@@ -1,0 +1,214 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::map::TileLayer 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a7d9f9648315ba99765da8d60eb1b9427">applyConfig</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a1ef741f77334ec29b1e693c94a82672a">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aa371566daa6fb07fd085f1c338becd39">createLayer</a>(int mapW, int mapH, float tileW=32.f, float tileH=32.f)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab62039a7a8335004814f15063565b421">depthY</a>(int tx, int ty)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac46533e088c5c6297014a0153ecd1acc">depthYAt</a>(int tx, int ty)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aed5183c2aa2a57b67383450488793cce">fill</a>(int gid)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a3a60d81c682741b7d907980a9c7e2fa7">getAutoReload</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a0a12dbdf236e7613e36b635d6703da20">getConfigPath</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a890f711fdaf05a3a30dc78ad23defc67">getLayer</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a0b86d985e3e15336051ead3c7c36fe83">getMapHeight</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#af683d287a81e0c5e3bcaf6b22ca93278">getMapWidth</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a98ebad56f77dc292df24964881f96356">getTile</a>(int tx, int ty)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#afe93984ac326e0ddb104aa916e18e62f">getTileHeight</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8ed2238d5c4faee81fb18d95af568150">getTilesetColumns</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a352cc245305b3d5b933d764de5537cc1">getTilesetFirstGid</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a36434647ed4677568501add8f4c102bb">getTilesetTexture</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a25f82da3a5111d95f130a5c3df35f26f">getTileWidth</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aee07fc1849b90fe9fd9fbcd884fa356d">getX</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#afb52d27e8bc1219bf94566728746ad1a">getY</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac92c03f8ba8a6b67cc256cdf0ca0e1c6">isVisible</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a4ee08bb1b7d76ee4f799b112c5d809e6">loadConfig</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aff38d4594f327b7eda4ff84104abfff9">release</a>() override</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a99209b76252864ce5d9c90ab16df4652">reloadConfig</a>()</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a706426926b27f194461100d3a18ebd31">resize</a>(int mapW, int mapH)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5c4cc1aed879918156efaf0e306c6154">setAutoReload</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8bdd2f929bf27ab48a9bb55249d238fa">setCamera</a>(graphics::Camera2D *camera)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aca3c9ef7cf1d13064336463327c0b4f8">setCanvas</a>(graphics::Canvas *canvas)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a840f0f2455665c594543d32802fde63f">setLayer</a>(int layer)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a44d0498b47b5b3c09103830d32996e67">setOrigin</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5ab56c169d64bccb415810ed47250ced">setTile</a>(int tx, int ty, int gid)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a63dff558d10034c5b53cbdf30433b94f">setTileset</a>(graphics::Texture *texture, int firstGid, int columns, int margin=0, int spacing=0)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a80e7704cf744c04e04da4480e10eb7a8">setTilesetTileSize</a>(int tileW, int tileH)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac55de53da121d14077949a60dc3ed87f">setTileSize</a>(float tileW, float tileH)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#af890a3e32f8e65a01c1e5ad0d272a6d0">setTint</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ae41eac72be4548133d8e11865b4b4db1">setVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac944b27692f4433a3861b379e330acd6">tileToWorld</a>(int tx, int ty, float &amp;wx, float &amp;wy)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab54f7e3873199423fefa8f68543304d2">tileToWorldX</a>(int tx, int ty)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ae6b739e83410580b498cae063fc88f1c">tileToWorldY</a>(int tx, int ty)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab86b075d145349f5cbf54a5df716fcb9">worldToTile</a>(float wx, float wy, int &amp;tx, int &amp;ty)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5952bd1fc6ca1ece68c9f43123fb124c">worldToTileX</a>(float wx, float wy)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8423c274fd201d47b1cdbe7c8f9e0239">worldToTileY</a>(float wx, float wy)</td><td class="entry"><a class="el" href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

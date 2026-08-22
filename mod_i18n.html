@@ -1,0 +1,272 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 本地化模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">本地化模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>本地化模块</h1>
+<p><b>脚本入口：</b> <code>eve.I18n()</code></p>
+<p>面向游戏的多语言支持：载入按语言分组的翻译表（JSON），按点号路径取字符串、 替换 <code>{name}</code> 占位符、按语言复数规则选择复数形式，并支持缺失键回退到默认语言。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">i18n &lt;- eve.I18n();</div>
+<div class="line">i18n.loadFromFile(&quot;zh&quot;, &quot;locales/zh.json&quot;);   // 从 VFS 读 JSON 翻译表</div>
+<div class="line">i18n.loadFromFile(&quot;en&quot;, &quot;locales/en.json&quot;);</div>
+<div class="line">i18n.setDefaultLanguage(&quot;en&quot;);</div>
+<div class="line">i18n.setLanguage(&quot;zh&quot;);</div>
+<div class="line"> </div>
+<div class="line">local title = i18n.get(&quot;menu.start&quot;);                  // &quot;开始游戏&quot;</div>
+<div class="line">local hi    = i18n.getWithParams(&quot;greeting&quot;, {name = &quot;Alice&quot;});  // &quot;你好，Alice！&quot;</div>
+<div class="line">local items = i18n.getPlural(&quot;items&quot;, 5);              // &quot;5 件物品&quot;</div>
+</div><!-- fragment --><h2>翻译表格式</h2>
+<p>JSON 根节点是对象；值可以是字符串、数字/布尔（转字符串），或**复数形式表** （键全部为 <code>zero/one/two/few/many/other</code> 的对象，作为该键的复数形式）。</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;menu&quot;: { &quot;start&quot;: &quot;Start&quot;, &quot;quit&quot;: &quot;Quit&quot; },</div>
+<div class="line">  &quot;greeting&quot;: &quot;Hello, {name}!&quot;,</div>
+<div class="line">  &quot;items&quot;: { &quot;one&quot;: &quot;{n} item&quot;, &quot;other&quot;: &quot;{n} items&quot; }</div>
+<div class="line">}</div>
+</div><!-- fragment --><ul>
+<li>点号路径：<code>menu.start</code> → <code>menu -&gt; start</code>。</li>
+<li>占位符：<code>{name}</code> / <code>{n}</code> 由 <code>getWithParams</code> / <code>getPluralWithParams</code> 的表或复数计数替换。</li>
+<li>缺失键：先查当前语言，再查默认语言，最后返回键本身（方便开发期看到未翻译项）。</li>
+<li>转义：JSON 原生支持 <code>\uXXXX</code>（含代理对）与 <code>\n</code>、<code>\"&lt;/tt&gt; 等转义。
+
+&lt;h2&gt;复数规则&lt;/h2&gt;
+
+内置 CLDR 风格规则覆盖常用语言：
+
+&lt;table class="markdownTable"&gt;
+  &lt;tr class="markdownTableHead"&gt;    &lt;th class="markdownTableHeadNone"&gt; 语言   </code></li>
+</ul>
+<p><code> 形式    </code></p>
+<p><code> </code></p>
+<p><code> <code>en/de/es/it/nl/sv/da/no/fi/el…</code>   </code></p>
+<p><code> <code>one</code> (n==1)，其余 <code>other</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>fr/pt</code>   </code></p>
+<p><code> n∈{0,1} → <code>one</code>，其余 <code>other</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>ru/uk/be</code>   </code></p>
+<p><code> <code>one</code>/<code>few</code>/<code>many</code> 三形式（%10 与 %100 规则）    </code></p>
+<p><code> </code></p>
+<p><code> <code>pl</code>   </code></p>
+<p><code> <code>one</code>/<code>few</code>/<code>many</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>cs/sk</code>   </code></p>
+<p><code> <code>one</code>/<code>few</code>/<code>other</code>    </code></p>
+<p><code> </code></p>
+<p><code> <code>zh/ja/ko/th/vi/id/ms/tr/my…</code>   </code></p>
+<p><code> 无复数区分，恒为 <code>other</code>   </code></p>
+<p><code></code></p>
+<p><code>语言代码会截取 <code>-</code>/<code>_</code> 前缀（如 <code>zh-CN</code> → <code>zh</code>）。选定形式缺失时依次回退 <code>other</code> → <code>one</code>；整键缺失再回退默认语言。</code></p>
+<p><code></p><h2>目标导向指南</h2>
+<p></code></p>
+<p><code></code></p>
+<p><code></p><h3>为多语言配置对话</h3>
+<p></code></p>
+<p><code></code></p>
+<p><code>在 <code>eve_init</code> 中载入翻译表并设置语言，之后所有显示文本（含 Dialogue 台词、 UI 文案、选项标签）都通过 <code>i18n.get*</code> 取，便于后期扩展新语言：</code></p>
+<p><code></p><div class="fragment"><div class="line">dlg.say(&quot;alice&quot;, i18n.get(&quot;line.hello&quot;));</div>
+<div class="line">dlg.addChoice(&quot;yes&quot;, i18n.get(&quot;choice.yes&quot;));</div>
+</div><!-- fragment --><p></code></p>
+<p><code></p><h3>热重载翻译表</h3>
+<p></code></p>
+<p><code></code></p>
+<p><code><code>loadFromFile</code> 会记录文件路径与修改时间；每帧调用 <code>i18n.update(dt)</code> 即可在 文件变更后自动重新载入（可通过 <code>setAutoReload(false)</code> 关闭）：</code></p>
+<p><code></p><div class="fragment"><div class="line">function eve_update(dt) {</div>
+<div class="line">    i18n.update(dt);</div>
+<div class="line">    // ...</div>
+<div class="line">}</div>
+</div><!-- fragment --><p></code></p>
+<p><code></p><h2>常见问题</h2>
+<p></code></p>
+<p><code></code></p>
+<p><code></p><ul>
+<li><code>loadFromJson</code> 解析失败或根节点不是对象时返回 <code>false</code>（错误静默，可用 <code>hasLanguage</code> 确认）。</li>
+<li><code>getPlural</code> 只认复数形式表；普通字符串键会原样返回（不做复数处理）。</li>
+<li><code>setLanguage</code> 只接受已载入的语言，否则返回 <code>false</code> 且保持原语言。</li>
+</ul>
+<p></code></p>
+<p><code></p><h2>API 快查</h2>
+<p></code></p>
+<p><code></code></p>
+<p><code></p><ul>
+<li><code>clear()</code>、<code>get(key)</code>、<code>getDefaultLanguage()</code>、<code>getLanguage()</code>、<code>getLanguageAt(index)</code></li>
+<li><code>getLanguageCount()</code>、<code>getPlural(key, n)</code>、<code>getPluralWithParams(key, n, params)</code></li>
+<li><code>getWithParams(key, params)</code>、<code>has(key)</code>、<code>hasLanguage(lang)</code></li>
+<li><code>isAutoReload()</code>、<code>loadFromFile(lang, path)</code>、<code>loadFromJson(lang, json)</code></li>
+<li><code>setAutoReload(enable)</code>、<code>setDefaultLanguage(lang)</code>、<code>setLanguage(lang)</code>、<code>unload(lang)</code></li>
+<li><code>update(dt)</code></li>
+</ul>
+<p></code></p>
+<p><code><code>params</code> 是 Squirrel 表，值为字符串 / 数字 / 布尔时自动转字符串；非表或 <code>null</code> 视为空参数。</code></p>
+<p><code></p><h2>使用要点</h2>
+<p></code></p>
+<p><code></code></p>
+<p><code></p><ul>
+<li>模块对象和翻译表应一次性载入并保存在全局状态，不要在每帧重复载入。</li>
+<li><code>update(dt)</code> 应在 <code>eve_update</code> 调用；文本查询可在更新或渲染阶段进行。</li>
+<li>参数约束、默认值和返回类型以头文件与 <code>addFunc</code> 绑定为准。</li>
+</ul>
+<p></code></p>
+<p><code><b>源码：</b> <a href="../../../src/modules/i18n/"><code>src/modules/i18n/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>i18n</code>。 </code></p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

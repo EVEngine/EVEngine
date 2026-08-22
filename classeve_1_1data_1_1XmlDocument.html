@@ -1,0 +1,476 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::data::XmlDocument类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1data.html">data</a></li><li class="navelem"><a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1data_1_1XmlDocument-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::data::XmlDocument类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Thin RAII wrapper over a <a class="el" href="namespacePoco.html">Poco</a> XML DOM document.  
+ <a href="classeve_1_1data_1_1XmlDocument.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="XmlDocument_8h_source.html">XmlDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0f6f2de378daf9d87b146acec861df1e" id="r_a0f6f2de378daf9d87b146acec861df1e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a0f6f2de378daf9d87b146acec861df1e">XmlDocument</a> ()</td></tr>
+<tr class="memdesc:a0f6f2de378daf9d87b146acec861df1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty document.  <br /></td></tr>
+<tr class="separator:a0f6f2de378daf9d87b146acec861df1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fdda5899325d321745ea169a66bed45" id="r_a2fdda5899325d321745ea169a66bed45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a2fdda5899325d321745ea169a66bed45">XmlDocument</a> (Poco::AutoPtr&lt; Poco::XML::Document &gt; doc)</td></tr>
+<tr class="memdesc:a2fdda5899325d321745ea169a66bed45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes ownership of an existing <a class="el" href="namespacePoco.html">Poco</a> DOM document.  <br /></td></tr>
+<tr class="separator:a2fdda5899325d321745ea169a66bed45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaf7654b8ddc1cbc8858fdec4b3d93b4" id="r_adaf7654b8ddc1cbc8858fdec4b3d93b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#adaf7654b8ddc1cbc8858fdec4b3d93b4">XmlDocument</a> (<a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:adaf7654b8ddc1cbc8858fdec4b3d93b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77cff8566e320437adb3a0518adce048" id="r_a77cff8566e320437adb3a0518adce048"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a77cff8566e320437adb3a0518adce048">operator=</a> (<a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a77cff8566e320437adb3a0518adce048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abde19288701fde9591539e59e647fadf" id="r_abde19288701fde9591539e59e647fadf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#abde19288701fde9591539e59e647fadf">XmlDocument</a> (const <a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;)=delete</td></tr>
+<tr class="separator:abde19288701fde9591539e59e647fadf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1854ecb5ce1216cd8e5a1ad23e6a212" id="r_aa1854ecb5ce1216cd8e5a1ad23e6a212"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#aa1854ecb5ce1216cd8e5a1ad23e6a212">~XmlDocument</a> ()=default</td></tr>
+<tr class="separator:aa1854ecb5ce1216cd8e5a1ad23e6a212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2cc9b8059dedff5e573d011295ff0ea" id="r_af2cc9b8059dedff5e573d011295ff0ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#af2cc9b8059dedff5e573d011295ff0ea">empty</a> () const</td></tr>
+<tr class="memdesc:af2cc9b8059dedff5e573d011295ff0ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when no underlying document is held.  <br /></td></tr>
+<tr class="separator:af2cc9b8059dedff5e573d011295ff0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ab5f12fa193163d9b7321c4a6d9cb6" id="r_a19ab5f12fa193163d9b7321c4a6d9cb6"><td class="memItemLeft" align="right" valign="top">Poco::XML::Document *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a19ab5f12fa193163d9b7321c4a6d9cb6">get</a> ()</td></tr>
+<tr class="memdesc:a19ab5f12fa193163d9b7321c4a6d9cb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Underlying <a class="el" href="namespacePoco.html">Poco</a> document access.  <br /></td></tr>
+<tr class="separator:a19ab5f12fa193163d9b7321c4a6d9cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13995eec29442f12d44e06c3f1840ce3" id="r_a13995eec29442f12d44e06c3f1840ce3"><td class="memItemLeft" align="right" valign="top">const Poco::XML::Document *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a13995eec29442f12d44e06c3f1840ce3">get</a> () const</td></tr>
+<tr class="separator:a13995eec29442f12d44e06c3f1840ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d63b5e1df8a07118e5f9ce15e43f928" id="r_a5d63b5e1df8a07118e5f9ce15e43f928"><td class="memItemLeft" align="right" valign="top">Poco::XML::Document *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a5d63b5e1df8a07118e5f9ce15e43f928">operator-&gt;</a> ()</td></tr>
+<tr class="memdesc:a5d63b5e1df8a07118e5f9ce15e43f928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience pointer/ref access.  <br /></td></tr>
+<tr class="separator:a5d63b5e1df8a07118e5f9ce15e43f928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a32244209ad9accc01a156f56fcc13" id="r_a96a32244209ad9accc01a156f56fcc13"><td class="memItemLeft" align="right" valign="top">Poco::XML::Document &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html#a96a32244209ad9accc01a156f56fcc13">operator*</a> ()</td></tr>
+<tr class="separator:a96a32244209ad9accc01a156f56fcc13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Thin RAII wrapper over a <a class="el" href="namespacePoco.html">Poco</a> XML DOM document. </p>
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8h_source.html">XmlDocument.h</a> 第 <a class="el" href="XmlDocument_8h_source.html#l00010">10</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0f6f2de378daf9d87b146acec861df1e" name="a0f6f2de378daf9d87b146acec861df1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f6f2de378daf9d87b146acec861df1e">&#9670;&#160;</a></span>XmlDocument() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::XmlDocument::XmlDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an empty document. </p>
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00006">6</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2fdda5899325d321745ea169a66bed45" name="a2fdda5899325d321745ea169a66bed45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fdda5899325d321745ea169a66bed45">&#9670;&#160;</a></span>XmlDocument() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::XmlDocument::XmlDocument </td>
+          <td>(</td>
+          <td class="paramtype">Poco::AutoPtr&lt; Poco::XML::Document &gt;&#160;</td>
+          <td class="paramname"><em>doc</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Takes ownership of an existing <a class="el" href="namespacePoco.html">Poco</a> DOM document. </p>
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adaf7654b8ddc1cbc8858fdec4b3d93b4" name="adaf7654b8ddc1cbc8858fdec4b3d93b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaf7654b8ddc1cbc8858fdec4b3d93b4">&#9670;&#160;</a></span>XmlDocument() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::XmlDocument::XmlDocument </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abde19288701fde9591539e59e647fadf" name="abde19288701fde9591539e59e647fadf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abde19288701fde9591539e59e647fadf">&#9670;&#160;</a></span>XmlDocument() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::XmlDocument::XmlDocument </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa1854ecb5ce1216cd8e5a1ad23e6a212" name="aa1854ecb5ce1216cd8e5a1ad23e6a212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1854ecb5ce1216cd8e5a1ad23e6a212">&#9670;&#160;</a></span>~XmlDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::XmlDocument::~XmlDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af2cc9b8059dedff5e573d011295ff0ea" name="af2cc9b8059dedff5e573d011295ff0ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2cc9b8059dedff5e573d011295ff0ea">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::data::XmlDocument::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when no underlying document is held. </p>
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19ab5f12fa193163d9b7321c4a6d9cb6" name="a19ab5f12fa193163d9b7321c4a6d9cb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19ab5f12fa193163d9b7321c4a6d9cb6">&#9670;&#160;</a></span>get() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::XML::Document * eve::data::XmlDocument::get </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Underlying <a class="el" href="namespacePoco.html">Poco</a> document access. </p>
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DataModule_8cpp_source.html#l00377">eve::data::DataModule::encodeXml()</a>.</p>
+
+</div>
+</div>
+<a id="a13995eec29442f12d44e06c3f1840ce3" name="a13995eec29442f12d44e06c3f1840ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13995eec29442f12d44e06c3f1840ce3">&#9670;&#160;</a></span>get() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Poco::XML::Document * eve::data::XmlDocument::get </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96a32244209ad9accc01a156f56fcc13" name="a96a32244209ad9accc01a156f56fcc13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96a32244209ad9accc01a156f56fcc13">&#9670;&#160;</a></span>operator*()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::XML::Document &amp; eve::data::XmlDocument::operator* </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5d63b5e1df8a07118e5f9ce15e43f928" name="a5d63b5e1df8a07118e5f9ce15e43f928"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d63b5e1df8a07118e5f9ce15e43f928">&#9670;&#160;</a></span>operator-&gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::XML::Document * eve::data::XmlDocument::operator-&gt; </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience pointer/ref access. </p>
+
+<p class="definition">在文件 <a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a> 第 <a class="el" href="XmlDocument_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a77cff8566e320437adb3a0518adce048" name="a77cff8566e320437adb3a0518adce048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77cff8566e320437adb3a0518adce048">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp; eve::data::XmlDocument::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/data/<a class="el" href="XmlDocument_8h_source.html">XmlDocument.h</a></li>
+<li>src/modules/data/<a class="el" href="XmlDocument_8cpp_source.html">XmlDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

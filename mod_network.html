@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 网络模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">网络模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>网络模块</h1>
+<p><b>脚本入口：</b> <code>eve.Network()</code></p>
+<p>提供 HTTP 请求、TCP 客户端/服务端、UDP、UDP 可靠链路（UdpLink）、RPC（NetRpc）、 多 peer 会话（NetHost）、类型化序列化（NetWriter/NetReader）和基础网络状态。</p>
+<p>改进设计见 `docs/dev/superpowers/specs/2026-08-18-network-module-improvement-design.md`。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local net = eve.Network();</div>
+<div class="line">local req = net.newHttp(&quot;GET&quot;, &quot;https://example.com/api&quot;);</div>
+<div class="line">req.setTimeout(5000);</div>
+<div class="line">req.submit();</div>
+<div class="line">// 在主循环调用 net.pump() 派发完成事件。</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Network</code> 创建 TcpSocket/UdpSocket/HttpRequest/Channel/Session，并通过 <code>pump()</code> 推进异步完成。Socket 负责传输，Channel 负责消息封装，Session 负责连接集合。</p>
+<h2>目标导向指南</h2>
+<h3>发起异步 HTTP 请求</h3>
+<p>用 <code>newHttp(method, url)</code>，设置 header、body、timeout 和 TLS 校验后 <code>submit()</code>；每帧调用 <code>net.pump()</code> 派发结果。不要阻塞渲染线程等待网络。</p>
+<h3>建立 TCP 会话</h3>
+<p>服务端 <code>newTcp()</code> 后 bind/listen/accept，客户端 connect；用 <code>newChannel(socket)</code> 封装消息发送，并把多个连接加入 <code>newSession()</code> 统一管理。断线时从 Session 移除并清理 socket。</p>
+<h3>封包并发送类型化消息</h3>
+<p>用 <code>newWriter()</code> 写入字段，<code>toString()</code> 取字节串后经 <code>sendMsgString()</code> 发送；接收端用 <code>newReader(bytes)</code> 或 <code>reader.init(bytes)</code> 读取：</p>
+<div class="fragment"><div class="line">local w = net.newWriter();</div>
+<div class="line">w.writeU32(42);</div>
+<div class="line">w.writeString(&quot;hello&quot;);</div>
+<div class="line">channel.sendMsgString(w.toString());</div>
+<div class="line">// 对端：</div>
+<div class="line">local r = net.newReader(receivedBytes);</div>
+<div class="line">local n = r.u32();</div>
+<div class="line">local s = r.str();</div>
+</div><!-- fragment --><p>读取越界后 <code>reader.ok()</code> 变为 false，后续读取安全返回默认值（空/0）。</p>
+<h3>UDP 可靠链路（UdpLink）</h3>
+<div class="fragment"><div class="line">local udp = net.newUdp();</div>
+<div class="line">udp.connect(&quot;127.0.0.1&quot;, 7000);</div>
+<div class="line">local link = net.newUdpLink(udp);</div>
+<div class="line">link.setRemote(&quot;127.0.0.1&quot;, 7000);</div>
+<div class="line">link.onMessage(function(channel, bytes) {</div>
+<div class="line">    local r = net.newReader(bytes);</div>
+<div class="line">    print(r.u32());</div>
+<div class="line">});</div>
+<div class="line">link.sendReliable(0, payloadString);      // 可靠、按序</div>
+<div class="line">link.sendUnreliable(1, payloadString);    // 尽力而为</div>
+<div class="line">link.sendOrdered(2, payloadString);       // 带序但不可靠</div>
+</div><!-- fragment --><h3>RPC（NetRpc）</h3>
+<div class="fragment"><div class="line">local rpc = net.newRpc(link);</div>
+<div class="line">rpc.registerRpc(7, function(bytes) {</div>
+<div class="line">    local r = net.newReader(bytes);</div>
+<div class="line">    print(&quot;got rpc 7: &quot; + r.str());</div>
+<div class="line">});</div>
+<div class="line">local w = net.newWriter();</div>
+<div class="line">w.writeString(&quot;hello&quot;);</div>
+<div class="line">rpc.callRpc(7, w.toString(), true);   // 可靠调用</div>
+</div><!-- fragment --><h3>多 peer 会话（NetHost）</h3>
+<div class="fragment"><div class="line">local host = net.newHost();</div>
+<div class="line">host.start(7000);</div>
+<div class="line">host.onMessage(function(peerId, channel, bytes) {</div>
+<div class="line">    // 首个数据报自动建链并分配 peerId</div>
+<div class="line">    host.sendReliable(peerId, 0, &quot;pong&quot;);</div>
+<div class="line">});</div>
+<div class="line">host.onPeerConnected(function(peerId) { /* peerconn */ });</div>
+<div class="line">host.onPeerDisconnected(function(peerId) { /* peerdisconn */ });</div>
+</div><!-- fragment --><h2>常见问题</h2>
+<ul>
+<li>提交 HTTP 后不 pump：请求完成不会被主线程处理。</li>
+<li>发布环境关闭 TLS 校验：<code>setVerifySsl(false)</code> 只能用于受控调试。</li>
+<li>假设 TCP 一次 send 对应一次 receive：应用层必须定义消息边界。</li>
+<li>发送数据不立即写出：<code>send()</code> 先入队，由网络线程轮询冲刷；大流量下 <code>pendingSendBytes()</code> 可见积压。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>accept()</code>、<code>add()</code>、<code>bind()</code>、<code>bool()</code>、<code>bytes()</code>、<code>callRpc()</code>、<code>close()</code>、<code>closeAll()</code>、<code>connect()</code>、<code>f32()</code>、<code>f64()</code></li>
+<li><code>get()</code>、<code>getName()</code>、<code>getPeer()</code>、<code>getSocket()</code>、<code>i8()</code>、<code>i16()</code>、<code>i32()</code>、<code>i64()</code>、<code>init()</code>、<code>initString()</code>、<code>isAlive()</code></li>
+<li><code>isConnected()</code>、<code>link()</code>、<code>listen()</code>、<code>newChannel()</code>、<code>newHost()</code>、<code>newHttp()</code>、<code>newReader()</code>、<code>newRpc()</code>、<code>newSession()</code></li>
+<li><code>newTcp()</code>、<code>newUdp()</code>、<code>newUdpLink()</code>、<code>newWriter()</code>、<code><a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok()</a></code>、<code>onMessage()</code>、<code>onPeerConnected()</code>、<code>onPeerDisconnected()</code></li>
+<li><code>peer()</code>、<code>peerCount()</code>、<code>peerId()</code>、<code>pendingFragments()</code>、<code>pendingReliable()</code>、<code><a class="el" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos()</a></code>、<code>pump()</code>、<code>registerRpc()</code>、<code>remaining()</code></li>
+<li><code>remove()</code>、<code>send()</code>、<code>sendMsg()</code>、<code>sendMsgString()</code>、<code>sendOrdered()</code>、<code>sendReliable()</code>、<code>sendString()</code>、<code>sendTo()</code>、<code>sendToString()</code></li>
+<li><code>sendUnreliable()</code>、<code>setBody()</code>、<code>setBodyString()</code>、<code>setHeader()</code>、<code>setLossRate()</code>、<code>setRemote()</code>、<code>setRemoteString()</code>、<code>setTimeout()</code></li>
+<li><code>setTimeoutMs()</code>、<code>setVerifySsl()</code>、<code>size()</code>、<code>start()</code>、<code>str()</code>、<code>submit()</code>、<code>toString()</code>、<code>u8()</code>、<code>u16()</code>、<code>u32()</code>、<code>u64()</code></li>
+<li><code>writeBool()</code>、<code>writeBytes()</code>、<code>writeF32()</code>、<code>writeF64()</code>、<code>writeI8()</code>、<code>writeI16()</code>、<code>writeI32()</code>、<code>writeI64()</code>、<code>writeString()</code></li>
+<li><code>writeU8()</code>、<code>writeU16()</code>、<code>writeU32()</code>、<code>writeU64()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/network/"><code>src/modules/network/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>network</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

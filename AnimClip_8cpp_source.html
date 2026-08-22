@@ -1,0 +1,578 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimClip.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimClip.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimClip_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClipRegistry_8h.html">animation/AnimClipRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimPose_8h.html">animation/AnimPose.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="AnimSkeleton_8h.html">animation/AnimSkeleton.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#ac3125c2603d046af2f3895982523d4fd">   14</a></span><a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#ac3125c2603d046af2f3895982523d4fd">AnimClip::AnimClip</a>(std::string <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) : name_(std::move(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)) {}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#ab464b17019e5e449f28c8147ac22961c">   16</a></span><a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#ab464b17019e5e449f28c8147ac22961c">AnimClip::~AnimClip</a>() { <a class="code hl_function" href="classeve_1_1animation_1_1AnimClipRegistry.html#a47b2250318d3afe7c29554c8e39f0c1a">AnimClipRegistry::unregister</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a41a504bff6b5b8912d1b9c37b760fca7">   18</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a41a504bff6b5b8912d1b9c37b760fca7">AnimClip::setDuration</a>(<span class="keywordtype">float</span> seconds) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (seconds &lt; 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip.setDuration: duration must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    duration_ = seconds;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a9506db7bef217059b8b3ac1c84ab3b57">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9506db7bef217059b8b3ac1c84ab3b57">AnimClip::setSampleRate</a>(<span class="keywordtype">float</span> hz) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (hz &lt;= 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip.setSampleRate: hz must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    sampleRate_ = hz;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">void</span> AnimClip::ensureBone(<span class="keywordtype">int</span> boneIndex) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip: invalid bone index %d&quot;</span>, boneIndex);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_.size())) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        tracks_.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex) + 1);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a4b8372924e32dabc6d17e1fba7f8d6b7">   35</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a4b8372924e32dabc6d17e1fba7f8d6b7">AnimClip::addPositionKey</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (time &lt; 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip.addPositionKey: time must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    ensureBone(boneIndex);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">auto</span> &amp;keys = tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    keys.push_back({time, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>});</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::sort(keys.begin(), keys.end(),</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>              [](<span class="keyword">const</span> Vec3Key &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec3Key &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { return a.t &lt; b.t; });</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (time &gt; duration_) duration_ = time;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a9c19f6b8c06a9606137c0bb8bd0a5b50">   45</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9c19f6b8c06a9606137c0bb8bd0a5b50">AnimClip::addRotationKey</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (time &lt; 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip.addRotationKey: time must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    ensureBone(boneIndex);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    QuatKey k{time, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>};</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> tmp;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> = <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a> = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    tmp.<a class="code hl_function" href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">normalizeRotation</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    k.x = tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    k.y = tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    k.z = tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    k.w = tmp.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">auto</span> &amp;keys = tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    keys.push_back(k);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::sort(keys.begin(), keys.end(),</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>              [](<span class="keyword">const</span> QuatKey &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> QuatKey &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { return a.t &lt; b.t; });</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">if</span> (time &gt; duration_) duration_ = time;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a2f7518b7b6f855926707543ccee7b5b1">   66</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a2f7518b7b6f855926707543ccee7b5b1">AnimClip::addScaleKey</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (time &lt; 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip.addScaleKey: time must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    ensureBone(boneIndex);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">auto</span> &amp;keys = tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].scales;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    keys.push_back({time, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>});</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::sort(keys.begin(), keys.end(),</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>              [](<span class="keyword">const</span> Vec3Key &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec3Key &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { return a.t &lt; b.t; });</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (time &gt; duration_) duration_ = time;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">   76</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">AnimClip::getPositionKeyCount</a>(<span class="keywordtype">int</span> boneIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_.size())) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions.size());</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">   81</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">AnimClip::getRotationKeyCount</a>(<span class="keywordtype">int</span> boneIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_.size())) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations.size());</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">   86</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">AnimClip::getScaleKeyCount</a>(<span class="keywordtype">int</span> boneIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_.size())) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].scales.size());</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keywordtype">void</span> requireKey(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex, <span class="keywordtype">int</span> count, <span class="keyword">const</span> <span class="keywordtype">char</span> *what) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || keyIndex &lt; 0 || keyIndex &gt;= count) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip: invalid %s key bone=%d index=%d&quot;</span>, what, boneIndex, keyIndex);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a41f60d74c95366f5ebfb09633a5656c6">   99</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a41f60d74c95366f5ebfb09633a5656c6">AnimClip::getPositionKeyTime</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">getPositionKeyCount</a>(boneIndex), <span class="stringliteral">&quot;position&quot;</span>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].t;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a9a48fb70436ba77a9479218eec8bde7d">  103</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9a48fb70436ba77a9479218eec8bde7d">AnimClip::getPositionKeyX</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">getPositionKeyCount</a>(boneIndex), <span class="stringliteral">&quot;position&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].x;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#ac00ac1189f7abea1479fc02dabd67237">  107</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#ac00ac1189f7abea1479fc02dabd67237">AnimClip::getPositionKeyY</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">getPositionKeyCount</a>(boneIndex), <span class="stringliteral">&quot;position&quot;</span>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].y;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a196f1d150debd06f7f53225ba25828da">  111</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a196f1d150debd06f7f53225ba25828da">AnimClip::getPositionKeyZ</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">getPositionKeyCount</a>(boneIndex), <span class="stringliteral">&quot;position&quot;</span>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].z;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a634e9dd8868297b6077ebb96f6f158b9">  116</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a634e9dd8868297b6077ebb96f6f158b9">AnimClip::getRotationKeyTime</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">getRotationKeyCount</a>(boneIndex), <span class="stringliteral">&quot;rotation&quot;</span>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].t;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a9ce23bac70ded5170d7b66bb41b72c41">  120</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a9ce23bac70ded5170d7b66bb41b72c41">AnimClip::getRotationKeyX</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">getRotationKeyCount</a>(boneIndex), <span class="stringliteral">&quot;rotation&quot;</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].x;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#aa78bf6af1b29faee39de281ad5ce2032">  124</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#aa78bf6af1b29faee39de281ad5ce2032">AnimClip::getRotationKeyY</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">getRotationKeyCount</a>(boneIndex), <span class="stringliteral">&quot;rotation&quot;</span>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].y;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="}">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a8ad9d2f8bc0ec8e4302fd263cb31fb5b">  128</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a8ad9d2f8bc0ec8e4302fd263cb31fb5b">AnimClip::getRotationKeyZ</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">getRotationKeyCount</a>(boneIndex), <span class="stringliteral">&quot;rotation&quot;</span>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].z;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a2925bed3ad5a548e94f27d91d1b30016">  132</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a2925bed3ad5a548e94f27d91d1b30016">AnimClip::getRotationKeyW</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">getRotationKeyCount</a>(boneIndex), <span class="stringliteral">&quot;rotation&quot;</span>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].rotations[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].w;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
+</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a6da022564257ddd0c3ed3172c5fd76e3">  137</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a6da022564257ddd0c3ed3172c5fd76e3">AnimClip::getScaleKeyTime</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">getScaleKeyCount</a>(boneIndex), <span class="stringliteral">&quot;scale&quot;</span>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].scales[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].t;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="}">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#ad0cc5911729f486f64528393b5b72587">  141</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#ad0cc5911729f486f64528393b5b72587">AnimClip::getScaleKeyX</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">getScaleKeyCount</a>(boneIndex), <span class="stringliteral">&quot;scale&quot;</span>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].scales[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].x;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="}">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a3b6e4d475c50d31c1174b13b60a32ccf">  145</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a3b6e4d475c50d31c1174b13b60a32ccf">AnimClip::getScaleKeyY</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">getScaleKeyCount</a>(boneIndex), <span class="stringliteral">&quot;scale&quot;</span>);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].scales[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].y;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00149" data-start="{" data-end="}">
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#ad61e3ebd9630a764e975935b48c4da8d">  149</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#ad61e3ebd9630a764e975935b48c4da8d">AnimClip::getScaleKeyZ</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> keyIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    requireKey(boneIndex, keyIndex, <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">getScaleKeyCount</a>(boneIndex), <span class="stringliteral">&quot;scale&quot;</span>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">return</span> tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].scales[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(keyIndex)].z;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>}</div>
+</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="foldopen" id="foldopen00154" data-start="{" data-end="}">
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a780a11875c0b28905b5140ea4ff25186">  154</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a780a11875c0b28905b5140ea4ff25186">AnimClip::applyPlanarRootMotion</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> speedX, <span class="keywordtype">float</span> speedZ) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    ensureBone(boneIndex);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">auto</span> &amp;keys = tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].positions;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">if</span> (keys.empty()) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="comment">// Create start/end keys from zero so motion matching sees a trajectory.</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        keys.push_back({0.f, 0.f, 0.f, 0.f});</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        keys.push_back({duration_, speedX * duration_, 0.f, speedZ * duration_});</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;k : keys) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        k.x += speedX * k.t;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        k.z += speedZ * k.t;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>}</div>
+</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="foldopen" id="foldopen00169" data-start="{" data-end="}">
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#accd790433b839b00872d4eeb11ee9e47">  169</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#accd790433b839b00872d4eeb11ee9e47">AnimClip::wrapTime</a>(<span class="keywordtype">float</span> time)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> (duration_ &lt;= 1e-8f) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">if</span> (loop_) {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        time = std::fmod(time, duration_);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">if</span> (time &lt; 0.f) time += duration_;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordflow">return</span> time;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(time, 0.f, duration_);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>}</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="keywordtype">void</span> AnimClip::sampleVec3(<span class="keyword">const</span> std::vector&lt;Vec3Key&gt; &amp;keys, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>,</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                          <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <span class="keywordtype">bool</span> &amp;<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">if</span> (keys.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">if</span> (time &lt;= keys.front().t || keys.size() == 1) {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = keys.front().x;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = keys.front().y;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = keys.front().z;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">if</span> (time &gt;= keys.back().t) {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = keys.back().x;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = keys.back().y;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = keys.back().z;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i + 1 &lt; keys.size(); ++i) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = keys[i];</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = keys[i + 1];</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">if</span> (time &gt;= <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.t &amp;&amp; time &lt;= <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.t) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> den = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.t - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.t;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> t   = den &gt; 1e-8f ? (time - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.t) / den : 0.f;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>               = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, t);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>               = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, t);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>               = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z, t);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = keys.back().x;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = keys.back().y;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = keys.back().z;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="keywordtype">void</span> AnimClip::sampleQuat(<span class="keyword">const</span> std::vector&lt;QuatKey&gt; &amp;keys, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>,</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                          <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">bool</span> &amp;<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> (keys.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">if</span> (time &lt;= keys.front().t || keys.size() == 1) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = keys.front().x;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = keys.front().y;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = keys.front().z;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = keys.front().w;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    }</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">if</span> (time &gt;= keys.back().t) {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = keys.back().x;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = keys.back().y;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = keys.back().z;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = keys.back().w;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i + 1 &lt; keys.size(); ++i) {</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = keys[i];</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = keys[i + 1];</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="keywordflow">if</span> (time &gt;= <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.t &amp;&amp; time &lt;= <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.t) {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> den = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.t - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.t;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> t   = den &gt; 1e-8f ? (time - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.t) / den : 0.f;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            <a class="code hl_function" href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">slerpQuat</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.w, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.w, t, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        }</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    }</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = keys.back().x;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = keys.back().y;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = keys.back().z;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = keys.back().w;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>}</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>TransformTRS AnimClip::sampleBone(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> time, <span class="keyword">const</span> TransformTRS &amp;fallback)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    TransformTRS out = fallback;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_.size())) <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keyword">const</span> BoneTrack &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> = tracks_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)];</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>             = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    sampleVec3(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.positions, time, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) {</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        out.px = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        out.py = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        out.pz = <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    }</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    sampleQuat(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.rotations, time, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        out.qx = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        out.qy = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        out.qz = <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        out.qw = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    }</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    sampleVec3(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.scales, time, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) {</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        out.sx = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        out.sy = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        out.sz = <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>}</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="foldopen" id="foldopen00276" data-start="{" data-end="}">
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a0684cf0f0a96e033f4721c9af11de565">  276</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a0684cf0f0a96e033f4721c9af11de565">AnimClip::sample</a>(<span class="keywordtype">float</span> time, <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *out, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordflow">if</span> (!out) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimClip.sample: pose is null&quot;</span>);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> boneCount = skeleton ? skeleton-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>()</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                                   : <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tracks_.size());</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    out-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(boneCount);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    time = <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#accd790433b839b00872d4eeb11ee9e47">wrapTime</a>(time);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; boneCount; ++i) {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;fb =</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            skeleton ? skeleton-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#ac4097c6422982bf9848523adf6e0337b">bindLocal</a>(i) : <a class="code hl_function" href="structeve_1_1animation_1_1TransformTRS.html#a5a874a608f3f5ec2e43ea4a668c9e829">TransformTRS::identity</a>();</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        out-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">local</a>(i) = sampleBone(i, time, fb);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    }</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>}</div>
+</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="foldopen" id="foldopen00289" data-start="{" data-end="}">
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimClip.html#a597eefac16bf226d5bda02748357e5ce">  289</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimClip.html#a597eefac16bf226d5bda02748357e5ce">AnimClip::adopt</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>&amp; other) {</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    std::swap(name_, other.name_);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    std::swap(duration_, other.duration_);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    std::swap(loop_, other.loop_);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    std::swap(sampleRate_, other.sampleRate_);</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    std::swap(tracks_, other.tracks_);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>}</div>
+</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClipRegistry_8h_html"><div class="ttname"><a href="AnimClipRegistry_8h.html">AnimClipRegistry.h</a></div></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aAnimPose_8h_html"><div class="ttname"><a href="AnimPose_8h.html">AnimPose.h</a></div></div>
+<div class="ttc" id="aAnimSkeleton_8h_html"><div class="ttname"><a href="AnimSkeleton_8h.html">AnimSkeleton.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a6af87187b494e66b82de2561eaa5f93a"><div class="ttname"><a href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a></div><div class="ttdeci">float tr</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00094">ModelRenderer.cpp:94</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClipRegistry_html_a47b2250318d3afe7c29554c8e39f0c1a"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClipRegistry.html#a47b2250318d3afe7c29554c8e39f0c1a">eve::animation::AnimClipRegistry::unregister</a></div><div class="ttdeci">static void unregister(AnimClip *clip)</div><div class="ttdoc">Forget a clip everywhere (called from ~AnimClip).</div><div class="ttdef"><b>Definition</b> <a href="AnimClipRegistry_8cpp_source.html#l00066">AnimClipRegistry.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00017">AnimClip.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a0684cf0f0a96e033f4721c9af11de565"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a0684cf0f0a96e033f4721c9af11de565">eve::animation::AnimClip::sample</a></div><div class="ttdeci">void sample(float time, AnimPose *out, const AnimSkeleton *skeleton=nullptr) const</div><div class="ttdoc">Sample local pose at time (seconds). If skeleton non-null, missing tracks fall back to bind pose; oth...</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00276">AnimClip.cpp:276</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a196f1d150debd06f7f53225ba25828da"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a196f1d150debd06f7f53225ba25828da">eve::animation::AnimClip::getPositionKeyZ</a></div><div class="ttdeci">float getPositionKeyZ(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00111">AnimClip.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a2925bed3ad5a548e94f27d91d1b30016"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a2925bed3ad5a548e94f27d91d1b30016">eve::animation::AnimClip::getRotationKeyW</a></div><div class="ttdeci">float getRotationKeyW(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00132">AnimClip.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a2f7518b7b6f855926707543ccee7b5b1"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a2f7518b7b6f855926707543ccee7b5b1">eve::animation::AnimClip::addScaleKey</a></div><div class="ttdeci">void addScaleKey(int boneIndex, float time, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00066">AnimClip.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a3b6e4d475c50d31c1174b13b60a32ccf"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a3b6e4d475c50d31c1174b13b60a32ccf">eve::animation::AnimClip::getScaleKeyY</a></div><div class="ttdeci">float getScaleKeyY(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00145">AnimClip.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a41a504bff6b5b8912d1b9c37b760fca7"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a41a504bff6b5b8912d1b9c37b760fca7">eve::animation::AnimClip::setDuration</a></div><div class="ttdeci">void setDuration(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00018">AnimClip.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a41f60d74c95366f5ebfb09633a5656c6"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a41f60d74c95366f5ebfb09633a5656c6">eve::animation::AnimClip::getPositionKeyTime</a></div><div class="ttdeci">float getPositionKeyTime(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00099">AnimClip.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a4b8372924e32dabc6d17e1fba7f8d6b7"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a4b8372924e32dabc6d17e1fba7f8d6b7">eve::animation::AnimClip::addPositionKey</a></div><div class="ttdeci">void addPositionKey(int boneIndex, float time, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00035">AnimClip.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a597eefac16bf226d5bda02748357e5ce"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a597eefac16bf226d5bda02748357e5ce">eve::animation::AnimClip::adopt</a></div><div class="ttdeci">void adopt(AnimClip &amp;other)</div><div class="ttdoc">Replace this clip's content with other's (payload moved, not copied). Used by hot reload so registere...</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00289">AnimClip.cpp:289</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a634e9dd8868297b6077ebb96f6f158b9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a634e9dd8868297b6077ebb96f6f158b9">eve::animation::AnimClip::getRotationKeyTime</a></div><div class="ttdeci">float getRotationKeyTime(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00116">AnimClip.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a689a04aae7dcfc22f514a15cf073a945"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">eve::animation::AnimClip::getRotationKeyCount</a></div><div class="ttdeci">int getRotationKeyCount(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00081">AnimClip.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a6da022564257ddd0c3ed3172c5fd76e3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a6da022564257ddd0c3ed3172c5fd76e3">eve::animation::AnimClip::getScaleKeyTime</a></div><div class="ttdeci">float getScaleKeyTime(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00137">AnimClip.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a780a11875c0b28905b5140ea4ff25186"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a780a11875c0b28905b5140ea4ff25186">eve::animation::AnimClip::applyPlanarRootMotion</a></div><div class="ttdeci">void applyPlanarRootMotion(int boneIndex, float speedX, float speedZ)</div><div class="ttdoc">Bake planar root motion onto an existing position track (or create one). For each position key at tim...</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00154">AnimClip.cpp:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a8ad9d2f8bc0ec8e4302fd263cb31fb5b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a8ad9d2f8bc0ec8e4302fd263cb31fb5b">eve::animation::AnimClip::getRotationKeyZ</a></div><div class="ttdeci">float getRotationKeyZ(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00128">AnimClip.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a916020620f435f45bfb6304fcae25b89"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">eve::animation::AnimClip::getScaleKeyCount</a></div><div class="ttdeci">int getScaleKeyCount(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00086">AnimClip.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a9506db7bef217059b8b3ac1c84ab3b57"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a9506db7bef217059b8b3ac1c84ab3b57">eve::animation::AnimClip::setSampleRate</a></div><div class="ttdeci">void setSampleRate(float hz)</div><div class="ttdoc">Sample rate hint used by MotionDatabase baking (Hz).</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00023">AnimClip.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a9a48fb70436ba77a9479218eec8bde7d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a9a48fb70436ba77a9479218eec8bde7d">eve::animation::AnimClip::getPositionKeyX</a></div><div class="ttdeci">float getPositionKeyX(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00103">AnimClip.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a9b1fa3749802ada9a8d6f733c4ac67ba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">eve::animation::AnimClip::getPositionKeyCount</a></div><div class="ttdeci">int getPositionKeyCount(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00076">AnimClip.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a9c19f6b8c06a9606137c0bb8bd0a5b50"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a9c19f6b8c06a9606137c0bb8bd0a5b50">eve::animation::AnimClip::addRotationKey</a></div><div class="ttdeci">void addRotationKey(int boneIndex, float time, float x, float y, float z, float w)</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00045">AnimClip.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_a9ce23bac70ded5170d7b66bb41b72c41"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#a9ce23bac70ded5170d7b66bb41b72c41">eve::animation::AnimClip::getRotationKeyX</a></div><div class="ttdeci">float getRotationKeyX(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00120">AnimClip.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_aa78bf6af1b29faee39de281ad5ce2032"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#aa78bf6af1b29faee39de281ad5ce2032">eve::animation::AnimClip::getRotationKeyY</a></div><div class="ttdeci">float getRotationKeyY(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00124">AnimClip.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_ab464b17019e5e449f28c8147ac22961c"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#ab464b17019e5e449f28c8147ac22961c">eve::animation::AnimClip::~AnimClip</a></div><div class="ttdeci">~AnimClip()</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00016">AnimClip.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_ac00ac1189f7abea1479fc02dabd67237"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#ac00ac1189f7abea1479fc02dabd67237">eve::animation::AnimClip::getPositionKeyY</a></div><div class="ttdeci">float getPositionKeyY(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00107">AnimClip.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_ac3125c2603d046af2f3895982523d4fd"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#ac3125c2603d046af2f3895982523d4fd">eve::animation::AnimClip::AnimClip</a></div><div class="ttdeci">AnimClip(std::string name=&quot;&quot;)</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00014">AnimClip.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_accd790433b839b00872d4eeb11ee9e47"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#accd790433b839b00872d4eeb11ee9e47">eve::animation::AnimClip::wrapTime</a></div><div class="ttdeci">float wrapTime(float time) const</div><div class="ttdoc">Wrap or clamp time according to loop flag.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00169">AnimClip.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_ad0cc5911729f486f64528393b5b72587"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#ad0cc5911729f486f64528393b5b72587">eve::animation::AnimClip::getScaleKeyX</a></div><div class="ttdeci">float getScaleKeyX(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00141">AnimClip.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html_ad61e3ebd9630a764e975935b48c4da8d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html#ad61e3ebd9630a764e975935b48c4da8d">eve::animation::AnimClip::getScaleKeyZ</a></div><div class="ttdeci">float getScaleKeyZ(int boneIndex, int keyIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00149">AnimClip.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_ab2c58886bd52cd4167b21cad65a8a2a6"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">eve::animation::AnimPose::local</a></div><div class="ttdeci">TransformTRS &amp; local(int boneIndex)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00074">AnimPose.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_aeea32fec7441e303ac3c6216448d4e33"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">eve::animation::AnimPose::resize</a></div><div class="ttdeci">void resize(int boneCount)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00044">AnimPose.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a44d26194685931ff9c09672982daddba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">eve::animation::AnimSkeleton::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00028">AnimSkeleton.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_ac4097c6422982bf9848523adf6e0337b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#ac4097c6422982bf9848523adf6e0337b">eve::animation::AnimSkeleton::bindLocal</a></div><div class="ttdeci">const TransformTRS &amp; bindLocal(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00116">AnimSkeleton.cpp:116</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a1cce09aba063bd49f2ea648f95972479"><div class="ttname"><a href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">eve::animation::slerpQuat</a></div><div class="ttdeci">void slerpQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw, float t, float &amp;ox, float &amp;oy, float &amp;oz, float &amp;ow)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00037">AnimMath.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a7e6712da7e628c22933bb801e9fb4564"><div class="ttname"><a href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">eve::animation::lerpf</a></div><div class="ttdeci">float lerpf(float a, float b, float t)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00035">AnimMath.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aed1d423554b8269ca7e6992b332f9812"><div class="ttname"><a href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">eve::animation::clampf</a></div><div class="ttdeci">float clampf(float v, float lo, float hi)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00031">AnimMath.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a03ea248de97b2702d86e047f2e32d970"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">eve::animation::TransformTRS::qx</a></div><div class="ttdeci">float qx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a08d6b60e2b0994d1c24e494aa9c8593b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">eve::animation::TransformTRS::qz</a></div><div class="ttdeci">float qz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a0e8d5035666cdb5c28b749bf3e2a4d74"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">eve::animation::TransformTRS::qy</a></div><div class="ttdeci">float qy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a5a874a608f3f5ec2e43ea4a668c9e829"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a5a874a608f3f5ec2e43ea4a668c9e829">eve::animation::TransformTRS::identity</a></div><div class="ttdeci">static TransformTRS identity()</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00014">AnimMath.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7a07df45fde09cb8d1ad4b58172eefb7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">eve::animation::TransformTRS::qw</a></div><div class="ttdeci">float qw</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_acdbd275a8f3dff3e944200b1a6010e46"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">eve::animation::TransformTRS::normalizeRotation</a></div><div class="ttdeci">void normalizeRotation()</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00016">AnimMath.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

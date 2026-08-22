@@ -1,0 +1,1218 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainSampler类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainSampler-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainSampler类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).  
+ <a href="classeve_1_1procgen_1_1TerrainSampler.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainSampler_8h_source.html">TerrainSampler.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2106b309db7b9a72ddb7a2a3bec31572" id="r_a2106b309db7b9a72ddb7a2a3bec31572"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2106b309db7b9a72ddb7a2a3bec31572">TerrainSampler</a> ()=default</td></tr>
+<tr class="separator:a2106b309db7b9a72ddb7a2a3bec31572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15ffc78d7c3d8105e5b3a5376a038b1b" id="r_a15ffc78d7c3d8105e5b3a5376a038b1b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a15ffc78d7c3d8105e5b3a5376a038b1b">sample</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a15ffc78d7c3d8105e5b3a5376a038b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b8de808510529c72cdb0555f24a7c3" id="r_a18b8de808510529c72cdb0555f24a7c3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a18b8de808510529c72cdb0555f24a7c3">sampleTile</a> (int tileX, int tileY) const</td></tr>
+<tr class="memdesc:a18b8de808510529c72cdb0555f24a7c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height at the center of map tile (tileX, tileY).  <br /></td></tr>
+<tr class="separator:a18b8de808510529c72cdb0555f24a7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbce487a072c7c103717f1e6dbfad3cc" id="r_adbce487a072c7c103717f1e6dbfad3cc"><td class="memItemLeft" align="right" valign="top">std::function&lt; float(float, float)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#adbce487a072c7c103717f1e6dbfad3cc">asFunction</a> () const</td></tr>
+<tr class="separator:adbce487a072c7c103717f1e6dbfad3cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f9194163b649cbd1dab347f422d53b0" id="r_a0f9194163b649cbd1dab347f422d53b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a0f9194163b649cbd1dab347f422d53b0">setSeed</a> (uint32_t <a class="el" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>)</td></tr>
+<tr class="separator:a0f9194163b649cbd1dab347f422d53b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43d577173cb8519e19541813c681217b" id="r_a43d577173cb8519e19541813c681217b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a43d577173cb8519e19541813c681217b">getSeed</a> () const</td></tr>
+<tr class="separator:a43d577173cb8519e19541813c681217b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96b66f0c6f3545bb3bc531886243c19b" id="r_a96b66f0c6f3545bb3bc531886243c19b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a96b66f0c6f3545bb3bc531886243c19b">setScale</a> (float <a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>)</td></tr>
+<tr class="memdesc:a96b66f0c6f3545bb3bc531886243c19b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cycles per world unit (alias of frequency). Default 1/32.  <br /></td></tr>
+<tr class="separator:a96b66f0c6f3545bb3bc531886243c19b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a9ac7a9151daa1a119036faaabf2a0" id="r_a51a9ac7a9151daa1a119036faaabf2a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a51a9ac7a9151daa1a119036faaabf2a0">getScale</a> () const</td></tr>
+<tr class="separator:a51a9ac7a9151daa1a119036faaabf2a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d5e2fc47c39fdb2bb550e6666a21b0f" id="r_a2d5e2fc47c39fdb2bb550e6666a21b0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2d5e2fc47c39fdb2bb550e6666a21b0f">setFrequency</a> (float frequency)</td></tr>
+<tr class="separator:a2d5e2fc47c39fdb2bb550e6666a21b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fab3abe910c99a5e442f85c25bf10d5" id="r_a2fab3abe910c99a5e442f85c25bf10d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2fab3abe910c99a5e442f85c25bf10d5">getFrequency</a> () const</td></tr>
+<tr class="separator:a2fab3abe910c99a5e442f85c25bf10d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc793e3018614075497ec409aa045270" id="r_adc793e3018614075497ec409aa045270"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#adc793e3018614075497ec409aa045270">setWavelength</a> (float wavelength)</td></tr>
+<tr class="memdesc:adc793e3018614075497ec409aa045270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance per large oscillation. Sets frequency = 1/wavelength.  <br /></td></tr>
+<tr class="separator:adc793e3018614075497ec409aa045270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ca1b18bf14f015ab7fd4757cddd2ef" id="r_ad5ca1b18bf14f015ab7fd4757cddd2ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#ad5ca1b18bf14f015ab7fd4757cddd2ef">getWavelength</a> () const</td></tr>
+<tr class="separator:ad5ca1b18bf14f015ab7fd4757cddd2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a085ee71d1802226a05d4cfd9565abdf0" id="r_a085ee71d1802226a05d4cfd9565abdf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a085ee71d1802226a05d4cfd9565abdf0">setOctaves</a> (int octaves)</td></tr>
+<tr class="separator:a085ee71d1802226a05d4cfd9565abdf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea0b4a948e67a849559ae9fb98db4617" id="r_aea0b4a948e67a849559ae9fb98db4617"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aea0b4a948e67a849559ae9fb98db4617">getOctaves</a> () const</td></tr>
+<tr class="separator:aea0b4a948e67a849559ae9fb98db4617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2546477019d0d34f4978b906d856936c" id="r_a2546477019d0d34f4978b906d856936c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2546477019d0d34f4978b906d856936c">setLacunarity</a> (float lacunarity)</td></tr>
+<tr class="separator:a2546477019d0d34f4978b906d856936c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa3a023dacf6449819b6a0ae1b39ec0b" id="r_aaa3a023dacf6449819b6a0ae1b39ec0b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aaa3a023dacf6449819b6a0ae1b39ec0b">getLacunarity</a> () const</td></tr>
+<tr class="separator:aaa3a023dacf6449819b6a0ae1b39ec0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bc22e71dbd7eeedbe4c862a9ff470e9" id="r_a4bc22e71dbd7eeedbe4c862a9ff470e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a4bc22e71dbd7eeedbe4c862a9ff470e9">setGain</a> (float gain)</td></tr>
+<tr class="separator:a4bc22e71dbd7eeedbe4c862a9ff470e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bae7758fe3ef90286cbaa01481c2643" id="r_a0bae7758fe3ef90286cbaa01481c2643"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a0bae7758fe3ef90286cbaa01481c2643">getGain</a> () const</td></tr>
+<tr class="separator:a0bae7758fe3ef90286cbaa01481c2643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b624ad627faa5561b514e3f6d140c83" id="r_a1b624ad627faa5561b514e3f6d140c83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a1b624ad627faa5561b514e3f6d140c83">setRidge</a> (float ridge)</td></tr>
+<tr class="separator:a1b624ad627faa5561b514e3f6d140c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a408218f5ca10636d15c27952725e0d4c" id="r_a408218f5ca10636d15c27952725e0d4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a408218f5ca10636d15c27952725e0d4c">getRidge</a> () const</td></tr>
+<tr class="separator:a408218f5ca10636d15c27952725e0d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f74e7404fe6086853445436275fd9bf" id="r_a4f74e7404fe6086853445436275fd9bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a4f74e7404fe6086853445436275fd9bf">setWarp</a> (float warp)</td></tr>
+<tr class="separator:a4f74e7404fe6086853445436275fd9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78732c21f3bec4941371de100e578387" id="r_a78732c21f3bec4941371de100e578387"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a78732c21f3bec4941371de100e578387">getWarp</a> () const</td></tr>
+<tr class="separator:a78732c21f3bec4941371de100e578387"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacdf979fbe2f5f1aeb0a70a92800000c" id="r_aacdf979fbe2f5f1aeb0a70a92800000c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aacdf979fbe2f5f1aeb0a70a92800000c">setExponent</a> (float exponent)</td></tr>
+<tr class="separator:aacdf979fbe2f5f1aeb0a70a92800000c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48198c519d00fed08b9902ec03959e0e" id="r_a48198c519d00fed08b9902ec03959e0e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a48198c519d00fed08b9902ec03959e0e">getExponent</a> () const</td></tr>
+<tr class="separator:a48198c519d00fed08b9902ec03959e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a625b430ae88a21f7ac831e9e3bb5f668" id="r_a625b430ae88a21f7ac831e9e3bb5f668"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a625b430ae88a21f7ac831e9e3bb5f668">setContinent</a> (float continent)</td></tr>
+<tr class="separator:a625b430ae88a21f7ac831e9e3bb5f668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01a8a025f3dc4ebf02fc376931f43907" id="r_a01a8a025f3dc4ebf02fc376931f43907"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a01a8a025f3dc4ebf02fc376931f43907">getContinent</a> () const</td></tr>
+<tr class="separator:a01a8a025f3dc4ebf02fc376931f43907"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ca7462c0b0195c6f2b8a621b4b1879" id="r_a25ca7462c0b0195c6f2b8a621b4b1879"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a25ca7462c0b0195c6f2b8a621b4b1879">setIsland</a> (float island)</td></tr>
+<tr class="separator:a25ca7462c0b0195c6f2b8a621b4b1879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec74bd8cbcdff121335f610e8d8dc853" id="r_aec74bd8cbcdff121335f610e8d8dc853"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aec74bd8cbcdff121335f610e8d8dc853">getIsland</a> () const</td></tr>
+<tr class="separator:aec74bd8cbcdff121335f610e8d8dc853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cd05708b500b74f1599b12491687b52" id="r_a9cd05708b500b74f1599b12491687b52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a9cd05708b500b74f1599b12491687b52">setCoastSoftness</a> (float softness)</td></tr>
+<tr class="memdesc:a9cd05708b500b74f1599b12491687b52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shore width of the land mask smoothstep. Smaller = cleaner, harder coast.  <br /></td></tr>
+<tr class="separator:a9cd05708b500b74f1599b12491687b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5265534a68d149b0cd3d6d111bde83a8" id="r_a5265534a68d149b0cd3d6d111bde83a8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a5265534a68d149b0cd3d6d111bde83a8">getCoastSoftness</a> () const</td></tr>
+<tr class="separator:a5265534a68d149b0cd3d6d111bde83a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacc64760bcf367333610d724c958bc13" id="r_aacc64760bcf367333610d724c958bc13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aacc64760bcf367333610d724c958bc13">setWorldSize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:aacc64760bcf367333610d724c958bc13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7337d90eec60e46ac3c5c6ac4ef328e8" id="r_a7337d90eec60e46ac3c5c6ac4ef328e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a7337d90eec60e46ac3c5c6ac4ef328e8">getWorldWidth</a> () const</td></tr>
+<tr class="separator:a7337d90eec60e46ac3c5c6ac4ef328e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f94eb9bea0809b93f73f0d92cba952a" id="r_a9f94eb9bea0809b93f73f0d92cba952a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a9f94eb9bea0809b93f73f0d92cba952a">getWorldHeight</a> () const</td></tr>
+<tr class="separator:a9f94eb9bea0809b93f73f0d92cba952a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac502e1d2a5d3842b18385d6d854c1a6" id="r_aac502e1d2a5d3842b18385d6d854c1a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aac502e1d2a5d3842b18385d6d854c1a6">setBase</a> (float base)</td></tr>
+<tr class="separator:aac502e1d2a5d3842b18385d6d854c1a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c21bd397e3ea26b4a412ec7d6111583" id="r_a8c21bd397e3ea26b4a412ec7d6111583"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a8c21bd397e3ea26b4a412ec7d6111583">getBase</a> () const</td></tr>
+<tr class="separator:a8c21bd397e3ea26b4a412ec7d6111583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7151d9d43939cb64d1f47def2f91d6" id="r_a8b7151d9d43939cb64d1f47def2f91d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a8b7151d9d43939cb64d1f47def2f91d6">setAmplitude</a> (float amplitude)</td></tr>
+<tr class="separator:a8b7151d9d43939cb64d1f47def2f91d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6f1bbbf4d54de8f990ffad82e68faef" id="r_ac6f1bbbf4d54de8f990ffad82e68faef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#ac6f1bbbf4d54de8f990ffad82e68faef">getAmplitude</a> () const</td></tr>
+<tr class="separator:ac6f1bbbf4d54de8f990ffad82e68faef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a722ded60b19a17193ca95c3758f64fb3" id="r_a722ded60b19a17193ca95c3758f64fb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a722ded60b19a17193ca95c3758f64fb3">setClamp</a> (bool <a class="el" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float minHeight, float maxHeight)</td></tr>
+<tr class="separator:a722ded60b19a17193ca95c3758f64fb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58bfa0318b9b0bef711c6c5a17978381" id="r_a58bfa0318b9b0bef711c6c5a17978381"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a58bfa0318b9b0bef711c6c5a17978381">isClamped</a> () const</td></tr>
+<tr class="separator:a58bfa0318b9b0bef711c6c5a17978381"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18e1c2b56b8dd446ec5224f0541096b5" id="r_a18e1c2b56b8dd446ec5224f0541096b5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a18e1c2b56b8dd446ec5224f0541096b5">getClampMin</a> () const</td></tr>
+<tr class="separator:a18e1c2b56b8dd446ec5224f0541096b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a276c0d6fc3803f1941c6ce04400c9561" id="r_a276c0d6fc3803f1941c6ce04400c9561"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a276c0d6fc3803f1941c6ce04400c9561">getClampMax</a> () const</td></tr>
+<tr class="separator:a276c0d6fc3803f1941c6ce04400c9561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ac3aa44708d686fd95b89d8a07b38ef6f" id="r_ac3aa44708d686fd95b89d8a07b38ef6f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#ac3aa44708d686fd95b89d8a07b38ef6f">fromParams</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params)</td></tr>
+<tr class="separator:ac3aa44708d686fd95b89d8a07b38ef6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe). </p>
+<p><code>sample(x, y)</code> maps any continuous map coordinate (tile/world units) to a height in [0, 1] by default. Same coordinate + same config ⇒ same height.</p>
+<p>Frequency is <b>cycles per world unit</b>. A wavelength of 32 (frequency 1/32) means one large hill every 32 tiles/pixels — this is what makes coherent terrain instead of white noise. <code>scale</code> is an alias for frequency.</p>
+<p>Pipeline:</p><ol type="1">
+<li>2-octave Perlin continent (low frequency) — this is the land shape</li>
+<li>low-frequency domain warp of that field (bays / peninsulas)</li>
+<li>optional multiplicative island falloff (kills map corners, not the shape)</li>
+<li>smoothstep → solid coastline; hills / ridges only inland </li>
+</ol>
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8h_source.html">TerrainSampler.h</a> 第 <a class="el" href="TerrainSampler_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2106b309db7b9a72ddb7a2a3bec31572" name="a2106b309db7b9a72ddb7a2a3bec31572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2106b309db7b9a72ddb7a2a3bec31572">&#9670;&#160;</a></span>TerrainSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainSampler::TerrainSampler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="adbce487a072c7c103717f1e6dbfad3cc" name="adbce487a072c7c103717f1e6dbfad3cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbce487a072c7c103717f1e6dbfad3cc">&#9670;&#160;</a></span>asFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt; float(float, float)&gt; eve::procgen::TerrainSampler::asFunction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Heightmap_8cpp_source.html#l00069">eve::procgen::Heightmap::generate()</a>.</p>
+
+</div>
+</div>
+<a id="ac3aa44708d686fd95b89d8a07b38ef6f" name="ac3aa44708d686fd95b89d8a07b38ef6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3aa44708d686fd95b89d8a07b38ef6f">&#9670;&#160;</a></span>fromParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a> eve::procgen::TerrainSampler::fromParams </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Params_8cpp_source.html#l00032">eve::procgen::Params::getFloat()</a>, <a class="el" href="Params_8cpp_source.html#l00015">eve::procgen::Params::getHeight()</a>, <a class="el" href="Params_8cpp_source.html#l00023">eve::procgen::Params::getInt()</a>, <a class="el" href="Params_8cpp_source.html#l00008">eve::procgen::Params::getSeed()</a>, <a class="el" href="Params_8cpp_source.html#l00014">eve::procgen::Params::getWidth()</a>, <a class="el" href="Params_8cpp_source.html#l00021">eve::procgen::Params::has()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="TerrainSampler_8cpp_source.html#l00010">setSeed()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l00361">eve::procgen::Procgen::generateHeightmap()</a>.</p>
+
+</div>
+</div>
+<a id="ac6f1bbbf4d54de8f990ffad82e68faef" name="ac6f1bbbf4d54de8f990ffad82e68faef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6f1bbbf4d54de8f990ffad82e68faef">&#9670;&#160;</a></span>getAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getAmplitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c21bd397e3ea26b4a412ec7d6111583" name="a8c21bd397e3ea26b4a412ec7d6111583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c21bd397e3ea26b4a412ec7d6111583">&#9670;&#160;</a></span>getBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getBase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a276c0d6fc3803f1941c6ce04400c9561" name="a276c0d6fc3803f1941c6ce04400c9561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a276c0d6fc3803f1941c6ce04400c9561">&#9670;&#160;</a></span>getClampMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getClampMax </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18e1c2b56b8dd446ec5224f0541096b5" name="a18e1c2b56b8dd446ec5224f0541096b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18e1c2b56b8dd446ec5224f0541096b5">&#9670;&#160;</a></span>getClampMin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getClampMin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5265534a68d149b0cd3d6d111bde83a8" name="a5265534a68d149b0cd3d6d111bde83a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5265534a68d149b0cd3d6d111bde83a8">&#9670;&#160;</a></span>getCoastSoftness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getCoastSoftness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01a8a025f3dc4ebf02fc376931f43907" name="a01a8a025f3dc4ebf02fc376931f43907"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01a8a025f3dc4ebf02fc376931f43907">&#9670;&#160;</a></span>getContinent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getContinent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48198c519d00fed08b9902ec03959e0e" name="a48198c519d00fed08b9902ec03959e0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48198c519d00fed08b9902ec03959e0e">&#9670;&#160;</a></span>getExponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getExponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2fab3abe910c99a5e442f85c25bf10d5" name="a2fab3abe910c99a5e442f85c25bf10d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fab3abe910c99a5e442f85c25bf10d5">&#9670;&#160;</a></span>getFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0bae7758fe3ef90286cbaa01481c2643" name="a0bae7758fe3ef90286cbaa01481c2643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bae7758fe3ef90286cbaa01481c2643">&#9670;&#160;</a></span>getGain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getGain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec74bd8cbcdff121335f610e8d8dc853" name="aec74bd8cbcdff121335f610e8d8dc853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec74bd8cbcdff121335f610e8d8dc853">&#9670;&#160;</a></span>getIsland()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getIsland </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa3a023dacf6449819b6a0ae1b39ec0b" name="aaa3a023dacf6449819b6a0ae1b39ec0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa3a023dacf6449819b6a0ae1b39ec0b">&#9670;&#160;</a></span>getLacunarity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getLacunarity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aea0b4a948e67a849559ae9fb98db4617" name="aea0b4a948e67a849559ae9fb98db4617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea0b4a948e67a849559ae9fb98db4617">&#9670;&#160;</a></span>getOctaves()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSampler::getOctaves </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a408218f5ca10636d15c27952725e0d4c" name="a408218f5ca10636d15c27952725e0d4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a408218f5ca10636d15c27952725e0d4c">&#9670;&#160;</a></span>getRidge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getRidge </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51a9ac7a9151daa1a119036faaabf2a0" name="a51a9ac7a9151daa1a119036faaabf2a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51a9ac7a9151daa1a119036faaabf2a0">&#9670;&#160;</a></span>getScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43d577173cb8519e19541813c681217b" name="a43d577173cb8519e19541813c681217b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43d577173cb8519e19541813c681217b">&#9670;&#160;</a></span>getSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::TerrainSampler::getSeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8h_source.html#l00012">eve::procgen::NoiseField::seed</a>.</p>
+
+</div>
+</div>
+<a id="a78732c21f3bec4941371de100e578387" name="a78732c21f3bec4941371de100e578387"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78732c21f3bec4941371de100e578387">&#9670;&#160;</a></span>getWarp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getWarp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5ca1b18bf14f015ab7fd4757cddd2ef" name="ad5ca1b18bf14f015ab7fd4757cddd2ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ca1b18bf14f015ab7fd4757cddd2ef">&#9670;&#160;</a></span>getWavelength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::getWavelength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f94eb9bea0809b93f73f0d92cba952a" name="a9f94eb9bea0809b93f73f0d92cba952a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f94eb9bea0809b93f73f0d92cba952a">&#9670;&#160;</a></span>getWorldHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSampler::getWorldHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Heightmap_8cpp_source.html#l00069">eve::procgen::Heightmap::generate()</a>.</p>
+
+</div>
+</div>
+<a id="a7337d90eec60e46ac3c5c6ac4ef328e8" name="a7337d90eec60e46ac3c5c6ac4ef328e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7337d90eec60e46ac3c5c6ac4ef328e8">&#9670;&#160;</a></span>getWorldWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSampler::getWorldWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Heightmap_8cpp_source.html#l00069">eve::procgen::Heightmap::generate()</a>.</p>
+
+</div>
+</div>
+<a id="a58bfa0318b9b0bef711c6c5a17978381" name="a58bfa0318b9b0bef711c6c5a17978381"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58bfa0318b9b0bef711c6c5a17978381">&#9670;&#160;</a></span>isClamped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainSampler::isClamped </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a15ffc78d7c3d8105e5b3a5376a038b1b" name="a15ffc78d7c3d8105e5b3a5376a038b1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15ffc78d7c3d8105e5b3a5376a038b1b">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::sample </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="NoiseField_8cpp_source.html#l00084">eve::procgen::NoiseField::fbmPerlin()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="NoiseField_8cpp_source.html#l00046">eve::procgen::NoiseField::perlinNoise()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00113">eve::procgen::NoiseField::ridgedPerlin()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSampler_8cpp_source.html#l00120">sampleTile()</a>.</p>
+
+</div>
+</div>
+<a id="a18b8de808510529c72cdb0555f24a7c3" name="a18b8de808510529c72cdb0555f24a7c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b8de808510529c72cdb0555f24a7c3">&#9670;&#160;</a></span>sampleTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainSampler::sampleTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tileX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tileY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Height at the center of map tile (tileX, tileY). </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainSampler_8cpp_source.html#l00065">sample()</a>.</p>
+
+</div>
+</div>
+<a id="a8b7151d9d43939cb64d1f47def2f91d6" name="a8b7151d9d43939cb64d1f47def2f91d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7151d9d43939cb64d1f47def2f91d6">&#9670;&#160;</a></span>setAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setAmplitude </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amplitude</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac502e1d2a5d3842b18385d6d854c1a6" name="aac502e1d2a5d3842b18385d6d854c1a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac502e1d2a5d3842b18385d6d854c1a6">&#9670;&#160;</a></span>setBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setBase </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>base</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a722ded60b19a17193ca95c3758f64fb3" name="a722ded60b19a17193ca95c3758f64fb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a722ded60b19a17193ca95c3758f64fb3">&#9670;&#160;</a></span>setClamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setClamp </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a9cd05708b500b74f1599b12491687b52" name="a9cd05708b500b74f1599b12491687b52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cd05708b500b74f1599b12491687b52">&#9670;&#160;</a></span>setCoastSoftness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setCoastSoftness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>softness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shore width of the land mask smoothstep. Smaller = cleaner, harder coast. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a625b430ae88a21f7ac831e9e3bb5f668" name="a625b430ae88a21f7ac831e9e3bb5f668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a625b430ae88a21f7ac831e9e3bb5f668">&#9670;&#160;</a></span>setContinent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setContinent </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>continent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacdf979fbe2f5f1aeb0a70a92800000c" name="aacdf979fbe2f5f1aeb0a70a92800000c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacdf979fbe2f5f1aeb0a70a92800000c">&#9670;&#160;</a></span>setExponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setExponent </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>exponent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d5e2fc47c39fdb2bb550e6666a21b0f" name="a2d5e2fc47c39fdb2bb550e6666a21b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d5e2fc47c39fdb2bb550e6666a21b0f">&#9670;&#160;</a></span>setFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setFrequency </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequency</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainSampler_8cpp_source.html#l00012">setScale()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSampler_8cpp_source.html#l00016">setWavelength()</a>.</p>
+
+</div>
+</div>
+<a id="a4bc22e71dbd7eeedbe4c862a9ff470e9" name="a4bc22e71dbd7eeedbe4c862a9ff470e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc22e71dbd7eeedbe4c862a9ff470e9">&#9670;&#160;</a></span>setGain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setGain </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a25ca7462c0b0195c6f2b8a621b4b1879" name="a25ca7462c0b0195c6f2b8a621b4b1879"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ca7462c0b0195c6f2b8a621b4b1879">&#9670;&#160;</a></span>setIsland()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setIsland </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>island</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2546477019d0d34f4978b906d856936c" name="a2546477019d0d34f4978b906d856936c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2546477019d0d34f4978b906d856936c">&#9670;&#160;</a></span>setLacunarity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setLacunarity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a085ee71d1802226a05d4cfd9565abdf0" name="a085ee71d1802226a05d4cfd9565abdf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a085ee71d1802226a05d4cfd9565abdf0">&#9670;&#160;</a></span>setOctaves()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setOctaves </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b624ad627faa5561b514e3f6d140c83" name="a1b624ad627faa5561b514e3f6d140c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b624ad627faa5561b514e3f6d140c83">&#9670;&#160;</a></span>setRidge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setRidge </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ridge</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96b66f0c6f3545bb3bc531886243c19b" name="a96b66f0c6f3545bb3bc531886243c19b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b66f0c6f3545bb3bc531886243c19b">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cycles per world unit (alias of frequency). Default 1/32. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSampler_8cpp_source.html#l00014">setFrequency()</a>.</p>
+
+</div>
+</div>
+<a id="a0f9194163b649cbd1dab347f422d53b0" name="a0f9194163b649cbd1dab347f422d53b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f9194163b649cbd1dab347f422d53b0">&#9670;&#160;</a></span>setSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setSeed </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CloudField_8cpp_source.html#l00020">seed</a> , 以及 <a class="el" href="NoiseField_8h_source.html#l00012">eve::procgen::NoiseField::seed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSampler_8cpp_source.html#l00128">fromParams()</a>.</p>
+
+</div>
+</div>
+<a id="a4f74e7404fe6086853445436275fd9bf" name="a4f74e7404fe6086853445436275fd9bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f74e7404fe6086853445436275fd9bf">&#9670;&#160;</a></span>setWarp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setWarp </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>warp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc793e3018614075497ec409aa045270" name="adc793e3018614075497ec409aa045270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc793e3018614075497ec409aa045270">&#9670;&#160;</a></span>setWavelength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setWavelength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wavelength</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance per large oscillation. Sets frequency = 1/wavelength. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainSampler_8cpp_source.html#l00014">setFrequency()</a>.</p>
+
+</div>
+</div>
+<a id="aacc64760bcf367333610d724c958bc13" name="aacc64760bcf367333610d724c958bc13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc64760bcf367333610d724c958bc13">&#9670;&#160;</a></span>setWorldSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainSampler::setWorldSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a> 第 <a class="el" href="TerrainSampler_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Heightmap_8cpp_source.html#l00069">eve::procgen::Heightmap::generate()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSampler_8h_source.html">TerrainSampler.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSampler_8cpp_source.html">TerrainSampler.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

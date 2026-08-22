@@ -1,0 +1,318 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 声明式场景树模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">声明式场景树模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>声明式场景树模块</h1>
+<p><b>脚本入口：</b> <code>eve.Scene()</code></p>
+<p>用节点描述构建 2D/3D 层级，维护 local/world 变换并连接渲染实体。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local scene = eve.Scene();</div>
+<div class="line">scene.beginBuild();</div>
+<div class="line">scene.beginNode(&quot;root&quot;, &quot;Root&quot;);</div>
+<div class="line">scene.setBuildSpace(&quot;3d&quot;);</div>
+<div class="line">scene.addNode(&quot;player&quot;, &quot;Player&quot;);</div>
+<div class="line">scene.end();</div>
+<div class="line">scene.mountBuildAs(&quot;level&quot;);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Scene</code> 管理命名 SceneHost；Host 保存 SceneNode 树；节点 local TRS 经 TransformSystem 计算 world TRS；renderable link 把结果同步给渲染组件。</p>
+<h2>目标导向指南</h2>
+<h3>构建层级场景</h3>
+<p>用 <code>beginBuild()</code>、<code>beginNode()</code> / <code>beginGroup()</code>、<code>end()</code> 建树，在打开的节点上设置 position/rotation/scale/space，最后 <code>mountBuildAs(name)</code>。父节点变换会传播给子节点。</p>
+<h3>移动节点并同步渲染实体</h3>
+<p>运行时用 <code>setNodePosition()</code> 等按 ID 修改 local transform，然后 <code>updateTransforms()</code>；通过 <code>linkRenderable2D/3D()</code> 连接的渲染实体会接收 world TRS。查询路径和祖先关系可用于编辑器与挂点逻辑。</p>
+<h3>给节点挂脚本行为（场景节点 ↔ 脚本 ECS）</h3>
+<p>每个节点都可以挂一个 <code>eve.SceneEntity</code> 子类实例（<code>extends eve.Entity</code>，数据组件槽沿用脚本 ECS 声明方式）。挂载后实例自动进入 <code>eve.view(cls)</code>，可被 <code>eve.System</code> 批量驱动；<code>scene.update(dt)</code> 先同步 transforms，再对全部已挂实例调用 <code>update(dt)</code>。</p>
+<div class="fragment"><div class="line">class MoveComp extends eve.Component { speed = 60.0 }</div>
+<div class="line"> </div>
+<div class="line">class Bouncer extends eve.SceneEntity {</div>
+<div class="line">    move = MoveComp</div>
+<div class="line">    function onAttach() { node().setPosition(120.0, 60.0, 0.0) }</div>
+<div class="line">    function update(dt) {</div>
+<div class="line">        local p = node().getPosition()</div>
+<div class="line">        node().setPosition(p[0], p[1] + move.speed * dt, p[2])</div>
+<div class="line">    }</div>
+<div class="line">    function onDetach() {}</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">local e = scene.attachEntity(&quot;player&quot;, Bouncer)   // 返回实例</div>
+<div class="line">scene.hasEntity(&quot;player&quot;, Bouncer)                // true</div>
+<div class="line">scene.getEntity(&quot;player&quot;, Bouncer)                // 按类查找</div>
+<div class="line">scene.entitiesOf(&quot;player&quot;)                        // 该节点全部实例</div>
+<div class="line">scene.detachEntity(&quot;player&quot;, e)                   // 卸载（触发 onDetach + destroy）</div>
+<div class="line"> </div>
+<div class="line">local ref = scene.getNodeRef(&quot;player&quot;)            // 节点句柄</div>
+<div class="line">local p = ref.getPosition()                       // [x, y, z]</div>
+<div class="line">ref.getWorldPosition()                            // world 位置（需先 updateTransforms/update）</div>
+<div class="line">ref.setPosition(0.0, 0.0, 0.0)</div>
+</div><!-- fragment --><p>生命周期：reconcile / 全量 rebuild 按节点 id 保留绑定；节点被移除时自动调用 <code>onDetach()</code> 并销毁实例。同一节点重复 attach 同 class 会先卸载旧实例。</p>
+<h3>通用 link 系统（节点 ↔ 渲染/物理/相机/音频）</h3>
+<p>一个节点可以同时挂多种外部对象的 link（每类一个），<code>TransformSystem</code> 按类型同步：</p>
+<div class="fragment"><div class="line">scene.linkRenderable3D(&quot;soldier&quot;, mesh)              // 渲染体：world TRS + visible</div>
+<div class="line">scene.linkPhysics3D(&quot;soldier&quot;, body)                 // 物理体：默认 node→body（kinematic）</div>
+<div class="line">scene.linkPhysics3D(&quot;soldier&quot;, body, &quot;body&quot;)         // body→node（dynamic，body 权威）</div>
+<div class="line">scene.linkPhysics2D(&quot;soldier&quot;, body2d, &quot;node&quot;)</div>
+<div class="line">scene.linkCamera3D(&quot;soldier&quot;, cam)                   // 相机：eye 跟随节点 world 位置</div>
+<div class="line">scene.linkAudio3D(&quot;soldier&quot;, source)                 // 3D 音源：position 跟随节点</div>
+<div class="line"> </div>
+<div class="line">scene.linkCount(&quot;soldier&quot;)                           // 4</div>
+<div class="line">scene.unlinkNodeKind(&quot;soldier&quot;, &quot;physics3d&quot;)         // 只拆一类</div>
+<div class="line">scene.unlinkNode(&quot;soldier&quot;)                          // 拆全部</div>
+</div><!-- fragment --><p>物理 2D 同步的是 local x/y/roll（像素 + 弧度），物理 3D 同步 local x/y/z + 欧拉角（四元数内部转换）；body→node 模式适合根级节点（local≈world）。link 在 reconcile / 全量 rebuild 后按 id 保留；<code>SceneLoader</code> 导入的模型节点同样可挂 link，热重载后保留。</p>
+<h3>变换读写 / 空间换算 / 层级操作</h3>
+<p>与 <code>setNode*</code> 配套的 getter 与换算已补齐（selected host；跨 host 用 <code>*At</code> 变体）：</p>
+<div class="fragment"><div class="line">scene.getNodePosition(&quot;ball&quot;)           // [x, y, z]</div>
+<div class="line">scene.getNodeRotation(&quot;ball&quot;)           // [yaw, pitch, roll]</div>
+<div class="line">scene.getNodeScale(&quot;ball&quot;)</div>
+<div class="line">scene.getNodeVisible(&quot;ball&quot;)</div>
+<div class="line">scene.getNodeWorldPosition(&quot;ball&quot;)      // 需先 updateTransforms/update</div>
+<div class="line">scene.getNodeWorldRotation(&quot;ball&quot;)</div>
+<div class="line">scene.getNodeWorldScale(&quot;ball&quot;)</div>
+<div class="line">scene.localToWorld(&quot;ball&quot;, 0, 0, 0)     // 节点 local → world</div>
+<div class="line">scene.worldToLocal(&quot;ball&quot;, x, y, z)</div>
+<div class="line"> </div>
+<div class="line">scene.setNodeParent(&quot;ball&quot;, &quot;pivot&quot;)    // 重挂父节点（环检测）；&quot;&quot; 表示摘除</div>
+<div class="line">scene.removeNode(&quot;ball&quot;)                // 从父节点摘除（arena 节点仍在，rebuild 才删除）</div>
+<div class="line">scene.addNodeChild(&quot;root&quot;, &quot;ball&quot;)</div>
+<div class="line">scene.removeNodeChild(&quot;root&quot;, &quot;ball&quot;)</div>
+<div class="line"> </div>
+<div class="line">scene.setNodeQuaternion(&quot;ball&quot;, qx, qy, qz, qw)</div>
+<div class="line">scene.getNodeQuaternion(&quot;ball&quot;)         // [qx, qy, qz, qw]</div>
+<div class="line">scene.setNodeLookAt(&quot;ball&quot;, tx, ty, tz) // local +Z 指向目标</div>
+</div><!-- fragment --><h3>节点 tag / layer（分组查询）</h3>
+<div class="fragment"><div class="line">scene.addNodeTag(&quot;ball&quot;, &quot;unit&quot;)</div>
+<div class="line">scene.hasNodeTag(&quot;ball&quot;, &quot;unit&quot;)</div>
+<div class="line">scene.removeNodeTag(&quot;ball&quot;, &quot;unit&quot;)</div>
+<div class="line">scene.getNodeTags(&quot;ball&quot;)               // 数组</div>
+<div class="line">scene.collectIdsByTag(&quot;unit&quot;)           // 全树按 tag 收集 id</div>
+<div class="line">scene.setNodeLayer(&quot;ball&quot;, 3)</div>
+<div class="line">scene.getNodeLayer(&quot;ball&quot;)</div>
+</div><!-- fragment --><p>声明式构建同样支持：<code>node("x").withTag("enemy").withLayer(2)</code>，reconcile patch 会同步 tag/layer。</p>
+<h3>节点生命周期事件</h3>
+<p>注册一个脚本回调，接收节点增删/移动/变更事件（<code>node_added</code> / <code>node_removed</code> / <code>node_moved</code> / <code>node_changed</code>）：</p>
+<div class="fragment"><div class="line">scene.setNodeEventHandler(function(action, nodeId, parentId) {</div>
+<div class="line">    // action: &quot;node_added&quot; | &quot;node_removed&quot; | &quot;node_moved&quot; | &quot;node_changed&quot;</div>
+<div class="line">})</div>
+</div><!-- fragment --><p><code>SceneComponent</code> 提供 <code>onMount()</code>（首次挂载调用一次）。默认 <code>eve_update</code> 已调用 <code>scene.updateTransformsAll()</code>；API 修改节点后只需增量同步（脏子树裁剪），全净树零开销。</p>
+<h3>错误语义</h3>
+<p>新增的 getter（<code>getNodePosition</code> 等）在节点不存在时抛 Squirrel 异常；可先用 <code>scene.hasNode(nodeId)</code> 守卫。setter 保持返回 bool。</p>
+<h3>节点 AABB、拾取与视锥裁剪</h3>
+<p>节点可设置 local 空间 AABB（拾取/裁剪/spatial 索引的基础；<code>Mesh</code> 不保留 CPU 顶点，故不做自动计算）：</p>
+<div class="fragment"><div class="line">scene.setNodeBounds(&quot;soldier&quot;, -1, -1, -1, 1, 1, 1)</div>
+<div class="line">scene.hasNodeBounds(&quot;soldier&quot;)</div>
+<div class="line">scene.getNodeBounds(&quot;soldier&quot;)             // [minX,minY,minZ,maxX,maxY,maxZ]</div>
+<div class="line"> </div>
+<div class="line">scene.pickRay(ox, oy, oz, dx, dy, dz)      // 最近命中节点 id（&quot;&quot; 未命中）</div>
+<div class="line">scene.pickScreen(cam, screenX, screenY, viewW, viewH)</div>
+<div class="line">scene.collectFrustumIds(cam, viewW, viewH) // 与相机视锥相交的节点 id 列表</div>
+</div><!-- fragment --><h3>场景序列化与空间索引</h3>
+<div class="fragment"><div class="line">local json = scene.serializeHost()          // 当前 host → JSON 字符串</div>
+<div class="line">scene.deserializeHostAt(&quot;level2&quot;, json)     // JSON → 新 host（含 TRS/tags/layer/bounds）</div>
+<div class="line"> </div>
+<div class="line">local octree = spatial.newOctree(-500, -500, -500, 500, 500, 500)</div>
+<div class="line">scene.syncSpatialIndex(octree)              // 有 bounds 的节点写入八叉树（id = arena 索引）</div>
+<div class="line">octree.querySphere(cx, cy, cz, r)</div>
+<div class="line">for (local i = 0; i &lt; octree.getResultCount(); ++i) {</div>
+<div class="line">    local nodeId = scene.nodeIdFromSpatialId(octree.getResultId(i))</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>声明式构建同样支持 bounds：<code>node("x").withBounds(-1,-1,-1,1,1,1)</code>，reconcile 与序列化均保留。</p>
+<p><code>SceneLoader</code> 导入的模型会自动填充 AABB：网格子节点取其 Assimp 网格的精确 local AABB，祖先节点取子节点并集（含变换），热重载后保留。导入模型无需手动 <code>setNodeBounds</code> 即可参与拾取、视锥裁剪与 spatial 索引。</p>
+<h2>常见问题</h2>
+<ul>
+<li><code>beginNode()</code> 与 <code>end()</code> 不配对导致 build 不完整。</li>
+<li>修改 local transform 后不更新 transforms。</li>
+<li>混淆节点 name、id 和 path：运行时修改优先用稳定 id。</li>
+<li><code>getNodeRef()</code> 基于当前 selected host；跨 host 请用 <code>getNodeRefAt(hostName, nodeId)</code>。</li>
+<li>脚本 ECS 的 <code>eve.view()</code> 返回缓存数组：只读遍历，不要在遍历中 push/pop。</li>
+<li><code>unlinkNode(nodeId)</code> 现在移除该节点全部 link；只拆一类请用 <code>unlinkNodeKind(nodeId, kind)</code>。</li>
+<li>mount / rebuild 会校验节点 id 唯一性，重复 id 直接报错（含脚本 builder）。</li>
+<li>被销毁的渲染/物理目标会在下一次变换更新时自动从节点上摘除 link（防悬垂指针）。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>addNode()</code>、<code>beginBuild()</code>、<code>beginGroup()</code>、<code>beginNode()</code>、<code>bindOwner()</code>、<code>collectChildIds()</code>、<code>collectIds()</code>、<code>collectIdsByName()</code></li>
+<li><code>collectIdsFrom()</code>、<code>collectIdsVisible()</code>、<code>end()</code>、<code>findIdByName()</code>、<code>findIdByPath()</code>、<code>getChildCount()</code>、<code>getChildIdAt()</code>、<code>getName()</code></li>
+<li><code>attachEntity()</code>、<code>attachEntityAt()</code>、<code>detachEntity()</code>、<code>detachEntityAt()</code>、<code>getEntity()</code>、<code>getEntityAt()</code>、<code>hasEntity()</code>、<code>hasEntityAt()</code>、<code>entitiesOf()</code>、<code>entitiesOfAt()</code>、<code>update()</code>、<code>currentHostName()</code>、<code>getNodeRef()</code>、<code>getNodeRefAt()</code>、<code>getNodeRefByPath()</code></li>
+<li><code>linkRenderable2D()</code>、<code>linkRenderable3D()</code>、<code>linkPhysics2D()</code>、<code>linkPhysics3D()</code>、<code>linkCamera3D()</code>、<code>linkAudio3D()</code>、<code>unlinkNodeKind()</code>、<code>linkCount()</code>（及 host-scoped <code>*At</code> 变体）</li>
+<li><code>getNodePosition()</code>、<code>getNodeRotation()</code>、<code>getNodeScale()</code>、<code>getNodeVisible()</code>、<code>getNodeWorldPosition()</code>、<code>getNodeWorldRotation()</code>、<code>getNodeWorldScale()</code>、<code>localToWorld()</code>、<code>worldToLocal()</code>、<code>setNodeParent()</code>、<code>removeNode()</code>、<code>addNodeChild()</code>、<code>removeNodeChild()</code>、<code>setNodeQuaternion()</code>、<code>getNodeQuaternion()</code>、<code>setNodeLookAt()</code>、<code>addNodeTag()</code>、<code>removeNodeTag()</code>、<code>hasNodeTag()</code>、<code>getNodeTags()</code>、<code>collectIdsByTag()</code>、<code>setNodeLayer()</code>、<code>getNodeLayer()</code>（及 host-scoped <code>*At</code> 变体）</li>
+<li><code>setNodeBounds()</code>、<code>hasNodeBounds()</code>、<code>getNodeBounds()</code>、<code>serializeHost()</code>、<code>deserializeHost()</code>、<code>pickRay()</code>、<code>pickScreen()</code>、<code>collectFrustumIds()</code>、<code>syncSpatialIndex()</code>、<code>nodeIdFromSpatialId()</code>（及 host-scoped <code>*At</code> 变体）</li>
+<li><code>getNodeCount()</code>、<code>getNodePath()</code>、<code>getParentId()</code>、<code>getRootId()</code>、<code>hasNode()</code>、<code>isAncestor()</code>、<code>isDescendant()</code>、<code>linkRenderable2D()</code></li>
+<li><code>linkRenderable3D()</code>、<code>mountBuild()</code>、<code>mountBuildAs()</code>、<code>remountBuildAs()</code>、<code>select()</code>、<code>setBuildPosition()</code>、<code>setBuildRotation()</code>、<code>setBuildScale()</code></li>
+<li><code>setBuildSpace()</code>、<code>setBuildVisible()</code>、<code>setHostLayer()</code>、<code>setHostVisible()</code>、<code>setNodePosition()</code>、<code>setNodeRotation()</code>、<code>setNodeScale()</code>、<code>setNodeVisible()</code></li>
+<li><code>unlinkNode()</code>、<code>updateTransforms()</code>、<code>updateTransformsAll()</code>、<code>walkBreadthFirstIds()</code>、<code>walkDepthFirstIds()</code></li>
+</ul>
+<p>辅助对象：</p>
+<ul>
+<li><code>eve.SceneEntity</code>：<code>scene()</code> / <code>node()</code> / <code>onAttach()</code> / <code>onDetach()</code> / <code>update(dt)</code>，组件槽字段与 <code>eve.Entity</code> 一致。</li>
+<li><code>eve.SceneNodeRef</code>（节点句柄）：<code>getNodeId()</code>、<code>getHostName()</code>、<code>isValid()</code>、<code>getScene()</code>、<code>setPosition()</code> / <code>getPosition()</code>、<code>setRotation()</code> / <code>getRotation()</code>、<code>setScale()</code> / <code>getScale()</code>、<code>setVisible()</code> / <code>isVisible()</code>、<code>getWorldPosition*()</code>、<code>getWorldMatrix()</code>、<code>getForward()/getRight()/getUp()</code>、<code>getParentId()</code>、<code>getChildCount()</code>、<code>getChildIdAt()</code>、<code>getPath()</code>、<code>attachEntity()</code>、<code>detachEntity()</code>、<code>getEntity()</code>、<code>hasEntity()</code>、<code>entitiesOf()</code>、<code>linkRenderable2D/3D()</code>、<code>linkPhysics2D/3D()</code>、<code>linkCamera3D()</code>、<code>linkAudio3D()</code>、<code>unlinkNode()</code>、<code>unlinkNodeKind()</code>、<code>linkCount()</code>、<code>localToWorld()</code>、<code>worldToLocal()</code>、<code>setParent()</code>、<code>removeNode()</code>、<code>setQuaternion()</code>、<code>getQuaternion()</code>、<code>lookAt()</code>、<code>addTag()</code>、<code>removeTag()</code>、<code>hasTag()</code>、<code>getTags()</code>、<code>setLayer()</code>、<code>getLayer()</code>、<code>setBounds()</code>、<code>hasBounds()</code>、<code>getBounds()</code>。</li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/scene/"><code>src/modules/scene/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>scene</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

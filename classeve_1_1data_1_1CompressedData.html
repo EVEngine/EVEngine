@@ -1,0 +1,489 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::data::CompressedData类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1data.html">data</a></li><li class="navelem"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1data_1_1CompressedData-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::data::CompressedData类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Stores byte data compressed via DataModule::compress.  
+ <a href="classeve_1_1data_1_1CompressedData.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CompressedData_8h_source.html">CompressedData.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::data::CompressedData 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1data_1_1CompressedData.png" usemap="#eve::data::CompressedData_map" alt=""/>
+  <map id="eve::data::CompressedData_map" name="eve::data::CompressedData_map">
+<area href="classeve_1_1Data.html" alt="eve::Data" shape="rect" coords="0,56,165,80"/>
+<area href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda..." alt="eve::Object" shape="rect" coords="0,0,165,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa101c7bf8efc7d5b051922e4f71aec75" id="r_aa101c7bf8efc7d5b051922e4f71aec75"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#aa101c7bf8efc7d5b051922e4f71aec75">CompressedData</a> (std::string format, char *cdata, size_t compressedsize, size_t rawsize, bool own=true)</td></tr>
+<tr class="memdesc:aa101c7bf8efc7d5b051922e4f71aec75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor just stores already-compressed data in the object.  <br /></td></tr>
+<tr class="separator:aa101c7bf8efc7d5b051922e4f71aec75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae101f43aefc0c5ab05ed011a2f90edbb" id="r_ae101f43aefc0c5ab05ed011a2f90edbb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#ae101f43aefc0c5ab05ed011a2f90edbb">CompressedData</a> (const <a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)</td></tr>
+<tr class="separator:ae101f43aefc0c5ab05ed011a2f90edbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c66c3f88842ec937f1687e4da7b9b5b" id="r_a9c66c3f88842ec937f1687e4da7b9b5b"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#a9c66c3f88842ec937f1687e4da7b9b5b">~CompressedData</a> ()</td></tr>
+<tr class="separator:a9c66c3f88842ec937f1687e4da7b9b5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9807a4f2f8b89a6ede69e83b4e64252" id="r_af9807a4f2f8b89a6ede69e83b4e64252"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#af9807a4f2f8b89a6ede69e83b4e64252">getFormat</a> () const</td></tr>
+<tr class="memdesc:af9807a4f2f8b89a6ede69e83b4e64252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the format that was used to compress the data.  <br /></td></tr>
+<tr class="separator:af9807a4f2f8b89a6ede69e83b4e64252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accbceb150756b75c6b642b72a6445a81" id="r_accbceb150756b75c6b642b72a6445a81"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#accbceb150756b75c6b642b72a6445a81">getDecompressedSize</a> () const</td></tr>
+<tr class="memdesc:accbceb150756b75c6b642b72a6445a81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the original (uncompressed) size of the compressed data. May return 0 if the uncompressed size is unknown.  <br /></td></tr>
+<tr class="separator:accbceb150756b75c6b642b72a6445a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9061e7cc6a06f435ee3c23bba727c963" id="r_a9061e7cc6a06f435ee3c23bba727c963"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#a9061e7cc6a06f435ee3c23bba727c963">clone</a> () const override</td></tr>
+<tr class="memdesc:a9061e7cc6a06f435ee3c23bba727c963"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a duplicate of <a class="el" href="classeve_1_1Data.html">Data</a> derived class instance.  <br /></td></tr>
+<tr class="separator:a9061e7cc6a06f435ee3c23bba727c963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad78fc670f76d2cfa8f00b8f9960c6101" id="r_ad78fc670f76d2cfa8f00b8f9960c6101"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#ad78fc670f76d2cfa8f00b8f9960c6101">getData</a> () const override</td></tr>
+<tr class="memdesc:ad78fc670f76d2cfa8f00b8f9960c6101"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a pointer to the data. This pointer will obviously not be valid if the <a class="el" href="classeve_1_1Data.html">Data</a> object is destroyed.  <br /></td></tr>
+<tr class="separator:ad78fc670f76d2cfa8f00b8f9960c6101"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5976e6fc899a72495e474f2dc154110" id="r_ae5976e6fc899a72495e474f2dc154110"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html#ae5976e6fc899a72495e474f2dc154110">getSize</a> () const override</td></tr>
+<tr class="memdesc:ae5976e6fc899a72495e474f2dc154110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of the <a class="el" href="classeve_1_1Data.html">Data</a> in bytes.  <br /></td></tr>
+<tr class="separator:ae5976e6fc899a72495e474f2dc154110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Data"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Data')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Data.html">eve::Data</a></td></tr>
+<tr class="memitem:a833dd34eb7b3cacb6d3e89b13676b79c inherit pub_methods_classeve_1_1Data" id="r_a833dd34eb7b3cacb6d3e89b13676b79c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Data.html#a833dd34eb7b3cacb6d3e89b13676b79c">~Data</a> ()</td></tr>
+<tr class="memdesc:a833dd34eb7b3cacb6d3e89b13676b79c inherit pub_methods_classeve_1_1Data"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="separator:a833dd34eb7b3cacb6d3e89b13676b79c inherit pub_methods_classeve_1_1Data"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a513f705d32a37006f25d79b57cae7563 inherit pub_methods_classeve_1_1Object" id="r_a513f705d32a37006f25d79b57cae7563"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a513f705d32a37006f25d79b57cae7563">Object</a> ()</td></tr>
+<tr class="separator:a513f705d32a37006f25d79b57cae7563 inherit pub_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object" id="r_a074c5f36236cc17f5c110f17be72b2b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a074c5f36236cc17f5c110f17be72b2b1">setUpdate</a> (<a class="el" href="classeve_1_1Object.html">Object</a> *replacement)</td></tr>
+<tr class="memdesc:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current object with a replacement. You don't need to care about the reference to the old object since it will be automatically updated in the ref smart pointer.  <br /></td></tr>
+<tr class="separator:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pro_methods_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a50dcf4681be0179bbd04e911b33115cd inherit pro_methods_classeve_1_1Object" id="r_a50dcf4681be0179bbd04e911b33115cd"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a50dcf4681be0179bbd04e911b33115cd">~Object</a> ()</td></tr>
+<tr class="separator:a50dcf4681be0179bbd04e911b33115cd inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab010b8dc4a18ca9771e0b354042c7055 inherit pro_methods_classeve_1_1Object" id="r_ab010b8dc4a18ca9771e0b354042c7055"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab010b8dc4a18ca9771e0b354042c7055">isDirty</a> () const</td></tr>
+<tr class="separator:ab010b8dc4a18ca9771e0b354042c7055 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af940d294ff10b6d828c1f52f8139937f inherit pro_methods_classeve_1_1Object" id="r_af940d294ff10b6d828c1f52f8139937f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#af940d294ff10b6d828c1f52f8139937f">getUpdate</a> () const</td></tr>
+<tr class="separator:af940d294ff10b6d828c1f52f8139937f inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeddd56fdaabe8ddb3cb5ed1fc2857db0 inherit pro_methods_classeve_1_1Object" id="r_aeddd56fdaabe8ddb3cb5ed1fc2857db0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#aeddd56fdaabe8ddb3cb5ed1fc2857db0">ref</a> ()</td></tr>
+<tr class="separator:aeddd56fdaabe8ddb3cb5ed1fc2857db0 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4b9ac0bd673dc2582e13122cb7827d7 inherit pro_methods_classeve_1_1Object" id="r_ab4b9ac0bd673dc2582e13122cb7827d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab4b9ac0bd673dc2582e13122cb7827d7">unref</a> ()</td></tr>
+<tr class="separator:ab4b9ac0bd673dc2582e13122cb7827d7 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Protected 属性 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a16b86af9dc497833e85daeddf7887d79 inherit pro_attribs_classeve_1_1Object" id="r_a16b86af9dc497833e85daeddf7887d79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a16b86af9dc497833e85daeddf7887d79">update</a></td></tr>
+<tr class="separator:a16b86af9dc497833e85daeddf7887d79 inherit pro_attribs_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9246cea7724ecf33485f595e1f2d20d9 inherit pro_attribs_classeve_1_1Object" id="r_a9246cea7724ecf33485f595e1f2d20d9"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a9246cea7724ecf33485f595e1f2d20d9">ref_count</a> = 0</td></tr>
+<tr class="separator:a9246cea7724ecf33485f595e1f2d20d9 inherit pro_attribs_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Stores byte data compressed via DataModule::compress. </p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8h_source.html">CompressedData.h</a> 第 <a class="el" href="CompressedData_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa101c7bf8efc7d5b051922e4f71aec75" name="aa101c7bf8efc7d5b051922e4f71aec75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa101c7bf8efc7d5b051922e4f71aec75">&#9670;&#160;</a></span>CompressedData() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::CompressedData::CompressedData </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>cdata</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>compressedsize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>rawsize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>own</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor just stores already-compressed data in the object. </p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="ae101f43aefc0c5ab05ed011a2f90edbb" name="ae101f43aefc0c5ab05ed011a2f90edbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae101f43aefc0c5ab05ed011a2f90edbb">&#9670;&#160;</a></span>CompressedData() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::CompressedData::CompressedData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a9c66c3f88842ec937f1687e4da7b9b5b" name="a9c66c3f88842ec937f1687e4da7b9b5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c66c3f88842ec937f1687e4da7b9b5b">&#9670;&#160;</a></span>~CompressedData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::CompressedData::~CompressedData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9061e7cc6a06f435ee3c23bba727c963" name="a9061e7cc6a06f435ee3c23bba727c963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9061e7cc6a06f435ee3c23bba727c963">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> * eve::data::CompressedData::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a duplicate of <a class="el" href="classeve_1_1Data.html">Data</a> derived class instance. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1Data.html#ae008a8541c08f60b28729b5f3afa03f8">eve::Data</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad78fc670f76d2cfa8f00b8f9960c6101" name="ad78fc670f76d2cfa8f00b8f9960c6101"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad78fc670f76d2cfa8f00b8f9960c6101">&#9670;&#160;</a></span>getData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::data::CompressedData::getData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a pointer to the data. This pointer will obviously not be valid if the <a class="el" href="classeve_1_1Data.html">Data</a> object is destroyed. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1Data.html#a4a1adbcde17925d1dbf4ff5b2806dcc1">eve::Data</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="accbceb150756b75c6b642b72a6445a81" name="accbceb150756b75c6b642b72a6445a81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accbceb150756b75c6b642b72a6445a81">&#9670;&#160;</a></span>getDecompressedSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::data::CompressedData::getDecompressedSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the original (uncompressed) size of the compressed data. May return 0 if the uncompressed size is unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af9807a4f2f8b89a6ede69e83b4e64252" name="af9807a4f2f8b89a6ede69e83b4e64252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9807a4f2f8b89a6ede69e83b4e64252">&#9670;&#160;</a></span>getFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::data::CompressedData::getFormat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the format that was used to compress the data. </p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5976e6fc899a72495e474f2dc154110" name="ae5976e6fc899a72495e474f2dc154110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5976e6fc899a72495e474f2dc154110">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::data::CompressedData::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the size of the <a class="el" href="classeve_1_1Data.html">Data</a> in bytes. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1Data.html#a3e3f7f5e7b2b451519932073ce6a33e6">eve::Data</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a> 第 <a class="el" href="CompressedData_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/data/<a class="el" href="CompressedData_8h_source.html">CompressedData.h</a></li>
+<li>src/modules/data/<a class="el" href="CompressedData_8cpp_source.html">CompressedData.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

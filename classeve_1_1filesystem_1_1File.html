@@ -1,0 +1,950 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::filesystem::File类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1filesystem.html">filesystem</a></li><li class="navelem"><a class="el" href="classeve_1_1filesystem_1_1File.html">File</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1filesystem_1_1File-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::filesystem::File类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a> interface, providing generic means of reading from and writing to files.  
+ <a href="classeve_1_1filesystem_1_1File.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="File_8h_source.html">File.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::filesystem::File 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1filesystem_1_1File.png" usemap="#eve::filesystem::File_map" alt=""/>
+  <map id="eve::filesystem::File_map" name="eve::filesystem::File_map">
+<area href="classeve_1_1filesystem_1_1cppfs_1_1File.html" title="File which is created when a user drags and drops an actual file onto the eve game...." alt="eve::filesystem::cppfs::File" shape="rect" coords="0,56,164,80"/>
+<area href="classeve_1_1filesystem_1_1physfs_1_1File.html" alt="eve::filesystem::physfs::File" shape="rect" coords="174,56,338,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa93f974e8e5b7f5bd6b823092315b4c6" id="r_aa93f974e8e5b7f5bd6b823092315b4c6"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#aa93f974e8e5b7f5bd6b823092315b4c6">~File</a> ()</td></tr>
+<tr class="memdesc:aa93f974e8e5b7f5bd6b823092315b4c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="separator:aa93f974e8e5b7f5bd6b823092315b4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac001bfff71531051d0d65be45528590a" id="r_ac001bfff71531051d0d65be45528590a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#ac001bfff71531051d0d65be45528590a">open</a> (std::string mode)=0</td></tr>
+<tr class="memdesc:ac001bfff71531051d0d65be45528590a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens the file in a certain mode.  <br /></td></tr>
+<tr class="separator:ac001bfff71531051d0d65be45528590a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef3a512bf468c5af59411b91b11730fb" id="r_aef3a512bf468c5af59411b91b11730fb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#aef3a512bf468c5af59411b91b11730fb">close</a> ()=0</td></tr>
+<tr class="memdesc:aef3a512bf468c5af59411b91b11730fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the file.  <br /></td></tr>
+<tr class="separator:aef3a512bf468c5af59411b91b11730fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7624f4981c3c42d2d16767ed1c61fafc" id="r_a7624f4981c3c42d2d16767ed1c61fafc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a7624f4981c3c42d2d16767ed1c61fafc">isOpen</a> () const =0</td></tr>
+<tr class="memdesc:a7624f4981c3c42d2d16767ed1c61fafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the file is open.  <br /></td></tr>
+<tr class="separator:a7624f4981c3c42d2d16767ed1c61fafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fdf7cb0d0115402e5ff211b5c2652f6" id="r_a1fdf7cb0d0115402e5ff211b5c2652f6"><td class="memItemLeft" align="right" valign="top">virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a1fdf7cb0d0115402e5ff211b5c2652f6">getSize</a> ()=0</td></tr>
+<tr class="memdesc:a1fdf7cb0d0115402e5ff211b5c2652f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of the file.  <br /></td></tr>
+<tr class="separator:a1fdf7cb0d0115402e5ff211b5c2652f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf0130c123e3afc7c7e27ced6aba1760" id="r_acf0130c123e3afc7c7e27ced6aba1760"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#acf0130c123e3afc7c7e27ced6aba1760">read</a> (int64_t size=<a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a>)</td></tr>
+<tr class="memdesc:acf0130c123e3afc7c7e27ced6aba1760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads data from the file and allocates a <a class="el" href="classeve_1_1Data.html">Data</a> object.  <br /></td></tr>
+<tr class="separator:acf0130c123e3afc7c7e27ced6aba1760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92d5bdcc1717c98e5874c432d616bea7" id="r_a92d5bdcc1717c98e5874c432d616bea7"><td class="memItemLeft" align="right" valign="top">virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a92d5bdcc1717c98e5874c432d616bea7">read</a> (void *dst, int64_t size)=0</td></tr>
+<tr class="memdesc:a92d5bdcc1717c98e5874c432d616bea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads data into the destination buffer.  <br /></td></tr>
+<tr class="separator:a92d5bdcc1717c98e5874c432d616bea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf3a87ee50aec46060e25c4cd480d5b5" id="r_acf3a87ee50aec46060e25c4cd480d5b5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#acf3a87ee50aec46060e25c4cd480d5b5">write</a> (const void *data, int64_t size)=0</td></tr>
+<tr class="memdesc:acf3a87ee50aec46060e25c4cd480d5b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes data into the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>.  <br /></td></tr>
+<tr class="separator:acf3a87ee50aec46060e25c4cd480d5b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a817a8241b579da5f3b4a04224e68dad9" id="r_a817a8241b579da5f3b4a04224e68dad9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a817a8241b579da5f3b4a04224e68dad9">write</a> (const <a class="el" href="classeve_1_1Data.html">Data</a> *data, int64_t size=<a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a>)</td></tr>
+<tr class="memdesc:a817a8241b579da5f3b4a04224e68dad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a <a class="el" href="classeve_1_1Data.html">Data</a> object into the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>.  <br /></td></tr>
+<tr class="separator:a817a8241b579da5f3b4a04224e68dad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0be1367eeecd6446df6cdc84bcb57ac0" id="r_a0be1367eeecd6446df6cdc84bcb57ac0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a0be1367eeecd6446df6cdc84bcb57ac0">flush</a> ()=0</td></tr>
+<tr class="memdesc:a0be1367eeecd6446df6cdc84bcb57ac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes the currently buffered file data to disk. Only applicable in write mode.  <br /></td></tr>
+<tr class="separator:a0be1367eeecd6446df6cdc84bcb57ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea9178158b2af68d869edad320e50a9" id="r_acea9178158b2af68d869edad320e50a9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#acea9178158b2af68d869edad320e50a9">isEOF</a> ()=0</td></tr>
+<tr class="memdesc:acea9178158b2af68d869edad320e50a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether we are currently at end-of-file.  <br /></td></tr>
+<tr class="separator:acea9178158b2af68d869edad320e50a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51770ae5a81c95ac6e287efd313fbe4a" id="r_a51770ae5a81c95ac6e287efd313fbe4a"><td class="memItemLeft" align="right" valign="top">virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a51770ae5a81c95ac6e287efd313fbe4a">tell</a> ()=0</td></tr>
+<tr class="memdesc:a51770ae5a81c95ac6e287efd313fbe4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current position in the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>.  <br /></td></tr>
+<tr class="separator:a51770ae5a81c95ac6e287efd313fbe4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2575a9c6c3b7da95cf2035b381073c6" id="r_af2575a9c6c3b7da95cf2035b381073c6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#af2575a9c6c3b7da95cf2035b381073c6">seek</a> (uint64_t <a class="el" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>)=0</td></tr>
+<tr class="memdesc:af2575a9c6c3b7da95cf2035b381073c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seeks to a certain position in the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>.  <br /></td></tr>
+<tr class="separator:af2575a9c6c3b7da95cf2035b381073c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b09173642652b32bbff00d81808677" id="r_a74b09173642652b32bbff00d81808677"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a74b09173642652b32bbff00d81808677">setBuffer</a> (std::string bufmode, int64_t size)=0</td></tr>
+<tr class="memdesc:a74b09173642652b32bbff00d81808677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the buffering mode for the file. When buffering is enabled,  <br /></td></tr>
+<tr class="separator:a74b09173642652b32bbff00d81808677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebed39414f80e07364c87a972ab616d4" id="r_aebed39414f80e07364c87a972ab616d4"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#aebed39414f80e07364c87a972ab616d4">getBuffer</a> (int64_t &amp;size) const =0</td></tr>
+<tr class="separator:aebed39414f80e07364c87a972ab616d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96781affeb5f2c57da527fc14049a234" id="r_a96781affeb5f2c57da527fc14049a234"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a96781affeb5f2c57da527fc14049a234">getMode</a> () const =0</td></tr>
+<tr class="memdesc:a96781affeb5f2c57da527fc14049a234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current mode of the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>.  <br /></td></tr>
+<tr class="separator:a96781affeb5f2c57da527fc14049a234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5c2d923e4400ba32a64b56376401033" id="r_ad5c2d923e4400ba32a64b56376401033"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename</a> () const =0</td></tr>
+<tr class="memdesc:ad5c2d923e4400ba32a64b56376401033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the filename for this <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>, or empty string if none.  <br /></td></tr>
+<tr class="separator:ad5c2d923e4400ba32a64b56376401033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a343d6e6be2149d8110400ac81863d27c" id="r_a343d6e6be2149d8110400ac81863d27c"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#a343d6e6be2149d8110400ac81863d27c">getExtension</a> () const</td></tr>
+<tr class="memdesc:a343d6e6be2149d8110400ac81863d27c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file extension for this <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>, or empty string if none.  <br /></td></tr>
+<tr class="separator:a343d6e6be2149d8110400ac81863d27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:aa45cdc7b0ea76ba67a7120ab8396ce0d" id="r_aa45cdc7b0ea76ba67a7120ab8396ce0d"><td class="memItemLeft" align="right" valign="top">static const int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a> = -1</td></tr>
+<tr class="memdesc:aa45cdc7b0ea76ba67a7120ab8396ce0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to indicate ALL data in a file.  <br /></td></tr>
+<tr class="separator:aa45cdc7b0ea76ba67a7120ab8396ce0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a> interface, providing generic means of reading from and writing to files. </p>
+
+<p class="definition">在文件 <a class="el" href="File_8h_source.html">File.h</a> 第 <a class="el" href="File_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa93f974e8e5b7f5bd6b823092315b4c6" name="aa93f974e8e5b7f5bd6b823092315b4c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa93f974e8e5b7f5bd6b823092315b4c6">&#9670;&#160;</a></span>~File()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::filesystem::File::~File </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+
+<p>被 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a60f6fa362b56ceecc0dce31bbe975c92">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a6d3c9453e141f36fa0b6f1cd338502dc">eve::filesystem::physfs::File</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="File_8cpp_source.html">File.cpp</a> 第 <a class="el" href="File_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aef3a512bf468c5af59411b91b11730fb" name="aef3a512bf468c5af59411b91b11730fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef3a512bf468c5af59411b91b11730fb">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Closes the file. </p>
+<dl class="section return"><dt>返回</dt><dd>True if successful, false otherwise. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a7e8f8e1a8e5d4dfefad5d3267d084b26">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a15cbee77aae8624c52d42809d9ead21b">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="a0be1367eeecd6446df6cdc84bcb57ac0" name="a0be1367eeecd6446df6cdc84bcb57ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0be1367eeecd6446df6cdc84bcb57ac0">&#9670;&#160;</a></span>flush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::flush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flushes the currently buffered file data to disk. Only applicable in write mode. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aa38b95fdca3f7384bcc64d92e399f59e">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#ab8decfb552f2761871bb7936d87aa59f">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aebed39414f80e07364c87a972ab616d4" name="aebed39414f80e07364c87a972ab616d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebed39414f80e07364c87a972ab616d4">&#9670;&#160;</a></span>getBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::File::getBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int64_t &amp;&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">size</td><td>The size in bytes of the buffer. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The current buffer mode. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aef53b243bc969661a63402a0c9f71757">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#aefaa653fcd0513cc200e632285417b5f">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a343d6e6be2149d8110400ac81863d27c" name="a343d6e6be2149d8110400ac81863d27c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a343d6e6be2149d8110400ac81863d27c">&#9670;&#160;</a></span>getExtension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::filesystem::File::getExtension </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the file extension for this <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>, or empty string if none. </p>
+<dl class="section return"><dt>返回</dt><dd>The file extension for this <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a> (without the dot). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="File_8cpp_source.html">File.cpp</a> 第 <a class="el" href="File_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>.</p>
+
+</div>
+</div>
+<a id="ad5c2d923e4400ba32a64b56376401033" name="ad5c2d923e4400ba32a64b56376401033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5c2d923e4400ba32a64b56376401033">&#9670;&#160;</a></span>getFilename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::File::getFilename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the filename for this <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>, or empty string if none. </p>
+<dl class="section return"><dt>返回</dt><dd>The filename for this <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ad05ef630c6dbddc7aecf6012f753d220">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a07bc5dcab3863d48c90e4cba8a454b3b">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00046">getExtension()</a> , 以及 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="a96781affeb5f2c57da527fc14049a234" name="a96781affeb5f2c57da527fc14049a234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96781affeb5f2c57da527fc14049a234">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::File::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current mode of the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </p>
+<dl class="section return"><dt>返回</dt><dd>The current mode of the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>; CLOSED, READ, WRITE or APPEND. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ac562d592cf10584903961b02196d8a42">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a1214ee7d50ccdfbf58cbd96ad655e39c">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a1fdf7cb0d0115402e5ff211b5c2652f6" name="a1fdf7cb0d0115402e5ff211b5c2652f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fdf7cb0d0115402e5ff211b5c2652f6">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int64_t eve::filesystem::File::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the size of the file. </p>
+<dl class="section return"><dt>返回</dt><dd>The size of the file. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a49989ab524541cad702032fdbad3b5c9">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#ac06c6681daaab367da928b1475fdf99b">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="acea9178158b2af68d869edad320e50a9" name="acea9178158b2af68d869edad320e50a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea9178158b2af68d869edad320e50a9">&#9670;&#160;</a></span>isEOF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::isEOF </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether we are currently at end-of-file. </p>
+<dl class="section return"><dt>返回</dt><dd>True if EOF, false otherwise. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#abdb36ffedd6d0f12c87b11da1cb33423">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a05bc5adde06b9958fe7ebe5977c55dfc">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a7624f4981c3c42d2d16767ed1c61fafc" name="a7624f4981c3c42d2d16767ed1c61fafc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7624f4981c3c42d2d16767ed1c61fafc">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether the file is open. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a714518a98907c57a14d7031547973699">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#aeb365e1c8db82763a9b3eb7a50c98dd5">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="ac001bfff71531051d0d65be45528590a" name="ac001bfff71531051d0d65be45528590a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac001bfff71531051d0d65be45528590a">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::open </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Opens the file in a certain mode. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>read(r), write(w), append(a). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True if successful, false otherwise. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a3b0a891d50ebbd63ff2403bd50f8143e">eve::filesystem::physfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a64df02cc2254bb57620c285b13c092ab">eve::filesystem::cppfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="acf0130c123e3afc7c7e27ced6aba1760" name="acf0130c123e3afc7c7e27ced6aba1760"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf0130c123e3afc7c7e27ced6aba1760">&#9670;&#160;</a></span>read() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> * eve::filesystem::File::read </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em> = <code><a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads data from the file and allocates a <a class="el" href="classeve_1_1Data.html">Data</a> object. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>The number of bytes to attempt reading, or -1 for EOF. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A newly allocated <a class="el" href="classeve_1_1Data.html">Data</a> object. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="File_8cpp_source.html">File.cpp</a> 第 <a class="el" href="File_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="File_8h_source.html#l00019">ALL</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#aef3a512bf468c5af59411b91b11730fb">close()</a>, <a class="el" href="FileData_8h_source.html#l00023">eve::filesystem::FileData::getData()</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename()</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#a1fdf7cb0d0115402e5ff211b5c2652f6">getSize()</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#a7624f4981c3c42d2d16767ed1c61fafc">isOpen()</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#ac001bfff71531051d0d65be45528590a">open()</a>, <a class="el" href="File_8cpp_source.html#l00009">read()</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1File.html#a51770ae5a81c95ac6e287efd313fbe4a">tell()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="a92d5bdcc1717c98e5874c432d616bea7" name="a92d5bdcc1717c98e5874c432d616bea7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92d5bdcc1717c98e5874c432d616bea7">&#9670;&#160;</a></span>read() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int64_t eve::filesystem::File::read </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads data into the destination buffer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dst</td><td>The destination buffer. </td></tr>
+    <tr><td class="paramname">size</td><td>The number of bytes to attempt reading. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The number of bytes actually read. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a383bbb9036d64a914a32b7dd05c9572d">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#aab41873c0fceed16dc5ff2997586a3fd">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af2575a9c6c3b7da95cf2035b381073c6" name="af2575a9c6c3b7da95cf2035b381073c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2575a9c6c3b7da95cf2035b381073c6">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::seek </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>pos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Seeks to a certain position in the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pos</td><td>The byte position in the file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True on success, false otherwise. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a54540e173a8e7c1590a9b9d99e036f3f">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a4caef0293b4329ad2c3c38e0116dd5c1">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a74b09173642652b32bbff00d81808677" name="a74b09173642652b32bbff00d81808677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b09173642652b32bbff00d81808677">&#9670;&#160;</a></span>setBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::setBuffer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>bufmode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the buffering mode for the file. When buffering is enabled, </p>
+<p>'none' - no buffer enabled 'full' - the file will not write to disk (or will pre-load data if in read mode) until the buffer's capacity is reached. 'newline' - the file will not only write when capacity is reached, but also write to disk if a newline is written.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bufmode</td><td>The buffer mode. </td></tr>
+    <tr><td class="paramname">size</td><td>The size in bytes of the buffer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a5a8b73216c54657dc2fe7c21e0cf3d8a">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a55a021282d85ab79c01a196fdc0284fe">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a51770ae5a81c95ac6e287efd313fbe4a" name="a51770ae5a81c95ac6e287efd313fbe4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51770ae5a81c95ac6e287efd313fbe4a">&#9670;&#160;</a></span>tell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int64_t eve::filesystem::File::tell </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current position in the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </p>
+<dl class="section return"><dt>返回</dt><dd>The current byte position in the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a9a2215b8aa3a9a29f31c04a5707c8cea">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#ac25339146d609d5987e569d6a29d6dad">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>.</p>
+
+</div>
+</div>
+<a id="a817a8241b579da5f3b4a04224e68dad9" name="a817a8241b579da5f3b4a04224e68dad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a817a8241b579da5f3b4a04224e68dad9">&#9670;&#160;</a></span>write() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::File::write </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Data.html">Data</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em> = <code><a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes a <a class="el" href="classeve_1_1Data.html">Data</a> object into the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>The data object to write into the file. </td></tr>
+    <tr><td class="paramname">size</td><td>The number of bytes to attempt writing, or -1 for everything. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True of success, false otherwise. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="File_8cpp_source.html">File.cpp</a> 第 <a class="el" href="File_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="File_8h_source.html#l00019">ALL</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1File.html#acf3a87ee50aec46060e25c4cd480d5b5">write()</a>.</p>
+
+</div>
+</div>
+<a id="acf3a87ee50aec46060e25c4cd480d5b5" name="acf3a87ee50aec46060e25c4cd480d5b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf3a87ee50aec46060e25c4cd480d5b5">&#9670;&#160;</a></span>write() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::File::write </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes data into the <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>The source buffer. </td></tr>
+    <tr><td class="paramname">size</td><td>The size of the buffer. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True of success, false otherwise. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a471e3c08c91117c6a43be9727a111c79">eve::filesystem::cppfs::File</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#aa46c49679a923554991ecea262d9f9e7">eve::filesystem::physfs::File</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00042">write()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aa45cdc7b0ea76ba67a7120ab8396ce0d" name="aa45cdc7b0ea76ba67a7120ab8396ce0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa45cdc7b0ea76ba67a7120ab8396ce0d">&#9670;&#160;</a></span>ALL</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int64_t eve::filesystem::File::ALL = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Used to indicate ALL data in a file. </p>
+
+<p class="definition">在文件 <a class="el" href="File_8h_source.html">File.h</a> 第 <a class="el" href="File_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="File_8cpp_source.html#l00009">read()</a>, <a class="el" href="physfs_2File_8cpp_source.html#l00102">eve::filesystem::physfs::File::read()</a> , 以及 <a class="el" href="File_8cpp_source.html#l00042">write()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/filesystem/<a class="el" href="File_8h_source.html">File.h</a></li>
+<li>src/modules/filesystem/<a class="el" href="File_8cpp_source.html">File.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

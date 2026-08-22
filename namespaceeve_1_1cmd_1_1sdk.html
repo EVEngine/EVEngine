@@ -1,0 +1,772 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::cmd::sdk 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1cmd.html">cmd</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html">sdk</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::cmd::sdk 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a505829be3cfe82ecdb1f4b140a576230" id="r_a505829be3cfe82ecdb1f4b140a576230"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405">Win32</a>
+, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831">Linux</a>
+, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8">Macosx</a>
+, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d">Android</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169">Ios</a>
+, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a505829be3cfe82ecdb1f4b140a576230"><td class="mdescLeft">&#160;</td><td class="mdescRight">平台集合（与仓库 Makefile 的 build/&lt;platform&gt; 目标一一对应）。  <a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">更多...</a><br /></td></tr>
+<tr class="separator:a505829be3cfe82ecdb1f4b140a576230"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:afe1c0f85798831dc57c10a36d4409a8f" id="r_afe1c0f85798831dc57c10a36d4409a8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#afe1c0f85798831dc57c10a36d4409a8f">parsePlatform</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:afe1c0f85798831dc57c10a36d4409a8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">解析平台名（大小写不敏感，含常用别名：windows/win、mac/macos/osx 等）。  <br /></td></tr>
+<tr class="separator:afe1c0f85798831dc57c10a36d4409a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab52e5800f014834d057cd9e12f021d6d" id="r_ab52e5800f014834d057cd9e12f021d6d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ab52e5800f014834d057cd9e12f021d6d">platformName</a> (<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> <a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="memdesc:ab52e5800f014834d057cd9e12f021d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">平台规范名（用于 Makefile 目标名）。  <br /></td></tr>
+<tr class="separator:ab52e5800f014834d057cd9e12f021d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bcd3e1415cc06faebad016377a6495a" id="r_a1bcd3e1415cc06faebad016377a6495a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a1bcd3e1415cc06faebad016377a6495a">getEnv</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;def=&quot;&quot;)</td></tr>
+<tr class="memdesc:a1bcd3e1415cc06faebad016377a6495a"><td class="mdescLeft">&#160;</td><td class="mdescRight">读取环境变量；未设置时返回 def。  <br /></td></tr>
+<tr class="separator:a1bcd3e1415cc06faebad016377a6495a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24a55358379efff928f71ab6ce63e51" id="r_ab24a55358379efff928f71ab6ce63e51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ab24a55358379efff928f71ab6ce63e51">setEnv</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="memdesc:ab24a55358379efff928f71ab6ce63e51"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置当前进程的环境变量（不持久化到系统）。  <br /></td></tr>
+<tr class="separator:ab24a55358379efff928f71ab6ce63e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac51ad0ab17ac79025b5c89772ae4d9c7" id="r_ac51ad0ab17ac79025b5c89772ae4d9c7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ac51ad0ab17ac79025b5c89772ae4d9c7">sdkVersionTag</a> ()</td></tr>
+<tr class="memdesc:ac51ad0ab17ac79025b5c89772ae4d9c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前 eve 版本对应的发布 tag（v0.1.0-dev → v0.1.0）。 可用 EVE_SDK_TAG 覆盖（dev 构建 / 测试）。解析失败时返回空串。  <br /></td></tr>
+<tr class="separator:ac51ad0ab17ac79025b5c89772ae4d9c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a0ba2ea5bde3c1b7adaafaf989dbeb" id="r_ad8a0ba2ea5bde3c1b7adaafaf989dbeb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ad8a0ba2ea5bde3c1b7adaafaf989dbeb">eveSdkInstallRoot</a> ()</td></tr>
+<tr class="memdesc:ad8a0ba2ea5bde3c1b7adaafaf989dbeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">EVEngine 官方 SDK 安装根目录（Windows: LOCALAPPDATA%/EVEngine/sdk， POSIX: $XDG_DATA_HOME/EVEngine/sdk），可用 EVE_SDK_INSTALL_ROOT 覆盖。 各平台 SDK 安装在 &lt;root&gt;/&lt;platform&gt; 下。  <br /></td></tr>
+<tr class="separator:ad8a0ba2ea5bde3c1b7adaafaf989dbeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b42226bc41bb659e1e5d5276bdc6dc7" id="r_a7b42226bc41bb659e1e5d5276bdc6dc7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a7b42226bc41bb659e1e5d5276bdc6dc7">eveSdkBaseUrl</a> ()</td></tr>
+<tr class="memdesc:a7b42226bc41bb659e1e5d5276bdc6dc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">官方 SDK 下载基址（GitHub Release 对应 tag），可用 EVE_SDK_BASE_URL 覆盖（镜像 / 测试，如 <a href="file://...）。">file://...）。</a>  <br /></td></tr>
+<tr class="separator:a7b42226bc41bb659e1e5d5276bdc6dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02bd632cf0c825a6f15be2f70088d5c5" id="r_a02bd632cf0c825a6f15be2f70088d5c5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a02bd632cf0c825a6f15be2f70088d5c5">fileSha256</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a02bd632cf0c825a6f15be2f70088d5c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">计算文件的 SHA-256（小写十六进制）；失败返回空串。  <br /></td></tr>
+<tr class="separator:a02bd632cf0c825a6f15be2f70088d5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fc3ad4542ec27ceedfe428ef3e0e902" id="r_a2fc3ad4542ec27ceedfe428ef3e0e902"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a2fc3ad4542ec27ceedfe428ef3e0e902">findSdkRoot</a> (const std::string &amp;sdkArg)</td></tr>
+<tr class="memdesc:a2fc3ad4542ec27ceedfe428ef3e0e902"><td class="mdescLeft">&#160;</td><td class="mdescRight">定位 EVEngine SDK 根目录：&ndash;sdk 参数 &gt; $EVENGINE_SDK &gt; 可执行文件 所在位置的 ../（&lt;sdk&gt;/bin/eve）&gt; 当前目录 &gt; <code>eve get</code> 安装的 SDK。  <br /></td></tr>
+<tr class="separator:a2fc3ad4542ec27ceedfe428ef3e0e902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a262743c35947288ada85eada5e77a898" id="r_a262743c35947288ada85eada5e77a898"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a262743c35947288ada85eada5e77a898">installEveSdk</a> (<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> <a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="memdesc:a262743c35947288ada85eada5e77a898"><td class="mdescLeft">&#160;</td><td class="mdescRight">下载并安装 EVEngine 官方 &lt;platform&gt; SDK（zip 内 eve-sdk/&lt;platform&gt;/， 从 GitHub Release 按当前 eve 版本挑选），校验 SHA256 后落位到 &lt;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ad8a0ba2ea5bde3c1b7adaafaf989dbeb" title="EVEngine 官方 SDK 安装根目录（Windows: LOCALAPPDATA%/EVEngine/sdk， POSIX: $XDG_DATA_HOME/EVEngine/sdk），可用 EVE...">eveSdkInstallRoot()</a>&gt;/&lt;platform&gt;。  <br /></td></tr>
+<tr class="separator:a262743c35947288ada85eada5e77a898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada26ba1493c1263301287a02a40dcf8e" id="r_ada26ba1493c1263301287a02a40dcf8e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ada26ba1493c1263301287a02a40dcf8e">sdkTargetPlatform</a> (const std::string &amp;sdkRoot)</td></tr>
+<tr class="memdesc:ada26ba1493c1263301287a02a40dcf8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">读取 &lt;sdk&gt;/share/eve/TARGET_PLATFORM（该 SDK 面向的目标平台）。  <br /></td></tr>
+<tr class="separator:ada26ba1493c1263301287a02a40dcf8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b4ffb64b48987cd2d41f6b9ced511a9" id="r_a0b4ffb64b48987cd2d41f6b9ced511a9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a0b4ffb64b48987cd2d41f6b9ced511a9">androidSdkRoot</a> ()</td></tr>
+<tr class="memdesc:a0b4ffb64b48987cd2d41f6b9ced511a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">解析 Android SDK 根目录：EVENGINE_ANDROID_SDK / ANDROID_SDK_ROOT / ANDROID_HOME，最后回落到平台默认位置（Windows: LOCALAPPDATA%/Android/Sdk）。  <br /></td></tr>
+<tr class="separator:a0b4ffb64b48987cd2d41f6b9ced511a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbad0e7e76aaa16d1585861135997d46" id="r_abbad0e7e76aaa16d1585861135997d46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#abbad0e7e76aaa16d1585861135997d46">applyEnvFile</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:abbad0e7e76aaa16d1585861135997d46"><td class="mdescLeft">&#160;</td><td class="mdescRight">读取 KEY=VALUE 环境文件；只应用当前进程尚未设置的变量。  <br /></td></tr>
+<tr class="separator:abbad0e7e76aaa16d1585861135997d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65c0f851c215bca33569fff07b4005f2" id="r_a65c0f851c215bca33569fff07b4005f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a65c0f851c215bca33569fff07b4005f2">runShell</a> (const std::string &amp;cmd)</td></tr>
+<tr class="memdesc:a65c0f851c215bca33569fff07b4005f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">通过系统 shell 执行命令并返回退出码（POSIX 下归一化 WEXITSTATUS）。  <br /></td></tr>
+<tr class="separator:a65c0f851c215bca33569fff07b4005f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512b8b127a665ce6774317b2a2a772ba" id="r_a512b8b127a665ce6774317b2a2a772ba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a512b8b127a665ce6774317b2a2a772ba">isAndroidSdkInstalled</a> (const std::string &amp;root)</td></tr>
+<tr class="memdesc:a512b8b127a665ce6774317b2a2a772ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">判断 Android SDK 是否已安装（cmdline-tools 的 sdkmanager 存在）。  <br /></td></tr>
+<tr class="separator:a512b8b127a665ce6774317b2a2a772ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a343aa78edca68a0251acb84acf787e67" id="r_a343aa78edca68a0251acb84acf787e67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a343aa78edca68a0251acb84acf787e67">installAndroidSdk</a> ()</td></tr>
+<tr class="memdesc:a343aa78edca68a0251acb84acf787e67"><td class="mdescLeft">&#160;</td><td class="mdescRight">自动下载并安装 Android 工具链：EVEngine 官方 android SDK + cmdline-tools / platform-tools / build-tools / platform + JDK 17 + Gradle， 返回退出码。  <br /></td></tr>
+<tr class="separator:a343aa78edca68a0251acb84acf787e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e518deebf78351c2c3d175aa3fd839" id="r_a32e518deebf78351c2c3d175aa3fd839"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a32e518deebf78351c2c3d175aa3fd839">copyTree</a> (const std::string &amp;from, const std::string &amp;to, const std::vector&lt; std::string &gt; &amp;skipDirs={})</td></tr>
+<tr class="memdesc:a32e518deebf78351c2c3d175aa3fd839"><td class="mdescLeft">&#160;</td><td class="mdescRight">递归复制目录，跳过指定名称的子目录（如 build/.gradle）。  <br /></td></tr>
+<tr class="separator:a32e518deebf78351c2c3d175aa3fd839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a6ac8ff4d20e4d7eeae84d42d849eb" id="r_af2a6ac8ff4d20e4d7eeae84d42d849eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#af2a6ac8ff4d20e4d7eeae84d42d849eb">copyTreeContents</a> (const std::string &amp;from, const std::string &amp;to)</td></tr>
+<tr class="memdesc:af2a6ac8ff4d20e4d7eeae84d42d849eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">把 from 目录的内容（不含 from 本身）复制到 to。  <br /></td></tr>
+<tr class="separator:af2a6ac8ff4d20e4d7eeae84d42d849eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a505829be3cfe82ecdb1f4b140a576230" name="a505829be3cfe82ecdb1f4b140a576230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a505829be3cfe82ecdb1f4b140a576230">&#9670;&#160;</a></span>Platform</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">eve::cmd::sdk::Platform</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>平台集合（与仓库 Makefile 的 build/&lt;platform&gt; 目标一一对应）。 </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405" name="a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405"></a>Win32&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831" name="a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831"></a>Linux&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8" name="a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8"></a>Macosx&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d" name="a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d"></a>Android&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169" name="a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169"></a>Ios&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e" name="a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8h_source.html">sdk_tools.h</a> 第 <a class="el" href="sdk__tools_8h_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a0b4ffb64b48987cd2d41f6b9ced511a9" name="a0b4ffb64b48987cd2d41f6b9ced511a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b4ffb64b48987cd2d41f6b9ced511a9">&#9670;&#160;</a></span>androidSdkRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::androidSdkRoot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>解析 Android SDK 根目录：EVENGINE_ANDROID_SDK / ANDROID_SDK_ROOT / ANDROID_HOME，最后回落到平台默认位置（Windows: LOCALAPPDATA%/Android/Sdk）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a>.</p>
+
+</div>
+</div>
+<a id="abbad0e7e76aaa16d1585861135997d46" name="abbad0e7e76aaa16d1585861135997d46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbad0e7e76aaa16d1585861135997d46">&#9670;&#160;</a></span>applyEnvFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cmd::sdk::applyEnvFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>读取 KEY=VALUE 环境文件；只应用当前进程尚未设置的变量。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00495">495</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00185">setEnv()</a>.</p>
+
+</div>
+</div>
+<a id="a32e518deebf78351c2c3d175aa3fd839" name="a32e518deebf78351c2c3d175aa3fd839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e518deebf78351c2c3d175aa3fd839">&#9670;&#160;</a></span>copyTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::cmd::sdk::copyTree </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>skipDirs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>递归复制目录，跳过指定名称的子目录（如 build/.gradle）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00838">838</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2a6ac8ff4d20e4d7eeae84d42d849eb" name="af2a6ac8ff4d20e4d7eeae84d42d849eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a6ac8ff4d20e4d7eeae84d42d849eb">&#9670;&#160;</a></span>copyTreeContents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::cmd::sdk::copyTreeContents </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>把 from 目录的内容（不含 from 本身）复制到 to。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00846">846</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b42226bc41bb659e1e5d5276bdc6dc7" name="a7b42226bc41bb659e1e5d5276bdc6dc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b42226bc41bb659e1e5d5276bdc6dc7">&#9670;&#160;</a></span>eveSdkBaseUrl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::eveSdkBaseUrl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>官方 SDK 下载基址（GitHub Release 对应 tag），可用 EVE_SDK_BASE_URL 覆盖（镜像 / 测试，如 <a href="file://...）。">file://...）。</a> </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00193">sdkVersionTag()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="ad8a0ba2ea5bde3c1b7adaafaf989dbeb" name="ad8a0ba2ea5bde3c1b7adaafaf989dbeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8a0ba2ea5bde3c1b7adaafaf989dbeb">&#9670;&#160;</a></span>eveSdkInstallRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::eveSdkInstallRoot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>EVEngine 官方 SDK 安装根目录（Windows: LOCALAPPDATA%/EVEngine/sdk， POSIX: $XDG_DATA_HOME/EVEngine/sdk），可用 EVE_SDK_INSTALL_ROOT 覆盖。 各平台 SDK 安装在 &lt;root&gt;/&lt;platform&gt; 下。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00275">findSdkRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="a02bd632cf0c825a6f15be2f70088d5c5" name="a02bd632cf0c825a6f15be2f70088d5c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02bd632cf0c825a6f15be2f70088d5c5">&#9670;&#160;</a></span>fileSha256()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::fileSha256 </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>计算文件的 SHA-256（小写十六进制）；失败返回空串。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00509">runShell()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="a2fc3ad4542ec27ceedfe428ef3e0e902" name="a2fc3ad4542ec27ceedfe428ef3e0e902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fc3ad4542ec27ceedfe428ef3e0e902">&#9670;&#160;</a></span>findSdkRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::findSdkRoot </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sdkArg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>定位 EVEngine SDK 根目录：&ndash;sdk 参数 &gt; $EVENGINE_SDK &gt; 可执行文件 所在位置的 ../（&lt;sdk&gt;/bin/eve）&gt; 当前目录 &gt; <code>eve get</code> 安装的 SDK。 </p>
+<dl class="section return"><dt>返回</dt><dd>SDK 根目录绝对路径；找不到时返回空串。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00204">eveSdkInstallRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00473">sdkTargetPlatform()</a>.</p>
+
+</div>
+</div>
+<a id="a1bcd3e1415cc06faebad016377a6495a" name="a1bcd3e1415cc06faebad016377a6495a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bcd3e1415cc06faebad016377a6495a">&#9670;&#160;</a></span>getEnv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::getEnv </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>def</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>读取环境变量；未设置时返回 def。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00480">androidSdkRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00495">applyEnvFile()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00221">eveSdkBaseUrl()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00204">eveSdkInstallRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00275">findSdkRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00193">sdkVersionTag()</a>.</p>
+
+</div>
+</div>
+<a id="a343aa78edca68a0251acb84acf787e67" name="a343aa78edca68a0251acb84acf787e67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a343aa78edca68a0251acb84acf787e67">&#9670;&#160;</a></span>installAndroidSdk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::sdk::installAndroidSdk </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>自动下载并安装 Android 工具链：EVEngine 官方 android SDK + cmdline-tools / platform-tools / build-tools / platform + JDK 17 + Gradle， 返回退出码。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00695">695</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d">Android</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00480">androidSdkRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00204">eveSdkInstallRoot()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00687">isAndroidSdkInstalled()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00509">runShell()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00185">setEnv()</a>.</p>
+
+</div>
+</div>
+<a id="a262743c35947288ada85eada5e77a898" name="a262743c35947288ada85eada5e77a898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a262743c35947288ada85eada5e77a898">&#9670;&#160;</a></span>installEveSdk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::sdk::installEveSdk </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a>&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>下载并安装 EVEngine 官方 &lt;platform&gt; SDK（zip 内 eve-sdk/&lt;platform&gt;/， 从 GitHub Release 按当前 eve 版本挑选），校验 SHA256 后落位到 &lt;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ad8a0ba2ea5bde3c1b7adaafaf989dbeb" title="EVEngine 官方 SDK 安装根目录（Windows: LOCALAPPDATA%/EVEngine/sdk， POSIX: $XDG_DATA_HOME/EVEngine/sdk），可用 EVE...">eveSdkInstallRoot()</a>&gt;/&lt;platform&gt;。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00359">359</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00221">eveSdkBaseUrl()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00204">eveSdkInstallRoot()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00228">fileSha256()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00169">platformName()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00509">runShell()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00473">sdkTargetPlatform()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00193">sdkVersionTag()</a> , 以及 <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a>.</p>
+
+</div>
+</div>
+<a id="a512b8b127a665ce6774317b2a2a772ba" name="a512b8b127a665ce6774317b2a2a772ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512b8b127a665ce6774317b2a2a772ba">&#9670;&#160;</a></span>isAndroidSdkInstalled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::cmd::sdk::isAndroidSdkInstalled </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>判断 Android SDK 是否已安装（cmdline-tools 的 sdkmanager 存在）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00687">687</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a>.</p>
+
+</div>
+</div>
+<a id="afe1c0f85798831dc57c10a36d4409a8f" name="afe1c0f85798831dc57c10a36d4409a8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe1c0f85798831dc57c10a36d4409a8f">&#9670;&#160;</a></span>parsePlatform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> eve::cmd::sdk::parsePlatform </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>解析平台名（大小写不敏感，含常用别名：windows/win、mac/macos/osx 等）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d">Android</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169">Ios</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831">Linux</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8">Macosx</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a> , 以及 <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405">Win32</a>.</p>
+
+</div>
+</div>
+<a id="ab52e5800f014834d057cd9e12f021d6d" name="ab52e5800f014834d057cd9e12f021d6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab52e5800f014834d057cd9e12f021d6d">&#9670;&#160;</a></span>platformName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::platformName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a>&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>平台规范名（用于 Makefile 目标名）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d">Android</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169">Ios</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831">Linux</a>, <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8">Macosx</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405">Win32</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="a65c0f851c215bca33569fff07b4005f2" name="a65c0f851c215bca33569fff07b4005f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c0f851c215bca33569fff07b4005f2">&#9670;&#160;</a></span>runShell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::cmd::sdk::runShell </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>通过系统 shell 执行命令并返回退出码（POSIX 下归一化 WEXITSTATUS）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00228">fileSha256()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="ada26ba1493c1263301287a02a40dcf8e" name="ada26ba1493c1263301287a02a40dcf8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada26ba1493c1263301287a02a40dcf8e">&#9670;&#160;</a></span>sdkTargetPlatform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::sdkTargetPlatform </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sdkRoot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>读取 &lt;sdk&gt;/share/eve/TARGET_PLATFORM（该 SDK 面向的目标平台）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00473">473</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00275">findSdkRoot()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="ac51ad0ab17ac79025b5c89772ae4d9c7" name="ac51ad0ab17ac79025b5c89772ae4d9c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51ad0ab17ac79025b5c89772ae4d9c7">&#9670;&#160;</a></span>sdkVersionTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::cmd::sdk::sdkVersionTag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>当前 eve 版本对应的发布 tag（v0.1.0-dev → v0.1.0）。 可用 EVE_SDK_TAG 覆盖（dev 构建 / 测试）。解析失败时返回空串。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdk__tools_8cpp_source.html#l00180">getEnv()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00221">eveSdkBaseUrl()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00359">installEveSdk()</a>.</p>
+
+</div>
+</div>
+<a id="ab24a55358379efff928f71ab6ce63e51" name="ab24a55358379efff928f71ab6ce63e51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24a55358379efff928f71ab6ce63e51">&#9670;&#160;</a></span>setEnv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cmd::sdk::setEnv </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置当前进程的环境变量（不持久化到系统）。 </p>
+
+<p class="definition">在文件 <a class="el" href="sdk__tools_8cpp_source.html">sdk_tools.cpp</a> 第 <a class="el" href="sdk__tools_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdk__tools_8cpp_source.html#l00495">applyEnvFile()</a> , 以及 <a class="el" href="sdk__tools_8cpp_source.html#l00695">installAndroidSdk()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

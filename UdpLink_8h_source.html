@@ -1,0 +1,333 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/network/UdpLink.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_01fbf463d294056048b691191265bf7f.html">network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UdpLink.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UdpLink_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;random&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1network.html">eve::network</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Network;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>UdpSocket;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">   31</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">MsgType</a> : uint8_t {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_enumvalue" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0a84fcf5d37086f2a93953734ce8f385b6">Reliable</a> = 0,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_enumvalue" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0a98a19ff88f463baefac152f8641dea36">Unreliable</a> = 1,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_enumvalue" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0ae602b4d900cc2b90c2c5732d516ec266">UnreliableOrdered</a> = 2,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    };</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a9fd929cbf5bfd409d39f8fd665830834">   37</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1network_1_1UdpLink.html#a9fd929cbf5bfd409d39f8fd665830834">MessageHandler</a> =</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        std::function&lt;void(<a class="code hl_enumeration" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">MsgType</a>, uint8_t channel, <span class="keyword">const</span> <span class="keywordtype">char</span>* data, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)&gt;;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a15e803e87dc633e8265c3ee0ec38d2fa">   39</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1network_1_1UdpLink.html#a15e803e87dc633e8265c3ee0ec38d2fa">DisconnectHandler</a> = std::function&lt;void(<span class="keyword">const</span> std::string&amp; reason)&gt;;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a>(<a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>* net, <a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#acf0b59f092e4a93f80397e84d4374555">~UdpLink</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="comment">// --- transport setup --------------------------------------------------</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a4c39adc03a887d31e0988dbaaf9cab58">setRemote</a>(std::string host, uint16_t port);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a2f750d8d399f1bcbebc5d03211b7635d">setRemoteString</a>(<span class="keyword">const</span> std::string&amp; addr);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a96d30602e2ac9e7dba3f27eaf39e9325">   48</a></span>    std::string <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a96d30602e2ac9e7dba3f27eaf39e9325">peer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> remote_; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// --- sending ----------------------------------------------------------</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a2be94f592eb4f29e9cdab1e5f0cc7507">send</a>(<a class="code hl_enumeration" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">MsgType</a> <a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, uint8_t channel, <span class="keyword">const</span> <span class="keywordtype">void</span>* data, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#aa032acc4bba9cccb93ccf525f12f87d9">sendString</a>(<a class="code hl_enumeration" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">MsgType</a> <a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, uint8_t channel, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// --- main-thread pump hooks (called by Network::pump) -----------------</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#ae3837c37c837e9d6870d778ad8395dfc">onDatagram</a>(<span class="keyword">const</span> std::vector&lt;char&gt;&amp; bytes, <span class="keyword">const</span> std::string&amp; from);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a94055e83712bf3a0a029ccdfcbdbe7c6">pump</a>(int64_t nowMs);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="comment">// --- callbacks &amp; config ----------------------------------------------</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a9349b703a1467570cf12a62fb1b7c089">   59</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a9349b703a1467570cf12a62fb1b7c089">setMessageHandler</a>(<a class="code hl_typedef" href="classeve_1_1network_1_1UdpLink.html#a9fd929cbf5bfd409d39f8fd665830834">MessageHandler</a> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) { onMessage_ = std::move(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>); }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a4077ee67fdbfeb36d2c6e344c9034895">   60</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a4077ee67fdbfeb36d2c6e344c9034895">setDisconnectHandler</a>(<a class="code hl_typedef" href="classeve_1_1network_1_1UdpLink.html#a15e803e87dc633e8265c3ee0ec38d2fa">DisconnectHandler</a> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) { onDisconnect_ = std::move(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>); }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#ad081c30ee0b99d23fe001c27676504ce">setLossRate</a>(<span class="keywordtype">float</span> rate);  <span class="comment">// 0..1, test hook: drop outbound datagrams</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a9b37d743483aaafe4988210568ce2b9a">   62</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a9b37d743483aaafe4988210568ce2b9a">setTimeoutMs</a>(<span class="keywordtype">int</span> ms) { timeoutMs_ = ms; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a2b2e4225fb33b82bea9bc306a1ee96b6">   64</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a2b2e4225fb33b82bea9bc306a1ee96b6">isAlive</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> alive_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#abd1f620496c4d0c053ae0e55c910f7b9">   65</a></span>    uint32_t <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#abd1f620496c4d0c053ae0e55c910f7b9">peerId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> peerId_; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a10b1ea6c3076e36ee7081d30584320c4">   66</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a10b1ea6c3076e36ee7081d30584320c4">setPeerId</a>(uint32_t <span class="keywordtype">id</span>) { peerId_ = <a class="code hl_variable" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#adb077dc91a5d2e1c9569a74e686b4ebd">   67</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#adb077dc91a5d2e1c9569a74e686b4ebd">pendingReliable</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sendQueue_.size(); }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a2f7d1f70d2c2e3b52a858b291081bdeb">   68</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1network_1_1UdpLink.html#a2f7d1f70d2c2e3b52a858b291081bdeb">pendingFragments</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fragments_.size(); }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="comment">// Max payload per UDP datagram (below typical MTU to avoid IP fragmentation).</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#a2fd20cbc7ae39bfcb339ba87ce154136">   71</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="classeve_1_1network_1_1UdpLink.html#a2fd20cbc7ae39bfcb339ba87ce154136">kPayloadMTU</a> = 1200;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1UdpLink.html#afcb6c82df5758ca404a5f751fe58d5e4">   72</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="classeve_1_1network_1_1UdpLink.html#afcb6c82df5758ca404a5f751fe58d5e4">kMaxMessage</a> = 256 * 1024;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> sendDatagram(std::vector&lt;char&gt; pkt);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> sendAckNow();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> pruneAcked(uint32_t ack, uint32_t bits);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> deliver(<a class="code hl_enumeration" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">MsgType</a> <a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, uint8_t channel, std::vector&lt;char&gt; payload);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> handleData(uint8_t <a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, uint8_t channel, uint32_t seq,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    <span class="keyword">const</span> std::vector&lt;char&gt;&amp; payload);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> noteReceived();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>* net_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::string remote_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::string remoteHost_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    uint16_t remotePort_ = 0;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">bool</span> remoteSet_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// sender</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    uint32_t nextSeq_ = 0;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">struct </span>SendEntry {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        std::vector&lt;std::vector&lt;char&gt;&gt; pkts;  <span class="comment">// one per datagram (fragments share a seq)</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        int64_t deadlineMs = 0;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordtype">int</span> attempts = 0;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    };</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    std::map&lt;uint32_t, SendEntry&gt; sendQueue_;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// receiver</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    uint32_t expectedReliable_ = 0;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::map&lt;uint32_t, std::vector&lt;char&gt;&gt; outOfOrder_;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    uint32_t expectedUnrelOrd_ = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::map&lt;uint32_t, std::vector&lt;char&gt;&gt; unrelOrdBuf_;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">// Encoding &quot;last contiguous received seq&quot; = expectedReliable_ - 1, so the</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="comment">// &quot;nothing received yet&quot; value wraps to 0xFFFFFFFF (never prune seq 0).</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    uint32_t ackSend_ = 0xFFFFFFFFu;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    uint32_t ackBitsSend_ = 0;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// fragmentation</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">struct </span>FragBuf {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        uint32_t total = 0;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        uint32_t received = 0;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordtype">size_t</span> lastLen = 0;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        std::vector&lt;char&gt; <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        std::vector&lt;uint8_t&gt; seen;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        int64_t lastMs = 0;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    };</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    std::map&lt;uint32_t, FragBuf&gt; fragments_;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    uint32_t nextFragId_ = 0;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="comment">// liveness / config</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    int64_t lastRecvMs_ = 0;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    int64_t lastSendMs_ = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    int64_t lastPingMs_ = 0;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    int64_t lastAckMs_ = 0;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">int</span> timeoutMs_ = 10000;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">int</span> retryBaseMs_ = 100;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">int</span> maxAttempts_ = 10;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">float</span> lossRate_ = 0.f;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::mt19937 rng_{0xE9E1};</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">bool</span> alive_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">bool</span> disconnectNotified_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    uint32_t peerId_ = 0;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_typedef" href="classeve_1_1network_1_1UdpLink.html#a9fd929cbf5bfd409d39f8fd665830834">MessageHandler</a> onMessage_;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <a class="code hl_typedef" href="classeve_1_1network_1_1UdpLink.html#a15e803e87dc633e8265c3ee0ec38d2fa">DisconnectHandler</a> onDisconnect_;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>};</div>
+</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}  <span class="comment">// namespace eve::network</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a75b160f574a0be26114bae2c7686a5e1"><div class="ttname"><a href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00444">EditorHost.cpp:444</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00450">EditorHost.cpp:450</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html"><div class="ttname"><a href="classeve_1_1network_1_1Network.html">eve::network::Network</a></div><div class="ttdoc">Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....</div><div class="ttdef"><b>Definition</b> <a href="Network_8h_source.html#l00032">Network.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html">eve::network::UdpLink</a></div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00029">UdpLink.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a10b1ea6c3076e36ee7081d30584320c4"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a10b1ea6c3076e36ee7081d30584320c4">eve::network::UdpLink::setPeerId</a></div><div class="ttdeci">void setPeerId(uint32_t id)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00066">UdpLink.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a15e803e87dc633e8265c3ee0ec38d2fa"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a15e803e87dc633e8265c3ee0ec38d2fa">eve::network::UdpLink::DisconnectHandler</a></div><div class="ttdeci">std::function&lt; void(const std::string &amp;reason)&gt; DisconnectHandler</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00039">UdpLink.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a2b2e4225fb33b82bea9bc306a1ee96b6"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a2b2e4225fb33b82bea9bc306a1ee96b6">eve::network::UdpLink::isAlive</a></div><div class="ttdeci">bool isAlive() const</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00064">UdpLink.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a2be94f592eb4f29e9cdab1e5f0cc7507"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a2be94f592eb4f29e9cdab1e5f0cc7507">eve::network::UdpLink::send</a></div><div class="ttdeci">void send(MsgType type, uint8_t channel, const void *data, size_t n)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00164">UdpLink.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a2f750d8d399f1bcbebc5d03211b7635d"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a2f750d8d399f1bcbebc5d03211b7635d">eve::network::UdpLink::setRemoteString</a></div><div class="ttdeci">bool setRemoteString(const std::string &amp;addr)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00142">UdpLink.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a2f7d1f70d2c2e3b52a858b291081bdeb"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a2f7d1f70d2c2e3b52a858b291081bdeb">eve::network::UdpLink::pendingFragments</a></div><div class="ttdeci">size_t pendingFragments() const</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00068">UdpLink.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a2fd20cbc7ae39bfcb339ba87ce154136"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a2fd20cbc7ae39bfcb339ba87ce154136">eve::network::UdpLink::kPayloadMTU</a></div><div class="ttdeci">static constexpr size_t kPayloadMTU</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00071">UdpLink.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a4077ee67fdbfeb36d2c6e344c9034895"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a4077ee67fdbfeb36d2c6e344c9034895">eve::network::UdpLink::setDisconnectHandler</a></div><div class="ttdeci">void setDisconnectHandler(DisconnectHandler h)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00060">UdpLink.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a4c39adc03a887d31e0988dbaaf9cab58"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a4c39adc03a887d31e0988dbaaf9cab58">eve::network::UdpLink::setRemote</a></div><div class="ttdeci">bool setRemote(std::string host, uint16_t port)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00133">UdpLink.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a8d820e72b9d4521e74ad987817144cf0"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">eve::network::UdpLink::MsgType</a></div><div class="ttdeci">MsgType</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00031">UdpLink.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a8d820e72b9d4521e74ad987817144cf0a84fcf5d37086f2a93953734ce8f385b6"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0a84fcf5d37086f2a93953734ce8f385b6">eve::network::UdpLink::MsgType::Reliable</a></div><div class="ttdeci">@ Reliable</div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a8d820e72b9d4521e74ad987817144cf0a98a19ff88f463baefac152f8641dea36"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0a98a19ff88f463baefac152f8641dea36">eve::network::UdpLink::MsgType::Unreliable</a></div><div class="ttdeci">@ Unreliable</div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a8d820e72b9d4521e74ad987817144cf0ae602b4d900cc2b90c2c5732d516ec266"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0ae602b4d900cc2b90c2c5732d516ec266">eve::network::UdpLink::MsgType::UnreliableOrdered</a></div><div class="ttdeci">@ UnreliableOrdered</div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a9349b703a1467570cf12a62fb1b7c089"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a9349b703a1467570cf12a62fb1b7c089">eve::network::UdpLink::setMessageHandler</a></div><div class="ttdeci">void setMessageHandler(MessageHandler h)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00059">UdpLink.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a94055e83712bf3a0a029ccdfcbdbe7c6"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a94055e83712bf3a0a029ccdfcbdbe7c6">eve::network::UdpLink::pump</a></div><div class="ttdeci">void pump(int64_t nowMs)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00417">UdpLink.cpp:417</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a96d30602e2ac9e7dba3f27eaf39e9325"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a96d30602e2ac9e7dba3f27eaf39e9325">eve::network::UdpLink::peer</a></div><div class="ttdeci">std::string peer() const</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00048">UdpLink.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a9b37d743483aaafe4988210568ce2b9a"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a9b37d743483aaafe4988210568ce2b9a">eve::network::UdpLink::setTimeoutMs</a></div><div class="ttdeci">void setTimeoutMs(int ms)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00062">UdpLink.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_a9fd929cbf5bfd409d39f8fd665830834"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#a9fd929cbf5bfd409d39f8fd665830834">eve::network::UdpLink::MessageHandler</a></div><div class="ttdeci">std::function&lt; void(MsgType, uint8_t channel, const char *data, size_t n)&gt; MessageHandler</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00037">UdpLink.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_aa032acc4bba9cccb93ccf525f12f87d9"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#aa032acc4bba9cccb93ccf525f12f87d9">eve::network::UdpLink::sendString</a></div><div class="ttdeci">bool sendString(MsgType type, uint8_t channel, const std::string &amp;s)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00236">UdpLink.cpp:236</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_abd1f620496c4d0c053ae0e55c910f7b9"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#abd1f620496c4d0c053ae0e55c910f7b9">eve::network::UdpLink::peerId</a></div><div class="ttdeci">uint32_t peerId() const</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00065">UdpLink.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_acf0b59f092e4a93f80397e84d4374555"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#acf0b59f092e4a93f80397e84d4374555">eve::network::UdpLink::~UdpLink</a></div><div class="ttdeci">~UdpLink()</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00126">UdpLink.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_ad081c30ee0b99d23fe001c27676504ce"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#ad081c30ee0b99d23fe001c27676504ce">eve::network::UdpLink::setLossRate</a></div><div class="ttdeci">void setLossRate(float rate)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00149">UdpLink.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_adb077dc91a5d2e1c9569a74e686b4ebd"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#adb077dc91a5d2e1c9569a74e686b4ebd">eve::network::UdpLink::pendingReliable</a></div><div class="ttdeci">size_t pendingReliable() const</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00067">UdpLink.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_ae3837c37c837e9d6870d778ad8395dfc"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#ae3837c37c837e9d6870d778ad8395dfc">eve::network::UdpLink::onDatagram</a></div><div class="ttdeci">void onDatagram(const std::vector&lt; char &gt; &amp;bytes, const std::string &amp;from)</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00333">UdpLink.cpp:333</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html_afcb6c82df5758ca404a5f751fe58d5e4"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html#afcb6c82df5758ca404a5f751fe58d5e4">eve::network::UdpLink::kMaxMessage</a></div><div class="ttdeci">static constexpr size_t kMaxMessage</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00072">UdpLink.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html">eve::network::UdpSocket</a></div><div class="ttdoc">UDP socket backed by Poco::Net; supports connect/bind and datagram send.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8h_source.html#l00024">UdpSocket.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html"><div class="ttname"><a href="namespaceeve_1_1network.html">eve::network</a></div><div class="ttdef"><b>Definition</b> <a href="network_2Channel_8cpp_source.html#l00012">Channel.cpp:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

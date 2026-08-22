@@ -1,0 +1,820 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpgpu::VulkanComputeShader类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpgpu.html">gpgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html">VulkanComputeShader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="classeve_1_1gpgpu_1_1VulkanComputeShader-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpgpu::VulkanComputeShader类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Vulkan 计算着色器（SPIR-V pipeline + descriptor 管理）。  
+ <a href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::gpgpu::VulkanComputeShader 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1gpgpu_1_1VulkanComputeShader.png" usemap="#eve::gpgpu::VulkanComputeShader_map" alt=""/>
+  <map id="eve::gpgpu::VulkanComputeShader_map" name="eve::gpgpu::VulkanComputeShader_map">
+<area href="classeve_1_1gpgpu_1_1ComputeShader.html" title="Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch...." alt="eve::gpgpu::ComputeShader" shape="rect" coords="0,0,209,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abebaf2ebf08a1bde71884ccfc7fb87b6" id="r_abebaf2ebf08a1bde71884ccfc7fb87b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#abebaf2ebf08a1bde71884ccfc7fb87b6">~VulkanComputeShader</a> () override</td></tr>
+<tr class="separator:abebaf2ebf08a1bde71884ccfc7fb87b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a304adae8f132d966143c3475cdcad033" id="r_a304adae8f132d966143c3475cdcad033"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a304adae8f132d966143c3475cdcad033">bindBuffer</a> (int binding, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buffer) override</td></tr>
+<tr class="memdesc:a304adae8f132d966143c3475cdcad033"><td class="mdescLeft">&#160;</td><td class="mdescRight">绑定/解绑 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html" title="Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...">GpuBuffer</a> 到指定 binding。  <br /></td></tr>
+<tr class="separator:a304adae8f132d966143c3475cdcad033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab84caa5261fcba19a748557712a15288" id="r_ab84caa5261fcba19a748557712a15288"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ab84caa5261fcba19a748557712a15288">getBoundBuffer</a> (int binding) const override</td></tr>
+<tr class="separator:ab84caa5261fcba19a748557712a15288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe6b8035ebb6b7bc59222b9cb982af8c" id="r_afe6b8035ebb6b7bc59222b9cb982af8c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#afe6b8035ebb6b7bc59222b9cb982af8c">setFloat</a> (int index, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) override</td></tr>
+<tr class="memdesc:afe6b8035ebb6b7bc59222b9cb982af8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">标量 uniform 读写。  <br /></td></tr>
+<tr class="separator:afe6b8035ebb6b7bc59222b9cb982af8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b04b795d7de291d1b8b5e5d6c311c8a" id="r_a0b04b795d7de291d1b8b5e5d6c311c8a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a0b04b795d7de291d1b8b5e5d6c311c8a">getFloat</a> (int index) const override</td></tr>
+<tr class="separator:a0b04b795d7de291d1b8b5e5d6c311c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238849b99aee87a8d9679f561f9667d3" id="r_a238849b99aee87a8d9679f561f9667d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a238849b99aee87a8d9679f561f9667d3">clearBindings</a> () override</td></tr>
+<tr class="memdesc:a238849b99aee87a8d9679f561f9667d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部绑定。  <br /></td></tr>
+<tr class="separator:a238849b99aee87a8d9679f561f9667d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac1734cc5b41c668993dca36466beb70" id="r_aac1734cc5b41c668993dca36466beb70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#aac1734cc5b41c668993dca36466beb70">flushDescriptors</a> (vkb::Device &amp;<a class="el" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>)</td></tr>
+<tr class="memdesc:aac1734cc5b41c668993dca36466beb70"><td class="mdescLeft">&#160;</td><td class="mdescRight">内部：把脏绑定刷成 descriptor set。  <br /></td></tr>
+<tr class="separator:aac1734cc5b41c668993dca36466beb70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7db62ca6c043739ca146ee8652bbf879" id="r_a7db62ca6c043739ca146ee8652bbf879"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a7db62ca6c043739ca146ee8652bbf879">beginSequence</a> ()</td></tr>
+<tr class="separator:a7db62ca6c043739ca146ee8652bbf879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc38d97e9571e165a1b00d17a6e40113" id="r_afc38d97e9571e165a1b00d17a6e40113"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#afc38d97e9571e165a1b00d17a6e40113">endSequence</a> ()</td></tr>
+<tr class="separator:afc38d97e9571e165a1b00d17a6e40113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224d9fec3bb5310fc6e80db5e17f34df" id="r_a224d9fec3bb5310fc6e80db5e17f34df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a224d9fec3bb5310fc6e80db5e17f34df">releasePendingDescriptors</a> (vkb::Device &amp;<a class="el" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>)</td></tr>
+<tr class="separator:a224d9fec3bb5310fc6e80db5e17f34df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1gpgpu_1_1ComputeShader')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></td></tr>
+<tr class="memitem:a5f100dc6ffca119d9a13d215adfab386 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_a5f100dc6ffca119d9a13d215adfab386"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a5f100dc6ffca119d9a13d215adfab386">ComputeShader</a> ()=default</td></tr>
+<tr class="separator:a5f100dc6ffca119d9a13d215adfab386 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99fb64bf089bdac3d3780cb0cf3dbe82 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_a99fb64bf089bdac3d3780cb0cf3dbe82"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a99fb64bf089bdac3d3780cb0cf3dbe82">~ComputeShader</a> ()=default</td></tr>
+<tr class="separator:a99fb64bf089bdac3d3780cb0cf3dbe82 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3437ba4402ec365dc78ca5120168c4d6 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_a3437ba4402ec365dc78ca5120168c4d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a3437ba4402ec365dc78ca5120168c4d6">ComputeShader</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;)=delete</td></tr>
+<tr class="separator:a3437ba4402ec365dc78ca5120168c4d6 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc12527bbeac87c0cbba33f5fb47b659 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_abc12527bbeac87c0cbba33f5fb47b659"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#abc12527bbeac87c0cbba33f5fb47b659">operator=</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;)=delete</td></tr>
+<tr class="separator:abc12527bbeac87c0cbba33f5fb47b659 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad66bc18ed29643e9780e5147bdb66976 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_ad66bc18ed29643e9780e5147bdb66976"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#ad66bc18ed29643e9780e5147bdb66976">pushConstantData</a> () const</td></tr>
+<tr class="separator:ad66bc18ed29643e9780e5147bdb66976 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab3b681b92bb9dd6ea4e9667a2b4b48eb" id="r_ab3b681b92bb9dd6ea4e9667a2b4b48eb"><td class="memItemLeft" align="right" valign="top">vkb::Device *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ab3b681b92bb9dd6ea4e9667a2b4b48eb">device_</a> = nullptr</td></tr>
+<tr class="separator:ab3b681b92bb9dd6ea4e9667a2b4b48eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a934a3757c2dcdd413cd04b2fa857dd48" id="r_a934a3757c2dcdd413cd04b2fa857dd48"><td class="memItemLeft" align="right" valign="top">vk::ShaderModule&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a934a3757c2dcdd413cd04b2fa857dd48">module_</a> {}</td></tr>
+<tr class="separator:a934a3757c2dcdd413cd04b2fa857dd48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320d8c5700c63ab361dee08150954db6" id="r_a320d8c5700c63ab361dee08150954db6"><td class="memItemLeft" align="right" valign="top">vk::DescriptorSetLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a320d8c5700c63ab361dee08150954db6">setLayout_</a> {}</td></tr>
+<tr class="separator:a320d8c5700c63ab361dee08150954db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a056c42149dbd2cf2631954070714ab80" id="r_a056c42149dbd2cf2631954070714ab80"><td class="memItemLeft" align="right" valign="top">vk::PipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a056c42149dbd2cf2631954070714ab80">pipelineLayout_</a> {}</td></tr>
+<tr class="separator:a056c42149dbd2cf2631954070714ab80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab267a14780b56309250bbd53a56e0e4b" id="r_ab267a14780b56309250bbd53a56e0e4b"><td class="memItemLeft" align="right" valign="top">vk::Pipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ab267a14780b56309250bbd53a56e0e4b">pipeline_</a> {}</td></tr>
+<tr class="separator:ab267a14780b56309250bbd53a56e0e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6af7e3e499b45a9a0960d54361f728df" id="r_a6af7e3e499b45a9a0960d54361f728df"><td class="memItemLeft" align="right" valign="top">vk::DescriptorPool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a6af7e3e499b45a9a0960d54361f728df">descriptorPool_</a> {}</td></tr>
+<tr class="separator:a6af7e3e499b45a9a0960d54361f728df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac30d5a02afbd1bc739e3d31014880ff7" id="r_ac30d5a02afbd1bc739e3d31014880ff7"><td class="memItemLeft" align="right" valign="top">vk::DescriptorSet&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ac30d5a02afbd1bc739e3d31014880ff7">descriptorSet_</a> {}</td></tr>
+<tr class="separator:ac30d5a02afbd1bc739e3d31014880ff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae036a75b1f31bf9e1504df25cf57ad45" id="r_ae036a75b1f31bf9e1504df25cf57ad45"><td class="memItemLeft" align="right" valign="top">vk::Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ae036a75b1f31bf9e1504df25cf57ad45">dummyBuffer_</a> {}</td></tr>
+<tr class="separator:ae036a75b1f31bf9e1504df25cf57ad45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0a1c0c652617fa1b2501d862762bba8" id="r_af0a1c0c652617fa1b2501d862762bba8"><td class="memItemLeft" align="right" valign="top">vk::DeviceMemory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#af0a1c0c652617fa1b2501d862762bba8">dummyMemory_</a> {}</td></tr>
+<tr class="separator:af0a1c0c652617fa1b2501d862762bba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3da5ea9a165774c4203893eb3717deff" id="r_a3da5ea9a165774c4203893eb3717deff"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a3da5ea9a165774c4203893eb3717deff">bindings_</a> {}</td></tr>
+<tr class="separator:a3da5ea9a165774c4203893eb3717deff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ea26064d41bc400149ff77a2eb239c5" id="r_a4ea26064d41bc400149ff77a2eb239c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a4ea26064d41bc400149ff77a2eb239c5">descriptorsDirty_</a> = true</td></tr>
+<tr class="separator:a4ea26064d41bc400149ff77a2eb239c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac881525f01f1f803c9808aa9e561fd79" id="r_ac881525f01f1f803c9808aa9e561fd79"><td class="memItemLeft" align="right" valign="top">std::vector&lt; vk::DescriptorSet &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ac881525f01f1f803c9808aa9e561fd79">pendingSets_</a></td></tr>
+<tr class="separator:ac881525f01f1f803c9808aa9e561fd79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf2c660d35bda2e421a4b0978cf1d2e" id="r_accf2c660d35bda2e421a4b0978cf1d2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#accf2c660d35bda2e421a4b0978cf1d2e">deferSetFree_</a> = false</td></tr>
+<tr class="separator:accf2c660d35bda2e421a4b0978cf1d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></td></tr>
+<tr class="memitem:a04a7141434a2ed6e3c62a4816e3686e2 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a04a7141434a2ed6e3c62a4816e3686e2"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a> = 8</td></tr>
+<tr class="separator:a04a7141434a2ed6e3c62a4816e3686e2 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1a2502dfd9daec795b6d942976c3c4 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a2b1a2502dfd9daec795b6d942976c3c4"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> = 32</td></tr>
+<tr class="separator:a2b1a2502dfd9daec795b6d942976c3c4 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83368c146e8652192f87b4c6623aa7b5 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a83368c146e8652192f87b4c6623aa7b5"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">kPushConstantBytes</a> = uint32_t(<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> * sizeof(float))</td></tr>
+<tr class="separator:a83368c146e8652192f87b4c6623aa7b5 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classeve_1_1gpgpu_1_1ComputeShader')"><img src="closed.png" alt="-"/>&#160;Protected 属性 继承自 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></td></tr>
+<tr class="memitem:a31895118df3a71bf1aa310884546516e inherit pro_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a31895118df3a71bf1aa310884546516e"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a31895118df3a71bf1aa310884546516e">push_</a> {}</td></tr>
+<tr class="separator:a31895118df3a71bf1aa310884546516e inherit pro_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Vulkan 计算着色器（SPIR-V pipeline + descriptor 管理）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abebaf2ebf08a1bde71884ccfc7fb87b6" name="abebaf2ebf08a1bde71884ccfc7fb87b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abebaf2ebf08a1bde71884ccfc7fb87b6">&#9670;&#160;</a></span>~VulkanComputeShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::VulkanComputeShader::~VulkanComputeShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00044">descriptorPool_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00045">descriptorSet_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00039">device_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00046">dummyBuffer_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00047">dummyMemory_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00040">module_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00043">pipeline_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00042">pipelineLayout_</a> , 以及 <a class="el" href="VulkanComputeShader_8h_source.html#l00041">setLayout_</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7db62ca6c043739ca146ee8652bbf879" name="a7db62ca6c043739ca146ee8652bbf879"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7db62ca6c043739ca146ee8652bbf879">&#9670;&#160;</a></span>beginSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::beginSequence </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>While a <a class="el" href="classeve_1_1gpgpu_1_1Sequence.html">Sequence</a> is recording, superseded sets are deferred (see flushDescriptors). </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00055">deferSetFree_</a>.</p>
+
+</div>
+</div>
+<a id="a304adae8f132d966143c3475cdcad033" name="a304adae8f132d966143c3475cdcad033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a304adae8f132d966143c3475cdcad033">&#9670;&#160;</a></span>bindBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::bindBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>绑定/解绑 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html" title="Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...">GpuBuffer</a> 到指定 binding。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#afaf8369ad9145505f5dd5e966b737cf5">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00049">bindings_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00050">descriptorsDirty_</a> , 以及 <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>.</p>
+
+</div>
+</div>
+<a id="a238849b99aee87a8d9679f561f9667d3" name="a238849b99aee87a8d9679f561f9667d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a238849b99aee87a8d9679f561f9667d3">&#9670;&#160;</a></span>clearBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::clearBindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>清空全部绑定。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#abadcbdd3b758467ef913085189bac449">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00049">bindings_</a> , 以及 <a class="el" href="VulkanComputeShader_8h_source.html#l00050">descriptorsDirty_</a>.</p>
+
+</div>
+</div>
+<a id="afc38d97e9571e165a1b00d17a6e40113" name="afc38d97e9571e165a1b00d17a6e40113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc38d97e9571e165a1b00d17a6e40113">&#9670;&#160;</a></span>endSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::endSequence </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00055">deferSetFree_</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanSequence_8cpp_source.html#l00175">eve::gpgpu::vulkanSequenceSubmit()</a>.</p>
+
+</div>
+</div>
+<a id="aac1734cc5b41c668993dca36466beb70" name="aac1734cc5b41c668993dca36466beb70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac1734cc5b41c668993dca36466beb70">&#9670;&#160;</a></span>flushDescriptors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::flushDescriptors </td>
+          <td>(</td>
+          <td class="paramtype">vkb::Device &amp;&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>内部：把脏绑定刷成 descriptor set。 </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00049">bindings_</a>, <a class="el" href="VulkanGpuBuffer_8h_source.html#l00031">eve::gpgpu::VulkanGpuBuffer::buffer_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00055">deferSetFree_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00044">descriptorPool_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00050">descriptorsDirty_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00045">descriptorSet_</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00269">device</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00046">dummyBuffer_</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00047">dummyMemory_</a>, <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>, <a class="el" href="VulkanComputeShader_8h_source.html#l00054">pendingSets_</a> , 以及 <a class="el" href="VulkanComputeShader_8h_source.html#l00041">setLayout_</a>.</p>
+
+</div>
+</div>
+<a id="ab84caa5261fcba19a748557712a15288" name="ab84caa5261fcba19a748557712a15288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab84caa5261fcba19a748557712a15288">&#9670;&#160;</a></span>getBoundBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> * eve::gpgpu::VulkanComputeShader::getBoundBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a66995b46d5c2bb55964d4afdd28ef7df">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00049">bindings_</a> , 以及 <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>.</p>
+
+</div>
+</div>
+<a id="a0b04b795d7de291d1b8b5e5d6c311c8a" name="a0b04b795d7de291d1b8b5e5d6c311c8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b04b795d7de291d1b8b5e5d6c311c8a">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpgpu::VulkanComputeShader::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#af4b5b0454125c65d53f1edc3773d922e">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ComputeShader_8h_source.html#l00018">eve::gpgpu::ComputeShader::kMaxFloats</a> , 以及 <a class="el" href="ComputeShader_8h_source.html#l00039">eve::gpgpu::ComputeShader::push_</a>.</p>
+
+</div>
+</div>
+<a id="a224d9fec3bb5310fc6e80db5e17f34df" name="a224d9fec3bb5310fc6e80db5e17f34df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a224d9fec3bb5310fc6e80db5e17f34df">&#9670;&#160;</a></span>releasePendingDescriptors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::releasePendingDescriptors </td>
+          <td>(</td>
+          <td class="paramtype">vkb::Device &amp;&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Free descriptor sets that were superseded while recorded (but not yet submitted) command buffers still referenced them. Safe to call only after every submission that used this shader has completed. </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanComputeShader_8h_source.html#l00044">descriptorPool_</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00269">device</a> , 以及 <a class="el" href="VulkanComputeShader_8h_source.html#l00054">pendingSets_</a>.</p>
+
+</div>
+</div>
+<a id="afe6b8035ebb6b7bc59222b9cb982af8c" name="afe6b8035ebb6b7bc59222b9cb982af8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe6b8035ebb6b7bc59222b9cb982af8c">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::VulkanComputeShader::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>标量 uniform 读写。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a44b71449ed92daf0e6c9dad0a052e135">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a> 第 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ComputeShader_8h_source.html#l00018">eve::gpgpu::ComputeShader::kMaxFloats</a>, <a class="el" href="ComputeShader_8h_source.html#l00039">eve::gpgpu::ComputeShader::push_</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3da5ea9a165774c4203893eb3717deff" name="a3da5ea9a165774c4203893eb3717deff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3da5ea9a165774c4203893eb3717deff">&#9670;&#160;</a></span>bindings_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a>&gt; eve::gpgpu::VulkanComputeShader::bindings_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00046">bindBuffer()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00067">clearBindings()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00052">getBoundBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="accf2c660d35bda2e421a4b0978cf1d2e" name="accf2c660d35bda2e421a4b0978cf1d2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf2c660d35bda2e421a4b0978cf1d2e">&#9670;&#160;</a></span>deferSetFree_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::VulkanComputeShader::deferSetFree_ = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00139">beginSequence()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00141">endSequence()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a>.</p>
+
+</div>
+</div>
+<a id="a6af7e3e499b45a9a0960d54361f728df" name="a6af7e3e499b45a9a0960d54361f728df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6af7e3e499b45a9a0960d54361f728df">&#9670;&#160;</a></span>descriptorPool_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DescriptorPool eve::gpgpu::VulkanComputeShader::descriptorPool_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00143">releasePendingDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="a4ea26064d41bc400149ff77a2eb239c5" name="a4ea26064d41bc400149ff77a2eb239c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ea26064d41bc400149ff77a2eb239c5">&#9670;&#160;</a></span>descriptorsDirty_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::VulkanComputeShader::descriptorsDirty_ = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00046">bindBuffer()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00067">clearBindings()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a>.</p>
+
+</div>
+</div>
+<a id="ac30d5a02afbd1bc739e3d31014880ff7" name="ac30d5a02afbd1bc739e3d31014880ff7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac30d5a02afbd1bc739e3d31014880ff7">&#9670;&#160;</a></span>descriptorSet_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DescriptorSet eve::gpgpu::VulkanComputeShader::descriptorSet_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="ab3b681b92bb9dd6ea4e9667a2b4b48eb" name="ab3b681b92bb9dd6ea4e9667a2b4b48eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b681b92bb9dd6ea4e9667a2b4b48eb">&#9670;&#160;</a></span>device_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::Device* eve::gpgpu::VulkanComputeShader::device_ = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="ae036a75b1f31bf9e1504df25cf57ad45" name="ae036a75b1f31bf9e1504df25cf57ad45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae036a75b1f31bf9e1504df25cf57ad45">&#9670;&#160;</a></span>dummyBuffer_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Buffer eve::gpgpu::VulkanComputeShader::dummyBuffer_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="af0a1c0c652617fa1b2501d862762bba8" name="af0a1c0c652617fa1b2501d862762bba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0a1c0c652617fa1b2501d862762bba8">&#9670;&#160;</a></span>dummyMemory_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DeviceMemory eve::gpgpu::VulkanComputeShader::dummyMemory_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="a934a3757c2dcdd413cd04b2fa857dd48" name="a934a3757c2dcdd413cd04b2fa857dd48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a934a3757c2dcdd413cd04b2fa857dd48">&#9670;&#160;</a></span>module_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::ShaderModule eve::gpgpu::VulkanComputeShader::module_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="ac881525f01f1f803c9808aa9e561fd79" name="ac881525f01f1f803c9808aa9e561fd79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac881525f01f1f803c9808aa9e561fd79">&#9670;&#160;</a></span>pendingSets_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;vk::DescriptorSet&gt; eve::gpgpu::VulkanComputeShader::pendingSets_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00143">releasePendingDescriptors()</a>.</p>
+
+</div>
+</div>
+<a id="ab267a14780b56309250bbd53a56e0e4b" name="ab267a14780b56309250bbd53a56e0e4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab267a14780b56309250bbd53a56e0e4b">&#9670;&#160;</a></span>pipeline_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Pipeline eve::gpgpu::VulkanComputeShader::pipeline_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="a056c42149dbd2cf2631954070714ab80" name="a056c42149dbd2cf2631954070714ab80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a056c42149dbd2cf2631954070714ab80">&#9670;&#160;</a></span>pipelineLayout_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::PipelineLayout eve::gpgpu::VulkanComputeShader::pipelineLayout_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<a id="a320d8c5700c63ab361dee08150954db6" name="a320d8c5700c63ab361dee08150954db6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a320d8c5700c63ab361dee08150954db6">&#9670;&#160;</a></span>setLayout_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DescriptorSetLayout eve::gpgpu::VulkanComputeShader::setLayout_ {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a> 第 <a class="el" href="VulkanComputeShader_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">flushDescriptors()</a> , 以及 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00010">~VulkanComputeShader()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/gpgpu/vulkan/<a class="el" href="VulkanComputeShader_8h_source.html">VulkanComputeShader.h</a></li>
+<li>src/modules/gpgpu/vulkan/<a class="el" href="VulkanComputeShader_8cpp_source.html">VulkanComputeShader.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimSkin类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1animation_1_1AnimSkin-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimSkin类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU linear-blend skinning binding for one mesh against an <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html" title="3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...">AnimSkeleton</a>.  
+ <a href="classeve_1_1animation_1_1AnimSkin.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa42c88fa99b47b2248924d9fd1d0e922" id="r_aa42c88fa99b47b2248924d9fd1d0e922"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aa42c88fa99b47b2248924d9fd1d0e922">AnimSkin</a> ()=default</td></tr>
+<tr class="separator:aa42c88fa99b47b2248924d9fd1d0e922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af720ee5d105559139df3d03b6a86d92d" id="r_af720ee5d105559139df3d03b6a86d92d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#af720ee5d105559139df3d03b6a86d92d">~AnimSkin</a> ()=default</td></tr>
+<tr class="separator:af720ee5d105559139df3d03b6a86d92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52177a6ed7ecad4271613d8b6905035f" id="r_a52177a6ed7ecad4271613d8b6905035f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a52177a6ed7ecad4271613d8b6905035f">AnimSkin</a> (const <a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> &amp;)=delete</td></tr>
+<tr class="separator:a52177a6ed7ecad4271613d8b6905035f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4973ca74306643cd04ef6f4c26220aaf" id="r_a4973ca74306643cd04ef6f4c26220aaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a4973ca74306643cd04ef6f4c26220aaf">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> &amp;)=delete</td></tr>
+<tr class="separator:a4973ca74306643cd04ef6f4c26220aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3653b7bedb2d0be80c88f34af678442" id="r_af3653b7bedb2d0be80c88f34af678442"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#af3653b7bedb2d0be80c88f34af678442">getVertexCount</a> () const</td></tr>
+<tr class="separator:af3653b7bedb2d0be80c88f34af678442"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c8e1116ecc48a5a2efd1306408b8731" id="r_a1c8e1116ecc48a5a2efd1306408b8731"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a1c8e1116ecc48a5a2efd1306408b8731">getBoneCount</a> () const</td></tr>
+<tr class="separator:a1c8e1116ecc48a5a2efd1306408b8731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f6df7ecfb40934cbd3258d40f5f408" id="r_a81f6df7ecfb40934cbd3258d40f5f408"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a81f6df7ecfb40934cbd3258d40f5f408">getInfluenceCount</a> () const</td></tr>
+<tr class="separator:a81f6df7ecfb40934cbd3258d40f5f408"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029c2026c3257a46751061fcded3689b" id="r_a029c2026c3257a46751061fcded3689b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a029c2026c3257a46751061fcded3689b">getSkeletonBone</a> (int skinBoneIndex) const</td></tr>
+<tr class="memdesc:a029c2026c3257a46751061fcded3689b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skeleton bone index used by skin joint i (-1 if unused).  <br /></td></tr>
+<tr class="separator:a029c2026c3257a46751061fcded3689b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1f412c47ec3986c6576732c18ad3695" id="r_aa1f412c47ec3986c6576732c18ad3695"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aa1f412c47ec3986c6576732c18ad3695">getSkinBoneName</a> (int skinBoneIndex) const</td></tr>
+<tr class="separator:aa1f412c47ec3986c6576732c18ad3695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a90d2a49ba8b01cd074f02ad76d66f6" id="r_a1a90d2a49ba8b01cd074f02ad76d66f6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a1a90d2a49ba8b01cd074f02ad76d66f6">getInverseBindElement</a> (int skinBoneIndex, int elementIndex) const</td></tr>
+<tr class="memdesc:a1a90d2a49ba8b01cd074f02ad76d66f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inverse-bind matrix element (column-major, 0..15) for skin joint i.  <br /></td></tr>
+<tr class="separator:a1a90d2a49ba8b01cd074f02ad76d66f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef11be708c332ff08fc61091b75db017" id="r_aef11be708c332ff08fc61091b75db017"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aef11be708c332ff08fc61091b75db017">skinPositions</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose, float *outPosXYZ) const</td></tr>
+<tr class="memdesc:aef11be708c332ff08fc61091b75db017"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats). pose must already have computeWorld(skeleton) applied and match the skeleton used at fromModel time.  <br /></td></tr>
+<tr class="separator:aef11be708c332ff08fc61091b75db017"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a874c5b3465f0285412451875c2af6da7" id="r_a874c5b3465f0285412451875c2af6da7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a874c5b3465f0285412451875c2af6da7">skinPositionsTo</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose, std::vector&lt; float &gt; &amp;outPosXYZ) const</td></tr>
+<tr class="memdesc:a874c5b3465f0285412451875c2af6da7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: skin into a vector sized vertexCount*3. Returns false if pose is null or bone count mismatches.  <br /></td></tr>
+<tr class="separator:a874c5b3465f0285412451875c2af6da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ce22989d3b318043e7e01cf35e1443d" id="r_a5ce22989d3b318043e7e01cf35e1443d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a5ce22989d3b318043e7e01cf35e1443d">updateSkinnedPositions</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose)</td></tr>
+<tr class="memdesc:a5ce22989d3b318043e7e01cf35e1443d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skin into an internal cache readable via getSkinnedPosition*. Returns false if pose is null or there are no vertices.  <br /></td></tr>
+<tr class="separator:a5ce22989d3b318043e7e01cf35e1443d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a463cee32cbad3b9bd7c27e55c928e2d5" id="r_a463cee32cbad3b9bd7c27e55c928e2d5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a463cee32cbad3b9bd7c27e55c928e2d5">hasSkinnedPositions</a> () const</td></tr>
+<tr class="memdesc:a463cee32cbad3b9bd7c27e55c928e2d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after a successful <a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a5ce22989d3b318043e7e01cf35e1443d" title="Skin into an internal cache readable via getSkinnedPosition*. Returns false if pose is null or there ...">updateSkinnedPositions()</a>.  <br /></td></tr>
+<tr class="separator:a463cee32cbad3b9bd7c27e55c928e2d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3404169b72f511bb66dd9b5e771acaae" id="r_a3404169b72f511bb66dd9b5e771acaae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a3404169b72f511bb66dd9b5e771acaae">getSkinnedPositionX</a> (int vertexIndex) const</td></tr>
+<tr class="memdesc:a3404169b72f511bb66dd9b5e771acaae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached skinned position component (requires updateSkinnedPositions).  <br /></td></tr>
+<tr class="separator:a3404169b72f511bb66dd9b5e771acaae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeefd4c2ca6a1b9fd45a09d957811cf7" id="r_adeefd4c2ca6a1b9fd45a09d957811cf7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#adeefd4c2ca6a1b9fd45a09d957811cf7">getSkinnedPositionY</a> (int vertexIndex) const</td></tr>
+<tr class="separator:adeefd4c2ca6a1b9fd45a09d957811cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad63ecd113ee309791dd1e896e22a3034" id="r_ad63ecd113ee309791dd1e896e22a3034"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ad63ecd113ee309791dd1e896e22a3034">getSkinnedPositionZ</a> (int vertexIndex) const</td></tr>
+<tr class="separator:ad63ecd113ee309791dd1e896e22a3034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4280cb8e8f3b62e7e6007811ee433162" id="r_a4280cb8e8f3b62e7e6007811ee433162"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a4280cb8e8f3b62e7e6007811ee433162">getBindPositionX</a> (int vertexIndex) const</td></tr>
+<tr class="memdesc:a4280cb8e8f3b62e7e6007811ee433162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind-pose (unskinned) position component for vertex v (0..vertexCount-1).  <br /></td></tr>
+<tr class="separator:a4280cb8e8f3b62e7e6007811ee433162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0452077d3696bb75bed518177ce23d1" id="r_ae0452077d3696bb75bed518177ce23d1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ae0452077d3696bb75bed518177ce23d1">getBindPositionY</a> (int vertexIndex) const</td></tr>
+<tr class="separator:ae0452077d3696bb75bed518177ce23d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9ec15a33932dc99fb2eed67b428a5f9" id="r_ac9ec15a33932dc99fb2eed67b428a5f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#ac9ec15a33932dc99fb2eed67b428a5f9">getBindPositionZ</a> (int vertexIndex) const</td></tr>
+<tr class="separator:ac9ec15a33932dc99fb2eed67b428a5f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44b161f244a4e614ebd1a9677ac183d0" id="r_a44b161f244a4e614ebd1a9677ac183d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a44b161f244a4e614ebd1a9677ac183d0">getVertexBone</a> (int vertexIndex, int influenceIndex) const</td></tr>
+<tr class="memdesc:a44b161f244a4e614ebd1a9677ac183d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Influence slot i (0..3) for vertex: skeleton bone index or -1.  <br /></td></tr>
+<tr class="separator:a44b161f244a4e614ebd1a9677ac183d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e3e091248117402857a710905ad149" id="r_a91e3e091248117402857a710905ad149"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a91e3e091248117402857a710905ad149">getVertexWeight</a> (int vertexIndex, int influenceIndex) const</td></tr>
+<tr class="separator:a91e3e091248117402857a710905ad149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a82f00b7fc58816b727208cc129b8ac5d" id="r_a82f00b7fc58816b727208cc129b8ac5d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a82f00b7fc58816b727208cc129b8ac5d">fromModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, int meshIndex, const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:a82f00b7fc58816b727208cc129b8ac5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build skin binding for meshIndex on model, mapping bone names onto skeleton. Throws if the mesh has no bones or no bone names match the skeleton. Returned pointer is owned by the caller / script GC.  <br /></td></tr>
+<tr class="separator:a82f00b7fc58816b727208cc129b8ac5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:adfb4650bbd42e07b805e152791375db6" id="r_adfb4650bbd42e07b805e152791375db6"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html#adfb4650bbd42e07b805e152791375db6">kMaxInfluences</a> = 4</td></tr>
+<tr class="separator:adfb4650bbd42e07b805e152791375db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU linear-blend skinning binding for one mesh against an <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html" title="3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...">AnimSkeleton</a>. </p>
+<p>Built from Assimp skin data on ModelData (bone names, inverse-bind matrices, per-vertex weights). Call <a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aef11be708c332ff08fc61091b75db017" title="Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats). pose must already have c...">skinPositions()</a> after <a class="el" href="classeve_1_1animation_1_1AnimPose.html#ae67161166c1e3fd7311093102b2c9601" title="Compute world transforms from local pose + skeleton hierarchy. World values readable via getWorld* af...">AnimPose::computeWorld()</a>.</p>
+<p>Script type: <code><a class="el" href="classeve_1_1animation_1_1AnimSkin.html" title="CPU linear-blend skinning binding for one mesh against an AnimSkeleton.">AnimSkin</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a> 第 <a class="el" href="AnimSkin_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa42c88fa99b47b2248924d9fd1d0e922" name="aa42c88fa99b47b2248924d9fd1d0e922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa42c88fa99b47b2248924d9fd1d0e922">&#9670;&#160;</a></span>AnimSkin() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimSkin::AnimSkin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimSkin_8cpp_source.html#l00058">fromModel()</a>.</p>
+
+</div>
+</div>
+<a id="af720ee5d105559139df3d03b6a86d92d" name="af720ee5d105559139df3d03b6a86d92d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af720ee5d105559139df3d03b6a86d92d">&#9670;&#160;</a></span>~AnimSkin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimSkin::~AnimSkin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a52177a6ed7ecad4271613d8b6905035f" name="a52177a6ed7ecad4271613d8b6905035f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52177a6ed7ecad4271613d8b6905035f">&#9670;&#160;</a></span>AnimSkin() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimSkin::AnimSkin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a82f00b7fc58816b727208cc129b8ac5d" name="a82f00b7fc58816b727208cc129b8ac5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82f00b7fc58816b727208cc129b8ac5d">&#9670;&#160;</a></span>fromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> * eve::animation::AnimSkin::fromModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build skin binding for meshIndex on model, mapping bone names onto skeleton. Throws if the mesh has no bones or no bone names match the skeleton. Returned pointer is owned by the caller / script GC. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="classeve_1_1animation_1_1AnimSkin.html#aa42c88fa99b47b2248924d9fd1d0e922">AnimSkin()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00037">eve::animation::AnimSkeleton::findBone()</a>, <a class="el" href="AnimSkin_8h_source.html#l00027">kMaxInfluences</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00527">mesh</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00204">eve::animation::Animation::newSkinFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="a4280cb8e8f3b62e7e6007811ee433162" name="a4280cb8e8f3b62e7e6007811ee433162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4280cb8e8f3b62e7e6007811ee433162">&#9670;&#160;</a></span>getBindPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getBindPositionX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind-pose (unskinned) position component for vertex v (0..vertexCount-1). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0452077d3696bb75bed518177ce23d1" name="ae0452077d3696bb75bed518177ce23d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0452077d3696bb75bed518177ce23d1">&#9670;&#160;</a></span>getBindPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getBindPositionY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9ec15a33932dc99fb2eed67b428a5f9" name="ac9ec15a33932dc99fb2eed67b428a5f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9ec15a33932dc99fb2eed67b428a5f9">&#9670;&#160;</a></span>getBindPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getBindPositionZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c8e1116ecc48a5a2efd1306408b8731" name="a1c8e1116ecc48a5a2efd1306408b8731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c8e1116ecc48a5a2efd1306408b8731">&#9670;&#160;</a></span>getBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimSkin::getBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a> 第 <a class="el" href="AnimSkin_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81f6df7ecfb40934cbd3258d40f5f408" name="a81f6df7ecfb40934cbd3258d40f5f408"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f6df7ecfb40934cbd3258d40f5f408">&#9670;&#160;</a></span>getInfluenceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimSkin::getInfluenceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a> 第 <a class="el" href="AnimSkin_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkin_8h_source.html#l00027">kMaxInfluences</a>.</p>
+
+</div>
+</div>
+<a id="a1a90d2a49ba8b01cd074f02ad76d66f6" name="a1a90d2a49ba8b01cd074f02ad76d66f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a90d2a49ba8b01cd074f02ad76d66f6">&#9670;&#160;</a></span>getInverseBindElement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getInverseBindElement </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>skinBoneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elementIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inverse-bind matrix element (column-major, 0..15) for skin joint i. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>.</p>
+
+</div>
+</div>
+<a id="a029c2026c3257a46751061fcded3689b" name="a029c2026c3257a46751061fcded3689b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a029c2026c3257a46751061fcded3689b">&#9670;&#160;</a></span>getSkeletonBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimSkin::getSkeletonBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>skinBoneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Skeleton bone index used by skin joint i (-1 if unused). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1f412c47ec3986c6576732c18ad3695" name="aa1f412c47ec3986c6576732c18ad3695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1f412c47ec3986c6576732c18ad3695">&#9670;&#160;</a></span>getSkinBoneName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimSkin::getSkinBoneName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>skinBoneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3404169b72f511bb66dd9b5e771acaae" name="a3404169b72f511bb66dd9b5e771acaae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3404169b72f511bb66dd9b5e771acaae">&#9670;&#160;</a></span>getSkinnedPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getSkinnedPositionX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cached skinned position component (requires updateSkinnedPositions). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00351">eve::particles::sampleSkinSpawn()</a>.</p>
+
+</div>
+</div>
+<a id="adeefd4c2ca6a1b9fd45a09d957811cf7" name="adeefd4c2ca6a1b9fd45a09d957811cf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeefd4c2ca6a1b9fd45a09d957811cf7">&#9670;&#160;</a></span>getSkinnedPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getSkinnedPositionY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00351">eve::particles::sampleSkinSpawn()</a>.</p>
+
+</div>
+</div>
+<a id="ad63ecd113ee309791dd1e896e22a3034" name="ad63ecd113ee309791dd1e896e22a3034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad63ecd113ee309791dd1e896e22a3034">&#9670;&#160;</a></span>getSkinnedPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getSkinnedPositionZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00351">eve::particles::sampleSkinSpawn()</a>.</p>
+
+</div>
+</div>
+<a id="a44b161f244a4e614ebd1a9677ac183d0" name="a44b161f244a4e614ebd1a9677ac183d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44b161f244a4e614ebd1a9677ac183d0">&#9670;&#160;</a></span>getVertexBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimSkin::getVertexBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>influenceIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Influence slot i (0..3) for vertex: skeleton bone index or -1. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3653b7bedb2d0be80c88f34af678442" name="af3653b7bedb2d0be80c88f34af678442"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3653b7bedb2d0be80c88f34af678442">&#9670;&#160;</a></span>getVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimSkin::getVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a> 第 <a class="el" href="AnimSkin_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91e3e091248117402857a710905ad149" name="a91e3e091248117402857a710905ad149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91e3e091248117402857a710905ad149">&#9670;&#160;</a></span>getVertexWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimSkin::getVertexWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>influenceIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a463cee32cbad3b9bd7c27e55c928e2d5" name="a463cee32cbad3b9bd7c27e55c928e2d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a463cee32cbad3b9bd7c27e55c928e2d5">&#9670;&#160;</a></span>hasSkinnedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimSkin::hasSkinnedPositions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after a successful <a class="el" href="classeve_1_1animation_1_1AnimSkin.html#a5ce22989d3b318043e7e01cf35e1443d" title="Skin into an internal cache readable via getSkinnedPosition*. Returns false if pose is null or there ...">updateSkinnedPositions()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a> 第 <a class="el" href="AnimSkin_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4973ca74306643cd04ef6f4c26220aaf" name="a4973ca74306643cd04ef6f4c26220aaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4973ca74306643cd04ef6f4c26220aaf">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> &amp; eve::animation::AnimSkin::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkin.html">AnimSkin</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef11be708c332ff08fc61091b75db017" name="aef11be708c332ff08fc61091b75db017"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef11be708c332ff08fc61091b75db017">&#9670;&#160;</a></span>skinPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimSkin::skinPositions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>outPosXYZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats). pose must already have computeWorld(skeleton) applied and match the skeleton used at fromModel time. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00197">eve::animation::AnimPose::world()</a>.</p>
+
+</div>
+</div>
+<a id="a874c5b3465f0285412451875c2af6da7" name="a874c5b3465f0285412451875c2af6da7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a874c5b3465f0285412451875c2af6da7">&#9670;&#160;</a></span>skinPositionsTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimSkin::skinPositionsTo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outPosXYZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: skin into a vector sized vertexCount*3. Returns false if pose is null or bone count mismatches. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ce22989d3b318043e7e01cf35e1443d" name="a5ce22989d3b318043e7e01cf35e1443d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ce22989d3b318043e7e01cf35e1443d">&#9670;&#160;</a></span>updateSkinnedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimSkin::updateSkinnedPositions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Skin into an internal cache readable via getSkinnedPosition*. Returns false if pose is null or there are no vertices. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a> 第 <a class="el" href="AnimSkin_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="adfb4650bbd42e07b805e152791375db6" name="adfb4650bbd42e07b805e152791375db6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfb4650bbd42e07b805e152791375db6">&#9670;&#160;</a></span>kMaxInfluences</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::animation::AnimSkin::kMaxInfluences = 4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a> 第 <a class="el" href="AnimSkin_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimSkin_8cpp_source.html#l00058">fromModel()</a> , 以及 <a class="el" href="AnimSkin_8h_source.html#l00045">getInfluenceCount()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimSkin_8h_source.html">AnimSkin.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimSkin_8cpp_source.html">AnimSkin.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

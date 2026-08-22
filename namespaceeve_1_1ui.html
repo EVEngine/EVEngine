@@ -1,0 +1,2222 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html">Component</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">React-style <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> component: implement <a class="el" href="classeve_1_1ui_1_1Component.html#a25e50a42bbd488548d1a8d7474c64639">build()</a>, call setState / markDirty, then <a class="el" href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b" title="Rebuild tree onto host (reconcile by key when possible).">rebuild()</a>. Mounts onto a named <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a> via mountAs / attach.  <a href="classeve_1_1ui_1_1Component.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1DatabasePanel.html">DatabasePanel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reflection-driven database panel (DevTools, MVVM).  <a href="classeve_1_1ui_1_1DatabasePanel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorHost.html">EditorHost</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Headless MCP editor host (MVVM).  <a href="classeve_1_1ui_1_1EditorHost.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">DevTools editor shell (main menu bar + docked panel layout).  <a href="classeve_1_1ui_1_1EditorShell.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html">FlexItemSpec</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexRect.html">FlexRect</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1FlexResult.html">FlexResult</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dear <a class="el" href="namespaceImGui.html">ImGui</a> + SDL input + Vulkan present overlay.  <a href="classeve_1_1ui_1_1ImGuiBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Inspector.html">Inspector</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reflection-driven property inspector (DevTools phase C, MVVM).  <a href="classeve_1_1ui_1_1Inspector.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One registered live script instance.  <a href="structeve_1_1ui_1_1ObjectEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reflectable script-object registry backing the database panel.  <a href="classeve_1_1ui_1_1ObjectRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scene hierarchy panel (DevTools, MVVM).  <a href="classeve_1_1ui_1_1ScenePanel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unified <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> design tokens (colors, geometry, typography). Applied to <a class="el" href="namespaceImGui.html">ImGui</a> each frame via applyThemeToImGui; metrics are design-time units at uiScale=1 and are multiplied by the current <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> scale.  <a href="structeve_1_1ui_1_1Theme.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UI.html">UI</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> module (eve.UI).  <a href="classeve_1_1ui_1_1UI.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platform / renderer backend for declarative <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a>. Concrete implementations live under ui/&lt;backend&gt;/ (e.g. ui/imgui).  <a href="classeve_1_1ui_1_1UIBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UIChange.html">UIChange</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value/text/toggle change for script: "hostName/nodeId".  <a href="structeve_1_1ui_1_1UIChange.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UIClick.html">UIClick</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One script-facing click: "hostName/nodeId".  <a href="structeve_1_1ui_1_1UIClick.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UIEvent.html">UIEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECS mount point for one <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> panel/screen. Subclass to attach <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> to game entities, e.g. <code>class Hud : public <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a></code>. <a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> walks <code>ecs::View&lt;<a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">UIHost</a>, <a class="el" href="structeve_1_1ui_1_1UIHost_1_1Meta.html">Meta</a>, <a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">Tree</a>&gt;</code> (includes subclasses).  <a href="classeve_1_1ui_1_1UIHost.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html">UINode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retained <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> widget node (arena tree). Conceptual counterpart of <a class="el" href="structeve_1_1scene_1_1SceneNode.html" title="Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.">eve::scene::SceneNode</a>; built declaratively from <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html" title="Declarative widget description (build once / on dirty → flatten into UIHost::Tree).">WidgetDesc</a>.  <a href="structeve_1_1ui_1_1UINode.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UIStats.html">UIStats</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UISystem.html">UISystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1ViewportState.html">ViewportState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative widget description (build once / on dirty → flatten into <a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a>).  <a href="structeve_1_1ui_1_1WidgetDesc.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a6bdaf95b2b644f85ea130aecf0e53639" id="r_a6bdaf95b2b644f85ea130aecf0e53639"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639">NodeType</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639ac89686a387d2b12b3c729ce35a0bcb5b">Window</a> = 0
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675">Text</a> = 1
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a87b7760f14fbff78d8819291f36ab9a0">Button</a> = 2
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a3b34e01ee9b3791180f0574b54a8cec8">SameLine</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0">Group</a> = 4
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a04b2e4188d4ef8051e4699da8af01335">Separator</a> = 5
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a4f8222964f9a317cef99dddc23a121bd">Checkbox</a> = 6
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a2d9b9a764fb0be4be10e1b2fce63f561">Slider</a> = 7
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a46b5f8c58b679b4243cbdb5749642c86">Progress</a> = 8
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a00a4e38dc612f355302803836c12f9a2">InputText</a> = 9
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639afd974b19acafec5dc7e542582c3a87cc">CollapsingHeader</a> = 10
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639aa82fea383f121c803741f8de1c209734">Child</a> = 11
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a09d2bd168181f1e64c2b1651a80a8aa8">Flex</a> = 12
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a6ab9a295c00f945cf4881fd7667a0334">Spacer</a> = 13
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639abe53a0541a6d36f6ecb879fa2c584b08">Image</a> = 14
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a093cf7039fabbbd9a9506dc26395c739">ImageButton</a> = 15
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639ad8929068f239cc2984d214ec4717cc5f">Combo</a> = 16
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a10534f3c98e1427c2f4e824c2651eb4a">ScrollList</a> = 17
+, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a8d6f3510a5cca2c1281c9c6afe7e0da2">Viewport</a> = 18
+<br />
+ }</td></tr>
+<tr class="memdesc:a6bdaf95b2b644f85ea130aecf0e53639"><td class="mdescLeft">&#160;</td><td class="mdescRight">Widget node kinds understood by the UI renderer.  <a href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639">更多...</a><br /></td></tr>
+<tr class="separator:a6bdaf95b2b644f85ea130aecf0e53639"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d22c9fb078c675de1a03caafc9c6d05" id="r_a3d22c9fb078c675de1a03caafc9c6d05"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">FlexDirection</a> : uint8_t { <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3">Row</a> = 0
+, <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05a1976d7f704de389d9fe064e08ea35b2d">Column</a> = 1
+ }</td></tr>
+<tr class="memdesc:a3d22c9fb078c675de1a03caafc9c6d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main-axis direction for Flex containers.  <a href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">更多...</a><br /></td></tr>
+<tr class="separator:a3d22c9fb078c675de1a03caafc9c6d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acff0a0ccbeb97db5dfaf4a76b7243ce9" id="r_acff0a0ccbeb97db5dfaf4a76b7243ce9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">FlexAlign</a> : uint8_t { <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9aa6122a65eaa676f700ae68d393054a37">Start</a> = 0
+, <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9a4f1f6016fc9f3f2353c0cc7c67b292bd">Center</a> = 1
+, <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9a87557f11575c0ad78e4e28abedc13b6e">End</a> = 2
+, <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9afbb09a82eafab60150d0996e8fe46560">Stretch</a> = 3
+ }</td></tr>
+<tr class="memdesc:acff0a0ccbeb97db5dfaf4a76b7243ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-axis alignment of Flex children.  <a href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">更多...</a><br /></td></tr>
+<tr class="separator:acff0a0ccbeb97db5dfaf4a76b7243ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8233ad15a5a68dfc0ca17e60eeff0d75" id="r_a8233ad15a5a68dfc0ca17e60eeff0d75"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">FlexJustify</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75aa6122a65eaa676f700ae68d393054a37">Start</a> = 0
+, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75a4f1f6016fc9f3f2353c0cc7c67b292bd">Center</a> = 1
+, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75a87557f11575c0ad78e4e28abedc13b6e">End</a> = 2
+, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75afa2f3f8f296dcb6e5c287d69eae1c119">SpaceBetween</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75aa711fff5f720542ab104aab0805e2565">SpaceAround</a> = 4
+<br />
+ }</td></tr>
+<tr class="memdesc:a8233ad15a5a68dfc0ca17e60eeff0d75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main-axis distribution of free space in a Flex container.  <a href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">更多...</a><br /></td></tr>
+<tr class="separator:a8233ad15a5a68dfc0ca17e60eeff0d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a141d0fb4680cd34f020a1e8b21053fbf" id="r_a141d0fb4680cd34f020a1e8b21053fbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a141d0fb4680cd34f020a1e8b21053fbf">registerEditorHostCapabilities</a> ()</td></tr>
+<tr class="separator:a141d0fb4680cd34f020a1e8b21053fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a432e555ff50e2b03d6f3ae1034aa9862" id="r_a432e555ff50e2b03d6f3ae1034aa9862"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a432e555ff50e2b03d6f3ae1034aa9862">createImGuiBackend</a> ()</td></tr>
+<tr class="memdesc:a432e555ff50e2b03d6f3ae1034aa9862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default backend: Dear <a class="el" href="namespaceImGui.html">ImGui</a> + SDL + Vulkan (see ui/imgui/).  <br /></td></tr>
+<tr class="separator:a432e555ff50e2b03d6f3ae1034aa9862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea1706c110e7cd7a08878a41d574d8e" id="r_acea1706c110e7cd7a08878a41d574d8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1FlexResult.html">FlexResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#acea1706c110e7cd7a08878a41d574d8e">flexArrange</a> (bool <a class="el" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a>, float gap, float availMain, float availCross, <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">FlexAlign</a> containerAlign, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">FlexJustify</a> justify, const std::vector&lt; <a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html">FlexItemSpec</a> &gt; &amp;items)</td></tr>
+<tr class="separator:acea1706c110e7cd7a08878a41d574d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae247c6622356b8142bc656d7e411a9f6" id="r_ae247c6622356b8142bc656d7e411a9f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ae247c6622356b8142bc656d7e411a9f6">measureFlowChildren</a> (<a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;tree, int firstChild, float *outW, float *outH)</td></tr>
+<tr class="separator:ae247c6622356b8142bc656d7e411a9f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ba22c2b6ed01e55e34f7ba140b75b42" id="r_a8ba22c2b6ed01e55e34f7ba140b75b42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a8ba22c2b6ed01e55e34f7ba140b75b42">measureNode</a> (<a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;tree, int index)</td></tr>
+<tr class="separator:a8ba22c2b6ed01e55e34f7ba140b75b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a718c393a0584399febb4df7375658d9b" id="r_a718c393a0584399febb4df7375658d9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a718c393a0584399febb4df7375658d9b">measureTree</a> (<a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;tree)</td></tr>
+<tr class="separator:a718c393a0584399febb4df7375658d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae30249b1982f32d04e54be3757a49dd8" id="r_ae30249b1982f32d04e54be3757a49dd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ae30249b1982f32d04e54be3757a49dd8">globalTheme</a> ()</td></tr>
+<tr class="separator:ae30249b1982f32d04e54be3757a49dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceeb01e94733c6fb68077f043b463ab1" id="r_aceeb01e94733c6fb68077f043b463ab1"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aceeb01e94733c6fb68077f043b463ab1">globalThemeName</a> ()</td></tr>
+<tr class="memdesc:aceeb01e94733c6fb68077f043b463ab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current preset name: "dark", "light", or "custom".  <br /></td></tr>
+<tr class="separator:aceeb01e94733c6fb68077f043b463ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2363ac6b57739cc492b7e7e5d486899d" id="r_a2363ac6b57739cc492b7e7e5d486899d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">setGlobalTheme</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>)</td></tr>
+<tr class="separator:a2363ac6b57739cc492b7e7e5d486899d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bc3c352a57daf57d6ae441e3e82e881" id="r_a5bc3c352a57daf57d6ae441e3e82e881"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a5bc3c352a57daf57d6ae441e3e82e881">setGlobalTheme</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a5bc3c352a57daf57d6ae441e3e82e881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a449969e268e5ce472bf83071d4035a" id="r_a5a449969e268e5ce472bf83071d4035a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a5a449969e268e5ce472bf83071d4035a">setThemeByName</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a5a449969e268e5ce472bf83071d4035a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown.  <br /></td></tr>
+<tr class="separator:a5a449969e268e5ce472bf83071d4035a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b2f1bda1461646c5c751df5282084f2" id="r_a7b2f1bda1461646c5c751df5282084f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a7b2f1bda1461646c5c751df5282084f2">setThemeUiScale</a> (float <a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>)</td></tr>
+<tr class="memdesc:a7b2f1bda1461646c5c751df5282084f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical (point-space) <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> scale. Default 1.0.  <br /></td></tr>
+<tr class="separator:a7b2f1bda1461646c5c751df5282084f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907f63a149b51fa02ab7ef2e586e87f9" id="r_a907f63a149b51fa02ab7ef2e586e87f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a907f63a149b51fa02ab7ef2e586e87f9">themeUiScale</a> ()</td></tr>
+<tr class="separator:a907f63a149b51fa02ab7ef2e586e87f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3efcb33e45f899de64fbe3d83129b440" id="r_a3efcb33e45f899de64fbe3d83129b440"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a3efcb33e45f899de64fbe3d83129b440">setThemeDpiScale</a> (float dpiScale)</td></tr>
+<tr class="separator:a3efcb33e45f899de64fbe3d83129b440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cb33d7d08c4ad0280ecb6beb1a098d3" id="r_a2cb33d7d08c4ad0280ecb6beb1a098d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a2cb33d7d08c4ad0280ecb6beb1a098d3">themeDpiScale</a> ()</td></tr>
+<tr class="separator:a2cb33d7d08c4ad0280ecb6beb1a098d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c3b5002223f569bdb7d90971c5d2d89" id="r_a1c3b5002223f569bdb7d90971c5d2d89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a1c3b5002223f569bdb7d90971c5d2d89">applyThemeToImGui</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>)</td></tr>
+<tr class="memdesc:a1c3b5002223f569bdb7d90971c5d2d89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push tokens into <a class="el" href="namespaceImGui.html">ImGui</a> style. Metrics are multiplied by uiScale (default: <a class="el" href="namespaceeve_1_1ui.html#a907f63a149b51fa02ab7ef2e586e87f9">themeUiScale()</a>).  <br /></td></tr>
+<tr class="separator:a1c3b5002223f569bdb7d90971c5d2d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82e6c273a07a8fc8a5e8fcfd7781b170" id="r_a82e6c273a07a8fc8a5e8fcfd7781b170"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a82e6c273a07a8fc8a5e8fcfd7781b170">applyThemeToImGui</a> (const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, float uiScale)</td></tr>
+<tr class="separator:a82e6c273a07a8fc8a5e8fcfd7781b170"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4412cbbb6b8cd40bea8416223b47fb1b" id="r_a4412cbbb6b8cd40bea8416223b47fb1b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a4412cbbb6b8cd40bea8416223b47fb1b">Module_IMPL</a> (<a class="el" href="classeve_1_1ui_1_1UI.html">UI</a>, new <a class="el" href="classeve_1_1ui_1_1UI.html">UI</a>())</td></tr>
+<tr class="separator:a4412cbbb6b8cd40bea8416223b47fb1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9faeccac79ba15e77d60dae53b07951" id="r_aa9faeccac79ba15e77d60dae53b07951"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aa9faeccac79ba15e77d60dae53b07951">window</a> (std::string <a class="el" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;root&quot;)</td></tr>
+<tr class="memdesc:aa9faeccac79ba15e77d60dae53b07951"><td class="mdescLeft">&#160;</td><td class="mdescRight">Top-level window widget with a title bar.  <br /></td></tr>
+<tr class="separator:aa9faeccac79ba15e77d60dae53b07951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a331f182920f18ad1b8b4ea57e2bd33ea" id="r_a331f182920f18ad1b8b4ea57e2bd33ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a331f182920f18ad1b8b4ea57e2bd33ea">text</a> (std::string content, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:a331f182920f18ad1b8b4ea57e2bd33ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static text label.  <br /></td></tr>
+<tr class="separator:a331f182920f18ad1b8b4ea57e2bd33ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb8cf878f3fdfc5792a9dc55fd706f74" id="r_acb8cf878f3fdfc5792a9dc55fd706f74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#acb8cf878f3fdfc5792a9dc55fd706f74">button</a> (std::string label, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, std::function&lt; void()&gt; onClick={})</td></tr>
+<tr class="memdesc:acb8cf878f3fdfc5792a9dc55fd706f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clickable button; fires onClick.  <br /></td></tr>
+<tr class="separator:acb8cf878f3fdfc5792a9dc55fd706f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4e2f5b5e3276bf63cb9a82ffcc1671f" id="r_af4e2f5b5e3276bf63cb9a82ffcc1671f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#af4e2f5b5e3276bf63cb9a82ffcc1671f">group</a> (std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:af4e2f5b5e3276bf63cb9a82ffcc1671f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plain group container.  <br /></td></tr>
+<tr class="separator:af4e2f5b5e3276bf63cb9a82ffcc1671f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6f6a3165657037f1225e72171ab4560" id="r_ac6f6a3165657037f1225e72171ab4560"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ac6f6a3165657037f1225e72171ab4560">sameLine</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:ac6f6a3165657037f1225e72171ab4560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds the next widget on the same line as the previous one.  <br /></td></tr>
+<tr class="separator:ac6f6a3165657037f1225e72171ab4560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a439102360a0ff437b30848bf3c837d3b" id="r_a439102360a0ff437b30848bf3c837d3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a439102360a0ff437b30848bf3c837d3b">separator</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:a439102360a0ff437b30848bf3c837d3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizontal separator line.  <br /></td></tr>
+<tr class="separator:a439102360a0ff437b30848bf3c837d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5bdbc3b1663666091c56556ea44aad" id="r_a3f5bdbc3b1663666091c56556ea44aad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a3f5bdbc3b1663666091c56556ea44aad">checkbox</a> (std::string label, bool checked=false, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, std::function&lt; void(bool)&gt; onToggle={})</td></tr>
+<tr class="memdesc:a3f5bdbc3b1663666091c56556ea44aad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checkbox with a label; fires onToggle.  <br /></td></tr>
+<tr class="separator:a3f5bdbc3b1663666091c56556ea44aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20130c072ac45ec97d3f2e27ba8a6682" id="r_a20130c072ac45ec97d3f2e27ba8a6682"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a20130c072ac45ec97d3f2e27ba8a6682">slider</a> (std::string label, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>, float minV, float maxV, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, std::function&lt; void(float)&gt; onValue={})</td></tr>
+<tr class="memdesc:a20130c072ac45ec97d3f2e27ba8a6682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizontal slider; fires onValue.  <br /></td></tr>
+<tr class="separator:a20130c072ac45ec97d3f2e27ba8a6682"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39dc61769f939f55a0a9001032e28cde" id="r_a39dc61769f939f55a0a9001032e28cde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a39dc61769f939f55a0a9001032e28cde">progress</a> (float fraction, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, std::string overlay=&quot;&quot;)</td></tr>
+<tr class="memdesc:a39dc61769f939f55a0a9001032e28cde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Progress bar; fraction is clamped to [0,1].  <br /></td></tr>
+<tr class="separator:a39dc61769f939f55a0a9001032e28cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6268fea5032938f81c8f3b16c475a573" id="r_a6268fea5032938f81c8f3b16c475a573"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a6268fea5032938f81c8f3b16c475a573">combo</a> (std::string label, std::vector&lt; std::string &gt; options, int selected, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::function&lt; void(float)&gt; onValue)</td></tr>
+<tr class="separator:a6268fea5032938f81c8f3b16c475a573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0ce113a4cf7d7c820c418731b2439b" id="r_aca0ce113a4cf7d7c820c418731b2439b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aca0ce113a4cf7d7c820c418731b2439b">image</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, std::function&lt; void()&gt; onClick)</td></tr>
+<tr class="separator:aca0ce113a4cf7d7c820c418731b2439b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84cfe05cbf68deb11ed18a7d37b4c72c" id="r_a84cfe05cbf68deb11ed18a7d37b4c72c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a84cfe05cbf68deb11ed18a7d37b4c72c">imageButton</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, std::function&lt; void()&gt; onClick)</td></tr>
+<tr class="separator:a84cfe05cbf68deb11ed18a7d37b4c72c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd1247906295244641f951cf4dc1dc7" id="r_aecd1247906295244641f951cf4dc1dc7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aecd1247906295244641f951cf4dc1dc7">viewport</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:aecd1247906295244641f951cf4dc1dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a723ee3734916914ba10c14f5d09f9ca0" id="r_a723ee3734916914ba10c14f5d09f9ca0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a723ee3734916914ba10c14f5d09f9ca0">inputText</a> (std::string label, std::string <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, std::function&lt; void(const std::string &amp;)&gt; onChange={})</td></tr>
+<tr class="memdesc:a723ee3734916914ba10c14f5d09f9ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Editable text field; fires onTextChange.  <br /></td></tr>
+<tr class="separator:a723ee3734916914ba10c14f5d09f9ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ae8d2c881c2491bef29fa219fa582a" id="r_ac2ae8d2c881c2491bef29fa219fa582a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ac2ae8d2c881c2491bef29fa219fa582a">collapsingHeader</a> (std::string label, std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, bool defaultOpen=true)</td></tr>
+<tr class="memdesc:ac2ae8d2c881c2491bef29fa219fa582a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collapsible header containing child widgets.  <br /></td></tr>
+<tr class="separator:ac2ae8d2c881c2491bef29fa219fa582a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee0c0f0b8ccd23a1ceddc04b9e40376f" id="r_aee0c0f0b8ccd23a1ceddc04b9e40376f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aee0c0f0b8ccd23a1ceddc04b9e40376f">child</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>=120.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aee0c0f0b8ccd23a1ceddc04b9e40376f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scrollable child region with an explicit size.  <br /></td></tr>
+<tr class="separator:aee0c0f0b8ccd23a1ceddc04b9e40376f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a357e5bbd29129615a0d9fe1e2e7747b9" id="r_a357e5bbd29129615a0d9fe1e2e7747b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a357e5bbd29129615a0d9fe1e2e7747b9">scrollList</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, float itemHeight)</td></tr>
+<tr class="separator:a357e5bbd29129615a0d9fe1e2e7747b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab20074ea6288ec097864c48310ba2033" id="r_ab20074ea6288ec097864c48310ba2033"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ab20074ea6288ec097864c48310ba2033">virtualList</a> (std::string listId, const std::vector&lt; std::string &gt; &amp;items, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, float itemHeight)</td></tr>
+<tr class="separator:ab20074ea6288ec097864c48310ba2033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8273b46fe30dbdb81dd7d8a9bfb28857" id="r_a8273b46fe30dbdb81dd7d8a9bfb28857"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a8273b46fe30dbdb81dd7d8a9bfb28857">flex</a> (<a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">FlexDirection</a> direction, std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:a8273b46fe30dbdb81dd7d8a9bfb28857"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elastic layout container (row/column). Prefer <code>row</code> / <code>column</code> shorthands.  <br /></td></tr>
+<tr class="separator:a8273b46fe30dbdb81dd7d8a9bfb28857"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbec5b50c99f45d58f40e7fb45c9a1a0" id="r_afbec5b50c99f45d58f40e7fb45c9a1a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a> (std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:afbec5b50c99f45d58f40e7fb45c9a1a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizontal elastic layout row.  <br /></td></tr>
+<tr class="separator:afbec5b50c99f45d58f40e7fb45c9a1a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf6d9482241b99eaa4e0382a0d28bbaa" id="r_acf6d9482241b99eaa4e0382a0d28bbaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#acf6d9482241b99eaa4e0382a0d28bbaa">column</a> (std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>={}, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:acf6d9482241b99eaa4e0382a0d28bbaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertical elastic layout column.  <br /></td></tr>
+<tr class="separator:acf6d9482241b99eaa4e0382a0d28bbaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04845ee1cc52455de50cf1e1c51f14e4" id="r_a04845ee1cc52455de50cf1e1c51f14e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a04845ee1cc52455de50cf1e1c51f14e4">spacer</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>=&quot;&quot;, float grow=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a04845ee1cc52455de50cf1e1c51f14e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent.  <br /></td></tr>
+<tr class="separator:a04845ee1cc52455de50cf1e1c51f14e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a639e62e2c5ae3b2f92b6e3463f2c883a" id="r_a639e62e2c5ae3b2f92b6e3463f2c883a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a639e62e2c5ae3b2f92b6e3463f2c883a">when</a> (bool cond, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> <a class="el" href="namespaceeve_1_1ui.html#aee0c0f0b8ccd23a1ceddc04b9e40376f">child</a>)</td></tr>
+<tr class="memdesc:a639e62e2c5ae3b2f92b6e3463f2c883a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conditional: include <code>child</code> only when <code>cond</code> is true (empty group otherwise).  <br /></td></tr>
+<tr class="separator:a639e62e2c5ae3b2f92b6e3463f2c883a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d326d40ae4dfb95f97b47802d1d9d8" id="r_a48d326d40ae4dfb95f97b47802d1d9d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a48d326d40ae4dfb95f97b47802d1d9d8">whenElse</a> (bool cond, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> ifTrue, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> ifFalse)</td></tr>
+<tr class="separator:a48d326d40ae4dfb95f97b47802d1d9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee96455380eddf3dff61b5639454b21f" id="r_aee96455380eddf3dff61b5639454b21f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aee96455380eddf3dff61b5639454b21f">list</a> (std::string listId, const std::vector&lt; std::string &gt; &amp;items, const std::function&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>(const std::string &amp;, int)&gt; &amp;itemFn)</td></tr>
+<tr class="memdesc:aee96455380eddf3dff61b5639454b21f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand a string list into a Group of item widgets. <code>itemFn(label, index)</code> builds each row; keys default to id.  <br /></td></tr>
+<tr class="separator:aee96455380eddf3dff61b5639454b21f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a2f8dc08f2e0f7df4e1ae7fab93da5" id="r_a76a2f8dc08f2e0f7df4e1ae7fab93da5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a76a2f8dc08f2e0f7df4e1ae7fab93da5">listButtons</a> (std::string listId, const std::vector&lt; std::string &gt; &amp;items)</td></tr>
+<tr class="memdesc:a76a2f8dc08f2e0f7df4e1ae7fab93da5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default list: one Button per item, id = listId + "/" + index.  <br /></td></tr>
+<tr class="separator:a76a2f8dc08f2e0f7df4e1ae7fab93da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3146f719a711896add59d3399f86912a" id="r_a3146f719a711896add59d3399f86912a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a3146f719a711896add59d3399f86912a">applyTree</a> (<a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *host, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> root)</td></tr>
+<tr class="memdesc:a3146f719a711896add59d3399f86912a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full replace flatten.  <br /></td></tr>
+<tr class="separator:a3146f719a711896add59d3399f86912a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4d03c28e2fb2fea4181788a273ee734" id="r_ac4d03c28e2fb2fea4181788a273ee734"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ac4d03c28e2fb2fea4181788a273ee734">applyTreeReconcile</a> (<a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *host, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> root)</td></tr>
+<tr class="memdesc:ac4d03c28e2fb2fea4181788a273ee734"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patch by key/id when structure (type + child keys) matches; otherwise full replace. Returns true if a structural rebuild occurred.  <br /></td></tr>
+<tr class="separator:ac4d03c28e2fb2fea4181788a273ee734"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="acff0a0ccbeb97db5dfaf4a76b7243ce9" name="acff0a0ccbeb97db5dfaf4a76b7243ce9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acff0a0ccbeb97db5dfaf4a76b7243ce9">&#9670;&#160;</a></span>FlexAlign</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">eve::ui::FlexAlign</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cross-axis alignment of Flex children. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acff0a0ccbeb97db5dfaf4a76b7243ce9aa6122a65eaa676f700ae68d393054a37" name="acff0a0ccbeb97db5dfaf4a76b7243ce9aa6122a65eaa676f700ae68d393054a37"></a>Start&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acff0a0ccbeb97db5dfaf4a76b7243ce9a4f1f6016fc9f3f2353c0cc7c67b292bd" name="acff0a0ccbeb97db5dfaf4a76b7243ce9a4f1f6016fc9f3f2353c0cc7c67b292bd"></a>Center&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acff0a0ccbeb97db5dfaf4a76b7243ce9a87557f11575c0ad78e4e28abedc13b6e" name="acff0a0ccbeb97db5dfaf4a76b7243ce9a87557f11575c0ad78e4e28abedc13b6e"></a>End&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acff0a0ccbeb97db5dfaf4a76b7243ce9afbb09a82eafab60150d0996e8fe46560" name="acff0a0ccbeb97db5dfaf4a76b7243ce9afbb09a82eafab60150d0996e8fe46560"></a>Stretch&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d22c9fb078c675de1a03caafc9c6d05" name="a3d22c9fb078c675de1a03caafc9c6d05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d22c9fb078c675de1a03caafc9c6d05">&#9670;&#160;</a></span>FlexDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">eve::ui::FlexDirection</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Main-axis direction for Flex containers. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3" name="a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3"></a>Row&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3d22c9fb078c675de1a03caafc9c6d05a1976d7f704de389d9fe064e08ea35b2d" name="a3d22c9fb078c675de1a03caafc9c6d05a1976d7f704de389d9fe064e08ea35b2d"></a>Column&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8233ad15a5a68dfc0ca17e60eeff0d75" name="a8233ad15a5a68dfc0ca17e60eeff0d75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8233ad15a5a68dfc0ca17e60eeff0d75">&#9670;&#160;</a></span>FlexJustify</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">eve::ui::FlexJustify</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Main-axis distribution of free space in a Flex container. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8233ad15a5a68dfc0ca17e60eeff0d75aa6122a65eaa676f700ae68d393054a37" name="a8233ad15a5a68dfc0ca17e60eeff0d75aa6122a65eaa676f700ae68d393054a37"></a>Start&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8233ad15a5a68dfc0ca17e60eeff0d75a4f1f6016fc9f3f2353c0cc7c67b292bd" name="a8233ad15a5a68dfc0ca17e60eeff0d75a4f1f6016fc9f3f2353c0cc7c67b292bd"></a>Center&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8233ad15a5a68dfc0ca17e60eeff0d75a87557f11575c0ad78e4e28abedc13b6e" name="a8233ad15a5a68dfc0ca17e60eeff0d75a87557f11575c0ad78e4e28abedc13b6e"></a>End&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8233ad15a5a68dfc0ca17e60eeff0d75afa2f3f8f296dcb6e5c287d69eae1c119" name="a8233ad15a5a68dfc0ca17e60eeff0d75afa2f3f8f296dcb6e5c287d69eae1c119"></a>SpaceBetween&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8233ad15a5a68dfc0ca17e60eeff0d75aa711fff5f720542ab104aab0805e2565" name="a8233ad15a5a68dfc0ca17e60eeff0d75aa711fff5f720542ab104aab0805e2565"></a>SpaceAround&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6bdaf95b2b644f85ea130aecf0e53639" name="a6bdaf95b2b644f85ea130aecf0e53639"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bdaf95b2b644f85ea130aecf0e53639">&#9670;&#160;</a></span>NodeType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639">eve::ui::NodeType</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Widget node kinds understood by the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> renderer. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639ac89686a387d2b12b3c729ce35a0bcb5b" name="a6bdaf95b2b644f85ea130aecf0e53639ac89686a387d2b12b3c729ce35a0bcb5b"></a>Window&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675" name="a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675"></a>Text&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a87b7760f14fbff78d8819291f36ab9a0" name="a6bdaf95b2b644f85ea130aecf0e53639a87b7760f14fbff78d8819291f36ab9a0"></a>Button&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a3b34e01ee9b3791180f0574b54a8cec8" name="a6bdaf95b2b644f85ea130aecf0e53639a3b34e01ee9b3791180f0574b54a8cec8"></a>SameLine&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0" name="a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0"></a>Group&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a04b2e4188d4ef8051e4699da8af01335" name="a6bdaf95b2b644f85ea130aecf0e53639a04b2e4188d4ef8051e4699da8af01335"></a>Separator&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a4f8222964f9a317cef99dddc23a121bd" name="a6bdaf95b2b644f85ea130aecf0e53639a4f8222964f9a317cef99dddc23a121bd"></a>Checkbox&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a2d9b9a764fb0be4be10e1b2fce63f561" name="a6bdaf95b2b644f85ea130aecf0e53639a2d9b9a764fb0be4be10e1b2fce63f561"></a>Slider&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a46b5f8c58b679b4243cbdb5749642c86" name="a6bdaf95b2b644f85ea130aecf0e53639a46b5f8c58b679b4243cbdb5749642c86"></a>Progress&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a00a4e38dc612f355302803836c12f9a2" name="a6bdaf95b2b644f85ea130aecf0e53639a00a4e38dc612f355302803836c12f9a2"></a>InputText&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639afd974b19acafec5dc7e542582c3a87cc" name="a6bdaf95b2b644f85ea130aecf0e53639afd974b19acafec5dc7e542582c3a87cc"></a>CollapsingHeader&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639aa82fea383f121c803741f8de1c209734" name="a6bdaf95b2b644f85ea130aecf0e53639aa82fea383f121c803741f8de1c209734"></a>Child&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a09d2bd168181f1e64c2b1651a80a8aa8" name="a6bdaf95b2b644f85ea130aecf0e53639a09d2bd168181f1e64c2b1651a80a8aa8"></a>Flex&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a6ab9a295c00f945cf4881fd7667a0334" name="a6bdaf95b2b644f85ea130aecf0e53639a6ab9a295c00f945cf4881fd7667a0334"></a>Spacer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639abe53a0541a6d36f6ecb879fa2c584b08" name="a6bdaf95b2b644f85ea130aecf0e53639abe53a0541a6d36f6ecb879fa2c584b08"></a>Image&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a093cf7039fabbbd9a9506dc26395c739" name="a6bdaf95b2b644f85ea130aecf0e53639a093cf7039fabbbd9a9506dc26395c739"></a>ImageButton&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639ad8929068f239cc2984d214ec4717cc5f" name="a6bdaf95b2b644f85ea130aecf0e53639ad8929068f239cc2984d214ec4717cc5f"></a>Combo&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a10534f3c98e1427c2f4e824c2651eb4a" name="a6bdaf95b2b644f85ea130aecf0e53639a10534f3c98e1427c2f4e824c2651eb4a"></a>ScrollList&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6bdaf95b2b644f85ea130aecf0e53639a8d6f3510a5cca2c1281c9c6afe7e0da2" name="a6bdaf95b2b644f85ea130aecf0e53639a8d6f3510a5cca2c1281c9c6afe7e0da2"></a>Viewport&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a1c3b5002223f569bdb7d90971c5d2d89" name="a1c3b5002223f569bdb7d90971c5d2d89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3b5002223f569bdb7d90971c5d2d89">&#9670;&#160;</a></span>applyThemeToImGui() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::applyThemeToImGui </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push tokens into <a class="el" href="namespaceImGui.html">ImGui</a> style. Metrics are multiplied by uiScale (default: <a class="el" href="namespaceeve_1_1ui.html#a907f63a149b51fa02ab7ef2e586e87f9">themeUiScale()</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Theme_8cpp_source.html#l00135">applyThemeToImGui()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00135">applyThemeToImGui()</a>, <a class="el" href="ImGuiBackend_8cpp_source.html#l00107">eve::ui::ImGuiBackend::init()</a> , 以及 <a class="el" href="UISystem_8cpp_source.html#l00585">eve::ui::UISystem::render()</a>.</p>
+
+</div>
+</div>
+<a id="a82e6c273a07a8fc8a5e8fcfd7781b170" name="a82e6c273a07a8fc8a5e8fcfd7781b170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e6c273a07a8fc8a5e8fcfd7781b170">&#9670;&#160;</a></span>applyThemeToImGui() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::applyThemeToImGui </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>uiScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a>.</p>
+
+</div>
+</div>
+<a id="a3146f719a711896add59d3399f86912a" name="a3146f719a711896add59d3399f86912a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3146f719a711896add59d3399f86912a">&#9670;&#160;</a></span>applyTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::applyTree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td>
+          <td class="paramname"><em>root</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Full replace flatten. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00477">477</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Widget_8cpp_source.html#l00490">applyTreeReconcile()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00026">eve::ui::UIHost::setTree()</a>.</p>
+
+</div>
+</div>
+<a id="ac4d03c28e2fb2fea4181788a273ee734" name="ac4d03c28e2fb2fea4181788a273ee734"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4d03c28e2fb2fea4181788a273ee734">&#9670;&#160;</a></span>applyTreeReconcile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::applyTreeReconcile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td>
+          <td class="paramname"><em>root</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Patch by key/id when structure (type + child keys) matches; otherwise full replace. Returns true if a structural rebuild occurred. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00490">490</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00477">applyTree()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UIHost_8cpp_source.html#l00028">eve::ui::UIHost::setTreeReconcile()</a>.</p>
+
+</div>
+</div>
+<a id="acb8cf878f3fdfc5792a9dc55fd706f74" name="acb8cf878f3fdfc5792a9dc55fd706f74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb8cf878f3fdfc5792a9dc55fd706f74">&#9670;&#160;</a></span>button()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::button </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;&#160;</td>
+          <td class="paramname"><em>onClick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clickable button; fires onClick. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a87b7760f14fbff78d8819291f36ab9a0">Button</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00427">eve::ui::UI::addButton()</a>, <a class="el" href="UI_8cpp_source.html#l00558">eve::ui::UI::addListItem()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00076">eve::ui::EditorShell::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>, <a class="el" href="Widget_8cpp_source.html#l00470">listButtons()</a>, <a class="el" href="UI_8cpp_source.html#l01100">eve::ui::UI::mountSimple()</a>, <a class="el" href="UIHost_8cpp_source.html#l00030">eve::ui::UIHost::setSimplePanel()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00410">virtualList()</a>.</p>
+
+</div>
+</div>
+<a id="a3f5bdbc3b1663666091c56556ea44aad" name="a3f5bdbc3b1663666091c56556ea44aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f5bdbc3b1663666091c56556ea44aad">&#9670;&#160;</a></span>checkbox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::checkbox </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>checked</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(bool)&gt;&#160;</td>
+          <td class="paramname"><em>onToggle</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checkbox with a label; fires onToggle. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a4f8222964f9a317cef99dddc23a121bd">Checkbox</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00437">eve::ui::UI::addCheckbox()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>.</p>
+
+</div>
+</div>
+<a id="aee0c0f0b8ccd23a1ceddc04b9e40376f" name="aee0c0f0b8ccd23a1ceddc04b9e40376f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee0c0f0b8ccd23a1ceddc04b9e40376f">&#9670;&#160;</a></span>child()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::child </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scrollable child region with an explicit size. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639aa82fea383f121c803741f8de1c209734">Child</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00352">eve::ui::UI::beginChild()</a>, <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00448">when()</a>.</p>
+
+</div>
+</div>
+<a id="ac2ae8d2c881c2491bef29fa219fa582a" name="ac2ae8d2c881c2491bef29fa219fa582a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ae8d2c881c2491bef29fa219fa582a">&#9670;&#160;</a></span>collapsingHeader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::collapsingHeader </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>defaultOpen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collapsible header containing child widgets. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639afd974b19acafec5dc7e542582c3a87cc">CollapsingHeader</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00348">eve::ui::UI::beginCollapsing()</a> , 以及 <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>.</p>
+
+</div>
+</div>
+<a id="acf6d9482241b99eaa4e0382a0d28bbaa" name="acf6d9482241b99eaa4e0382a0d28bbaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf6d9482241b99eaa4e0382a0d28bbaa">&#9670;&#160;</a></span>column()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::column </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vertical elastic layout column. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05a1976d7f704de389d9fe064e08ea35b2d">Column</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00421">flex()</a>.</p>
+
+</div>
+</div>
+<a id="a6268fea5032938f81c8f3b16c475a573" name="a6268fea5032938f81c8f3b16c475a573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6268fea5032938f81c8f3b16c475a573">&#9670;&#160;</a></span>combo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::combo </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>options</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>selected</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(float)&gt;&#160;</td>
+          <td class="paramname"><em>onValue</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Dropdown; options joined by '<br  />
+', selected index in <code>selected</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639ad8929068f239cc2984d214ec4717cc5f">Combo</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00462">eve::ui::UI::addCombo()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a> , 以及 <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>.</p>
+
+</div>
+</div>
+<a id="a432e555ff50e2b03d6f3ae1034aa9862" name="a432e555ff50e2b03d6f3ae1034aa9862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a432e555ff50e2b03d6f3ae1034aa9862">&#9670;&#160;</a></span>createImGuiBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &gt; eve::ui::createImGuiBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Default backend: Dear <a class="el" href="namespaceImGui.html">ImGui</a> + SDL + Vulkan (see ui/imgui/). </p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00156">eve::ui::UI::initBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a8273b46fe30dbdb81dd7d8a9bfb28857" name="a8273b46fe30dbdb81dd7d8a9bfb28857"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8273b46fe30dbdb81dd7d8a9bfb28857">&#9670;&#160;</a></span>flex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::flex </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">FlexDirection</a>&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Elastic layout container (row/column). Prefer <code>row</code> / <code>column</code> shorthands. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a09d2bd168181f1e64c2b1651a80a8aa8">Flex</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00395">eve::ui::UI::beginFlex()</a>, <a class="el" href="Widget_8cpp_source.html#l00435">column()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00431">row()</a>.</p>
+
+</div>
+</div>
+<a id="acea1706c110e7cd7a08878a41d574d8e" name="acea1706c110e7cd7a08878a41d574d8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea1706c110e7cd7a08878a41d574d8e">&#9670;&#160;</a></span>flexArrange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1FlexResult.html">FlexResult</a> eve::ui::flexArrange </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>availMain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>availCross</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">FlexAlign</a>&#160;</td>
+          <td class="paramname"><em>containerAlign</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">FlexJustify</a>&#160;</td>
+          <td class="paramname"><em>justify</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html">FlexItemSpec</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>items</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Distribute flex items along main/cross axis. Pure — no <a class="el" href="namespaceImGui.html">ImGui</a> state touched, so it can be unit-tested headlessly. </p>
+
+<p class="definition">在文件 <a class="el" href="Layout_8cpp_source.html">Layout.cpp</a> 第 <a class="el" href="Layout_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Layout_8h_source.html#l00033">eve::ui::FlexItemSpec::anchorCross</a>, <a class="el" href="Layout_8h_source.html#l00032">eve::ui::FlexItemSpec::anchorMain</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75a4f1f6016fc9f3f2353c0cc7c67b292bd">Center</a>, <a class="el" href="Layout_8h_source.html#l00059">eve::ui::FlexResult::contentH</a>, <a class="el" href="Layout_8h_source.html#l00058">eve::ui::FlexResult::contentW</a>, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75a87557f11575c0ad78e4e28abedc13b6e">End</a>, <a class="el" href="Layout_8h_source.html#l00042">eve::ui::FlexItemSpec::explicitMain</a>, <a class="el" href="Layout_8h_source.html#l00053">eve::ui::FlexRect::h</a>, <a class="el" href="Layout_8h_source.html#l00057">eve::ui::FlexResult::items</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Widget_8cpp_source.html#l00431">row()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75aa711fff5f720542ab104aab0805e2565">SpaceAround</a>, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75afa2f3f8f296dcb6e5c287d69eae1c119">SpaceBetween</a>, <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75aa6122a65eaa676f700ae68d393054a37">Start</a>, <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9afbb09a82eafab60150d0996e8fe46560">Stretch</a>, <a class="el" href="Layout_8h_source.html#l00052">eve::ui::FlexRect::w</a>, <a class="el" href="Layout_8h_source.html#l00050">eve::ui::FlexRect::x</a> , 以及 <a class="el" href="Layout_8h_source.html#l00051">eve::ui::FlexRect::y</a>.</p>
+
+</div>
+</div>
+<a id="ae30249b1982f32d04e54be3757a49dd8" name="ae30249b1982f32d04e54be3757a49dd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae30249b1982f32d04e54be3757a49dd8">&#9670;&#160;</a></span>globalTheme()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp; eve::ui::globalTheme </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImGuiBackend_8cpp_source.html#l00107">eve::ui::ImGuiBackend::init()</a>, <a class="el" href="UISystem_8cpp_source.html#l00585">eve::ui::UISystem::render()</a>, <a class="el" href="UI_8cpp_source.html#l00782">eve::ui::UI::setNavGamepad()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l00778">eve::ui::UI::setNavKeyboard()</a>.</p>
+
+</div>
+</div>
+<a id="aceeb01e94733c6fb68077f043b463ab1" name="aceeb01e94733c6fb68077f043b463ab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceeb01e94733c6fb68077f043b463ab1">&#9670;&#160;</a></span>globalThemeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::globalThemeName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current preset name: "dark", "light", or "custom". </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00776">eve::ui::UI::getTheme()</a>.</p>
+
+</div>
+</div>
+<a id="af4e2f5b5e3276bf63cb9a82ffcc1671f" name="af4e2f5b5e3276bf63cb9a82ffcc1671f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4e2f5b5e3276bf63cb9a82ffcc1671f">&#9670;&#160;</a></span>group()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::group </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plain group container. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0">Group</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+</div>
+</div>
+<a id="aca0ce113a4cf7d7c820c418731b2439b" name="aca0ce113a4cf7d7c820c418731b2439b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca0ce113a4cf7d7c820c418731b2439b">&#9670;&#160;</a></span>image()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::image </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;&#160;</td>
+          <td class="paramname"><em>onClick</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Colored / textured image. Size defaults to texture size via layout. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="TileConfig_8cpp_source.html#l00111">image</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639abe53a0541a6d36f6ecb879fa2c584b08">Image</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="a84cfe05cbf68deb11ed18a7d37b4c72c" name="a84cfe05cbf68deb11ed18a7d37b4c72c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84cfe05cbf68deb11ed18a7d37b4c72c">&#9670;&#160;</a></span>imageButton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::imageButton </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;&#160;</td>
+          <td class="paramname"><em>onClick</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Clickable image (renders via <a class="el" href="namespaceImGui.html">ImGui</a> ImageButton). </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a093cf7039fabbbd9a9506dc26395c739">ImageButton</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00454">eve::ui::UI::addImageButton()</a>.</p>
+
+</div>
+</div>
+<a id="a723ee3734916914ba10c14f5d09f9ca0" name="a723ee3734916914ba10c14f5d09f9ca0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a723ee3734916914ba10c14f5d09f9ca0">&#9670;&#160;</a></span>inputText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::inputText </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(const std::string &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>onChange</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Editable text field; fires onTextChange. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a00a4e38dc612f355302803836c12f9a2">InputText</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00476">eve::ui::UI::addInputText()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>.</p>
+
+</div>
+</div>
+<a id="aee96455380eddf3dff61b5639454b21f" name="aee96455380eddf3dff61b5639454b21f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee96455380eddf3dff61b5639454b21f">&#9670;&#160;</a></span>list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::list </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>listId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>items</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>(const std::string &amp;, int)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>itemFn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expand a string list into a Group of item widgets. <code>itemFn(label, index)</code> builds each row; keys default to id. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="KernelGen_8cpp_source.html#l00122">group</a>, <a class="el" href="Widget_8h_source.html#l00015">eve::ui::WidgetDesc::id</a>, <a class="el" href="Widget_8h_source.html#l00017">eve::ui::WidgetDesc::key</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00431">row()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Widget_8cpp_source.html#l00470">listButtons()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00410">virtualList()</a>.</p>
+
+</div>
+</div>
+<a id="a76a2f8dc08f2e0f7df4e1ae7fab93da5" name="a76a2f8dc08f2e0f7df4e1ae7fab93da5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a2f8dc08f2e0f7df4e1ae7fab93da5">&#9670;&#160;</a></span>listButtons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::listButtons </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>listId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>items</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Default list: one Button per item, id = listId + "/" + index. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00244">button()</a>, <a class="el" href="Widget_8cpp_source.html#l00457">list()</a> , 以及 <a class="el" href="Widget_8h_source.html#l00080">eve::ui::WidgetDesc::withKey()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00595">eve::ui::UI::setListItems()</a>.</p>
+
+</div>
+</div>
+<a id="ae247c6622356b8142bc656d7e411a9f6" name="ae247c6622356b8142bc656d7e411a9f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae247c6622356b8142bc656d7e411a9f6">&#9670;&#160;</a></span>measureFlowChildren()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::measureFlowChildren </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;&#160;</td>
+          <td class="paramname"><em>tree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstChild</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>outW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>outH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Flow measure helpers for non-flex containers (Window/Group/Child/Header). </p>
+
+<p class="definition">在文件 <a class="el" href="Layout_8cpp_source.html">Layout.cpp</a> 第 <a class="el" href="Layout_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="UIHost_8h_source.html#l00160">eve::ui::UIHost::Tree::nodes</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a3b34e01ee9b3791180f0574b54a8cec8">SameLine</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a>.</p>
+
+</div>
+</div>
+<a id="a8ba22c2b6ed01e55e34f7ba140b75b42" name="a8ba22c2b6ed01e55e34f7ba140b75b42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ba22c2b6ed01e55e34f7ba140b75b42">&#9670;&#160;</a></span>measureNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::measureNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;&#160;</td>
+          <td class="paramname"><em>tree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Measure one node (recursively) and fill <a class="el" href="structeve_1_1ui_1_1UINode.html#ad582ce54d4bec5eb41d7bf76150b2f2d">UINode::measuredW</a>/H. </p>
+
+<p class="definition">在文件 <a class="el" href="Layout_8cpp_source.html">Layout.cpp</a> 第 <a class="el" href="Layout_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8h_source.html#l00047">eve::ui::WidgetDesc::absolute</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a87b7760f14fbff78d8819291f36ab9a0">Button</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a4f8222964f9a317cef99dddc23a121bd">Checkbox</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639aa82fea383f121c803741f8de1c209734">Child</a>, <a class="el" href="Widget_8cpp_source.html#l00387">child()</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639afd974b19acafec5dc7e542582c3a87cc">CollapsingHeader</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639ad8929068f239cc2984d214ec4717cc5f">Combo</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a09d2bd168181f1e64c2b1651a80a8aa8">Flex</a>, <a class="el" href="Widget_8h_source.html#l00065">eve::ui::WidgetDesc::flexDirection</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0">Group</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639abe53a0541a6d36f6ecb879fa2c584b08">Image</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a093cf7039fabbbd9a9506dc26395c739">ImageButton</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a00a4e38dc612f355302803836c12f9a2">InputText</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Widget_8h_source.html#l00032">eve::ui::WidgetDesc::marginB</a>, <a class="el" href="Widget_8h_source.html#l00029">eve::ui::WidgetDesc::marginL</a>, <a class="el" href="Widget_8h_source.html#l00031">eve::ui::WidgetDesc::marginR</a>, <a class="el" href="Widget_8h_source.html#l00030">eve::ui::WidgetDesc::marginT</a>, <a class="el" href="Layout_8cpp_source.html#l00170">measureFlowChildren()</a>, <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="UIHost_8h_source.html#l00160">eve::ui::UIHost::Tree::nodes</a>, <a class="el" href="Widget_8h_source.html#l00033">eve::ui::WidgetDesc::paddingL</a>, <a class="el" href="Widget_8h_source.html#l00034">eve::ui::WidgetDesc::paddingT</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a46b5f8c58b679b4243cbdb5749642c86">Progress</a>, <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3">Row</a>, <a class="el" href="Widget_8cpp_source.html#l00431">row()</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a3b34e01ee9b3791180f0574b54a8cec8">SameLine</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a10534f3c98e1427c2f4e824c2651eb4a">ScrollList</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a04b2e4188d4ef8051e4699da8af01335">Separator</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a2d9b9a764fb0be4be10e1b2fce63f561">Slider</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a6ab9a295c00f945cf4881fd7667a0334">Spacer</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675">Text</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a8d6f3510a5cca2c1281c9c6afe7e0da2">Viewport</a>, <a class="el" href="Widget_8h_source.html#l00020">eve::ui::WidgetDesc::visible</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a> , 以及 <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639ac89686a387d2b12b3c729ce35a0bcb5b">Window</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Layout_8cpp_source.html#l00170">measureFlowChildren()</a>, <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a> , 以及 <a class="el" href="Layout_8cpp_source.html#l00348">measureTree()</a>.</p>
+
+</div>
+</div>
+<a id="a718c393a0584399febb4df7375658d9b" name="a718c393a0584399febb4df7375658d9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a718c393a0584399febb4df7375658d9b">&#9670;&#160;</a></span>measureTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::measureTree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;&#160;</td>
+          <td class="paramname"><em>tree</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Measure the whole tree from its root. </p>
+
+<p class="definition">在文件 <a class="el" href="Layout_8cpp_source.html">Layout.cpp</a> 第 <a class="el" href="Layout_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a> , 以及 <a class="el" href="UIHost_8h_source.html#l00161">eve::ui::UIHost::Tree::root</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UISystem_8cpp_source.html#l00585">eve::ui::UISystem::render()</a>.</p>
+
+</div>
+</div>
+<a id="a4412cbbb6b8cd40bea8416223b47fb1b" name="a4412cbbb6b8cd40bea8416223b47fb1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4412cbbb6b8cd40bea8416223b47fb1b">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UI.html">UI</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>UI</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a39dc61769f939f55a0a9001032e28cde" name="a39dc61769f939f55a0a9001032e28cde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39dc61769f939f55a0a9001032e28cde">&#9670;&#160;</a></span>progress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::progress </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fraction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>overlay</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Progress bar; fraction is clamped to [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a46b5f8c58b679b4243cbdb5749642c86">Progress</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00446">eve::ui::UI::addProgress()</a>.</p>
+
+</div>
+</div>
+<a id="a141d0fb4680cd34f020a1e8b21053fbf" name="a141d0fb4680cd34f020a1e8b21053fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a141d0fb4680cd34f020a1e8b21053fbf">&#9670;&#160;</a></span>registerEditorHostCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::registerEditorHostCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostCapabilities_8cpp_source.html">EditorHostCapabilities.cpp</a> 第 <a class="el" href="EditorHostCapabilities_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00013">impl</a> , 以及 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00151">eve::ui::UI::UI()</a>.</p>
+
+</div>
+</div>
+<a id="afbec5b50c99f45d58f40e7fb45c9a1a0" name="afbec5b50c99f45d58f40e7fb45c9a1a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbec5b50c99f45d58f40e7fb45c9a1a0">&#9670;&#160;</a></span>row()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::row </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Horizontal elastic layout row. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="Widget_8cpp_source.html#l00421">flex()</a> , 以及 <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3">Row</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00076">eve::ui::EditorShell::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>, <a class="el" href="Layout_8cpp_source.html#l00024">flexArrange()</a>, <a class="el" href="Widget_8cpp_source.html#l00457">list()</a> , 以及 <a class="el" href="Layout_8cpp_source.html#l00208">measureNode()</a>.</p>
+
+</div>
+</div>
+<a id="ac6f6a3165657037f1225e72171ab4560" name="ac6f6a3165657037f1225e72171ab4560"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6f6a3165657037f1225e72171ab4560">&#9670;&#160;</a></span>sameLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::sameLine </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Holds the next widget on the same line as the previous one. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a3b34e01ee9b3791180f0574b54a8cec8">SameLine</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00431">eve::ui::UI::addSameLine()</a>.</p>
+
+</div>
+</div>
+<a id="a357e5bbd29129615a0d9fe1e2e7747b9" name="a357e5bbd29129615a0d9fe1e2e7747b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a357e5bbd29129615a0d9fe1e2e7747b9">&#9670;&#160;</a></span>scrollList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::scrollList </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>itemHeight</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Virtualized scroll list: only visible rows are drawn each frame. Children are the full item set (rows laid out top-to-bottom at <code>itemHeight</code> px). Set a <code>height</code> for the viewport; 0 = fill available space. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a10534f3c98e1427c2f4e824c2651eb4a">ScrollList</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00356">eve::ui::UI::beginScrollList()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00410">virtualList()</a>.</p>
+
+</div>
+</div>
+<a id="a439102360a0ff437b30848bf3c837d3b" name="a439102360a0ff437b30848bf3c837d3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a439102360a0ff437b30848bf3c837d3b">&#9670;&#160;</a></span>separator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::separator </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Horizontal separator line. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a04b2e4188d4ef8051e4699da8af01335">Separator</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00433">eve::ui::UI::addSeparator()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>.</p>
+
+</div>
+</div>
+<a id="a2363ac6b57739cc492b7e7e5d486899d" name="a2363ac6b57739cc492b7e7e5d486899d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2363ac6b57739cc492b7e7e5d486899d">&#9670;&#160;</a></span>setGlobalTheme() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::setGlobalTheme </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Theme_8cpp_source.html#l00103">setGlobalTheme()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00103">setGlobalTheme()</a> , 以及 <a class="el" href="Theme_8cpp_source.html#l00110">setThemeByName()</a>.</p>
+
+</div>
+</div>
+<a id="a5bc3c352a57daf57d6ae441e3e82e881" name="a5bc3c352a57daf57d6ae441e3e82e881"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bc3c352a57daf57d6ae441e3e82e881">&#9670;&#160;</a></span>setGlobalTheme() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::setGlobalTheme </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;&#160;</td>
+          <td class="paramname"><em>theme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a>.</p>
+
+</div>
+</div>
+<a id="a5a449969e268e5ce472bf83071d4035a" name="a5a449969e268e5ce472bf83071d4035a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a449969e268e5ce472bf83071d4035a">&#9670;&#160;</a></span>setThemeByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::setThemeByName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Theme_8cpp_source.html#l00034">eve::ui::Theme::dark()</a>, <a class="el" href="Theme_8cpp_source.html#l00040">eve::ui::Theme::light()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="Theme_8cpp_source.html#l00103">setGlobalTheme()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00774">eve::ui::UI::setTheme()</a>, <a class="el" href="UI_8cpp_source.html#l00770">eve::ui::UI::setThemeDark()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l00772">eve::ui::UI::setThemeLight()</a>.</p>
+
+</div>
+</div>
+<a id="a3efcb33e45f899de64fbe3d83129b440" name="a3efcb33e45f899de64fbe3d83129b440"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3efcb33e45f899de64fbe3d83129b440">&#9670;&#160;</a></span>setThemeDpiScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::setThemeDpiScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dpiScale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Display/framebuffer DPI ratio (e.g. 2.0 on Retina). The font atlas is rasterized at this resolution so glyphs stay crisp, but <a class="el" href="namespaceImGui.html">ImGui</a> already scales the whole frame by io.DisplayFramebufferScale (the same ratio), so applyThemeToImGui cancels it via FontGlobalScale to avoid double scaling. </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImGuiBackend_8cpp_source.html#l00107">eve::ui::ImGuiBackend::init()</a>.</p>
+
+</div>
+</div>
+<a id="a7b2f1bda1461646c5c751df5282084f2" name="a7b2f1bda1461646c5c751df5282084f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b2f1bda1461646c5c751df5282084f2">&#9670;&#160;</a></span>setThemeUiScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::setThemeUiScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Logical (point-space) <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> scale. Default 1.0. </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImGuiBackend_8cpp_source.html#l00107">eve::ui::ImGuiBackend::init()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l00786">eve::ui::UI::setScale()</a>.</p>
+
+</div>
+</div>
+<a id="a20130c072ac45ec97d3f2e27ba8a6682" name="a20130c072ac45ec97d3f2e27ba8a6682"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20130c072ac45ec97d3f2e27ba8a6682">&#9670;&#160;</a></span>slider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::slider </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(float)&gt;&#160;</td>
+          <td class="paramname"><em>onValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Horizontal slider; fires onValue. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a2d9b9a764fb0be4be10e1b2fce63f561">Slider</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00441">eve::ui::UI::addSlider()</a>.</p>
+
+</div>
+</div>
+<a id="a04845ee1cc52455de50cf1e1c51f14e4" name="a04845ee1cc52455de50cf1e1c51f14e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04845ee1cc52455de50cf1e1c51f14e4">&#9670;&#160;</a></span>spacer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::spacer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>grow</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00439">439</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a6ab9a295c00f945cf4881fd7667a0334">Spacer</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00480">eve::ui::UI::addSpacer()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00076">eve::ui::EditorShell::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>.</p>
+
+</div>
+</div>
+<a id="a331f182920f18ad1b8b4ea57e2bd33ea" name="a331f182920f18ad1b8b4ea57e2bd33ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a331f182920f18ad1b8b4ea57e2bd33ea">&#9670;&#160;</a></span>text()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::text </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Static text label. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675">Text</a> , 以及 <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00417">eve::ui::UI::addText()</a>, <a class="el" href="UI_8cpp_source.html#l00421">eve::ui::UI::addTextWrapped()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00076">eve::ui::EditorShell::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>, <a class="el" href="UI_8cpp_source.html#l01100">eve::ui::UI::mountSimple()</a>, <a class="el" href="UIHost_8cpp_source.html#l00030">eve::ui::UIHost::setSimplePanel()</a>, <a class="el" href="UI_8cpp_source.html#l00611">eve::ui::UI::setText()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00059">eve::ui::UIHost::setTextById()</a>.</p>
+
+</div>
+</div>
+<a id="a2cb33d7d08c4ad0280ecb6beb1a098d3" name="a2cb33d7d08c4ad0280ecb6beb1a098d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cb33d7d08c4ad0280ecb6beb1a098d3">&#9670;&#160;</a></span>themeDpiScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::themeDpiScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a907f63a149b51fa02ab7ef2e586e87f9" name="a907f63a149b51fa02ab7ef2e586e87f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a907f63a149b51fa02ab7ef2e586e87f9">&#9670;&#160;</a></span>themeUiScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::themeUiScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aecd1247906295244641f951cf4dc1dc7" name="aecd1247906295244641f951cf4dc1dc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd1247906295244641f951cf4dc1dc7">&#9670;&#160;</a></span>viewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::viewport </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Embedded render target widget: shows an offscreen Canvas, routes input. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00353">353</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a8d6f3510a5cca2c1281c9c6afe7e0da2">Viewport</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00458">eve::ui::UI::addViewport()</a>.</p>
+
+</div>
+</div>
+<a id="ab20074ea6288ec097864c48310ba2033" name="ab20074ea6288ec097864c48310ba2033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab20074ea6288ec097864c48310ba2033">&#9670;&#160;</a></span>virtualList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::virtualList </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>listId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>items</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em> = <code>200.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>itemHeight</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>One-line convenience: virtualized list of buttons from string items. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00244">button()</a>, <a class="el" href="Widget_8h_source.html#l00074">eve::ui::WidgetDesc::children</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Widget_8cpp_source.html#l00457">list()</a>, <a class="el" href="Widget_8cpp_source.html#l00398">scrollList()</a> , 以及 <a class="el" href="Widget_8h_source.html#l00080">eve::ui::WidgetDesc::withKey()</a>.</p>
+
+</div>
+</div>
+<a id="a639e62e2c5ae3b2f92b6e3463f2c883a" name="a639e62e2c5ae3b2f92b6e3463f2c883a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a639e62e2c5ae3b2f92b6e3463f2c883a">&#9670;&#160;</a></span>when()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::when </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td>
+          <td class="paramname"><em>child</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Conditional: include <code>child</code> only when <code>cond</code> is true (empty group otherwise). </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00387">child()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00122">group</a>.</p>
+
+</div>
+</div>
+<a id="a48d326d40ae4dfb95f97b47802d1d9d8" name="a48d326d40ae4dfb95f97b47802d1d9d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d326d40ae4dfb95f97b47802d1d9d8">&#9670;&#160;</a></span>whenElse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::whenElse </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td>
+          <td class="paramname"><em>ifTrue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td>
+          <td class="paramname"><em>ifFalse</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9faeccac79ba15e77d60dae53b07951" name="aa9faeccac79ba15e77d60dae53b07951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9faeccac79ba15e77d60dae53b07951">&#9670;&#160;</a></span>window()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::window </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Top-level window widget with a title bar. </p>
+
+<p class="definition">在文件 <a class="el" href="Widget_8cpp_source.html">Widget.cpp</a> 第 <a class="el" href="Widget_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="EditorHost_8cpp_source.html#l00451">title</a>, <a class="el" href="Widget_8h_source.html#l00014">eve::ui::WidgetDesc::type</a>, <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639ac89686a387d2b12b3c729ce35a0bcb5b">Window</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00225">window()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00339">eve::ui::UI::beginWindow()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00076">eve::ui::EditorShell::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>, <a class="el" href="ImGuiBackend_8cpp_source.html#l00107">eve::ui::ImGuiBackend::init()</a>, <a class="el" href="UI_8cpp_source.html#l01100">eve::ui::UI::mountSimple()</a>, <a class="el" href="UI_8cpp_source.html#l00595">eve::ui::UI::setListItems()</a>, <a class="el" href="UIHost_8cpp_source.html#l00030">eve::ui::UIHost::setSimplePanel()</a>, <a class="el" href="Widget_8cpp_source.html#l00225">window()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00050">eve::ui::DatabasePanel::~DatabasePanel()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00012">eve::ui::EditorShell::~EditorShell()</a>, <a class="el" href="Inspector_8cpp_source.html#l00077">eve::ui::Inspector::~Inspector()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00017">eve::ui::ScenePanel::~ScenePanel()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

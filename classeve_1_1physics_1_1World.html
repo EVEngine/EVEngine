@@ -1,0 +1,1929 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::World类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1World.html">World</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1World-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::World类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity, raycasts, AABB queries and contact/impact events.  
+ <a href="classeve_1_1physics_1_1World.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="World_8h_source.html">World.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1World_1_1ContactEvent.html">ContactEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1World_1_1ImpactEvent.html">ImpactEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af82ff88bedb163332bec66efcf10f5b6" id="r_af82ff88bedb163332bec66efcf10f5b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#af82ff88bedb163332bec66efcf10f5b6">World</a> (float gravityX, float gravityY, bool sleep, float meter)</td></tr>
+<tr class="memdesc:af82ff88bedb163332bec66efcf10f5b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a physics world.  <br /></td></tr>
+<tr class="separator:af82ff88bedb163332bec66efcf10f5b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa138fed3d49ce2ea9f542b82eb7eed82" id="r_aa138fed3d49ce2ea9f542b82eb7eed82"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#aa138fed3d49ce2ea9f542b82eb7eed82">~World</a> ()</td></tr>
+<tr class="separator:aa138fed3d49ce2ea9f542b82eb7eed82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40eb722667c7f4dfa665357f38f8eb29" id="r_a40eb722667c7f4dfa665357f38f8eb29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a40eb722667c7f4dfa665357f38f8eb29">World</a> (const <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;)=delete</td></tr>
+<tr class="separator:a40eb722667c7f4dfa665357f38f8eb29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcc65ebd4f0e3ef07f1657e15a9eefc5" id="r_abcc65ebd4f0e3ef07f1657e15a9eefc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#abcc65ebd4f0e3ef07f1657e15a9eefc5">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;)=delete</td></tr>
+<tr class="separator:abcc65ebd4f0e3ef07f1657e15a9eefc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ccfad673f1a74a9f37ea694d8405aa2" id="r_a1ccfad673f1a74a9f37ea694d8405aa2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a1ccfad673f1a74a9f37ea694d8405aa2">update</a> (float dt)</td></tr>
+<tr class="memdesc:a1ccfad673f1a74a9f37ea694d8405aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steps the simulation by dt seconds (5 velocity / 2 position iterations).  <br /></td></tr>
+<tr class="separator:a1ccfad673f1a74a9f37ea694d8405aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0c527cd199adaa93945a2c1d177b37c" id="r_ae0c527cd199adaa93945a2c1d177b37c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ae0c527cd199adaa93945a2c1d177b37c">updateFull</a> (float dt, int velocityIterations, int positionIterations)</td></tr>
+<tr class="memdesc:ae0c527cd199adaa93945a2c1d177b37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steps with explicit iteration counts.  <br /></td></tr>
+<tr class="separator:ae0c527cd199adaa93945a2c1d177b37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c9689fff33b5287054b651dafca833" id="r_a66c9689fff33b5287054b651dafca833"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a66c9689fff33b5287054b651dafca833">setGravity</a> (float gx, float gy)</td></tr>
+<tr class="memdesc:a66c9689fff33b5287054b651dafca833"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the world gravity vector in pixels/s^2.  <br /></td></tr>
+<tr class="separator:a66c9689fff33b5287054b651dafca833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a757aa891f0559aba5c26f7d2eb86fc4c" id="r_a757aa891f0559aba5c26f7d2eb86fc4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a757aa891f0559aba5c26f7d2eb86fc4c">getGravityX</a> () const</td></tr>
+<tr class="separator:a757aa891f0559aba5c26f7d2eb86fc4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad41e983e2a900352523a17f891d579d4" id="r_ad41e983e2a900352523a17f891d579d4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ad41e983e2a900352523a17f891d579d4">getGravityY</a> () const</td></tr>
+<tr class="separator:ad41e983e2a900352523a17f891d579d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00090a591f61f969148bca8d3f2c32b7" id="r_a00090a591f61f969148bca8d3f2c32b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a00090a591f61f969148bca8d3f2c32b7">setMeter</a> (float pixelsPerMeter)</td></tr>
+<tr class="memdesc:a00090a591f61f969148bca8d3f2c32b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the pixels-per-meter conversion.  <br /></td></tr>
+<tr class="separator:a00090a591f61f969148bca8d3f2c32b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af03b5217ad527a2754e33579b534a071" id="r_af03b5217ad527a2754e33579b534a071"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#af03b5217ad527a2754e33579b534a071">getMeter</a> () const</td></tr>
+<tr class="separator:af03b5217ad527a2754e33579b534a071"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3ae89e72901d58785bd68512afeff8b" id="r_aa3ae89e72901d58785bd68512afeff8b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#aa3ae89e72901d58785bd68512afeff8b">newBody</a> (const std::string &amp;bodyType, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="memdesc:aa3ae89e72901d58785bd68512afeff8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">bodyType: "static" | "kinematic" | "dynamic". x/y in pixels.  <br /></td></tr>
+<tr class="separator:aa3ae89e72901d58785bd68512afeff8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24a74985363dd02899ce8edf7c7f8716" id="r_a24a74985363dd02899ce8edf7c7f8716"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a24a74985363dd02899ce8edf7c7f8716">destroyBody</a> (<a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *<a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>)</td></tr>
+<tr class="memdesc:a24a74985363dd02899ce8edf7c7f8716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a body (null is ignored).  <br /></td></tr>
+<tr class="separator:a24a74985363dd02899ce8edf7c7f8716"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c8b33b3439c1ce480770a1d38ce4788" id="r_a5c8b33b3439c1ce480770a1d38ce4788"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a5c8b33b3439c1ce480770a1d38ce4788">destroy</a> ()</td></tr>
+<tr class="memdesc:a5c8b33b3439c1ce480770a1d38ce4788"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the underlying Box2D world and resets event buffers.  <br /></td></tr>
+<tr class="separator:a5c8b33b3439c1ce480770a1d38ce4788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f02958e366bafc63316e3365adb2da3" id="r_a4f02958e366bafc63316e3365adb2da3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a4f02958e366bafc63316e3365adb2da3">drawDebug</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a4f02958e366bafc63316e3365adb2da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional: draw fixture AABBs via Graphics::drawSolidRect.  <br /></td></tr>
+<tr class="separator:a4f02958e366bafc63316e3365adb2da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0150b0cafa2585778083a27c8f3d58d" id="r_ad0150b0cafa2585778083a27c8f3d58d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ad0150b0cafa2585778083a27c8f3d58d">rayCast</a> (float x1, float y1, float x2, float y2)</td></tr>
+<tr class="memdesc:ad0150b0cafa2585778083a27c8f3d58d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closest raycast in pixel space from (x1,y1) to (x2,y2). Returns hit body id, or -1. Read hit details via getRayHit*.  <br /></td></tr>
+<tr class="separator:ad0150b0cafa2585778083a27c8f3d58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88438d8b3deaf2599b7cf048053605de" id="r_a88438d8b3deaf2599b7cf048053605de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a88438d8b3deaf2599b7cf048053605de">hasRayHit</a> () const</td></tr>
+<tr class="separator:a88438d8b3deaf2599b7cf048053605de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03111efebc2ef681fb6920119503d501" id="r_a03111efebc2ef681fb6920119503d501"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a03111efebc2ef681fb6920119503d501">getRayHitBodyId</a> () const</td></tr>
+<tr class="separator:a03111efebc2ef681fb6920119503d501"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a024bc9412737b10c79478dfb738251a1" id="r_a024bc9412737b10c79478dfb738251a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a024bc9412737b10c79478dfb738251a1">getRayHitX</a> () const</td></tr>
+<tr class="separator:a024bc9412737b10c79478dfb738251a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d1f49a7d4ac97a4b12e4f56fa1739e4" id="r_a3d1f49a7d4ac97a4b12e4f56fa1739e4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a3d1f49a7d4ac97a4b12e4f56fa1739e4">getRayHitY</a> () const</td></tr>
+<tr class="separator:a3d1f49a7d4ac97a4b12e4f56fa1739e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4c6dad038a6787053f74eec668e2af" id="r_abe4c6dad038a6787053f74eec668e2af"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#abe4c6dad038a6787053f74eec668e2af">getRayHitNormalX</a> () const</td></tr>
+<tr class="separator:abe4c6dad038a6787053f74eec668e2af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fb7d36e938d2642c02c2621ab575a5d" id="r_a7fb7d36e938d2642c02c2621ab575a5d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a7fb7d36e938d2642c02c2621ab575a5d">getRayHitNormalY</a> () const</td></tr>
+<tr class="separator:a7fb7d36e938d2642c02c2621ab575a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a9ffc620de8a7499c60d276e78558d1" id="r_a7a9ffc620de8a7499c60d276e78558d1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a7a9ffc620de8a7499c60d276e78558d1">getRayHitFraction</a> () const</td></tr>
+<tr class="memdesc:a7a9ffc620de8a7499c60d276e78558d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction along the segment [0,1] of the closest hit.  <br /></td></tr>
+<tr class="separator:a7a9ffc620de8a7499c60d276e78558d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e334d8fb2efd3f0862fb69f25e76f17" id="r_a1e334d8fb2efd3f0862fb69f25e76f17"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a1e334d8fb2efd3f0862fb69f25e76f17">queryAABB</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:a1e334d8fb2efd3f0862fb69f25e76f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query fixtures overlapping an axis-aligned box in pixel space (x,y,w,h). Returns match count; read ids with getQueryBodyId(i).  <br /></td></tr>
+<tr class="separator:a1e334d8fb2efd3f0862fb69f25e76f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a513d26e68df89fe4310b72a12fd814c0" id="r_a513d26e68df89fe4310b72a12fd814c0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a513d26e68df89fe4310b72a12fd814c0">getQueryCount</a> () const</td></tr>
+<tr class="separator:a513d26e68df89fe4310b72a12fd814c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a506b405b45602b9e820dd86d2498e68f" id="r_a506b405b45602b9e820dd86d2498e68f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a506b405b45602b9e820dd86d2498e68f">getQueryBodyId</a> (int index) const</td></tr>
+<tr class="separator:a506b405b45602b9e820dd86d2498e68f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab938c662057511d8117ef2e2ffcd2012" id="r_ab938c662057511d8117ef2e2ffcd2012"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ab938c662057511d8117ef2e2ffcd2012">getBeginContactCount</a> () const</td></tr>
+<tr class="separator:ab938c662057511d8117ef2e2ffcd2012"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aada75c262871b4b2541367b79d38977c" id="r_aada75c262871b4b2541367b79d38977c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#aada75c262871b4b2541367b79d38977c">getBeginContactBodyAId</a> (int index) const</td></tr>
+<tr class="separator:aada75c262871b4b2541367b79d38977c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55ef5ca7558197584a84ce78fecd0773" id="r_a55ef5ca7558197584a84ce78fecd0773"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a55ef5ca7558197584a84ce78fecd0773">getBeginContactBodyBId</a> (int index) const</td></tr>
+<tr class="separator:a55ef5ca7558197584a84ce78fecd0773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34e503139ed204594fa3776bd0b0e881" id="r_a34e503139ed204594fa3776bd0b0e881"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a34e503139ed204594fa3776bd0b0e881">getBeginContactFixtureATag</a> (int index) const</td></tr>
+<tr class="separator:a34e503139ed204594fa3776bd0b0e881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9092de8829917e2e58a89642b1e5b89" id="r_ad9092de8829917e2e58a89642b1e5b89"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ad9092de8829917e2e58a89642b1e5b89">getBeginContactFixtureBTag</a> (int index) const</td></tr>
+<tr class="separator:ad9092de8829917e2e58a89642b1e5b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac297666a85ebdbea5b4acbc10d85d12f" id="r_ac297666a85ebdbea5b4acbc10d85d12f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ac297666a85ebdbea5b4acbc10d85d12f">getEndContactCount</a> () const</td></tr>
+<tr class="separator:ac297666a85ebdbea5b4acbc10d85d12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cf88cc90bbc2eaa38500fe9a6dcf0c8" id="r_a6cf88cc90bbc2eaa38500fe9a6dcf0c8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a6cf88cc90bbc2eaa38500fe9a6dcf0c8">getEndContactBodyAId</a> (int index) const</td></tr>
+<tr class="separator:a6cf88cc90bbc2eaa38500fe9a6dcf0c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54ca0dc329575525ab4dff798e7f7fc5" id="r_a54ca0dc329575525ab4dff798e7f7fc5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a54ca0dc329575525ab4dff798e7f7fc5">getEndContactBodyBId</a> (int index) const</td></tr>
+<tr class="separator:a54ca0dc329575525ab4dff798e7f7fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a435b6ae2eac6bd323af906f104ed85e5" id="r_a435b6ae2eac6bd323af906f104ed85e5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a435b6ae2eac6bd323af906f104ed85e5">getEndContactFixtureATag</a> (int index) const</td></tr>
+<tr class="separator:a435b6ae2eac6bd323af906f104ed85e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acda3969c10611e2e5439a15fcebcafb5" id="r_acda3969c10611e2e5439a15fcebcafb5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#acda3969c10611e2e5439a15fcebcafb5">getEndContactFixtureBTag</a> (int index) const</td></tr>
+<tr class="separator:acda3969c10611e2e5439a15fcebcafb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec718e73e3ec17643a6ed75b0e32f7b" id="r_a6ec718e73e3ec17643a6ed75b0e32f7b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a6ec718e73e3ec17643a6ed75b0e32f7b">getImpactCount</a> () const</td></tr>
+<tr class="separator:a6ec718e73e3ec17643a6ed75b0e32f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab43f4d0d047ea36ed0784af64928f373" id="r_ab43f4d0d047ea36ed0784af64928f373"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ab43f4d0d047ea36ed0784af64928f373">getImpactBodyAId</a> (int index) const</td></tr>
+<tr class="separator:ab43f4d0d047ea36ed0784af64928f373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4058d1a191e9f3a892c999260dfe5e" id="r_abe4058d1a191e9f3a892c999260dfe5e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#abe4058d1a191e9f3a892c999260dfe5e">getImpactBodyBId</a> (int index) const</td></tr>
+<tr class="separator:abe4058d1a191e9f3a892c999260dfe5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeea37c87007543a03906492fd834dc1a" id="r_aeea37c87007543a03906492fd834dc1a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#aeea37c87007543a03906492fd834dc1a">getImpactFixtureATag</a> (int index) const</td></tr>
+<tr class="separator:aeea37c87007543a03906492fd834dc1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef28d8765465fb4a724c0b8bac78edbc" id="r_aef28d8765465fb4a724c0b8bac78edbc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#aef28d8765465fb4a724c0b8bac78edbc">getImpactFixtureBTag</a> (int index) const</td></tr>
+<tr class="separator:aef28d8765465fb4a724c0b8bac78edbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48c6f74dccaafcf3c0966cb5317ca94f" id="r_a48c6f74dccaafcf3c0966cb5317ca94f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a48c6f74dccaafcf3c0966cb5317ca94f">getImpactPointX</a> (int index) const</td></tr>
+<tr class="separator:a48c6f74dccaafcf3c0966cb5317ca94f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc8c4f1b6f48e110b5093e6c8d917c47" id="r_afc8c4f1b6f48e110b5093e6c8d917c47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#afc8c4f1b6f48e110b5093e6c8d917c47">getImpactPointY</a> (int index) const</td></tr>
+<tr class="separator:afc8c4f1b6f48e110b5093e6c8d917c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f256b07b0a443fcedcdc724234035c3" id="r_a8f256b07b0a443fcedcdc724234035c3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a8f256b07b0a443fcedcdc724234035c3">getImpactNormalX</a> (int index) const</td></tr>
+<tr class="separator:a8f256b07b0a443fcedcdc724234035c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f0a7d65066daac5e4be3b32ce92c295" id="r_a1f0a7d65066daac5e4be3b32ce92c295"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a1f0a7d65066daac5e4be3b32ce92c295">getImpactNormalY</a> (int index) const</td></tr>
+<tr class="separator:a1f0a7d65066daac5e4be3b32ce92c295"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92f4816bf8edc85bd1d9deaddbb531e0" id="r_a92f4816bf8edc85bd1d9deaddbb531e0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a92f4816bf8edc85bd1d9deaddbb531e0">getImpactRelativeNormalSpeed</a> (int index) const</td></tr>
+<tr class="separator:a92f4816bf8edc85bd1d9deaddbb531e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb33776546c14a153dc3547cdef23d41" id="r_acb33776546c14a153dc3547cdef23d41"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#acb33776546c14a153dc3547cdef23d41">getImpactNormalImpulse</a> (int index) const</td></tr>
+<tr class="separator:acb33776546c14a153dc3547cdef23d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2870566b08dc0f535751bb0b0be8f58" id="r_ad2870566b08dc0f535751bb0b0be8f58"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ad2870566b08dc0f535751bb0b0be8f58">getImpactTangentImpulse</a> (int index) const</td></tr>
+<tr class="separator:ad2870566b08dc0f535751bb0b0be8f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae10ca9e852f2c9b640c7a4039a77d5c9" id="r_ae10ca9e852f2c9b640c7a4039a77d5c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ae10ca9e852f2c9b640c7a4039a77d5c9">clearContactEvents</a> ()</td></tr>
+<tr class="memdesc:ae10ca9e852f2c9b640c7a4039a77d5c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears collected begin/end contact and impact event buffers.  <br /></td></tr>
+<tr class="separator:ae10ca9e852f2c9b640c7a4039a77d5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae85b77019bc58bf9e0281dad49d1bba2" id="r_ae85b77019bc58bf9e0281dad49d1bba2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ae85b77019bc58bf9e0281dad49d1bba2">toMeters</a> (float pixels) const</td></tr>
+<tr class="memdesc:ae85b77019bc58bf9e0281dad49d1bba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a pixel-space length to meters.  <br /></td></tr>
+<tr class="separator:ae85b77019bc58bf9e0281dad49d1bba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a2a3d89ce5acca81b3aabfc47f2b617" id="r_a7a2a3d89ce5acca81b3aabfc47f2b617"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a7a2a3d89ce5acca81b3aabfc47f2b617">toPixels</a> (float meters) const</td></tr>
+<tr class="memdesc:a7a2a3d89ce5acca81b3aabfc47f2b617"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a meter-space length to pixels.  <br /></td></tr>
+<tr class="separator:a7a2a3d89ce5acca81b3aabfc47f2b617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bf8d2aac41e66f22edf1dc29d8a0547" id="r_a9bf8d2aac41e66f22edf1dc29d8a0547"><td class="memItemLeft" align="right" valign="top">b2World *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a9bf8d2aac41e66f22edf1dc29d8a0547">raw</a> ()</td></tr>
+<tr class="memdesc:a9bf8d2aac41e66f22edf1dc29d8a0547"><td class="mdescLeft">&#160;</td><td class="mdescRight">The underlying Box2D world (advanced use).  <br /></td></tr>
+<tr class="separator:a9bf8d2aac41e66f22edf1dc29d8a0547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6c385fe4445a049b1de16125c24dd72" id="r_ac6c385fe4445a049b1de16125c24dd72"><td class="memItemLeft" align="right" valign="top">const b2World *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ac6c385fe4445a049b1de16125c24dd72">raw</a> () const</td></tr>
+<tr class="separator:ac6c385fe4445a049b1de16125c24dd72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3431bedc9c65bc99740810b38c4df97e" id="r_a3431bedc9c65bc99740810b38c4df97e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a3431bedc9c65bc99740810b38c4df97e">onBeginContact</a> (b2Contact *contact)</td></tr>
+<tr class="separator:a3431bedc9c65bc99740810b38c4df97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3da243a331c6d168b1e9ee8f979b4ed8" id="r_a3da243a331c6d168b1e9ee8f979b4ed8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a3da243a331c6d168b1e9ee8f979b4ed8">onEndContact</a> (b2Contact *contact)</td></tr>
+<tr class="separator:a3da243a331c6d168b1e9ee8f979b4ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e12d24eb3031d6493e6be999693fea" id="r_ae3e12d24eb3031d6493e6be999693fea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ae3e12d24eb3031d6493e6be999693fea">onPreSolve</a> (b2Contact *contact, const b2Manifold *oldManifold)</td></tr>
+<tr class="separator:ae3e12d24eb3031d6493e6be999693fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69353ce34b54ed7f92b2b9149796fe83" id="r_a69353ce34b54ed7f92b2b9149796fe83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a69353ce34b54ed7f92b2b9149796fe83">onPostSolve</a> (b2Contact *contact, const b2ContactImpulse *impulse)</td></tr>
+<tr class="separator:a69353ce34b54ed7f92b2b9149796fe83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36855df17cb40ec79254f378276a012c" id="r_a36855df17cb40ec79254f378276a012c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a36855df17cb40ec79254f378276a012c">forgetBody</a> (<a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *<a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>)</td></tr>
+<tr class="separator:a36855df17cb40ec79254f378276a012c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fd35a16d4dfa3ca91d2e5e15cd5869d" id="r_a3fd35a16d4dfa3ca91d2e5e15cd5869d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a3fd35a16d4dfa3ca91d2e5e15cd5869d">forgetFixture</a> (<a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> *fixture)</td></tr>
+<tr class="separator:a3fd35a16d4dfa3ca91d2e5e15cd5869d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0690950d32b240f12ebb7394bb7f5d4" id="r_ac0690950d32b240f12ebb7394bb7f5d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#ac0690950d32b240f12ebb7394bb7f5d4">nextBodyId</a> ()</td></tr>
+<tr class="separator:ac0690950d32b240f12ebb7394bb7f5d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a8858f397a273114ddc1443880bb5540e" id="r_a8858f397a273114ddc1443880bb5540e"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a8858f397a273114ddc1443880bb5540e">Body</a></td></tr>
+<tr class="separator:a8858f397a273114ddc1443880bb5540e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc19ccd29f90e77e5332f42ab062038" id="r_a7cc19ccd29f90e77e5332f42ab062038"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html#a7cc19ccd29f90e77e5332f42ab062038">Fixture</a></td></tr>
+<tr class="separator:a7cc19ccd29f90e77e5332f42ab062038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity, raycasts, AABB queries and contact/impact events. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af82ff88bedb163332bec66efcf10f5b6" name="af82ff88bedb163332bec66efcf10f5b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af82ff88bedb163332bec66efcf10f5b6">&#9670;&#160;</a></span>World() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::World::World </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sleep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a physics world. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gravityX/gravityY</td><td>Gravity vector in pixels/s^2. </td></tr>
+    <tr><td class="paramname">sleep</td><td>Whether bodies may sleep when idle. </td></tr>
+    <tr><td class="paramname">meter</td><td>Pixels per meter conversion factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="aa138fed3d49ce2ea9f542b82eb7eed82" name="aa138fed3d49ce2ea9f542b82eb7eed82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa138fed3d49ce2ea9f542b82eb7eed82">&#9670;&#160;</a></span>~World()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::World::~World </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00159">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a40eb722667c7f4dfa665357f38f8eb29" name="a40eb722667c7f4dfa665357f38f8eb29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40eb722667c7f4dfa665357f38f8eb29">&#9670;&#160;</a></span>World() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::World::World </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae10ca9e852f2c9b640c7a4039a77d5c9" name="ae10ca9e852f2c9b640c7a4039a77d5c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae10ca9e852f2c9b640c7a4039a77d5c9">&#9670;&#160;</a></span>clearContactEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::clearContactEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears collected begin/end contact and impact event buffers. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00425">425</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00159">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a5c8b33b3439c1ce480770a1d38ce4788" name="a5c8b33b3439c1ce480770a1d38ce4788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c8b33b3439c1ce480770a1d38ce4788">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys the underlying Box2D world and resets event buffers. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="World_8cpp_source.html#l00425">clearContactEvents()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00157">~World()</a>.</p>
+
+</div>
+</div>
+<a id="a24a74985363dd02899ce8edf7c7f8716" name="a24a74985363dd02899ce8edf7c7f8716"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a74985363dd02899ce8edf7c7f8716">&#9670;&#160;</a></span>destroyBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::destroyBody </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys a body (null is ignored). </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="a4f02958e366bafc63316e3365adb2da3" name="a4f02958e366bafc63316e3365adb2da3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f02958e366bafc63316e3365adb2da3">&#9670;&#160;</a></span>drawDebug()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::drawDebug </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional: draw fixture AABBs via Graphics::drawSolidRect. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00079">eve::physics::DebugDraw::begin()</a> , 以及 <a class="el" href="World_8cpp_source.html#l00083">eve::physics::DebugDraw::end()</a>.</p>
+
+</div>
+</div>
+<a id="a36855df17cb40ec79254f378276a012c" name="a36855df17cb40ec79254f378276a012c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36855df17cb40ec79254f378276a012c">&#9670;&#160;</a></span>forgetBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::forgetBody </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00061">eve::physics::Body::destroy()</a> , 以及 <a class="el" href="Body_8cpp_source.html#l00034">eve::physics::Body::~Body()</a>.</p>
+
+</div>
+</div>
+<a id="a3fd35a16d4dfa3ca91d2e5e15cd5869d" name="a3fd35a16d4dfa3ca91d2e5e15cd5869d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fd35a16d4dfa3ca91d2e5e15cd5869d">&#9670;&#160;</a></span>forgetFixture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::forgetFixture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> *&#160;</td>
+          <td class="paramname"><em>fixture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fixture_8cpp_source.html#l00103">eve::physics::Fixture::getBodyId()</a>, <a class="el" href="Fixture_8h_source.html#l00041">eve::physics::Fixture::getTag()</a>, <a class="el" href="Fixture_8h_source.html#l00064">eve::physics::Fixture::raw()</a> , 以及 <a class="el" href="World_8h_source.html#l00140">raw()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00061">eve::physics::Body::destroy()</a>, <a class="el" href="Fixture_8cpp_source.html#l00030">eve::physics::Fixture::destroy()</a>, <a class="el" href="Body_8cpp_source.html#l00034">eve::physics::Body::~Body()</a> , 以及 <a class="el" href="Fixture_8cpp_source.html#l00012">eve::physics::Fixture::~Fixture()</a>.</p>
+
+</div>
+</div>
+<a id="aada75c262871b4b2541367b79d38977c" name="aada75c262871b4b2541367b79d38977c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aada75c262871b4b2541367b79d38977c">&#9670;&#160;</a></span>getBeginContactBodyAId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getBeginContactBodyAId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55ef5ca7558197584a84ce78fecd0773" name="a55ef5ca7558197584a84ce78fecd0773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55ef5ca7558197584a84ce78fecd0773">&#9670;&#160;</a></span>getBeginContactBodyBId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getBeginContactBodyBId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab938c662057511d8117ef2e2ffcd2012" name="ab938c662057511d8117ef2e2ffcd2012"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab938c662057511d8117ef2e2ffcd2012">&#9670;&#160;</a></span>getBeginContactCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getBeginContactCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34e503139ed204594fa3776bd0b0e881" name="a34e503139ed204594fa3776bd0b0e881"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34e503139ed204594fa3776bd0b0e881">&#9670;&#160;</a></span>getBeginContactFixtureATag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::World::getBeginContactFixtureATag </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad9092de8829917e2e58a89642b1e5b89" name="ad9092de8829917e2e58a89642b1e5b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9092de8829917e2e58a89642b1e5b89">&#9670;&#160;</a></span>getBeginContactFixtureBTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::World::getBeginContactFixtureBTag </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6cf88cc90bbc2eaa38500fe9a6dcf0c8" name="a6cf88cc90bbc2eaa38500fe9a6dcf0c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cf88cc90bbc2eaa38500fe9a6dcf0c8">&#9670;&#160;</a></span>getEndContactBodyAId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getEndContactBodyAId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54ca0dc329575525ab4dff798e7f7fc5" name="a54ca0dc329575525ab4dff798e7f7fc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54ca0dc329575525ab4dff798e7f7fc5">&#9670;&#160;</a></span>getEndContactBodyBId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getEndContactBodyBId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac297666a85ebdbea5b4acbc10d85d12f" name="ac297666a85ebdbea5b4acbc10d85d12f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac297666a85ebdbea5b4acbc10d85d12f">&#9670;&#160;</a></span>getEndContactCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getEndContactCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a435b6ae2eac6bd323af906f104ed85e5" name="a435b6ae2eac6bd323af906f104ed85e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435b6ae2eac6bd323af906f104ed85e5">&#9670;&#160;</a></span>getEndContactFixtureATag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::World::getEndContactFixtureATag </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acda3969c10611e2e5439a15fcebcafb5" name="acda3969c10611e2e5439a15fcebcafb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acda3969c10611e2e5439a15fcebcafb5">&#9670;&#160;</a></span>getEndContactFixtureBTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::World::getEndContactFixtureBTag </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a757aa891f0559aba5c26f7d2eb86fc4c" name="a757aa891f0559aba5c26f7d2eb86fc4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a757aa891f0559aba5c26f7d2eb86fc4c">&#9670;&#160;</a></span>getGravityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getGravityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="ad41e983e2a900352523a17f891d579d4" name="ad41e983e2a900352523a17f891d579d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad41e983e2a900352523a17f891d579d4">&#9670;&#160;</a></span>getGravityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getGravityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="ab43f4d0d047ea36ed0784af64928f373" name="ab43f4d0d047ea36ed0784af64928f373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab43f4d0d047ea36ed0784af64928f373">&#9670;&#160;</a></span>getImpactBodyAId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getImpactBodyAId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00391">391</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe4058d1a191e9f3a892c999260dfe5e" name="abe4058d1a191e9f3a892c999260dfe5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4058d1a191e9f3a892c999260dfe5e">&#9670;&#160;</a></span>getImpactBodyBId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getImpactBodyBId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ec718e73e3ec17643a6ed75b0e32f7b" name="a6ec718e73e3ec17643a6ed75b0e32f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec718e73e3ec17643a6ed75b0e32f7b">&#9670;&#160;</a></span>getImpactCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getImpactCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeea37c87007543a03906492fd834dc1a" name="aeea37c87007543a03906492fd834dc1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea37c87007543a03906492fd834dc1a">&#9670;&#160;</a></span>getImpactFixtureATag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::World::getImpactFixtureATag </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef28d8765465fb4a724c0b8bac78edbc" name="aef28d8765465fb4a724c0b8bac78edbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef28d8765465fb4a724c0b8bac78edbc">&#9670;&#160;</a></span>getImpactFixtureBTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::World::getImpactFixtureBTag </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb33776546c14a153dc3547cdef23d41" name="acb33776546c14a153dc3547cdef23d41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb33776546c14a153dc3547cdef23d41">&#9670;&#160;</a></span>getImpactNormalImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactNormalImpulse </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f256b07b0a443fcedcdc724234035c3" name="a8f256b07b0a443fcedcdc724234035c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f256b07b0a443fcedcdc724234035c3">&#9670;&#160;</a></span>getImpactNormalX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactNormalX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00409">409</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f0a7d65066daac5e4be3b32ce92c295" name="a1f0a7d65066daac5e4be3b32ce92c295"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f0a7d65066daac5e4be3b32ce92c295">&#9670;&#160;</a></span>getImpactNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactNormalY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48c6f74dccaafcf3c0966cb5317ca94f" name="a48c6f74dccaafcf3c0966cb5317ca94f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48c6f74dccaafcf3c0966cb5317ca94f">&#9670;&#160;</a></span>getImpactPointX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactPointX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00403">403</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc8c4f1b6f48e110b5093e6c8d917c47" name="afc8c4f1b6f48e110b5093e6c8d917c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc8c4f1b6f48e110b5093e6c8d917c47">&#9670;&#160;</a></span>getImpactPointY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactPointY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92f4816bf8edc85bd1d9deaddbb531e0" name="a92f4816bf8edc85bd1d9deaddbb531e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f4816bf8edc85bd1d9deaddbb531e0">&#9670;&#160;</a></span>getImpactRelativeNormalSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactRelativeNormalSpeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2870566b08dc0f535751bb0b0be8f58" name="ad2870566b08dc0f535751bb0b0be8f58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2870566b08dc0f535751bb0b0be8f58">&#9670;&#160;</a></span>getImpactTangentImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getImpactTangentImpulse </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af03b5217ad527a2754e33579b534a071" name="af03b5217ad527a2754e33579b534a071"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af03b5217ad527a2754e33579b534a071">&#9670;&#160;</a></span>getMeter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getMeter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a506b405b45602b9e820dd86d2498e68f" name="a506b405b45602b9e820dd86d2498e68f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a506b405b45602b9e820dd86d2498e68f">&#9670;&#160;</a></span>getQueryBodyId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getQueryBodyId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a513d26e68df89fe4310b72a12fd814c0" name="a513d26e68df89fe4310b72a12fd814c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a513d26e68df89fe4310b72a12fd814c0">&#9670;&#160;</a></span>getQueryCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getQueryCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03111efebc2ef681fb6920119503d501" name="a03111efebc2ef681fb6920119503d501"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03111efebc2ef681fb6920119503d501">&#9670;&#160;</a></span>getRayHitBodyId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::getRayHitBodyId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a9ffc620de8a7499c60d276e78558d1" name="a7a9ffc620de8a7499c60d276e78558d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a9ffc620de8a7499c60d276e78558d1">&#9670;&#160;</a></span>getRayHitFraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getRayHitFraction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fraction along the segment [0,1] of the closest hit. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe4c6dad038a6787053f74eec668e2af" name="abe4c6dad038a6787053f74eec668e2af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4c6dad038a6787053f74eec668e2af">&#9670;&#160;</a></span>getRayHitNormalX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getRayHitNormalX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7fb7d36e938d2642c02c2621ab575a5d" name="a7fb7d36e938d2642c02c2621ab575a5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fb7d36e938d2642c02c2621ab575a5d">&#9670;&#160;</a></span>getRayHitNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getRayHitNormalY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a024bc9412737b10c79478dfb738251a1" name="a024bc9412737b10c79478dfb738251a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a024bc9412737b10c79478dfb738251a1">&#9670;&#160;</a></span>getRayHitX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getRayHitX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d1f49a7d4ac97a4b12e4f56fa1739e4" name="a3d1f49a7d4ac97a4b12e4f56fa1739e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d1f49a7d4ac97a4b12e4f56fa1739e4">&#9670;&#160;</a></span>getRayHitY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::getRayHitY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a88438d8b3deaf2599b7cf048053605de" name="a88438d8b3deaf2599b7cf048053605de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88438d8b3deaf2599b7cf048053605de">&#9670;&#160;</a></span>hasRayHit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::World::hasRayHit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3ae89e72901d58785bd68512afeff8b" name="aa3ae89e72901d58785bd68512afeff8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3ae89e72901d58785bd68512afeff8b">&#9670;&#160;</a></span>newBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> * eve::physics::World::newBody </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>bodyType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>bodyType: "static" | "kinematic" | "dynamic". x/y in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8h_source.html#l00154">Body</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>, <a class="el" href="World_8cpp_source.html#l00228">nextBodyId()</a>, <a class="el" href="World_8h_source.html#l00140">raw()</a>, <a class="el" href="World_8cpp_source.html#l00225">toMeters()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ac0690950d32b240f12ebb7394bb7f5d4" name="ac0690950d32b240f12ebb7394bb7f5d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0690950d32b240f12ebb7394bb7f5d4">&#9670;&#160;</a></span>nextBodyId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::nextBodyId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00230">newBody()</a>.</p>
+
+</div>
+</div>
+<a id="a3431bedc9c65bc99740810b38c4df97e" name="a3431bedc9c65bc99740810b38c4df97e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3431bedc9c65bc99740810b38c4df97e">&#9670;&#160;</a></span>onBeginContact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::onBeginContact </td>
+          <td>(</td>
+          <td class="paramtype">b2Contact *&#160;</td>
+          <td class="paramname"><em>contact</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="Event_8h_source.html#l00029">eve::event::Variant::makeInt()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00062">eve::physics::ContactRelay::BeginContact()</a>.</p>
+
+</div>
+</div>
+<a id="a3da243a331c6d168b1e9ee8f979b4ed8" name="a3da243a331c6d168b1e9ee8f979b4ed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3da243a331c6d168b1e9ee8f979b4ed8">&#9670;&#160;</a></span>onEndContact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::onEndContact </td>
+          <td>(</td>
+          <td class="paramtype">b2Contact *&#160;</td>
+          <td class="paramname"><em>contact</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="Event_8h_source.html#l00029">eve::event::Variant::makeInt()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00063">eve::physics::ContactRelay::EndContact()</a>.</p>
+
+</div>
+</div>
+<a id="a69353ce34b54ed7f92b2b9149796fe83" name="a69353ce34b54ed7f92b2b9149796fe83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69353ce34b54ed7f92b2b9149796fe83">&#9670;&#160;</a></span>onPostSolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::onPostSolve </td>
+          <td>(</td>
+          <td class="paramtype">b2Contact *&#160;</td>
+          <td class="paramname"><em>contact</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const b2ContactImpulse *&#160;</td>
+          <td class="paramname"><em>impulse</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8h_source.html#l00046">eve::physics::World::ImpactEvent::normalImpulse</a>, <a class="el" href="World_8h_source.html#l00043">eve::physics::World::ImpactEvent::normalX</a>, <a class="el" href="World_8h_source.html#l00044">eve::physics::World::ImpactEvent::normalY</a>, <a class="el" href="World_8h_source.html#l00041">eve::physics::World::ImpactEvent::pointX</a>, <a class="el" href="World_8h_source.html#l00042">eve::physics::World::ImpactEvent::pointY</a>, <a class="el" href="World_8h_source.html#l00045">eve::physics::World::ImpactEvent::relativeNormalSpeed</a>, <a class="el" href="World_8h_source.html#l00047">eve::physics::World::ImpactEvent::tangentImpulse</a> , 以及 <a class="el" href="World_8cpp_source.html#l00226">toPixels()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00067">eve::physics::ContactRelay::PostSolve()</a>.</p>
+
+</div>
+</div>
+<a id="ae3e12d24eb3031d6493e6be999693fea" name="ae3e12d24eb3031d6493e6be999693fea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3e12d24eb3031d6493e6be999693fea">&#9670;&#160;</a></span>onPreSolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::onPreSolve </td>
+          <td>(</td>
+          <td class="paramtype">b2Contact *&#160;</td>
+          <td class="paramname"><em>contact</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const b2Manifold *&#160;</td>
+          <td class="paramname"><em>oldManifold</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="World_8cpp_source.html#l00226">toPixels()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00064">eve::physics::ContactRelay::PreSolve()</a>.</p>
+
+</div>
+</div>
+<a id="abcc65ebd4f0e3ef07f1657e15a9eefc5" name="abcc65ebd4f0e3ef07f1657e15a9eefc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcc65ebd4f0e3ef07f1657e15a9eefc5">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp; eve::physics::World::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1e334d8fb2efd3f0862fb69f25e76f17" name="a1e334d8fb2efd3f0862fb69f25e76f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e334d8fb2efd3f0862fb69f25e76f17">&#9670;&#160;</a></span>queryAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::queryAABB </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query fixtures overlapping an axis-aligned box in pixel space (x,y,w,h). Returns match count; read ids with getQueryBodyId(i). </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00484">484</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="World_8cpp_source.html#l00225">toMeters()</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a9bf8d2aac41e66f22edf1dc29d8a0547" name="a9bf8d2aac41e66f22edf1dc29d8a0547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bf8d2aac41e66f22edf1dc29d8a0547">&#9670;&#160;</a></span>raw() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">b2World * eve::physics::World::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The underlying Box2D world (advanced use). </p>
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00061">eve::physics::Body::destroy()</a>, <a class="el" href="World_8cpp_source.html#l00260">forgetFixture()</a>, <a class="el" href="World_8cpp_source.html#l00230">newBody()</a> , 以及 <a class="el" href="Body_8cpp_source.html#l00034">eve::physics::Body::~Body()</a>.</p>
+
+</div>
+</div>
+<a id="ac6c385fe4445a049b1de16125c24dd72" name="ac6c385fe4445a049b1de16125c24dd72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c385fe4445a049b1de16125c24dd72">&#9670;&#160;</a></span>raw() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const b2World * eve::physics::World::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0150b0cafa2585778083a27c8f3d58d" name="ad0150b0cafa2585778083a27c8f3d58d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0150b0cafa2585778083a27c8f3d58d">&#9670;&#160;</a></span>rayCast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::World::rayCast </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closest raycast in pixel space from (x1,y1) to (x2,y2). Returns hit body id, or -1. Read hit details via getRayHit*. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00439">439</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00092">normal</a>, <a class="el" href="World_8cpp_source.html#l00225">toMeters()</a> , 以及 <a class="el" href="World_8cpp_source.html#l00226">toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a66c9689fff33b5287054b651dafca833" name="a66c9689fff33b5287054b651dafca833"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c9689fff33b5287054b651dafca833">&#9670;&#160;</a></span>setGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::setGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the world gravity vector in pixels/s^2. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a00090a591f61f969148bca8d3f2c32b7" name="a00090a591f61f969148bca8d3f2c32b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00090a591f61f969148bca8d3f2c32b7">&#9670;&#160;</a></span>setMeter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::setMeter </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pixelsPerMeter</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes the pixels-per-meter conversion. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae85b77019bc58bf9e0281dad49d1bba2" name="ae85b77019bc58bf9e0281dad49d1bba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae85b77019bc58bf9e0281dad49d1bba2">&#9670;&#160;</a></span>toMeters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::toMeters </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pixels</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a pixel-space length to meters. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00150">eve::physics::Body::applyForce()</a>, <a class="el" href="Body_8cpp_source.html#l00156">eve::physics::Body::applyForceAt()</a>, <a class="el" href="Body_8cpp_source.html#l00162">eve::physics::Body::applyLinearImpulse()</a>, <a class="el" href="World_8cpp_source.html#l00230">newBody()</a>, <a class="el" href="Body_8cpp_source.html#l00239">eve::physics::Body::newCircleFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00216">eve::physics::Body::newRectangleFixtureAt()</a>, <a class="el" href="World_8cpp_source.html#l00484">queryAABB()</a>, <a class="el" href="World_8cpp_source.html#l00439">rayCast()</a>, <a class="el" href="World_8cpp_source.html#l00204">setGravity()</a>, <a class="el" href="Body_8cpp_source.html#l00108">eve::physics::Body::setLinearVelocity()</a>, <a class="el" href="Body_8cpp_source.html#l00083">eve::physics::Body::setPosition()</a>, <a class="el" href="Fixture_8cpp_source.html#l00105">eve::physics::Fixture::testPoint()</a> , 以及 <a class="el" href="World_8cpp_source.html#l00147">World()</a>.</p>
+
+</div>
+</div>
+<a id="a7a2a3d89ce5acca81b3aabfc47f2b617" name="a7a2a3d89ce5acca81b3aabfc47f2b617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a2a3d89ce5acca81b3aabfc47f2b617">&#9670;&#160;</a></span>toPixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::World::toPixels </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meters</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a meter-space length to pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00209">getGravityX()</a>, <a class="el" href="World_8cpp_source.html#l00214">getGravityY()</a>, <a class="el" href="Body_8cpp_source.html#l00123">eve::physics::Body::getLinearSpeed()</a>, <a class="el" href="Body_8cpp_source.html#l00113">eve::physics::Body::getLinearVelocityX()</a>, <a class="el" href="Body_8cpp_source.html#l00118">eve::physics::Body::getLinearVelocityY()</a>, <a class="el" href="Body_8cpp_source.html#l00130">eve::physics::Body::getWorldCenterX()</a>, <a class="el" href="Body_8cpp_source.html#l00135">eve::physics::Body::getWorldCenterY()</a>, <a class="el" href="Body_8cpp_source.html#l00088">eve::physics::Body::getX()</a>, <a class="el" href="Body_8cpp_source.html#l00093">eve::physics::Body::getY()</a>, <a class="el" href="World_8cpp_source.html#l00340">onPostSolve()</a>, <a class="el" href="World_8cpp_source.html#l00317">onPreSolve()</a> , 以及 <a class="el" href="World_8cpp_source.html#l00439">rayCast()</a>.</p>
+
+</div>
+</div>
+<a id="a1ccfad673f1a74a9f37ea694d8405aa2" name="a1ccfad673f1a74a9f37ea694d8405aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ccfad673f1a74a9f37ea694d8405aa2">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Steps the simulation by dt seconds (5 velocity / 2 position iterations). </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00196">updateFull()</a>.</p>
+
+</div>
+</div>
+<a id="ae0c527cd199adaa93945a2c1d177b37c" name="ae0c527cd199adaa93945a2c1d177b37c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c527cd199adaa93945a2c1d177b37c">&#9670;&#160;</a></span>updateFull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::World::updateFull </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>velocityIterations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>positionIterations</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Steps with explicit iteration counts. </p>
+
+<p class="definition">在文件 <a class="el" href="World_8cpp_source.html">World.cpp</a> 第 <a class="el" href="World_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00194">update()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a8858f397a273114ddc1443880bb5540e" name="a8858f397a273114ddc1443880bb5540e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8858f397a273114ddc1443880bb5540e">&#9670;&#160;</a></span>Body</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00230">newBody()</a>.</p>
+
+</div>
+</div>
+<a id="a7cc19ccd29f90e77e5332f42ab062038" name="a7cc19ccd29f90e77e5332f42ab062038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cc19ccd29f90e77e5332f42ab062038">&#9670;&#160;</a></span>Fixture</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World_8h_source.html">World.h</a> 第 <a class="el" href="World_8h_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="World_8h_source.html">World.h</a></li>
+<li>src/modules/physics/<a class="el" href="World_8cpp_source.html">World.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

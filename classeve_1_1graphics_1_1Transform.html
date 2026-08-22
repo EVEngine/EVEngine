@@ -1,0 +1,570 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Transform类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Transform.html">Transform</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="classeve_1_1graphics_1_1Transform-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Transform类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>矩阵变换栈（2D/3D）：旋转/缩放/平移 + push/pop。  
+ <a href="classeve_1_1graphics_1_1Transform.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Transform_8h_source.html">Transform.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Transform 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Transform.png" usemap="#eve::graphics::Transform_map" alt=""/>
+  <map id="eve::graphics::Transform_map" name="eve::graphics::Transform_map">
+<area href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。" alt="eve::graphics::Camera" shape="rect" coords="0,56,151,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6b8f22457542495e175ecab2ff3c1bf6" id="r_a6b8f22457542495e175ecab2ff3c1bf6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a6b8f22457542495e175ecab2ff3c1bf6">Transform</a> ()</td></tr>
+<tr class="separator:a6b8f22457542495e175ecab2ff3c1bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed3a9c9c67dda7cf2c33283d0b1b53ca" id="r_aed3a9c9c67dda7cf2c33283d0b1b53ca"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#aed3a9c9c67dda7cf2c33283d0b1b53ca">~Transform</a> ()</td></tr>
+<tr class="separator:aed3a9c9c67dda7cf2c33283d0b1b53ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcfd4a6e4e73879c3f9ff1d3dbdd7ff9" id="r_afcfd4a6e4e73879c3f9ff1d3dbdd7ff9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#afcfd4a6e4e73879c3f9ff1d3dbdd7ff9">rotate</a> (float r, glm::vec2 <a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="memdesc:afcfd4a6e4e73879c3f9ff1d3dbdd7ff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D 绕点 (p) 旋转 r（弧度）。  <br /></td></tr>
+<tr class="separator:afcfd4a6e4e73879c3f9ff1d3dbdd7ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02c94b509500425d932cee20648eb92a" id="r_a02c94b509500425d932cee20648eb92a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a02c94b509500425d932cee20648eb92a">scale</a> (float all)</td></tr>
+<tr class="memdesc:a02c94b509500425d932cee20648eb92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D 均匀/非均匀缩放。  <br /></td></tr>
+<tr class="separator:a02c94b509500425d932cee20648eb92a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e66184454dac6b8da99245e9fbc400" id="r_a32e66184454dac6b8da99245e9fbc400"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a32e66184454dac6b8da99245e9fbc400">scale</a> (glm::vec2 <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="separator:a32e66184454dac6b8da99245e9fbc400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa0c05c6e5170544257ae52473cb8963" id="r_aaa0c05c6e5170544257ae52473cb8963"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#aaa0c05c6e5170544257ae52473cb8963">translate</a> (glm::vec2 <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:aaa0c05c6e5170544257ae52473cb8963"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D 平移。  <br /></td></tr>
+<tr class="separator:aaa0c05c6e5170544257ae52473cb8963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7606bece69690696df1adb4e22e3bc27" id="r_a7606bece69690696df1adb4e22e3bc27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a7606bece69690696df1adb4e22e3bc27">origin</a> ()</td></tr>
+<tr class="memdesc:a7606bece69690696df1adb4e22e3bc27"><td class="mdescLeft">&#160;</td><td class="mdescRight">重置为单位矩阵。  <br /></td></tr>
+<tr class="separator:a7606bece69690696df1adb4e22e3bc27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f6bf147dc1af9d131bf685372ffd49" id="r_a54f6bf147dc1af9d131bf685372ffd49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a54f6bf147dc1af9d131bf685372ffd49">rotate3d</a> (float r, glm::vec3 <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a54f6bf147dc1af9d131bf685372ffd49"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D 绕轴旋转 / 缩放 / 平移。  <br /></td></tr>
+<tr class="separator:a54f6bf147dc1af9d131bf685372ffd49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac311efa0cdb658a2d360636852933e62" id="r_ac311efa0cdb658a2d360636852933e62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#ac311efa0cdb658a2d360636852933e62">scale3d</a> (glm::vec3 <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="separator:ac311efa0cdb658a2d360636852933e62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a189cf8d7d872554a0c6bb48ddb0067ae" id="r_a189cf8d7d872554a0c6bb48ddb0067ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a189cf8d7d872554a0c6bb48ddb0067ae">translate3d</a> (glm::vec3 <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="separator:a189cf8d7d872554a0c6bb48ddb0067ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c6a8777021d9ec0ca6d9b1e0e512f1e" id="r_a8c6a8777021d9ec0ca6d9b1e0e512f1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a8c6a8777021d9ec0ca6d9b1e0e512f1e">push</a> ()</td></tr>
+<tr class="memdesc:a8c6a8777021d9ec0ca6d9b1e0e512f1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">压栈 / 弹栈 / 取栈顶矩阵。  <br /></td></tr>
+<tr class="separator:a8c6a8777021d9ec0ca6d9b1e0e512f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdefd37c2d2b084242c97af7258a736c" id="r_afdefd37c2d2b084242c97af7258a736c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#afdefd37c2d2b084242c97af7258a736c">pop</a> ()</td></tr>
+<tr class="separator:afdefd37c2d2b084242c97af7258a736c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fec706387cd991dc9edb4c69e09d474" id="r_a9fec706387cd991dc9edb4c69e09d474"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#a9fec706387cd991dc9edb4c69e09d474">top</a> ()</td></tr>
+<tr class="separator:a9fec706387cd991dc9edb4c69e09d474"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:ac0319b1d4f1493bfae5c4082f2e8f8af" id="r_ac0319b1d4f1493bfae5c4082f2e8f8af"><td class="memItemLeft" align="right" valign="top">std::stack&lt; glm::mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html#ac0319b1d4f1493bfae5c4082f2e8f8af">matrix</a></td></tr>
+<tr class="separator:ac0319b1d4f1493bfae5c4082f2e8f8af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>矩阵变换栈（2D/3D）：旋转/缩放/平移 + push/pop。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8h_source.html">Transform.h</a> 第 <a class="el" href="Transform_8h_source.html#l00010">10</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6b8f22457542495e175ecab2ff3c1bf6" name="a6b8f22457542495e175ecab2ff3c1bf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b8f22457542495e175ecab2ff3c1bf6">&#9670;&#160;</a></span>Transform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Transform::Transform </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Transform_8cpp_source.html#l00027">origin()</a>.</p>
+
+</div>
+</div>
+<a id="aed3a9c9c67dda7cf2c33283d0b1b53ca" name="aed3a9c9c67dda7cf2c33283d0b1b53ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3a9c9c67dda7cf2c33283d0b1b53ca">&#9670;&#160;</a></span>~Transform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::graphics::Transform::~Transform </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8h_source.html">Transform.h</a> 第 <a class="el" href="Transform_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7606bece69690696df1adb4e22e3bc27" name="a7606bece69690696df1adb4e22e3bc27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7606bece69690696df1adb4e22e3bc27">&#9670;&#160;</a></span>origin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::origin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>重置为单位矩阵。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Transform_8cpp_source.html#l00007">Transform()</a>.</p>
+
+</div>
+</div>
+<a id="afdefd37c2d2b084242c97af7258a736c" name="afdefd37c2d2b084242c97af7258a736c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdefd37c2d2b084242c97af7258a736c">&#9670;&#160;</a></span>pop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::pop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Transform_8h_source.html#l00036">matrix</a>.</p>
+
+</div>
+</div>
+<a id="a8c6a8777021d9ec0ca6d9b1e0e512f1e" name="a8c6a8777021d9ec0ca6d9b1e0e512f1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c6a8777021d9ec0ca6d9b1e0e512f1e">&#9670;&#160;</a></span>push()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::push </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>压栈 / 弹栈 / 取栈顶矩阵。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="Transform_8h_source.html#l00036">matrix</a>.</p>
+
+</div>
+</div>
+<a id="afcfd4a6e4e73879c3f9ff1d3dbdd7ff9" name="afcfd4a6e4e73879c3f9ff1d3dbdd7ff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcfd4a6e4e73879c3f9ff1d3dbdd7ff9">&#9670;&#160;</a></span>rotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::rotate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec2&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>2D 绕点 (p) 旋转 r（弧度）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54f6bf147dc1af9d131bf685372ffd49" name="a54f6bf147dc1af9d131bf685372ffd49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f6bf147dc1af9d131bf685372ffd49">&#9670;&#160;</a></span>rotate3d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::rotate3d </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>3D 绕轴旋转 / 缩放 / 平移。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a02c94b509500425d932cee20648eb92a" name="a02c94b509500425d932cee20648eb92a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02c94b509500425d932cee20648eb92a">&#9670;&#160;</a></span>scale() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::scale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>all</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>2D 均匀/非均匀缩放。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32e66184454dac6b8da99245e9fbc400" name="a32e66184454dac6b8da99245e9fbc400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e66184454dac6b8da99245e9fbc400">&#9670;&#160;</a></span>scale() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::scale </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec2&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac311efa0cdb658a2d360636852933e62" name="ac311efa0cdb658a2d360636852933e62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac311efa0cdb658a2d360636852933e62">&#9670;&#160;</a></span>scale3d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::scale3d </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9fec706387cd991dc9edb4c69e09d474" name="a9fec706387cd991dc9edb4c69e09d474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fec706387cd991dc9edb4c69e09d474">&#9670;&#160;</a></span>top()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::Transform::top </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Transform_8h_source.html#l00036">matrix</a>.</p>
+
+</div>
+</div>
+<a id="aaa0c05c6e5170544257ae52473cb8963" name="aaa0c05c6e5170544257ae52473cb8963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa0c05c6e5170544257ae52473cb8963">&#9670;&#160;</a></span>translate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::translate </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec2&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>2D 平移。 </p>
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a189cf8d7d872554a0c6bb48ddb0067ae" name="a189cf8d7d872554a0c6bb48ddb0067ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a189cf8d7d872554a0c6bb48ddb0067ae">&#9670;&#160;</a></span>translate3d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Transform::translate3d </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8cpp_source.html">Transform.cpp</a> 第 <a class="el" href="Transform_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ac0319b1d4f1493bfae5c4082f2e8f8af" name="ac0319b1d4f1493bfae5c4082f2e8f8af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0319b1d4f1493bfae5c4082f2e8f8af">&#9670;&#160;</a></span>matrix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::stack&lt;glm::mat4&gt; eve::graphics::Transform::matrix</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transform_8h_source.html">Transform.h</a> 第 <a class="el" href="Transform_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Transform_8cpp_source.html#l00057">pop()</a>, <a class="el" href="Transform_8cpp_source.html#l00045">push()</a> , 以及 <a class="el" href="Transform_8cpp_source.html#l00061">top()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Transform_8h_source.html">Transform.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Transform_8cpp_source.html">Transform.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

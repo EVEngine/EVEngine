@@ -1,0 +1,538 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dialogue::Dialogue::VarValue结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a></li><li class="navelem"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">VarValue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dialogue::Dialogue::VarValue结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Dialogue_8h_source.html">Dialogue.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a542a519a427688cc0b445beab1c66281" id="r_a542a519a427688cc0b445beab1c66281"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281">Type</a> { <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a1686a6c336b71b36d77354cea19a8b52">Int</a>
+, <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>
+, <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281ac26f15e86e3de4c398a8273272aba034">Bool</a>
+, <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a27118326006d3829667a400ad23d5d98">String</a>
+ }</td></tr>
+<tr class="separator:a542a519a427688cc0b445beab1c66281"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a88ae47fd98cf9f3f49ab0026713899a8" id="r_a88ae47fd98cf9f3f49ab0026713899a8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a88ae47fd98cf9f3f49ab0026713899a8">toString</a> () const</td></tr>
+<tr class="separator:a88ae47fd98cf9f3f49ab0026713899a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10afb5898785fc900f18277bfe3a215" id="r_ad10afb5898785fc900f18277bfe3a215"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#ad10afb5898785fc900f18277bfe3a215">typeName</a> () const</td></tr>
+<tr class="separator:ad10afb5898785fc900f18277bfe3a215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bb58434b9b323b6aefe785fa1ba1771" id="r_a3bb58434b9b323b6aefe785fa1ba1771"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a3bb58434b9b323b6aefe785fa1ba1771">isNumeric</a> () const</td></tr>
+<tr class="separator:a3bb58434b9b323b6aefe785fa1ba1771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa28f866030f982a2b7fef5e677f8493f" id="r_aa28f866030f982a2b7fef5e677f8493f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">VarValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#aa28f866030f982a2b7fef5e677f8493f">integer</a> (long long <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="separator:aa28f866030f982a2b7fef5e677f8493f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e838875e01c72e2203df6d009642c59" id="r_a0e838875e01c72e2203df6d009642c59"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">VarValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a0e838875e01c72e2203df6d009642c59">number</a> (double <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="separator:a0e838875e01c72e2203df6d009642c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35ed4467615b2b292e5a3cee17acc4f2" id="r_a35ed4467615b2b292e5a3cee17acc4f2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">VarValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a35ed4467615b2b292e5a3cee17acc4f2">boolean</a> (bool <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="separator:a35ed4467615b2b292e5a3cee17acc4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47029e649b4ef60eacaffd5c149d409c" id="r_a47029e649b4ef60eacaffd5c149d409c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">VarValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a47029e649b4ef60eacaffd5c149d409c">string</a> (std::string <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="separator:a47029e649b4ef60eacaffd5c149d409c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a86fdbbfcaa6fbcfaf0f0e108ce0bc45b" id="r_a86fdbbfcaa6fbcfaf0f0e108ce0bc45b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a86fdbbfcaa6fbcfaf0f0e108ce0bc45b">type</a> = <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a27118326006d3829667a400ad23d5d98">Type::String</a></td></tr>
+<tr class="separator:a86fdbbfcaa6fbcfaf0f0e108ce0bc45b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef2971429ded1295962336ffe5064cc" id="r_adef2971429ded1295962336ffe5064cc"><td class="memItemLeft" align="right" valign="top">long long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#adef2971429ded1295962336ffe5064cc">i</a> = 0</td></tr>
+<tr class="separator:adef2971429ded1295962336ffe5064cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af079b561b9b4d2e83d5b37d6892e50bf" id="r_af079b561b9b4d2e83d5b37d6892e50bf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#af079b561b9b4d2e83d5b37d6892e50bf">f</a> = 0.0</td></tr>
+<tr class="separator:af079b561b9b4d2e83d5b37d6892e50bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf64a5494be96e4c7615671bc68f7b9b" id="r_acf64a5494be96e4c7615671bc68f7b9b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#acf64a5494be96e4c7615671bc68f7b9b">b</a> = false</td></tr>
+<tr class="separator:acf64a5494be96e4c7615671bc68f7b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fdf9949377bb2fc79e073db4fc373fd" id="r_a6fdf9949377bb2fc79e073db4fc373fd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a6fdf9949377bb2fc79e073db4fc373fd">s</a></td></tr>
+<tr class="separator:a6fdf9949377bb2fc79e073db4fc373fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00158">158</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a542a519a427688cc0b445beab1c66281" name="a542a519a427688cc0b445beab1c66281"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a542a519a427688cc0b445beab1c66281">&#9670;&#160;</a></span>Type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281">eve::dialogue::Dialogue::VarValue::Type</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a542a519a427688cc0b445beab1c66281a1686a6c336b71b36d77354cea19a8b52" name="a542a519a427688cc0b445beab1c66281a1686a6c336b71b36d77354cea19a8b52"></a>Int&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a542a519a427688cc0b445beab1c66281a22ae0e2b89e5e3d477f988cc36d3272b" name="a542a519a427688cc0b445beab1c66281a22ae0e2b89e5e3d477f988cc36d3272b"></a>Float&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a542a519a427688cc0b445beab1c66281ac26f15e86e3de4c398a8273272aba034" name="a542a519a427688cc0b445beab1c66281ac26f15e86e3de4c398a8273272aba034"></a>Bool&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a542a519a427688cc0b445beab1c66281a27118326006d3829667a400ad23d5d98" name="a542a519a427688cc0b445beab1c66281a27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a35ed4467615b2b292e5a3cee17acc4f2" name="a35ed4467615b2b292e5a3cee17acc4f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35ed4467615b2b292e5a3cee17acc4f2">&#9670;&#160;</a></span>boolean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">Dialogue::VarValue</a> eve::dialogue::Dialogue::VarValue::boolean </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8h_source.html#l00161">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="aa28f866030f982a2b7fef5e677f8493f" name="aa28f866030f982a2b7fef5e677f8493f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa28f866030f982a2b7fef5e677f8493f">&#9670;&#160;</a></span>integer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">Dialogue::VarValue</a> eve::dialogue::Dialogue::VarValue::integer </td>
+          <td>(</td>
+          <td class="paramtype">long long&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a1686a6c336b71b36d77354cea19a8b52">Int</a>, <a class="el" href="Dialogue_8h_source.html#l00161">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a3bb58434b9b323b6aefe785fa1ba1771" name="a3bb58434b9b323b6aefe785fa1ba1771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bb58434b9b323b6aefe785fa1ba1771">&#9670;&#160;</a></span>isNumeric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::VarValue::isNumeric </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>, <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a1686a6c336b71b36d77354cea19a8b52">Int</a> , 以及 <a class="el" href="Dialogue_8h_source.html#l00161">type</a>.</p>
+
+</div>
+</div>
+<a id="a0e838875e01c72e2203df6d009642c59" name="a0e838875e01c72e2203df6d009642c59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e838875e01c72e2203df6d009642c59">&#9670;&#160;</a></span>number()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">Dialogue::VarValue</a> eve::dialogue::Dialogue::VarValue::number </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8h_source.html#l00161">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a47029e649b4ef60eacaffd5c149d409c" name="a47029e649b4ef60eacaffd5c149d409c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47029e649b4ef60eacaffd5c149d409c">&#9670;&#160;</a></span>string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html">Dialogue::VarValue</a> eve::dialogue::Dialogue::VarValue::string </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Dialogue_8h_source.html#l00161">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00363">eve::dialogue::Dialogue::getVarValue()</a>.</p>
+
+</div>
+</div>
+<a id="a88ae47fd98cf9f3f49ab0026713899a8" name="a88ae47fd98cf9f3f49ab0026713899a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88ae47fd98cf9f3f49ab0026713899a8">&#9670;&#160;</a></span>toString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::VarValue::toString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="ad10afb5898785fc900f18277bfe3a215" name="ad10afb5898785fc900f18277bfe3a215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10afb5898785fc900f18277bfe3a215">&#9670;&#160;</a></span>typeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::VarValue::typeName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a> 第 <a class="el" href="Dialogue_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00370">eve::dialogue::Dialogue::getVarType()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="acf64a5494be96e4c7615671bc68f7b9b" name="acf64a5494be96e4c7615671bc68f7b9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf64a5494be96e4c7615671bc68f7b9b">&#9670;&#160;</a></span>b</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::Dialogue::VarValue::b = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00164">164</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af079b561b9b4d2e83d5b37d6892e50bf" name="af079b561b9b4d2e83d5b37d6892e50bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af079b561b9b4d2e83d5b37d6892e50bf">&#9670;&#160;</a></span>f</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::dialogue::Dialogue::VarValue::f = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adef2971429ded1295962336ffe5064cc" name="adef2971429ded1295962336ffe5064cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef2971429ded1295962336ffe5064cc">&#9670;&#160;</a></span>i</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long long eve::dialogue::Dialogue::VarValue::i = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fdf9949377bb2fc79e073db4fc373fd" name="a6fdf9949377bb2fc79e073db4fc373fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fdf9949377bb2fc79e073db4fc373fd">&#9670;&#160;</a></span>s</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dialogue::Dialogue::VarValue::s</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86fdbbfcaa6fbcfaf0f0e108ce0bc45b" name="a86fdbbfcaa6fbcfaf0f0e108ce0bc45b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86fdbbfcaa6fbcfaf0f0e108ce0bc45b">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281">Type</a> eve::dialogue::Dialogue::VarValue::type = <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a542a519a427688cc0b445beab1c66281a27118326006d3829667a400ad23d5d98">Type::String</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Dialogue_8h_source.html">Dialogue.h</a> 第 <a class="el" href="Dialogue_8h_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l00274">boolean()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00260">integer()</a>, <a class="el" href="Dialogue_8h_source.html#l00169">isNumeric()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00267">number()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l00281">string()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/dialogue/<a class="el" href="Dialogue_8h_source.html">Dialogue.h</a></li>
+<li>src/modules/dialogue/<a class="el" href="Dialogue_8cpp_source.html">Dialogue.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

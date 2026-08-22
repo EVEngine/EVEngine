@@ -1,0 +1,243 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/Params.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Params.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Params_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Params_8h.html">procgen/Params.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#ac3e1e35db1edb15e4785b850790396cb">    7</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#ac3e1e35db1edb15e4785b850790396cb">Params::setSeed</a>(uint32_t <a class="code hl_variable" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>) { seed_ = <a class="code hl_variable" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>; }</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">    8</a></span>uint32_t <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">Params::getSeed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> seed_; }</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#a1d161ea4d699ee471f5bdc1467bc7e48">   10</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a1d161ea4d699ee471f5bdc1467bc7e48">Params::setSize</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    width_  = <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a> &gt; 0 ? <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a> : 1;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    height_ = <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a> &gt; 0 ? <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a> : 1;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">   14</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">Params::getWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">   15</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">Params::getHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#a2f4088085aad76b56eefc62d31c4ab5e">   17</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a2f4088085aad76b56eefc62d31c4ab5e">Params::setInt</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keywordtype">int</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) { values_[key] = std::to_string(<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>); }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#acce6b32828adb0ee22eedd3bd28e7743">   18</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#acce6b32828adb0ee22eedd3bd28e7743">Params::setFloat</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) { values_[key] = std::to_string(<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>); }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#afd16cb59f3f566a6c1de0b2be82e50b3">   19</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#afd16cb59f3f566a6c1de0b2be82e50b3">Params::setString</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) { values_[key] = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>; }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#aa9134159e412c42af598ee6c39a4e152">   21</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aa9134159e412c42af598ee6c39a4e152">Params::has</a>(<span class="keyword">const</span> std::string &amp;key)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> values_.find(key) != values_.end(); }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">   23</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">Params::getInt</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keywordtype">int</span> defaultValue)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">auto</span> it = values_.find(key);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (it == values_.end()) <span class="keywordflow">return</span> defaultValue;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">char</span> *end = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">long</span>  <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>   = std::strtol(it-&gt;second.c_str(), &amp;end, 10);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (end == it-&gt;second.c_str()) <span class="keywordflow">return</span> defaultValue;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> int(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">   32</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">Params::getFloat</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keywordtype">float</span> defaultValue)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">auto</span> it = values_.find(key);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (it == values_.end()) <span class="keywordflow">return</span> defaultValue;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">char</span> *end = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>   = std::strtof(it-&gt;second.c_str(), &amp;end);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (end == it-&gt;second.c_str()) <span class="keywordflow">return</span> defaultValue;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Params.html#ace9a1ff0c60ec1111140e72cd40d5e21">   41</a></span>std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#ace9a1ff0c60ec1111140e72cd40d5e21">Params::getString</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;defaultValue)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">auto</span> it = values_.find(key);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> it == values_.end() ? defaultValue : it-&gt;second;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCloudField_8cpp_html_a7a3a89c2bc797e681ec9d4867aa39a5f"><div class="ttname"><a href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a></div><div class="ttdeci">uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00020">CloudField.cpp:20</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a48083b65ac9a863566dc3e3fff09a5b4"><div class="ttname"><a href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00235">Grass.cpp:235</a></div></div>
+<div class="ttc" id="aParams_8h_html"><div class="ttname"><a href="Params_8h.html">Params.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a2474a5474cbff19523a51eb1de01cda4"><div class="ttname"><a href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00144">Pathfinder.cpp:144</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a0645f3ad15b246f52b7d3d1fbe04cc0d"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">eve::procgen::Params::getSeed</a></div><div class="ttdeci">uint32_t getSeed() const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00008">Params.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a1d161ea4d699ee471f5bdc1467bc7e48"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a1d161ea4d699ee471f5bdc1467bc7e48">eve::procgen::Params::setSize</a></div><div class="ttdeci">void setSize(int width, int height)</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00010">Params.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a2f4088085aad76b56eefc62d31c4ab5e"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a2f4088085aad76b56eefc62d31c4ab5e">eve::procgen::Params::setInt</a></div><div class="ttdeci">void setInt(const std::string &amp;key, int value)</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00017">Params.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a60856961aa7e4f6ed58f0a9ef5c18c61"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">eve::procgen::Params::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00015">Params.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a95044446d104aae03b90dcda915ae865"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">eve::procgen::Params::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00014">Params.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_aa9134159e412c42af598ee6c39a4e152"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#aa9134159e412c42af598ee6c39a4e152">eve::procgen::Params::has</a></div><div class="ttdeci">bool has(const std::string &amp;key) const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00021">Params.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_aaaad0b9bad38ea7378e1b3c41825f101"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">eve::procgen::Params::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;key, float defaultValue) const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00032">Params.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_ac3e1e35db1edb15e4785b850790396cb"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#ac3e1e35db1edb15e4785b850790396cb">eve::procgen::Params::setSeed</a></div><div class="ttdeci">void setSeed(uint32_t seed)</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00007">Params.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_acce6b32828adb0ee22eedd3bd28e7743"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#acce6b32828adb0ee22eedd3bd28e7743">eve::procgen::Params::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;key, float value)</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00018">Params.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_ace9a1ff0c60ec1111140e72cd40d5e21"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#ace9a1ff0c60ec1111140e72cd40d5e21">eve::procgen::Params::getString</a></div><div class="ttdeci">std::string getString(const std::string &amp;key, const std::string &amp;defaultValue) const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00041">Params.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_adcc55d46d8177b000dccba61345441c7"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">eve::procgen::Params::getInt</a></div><div class="ttdeci">int getInt(const std::string &amp;key, int defaultValue) const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00023">Params.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_afd16cb59f3f566a6c1de0b2be82e50b3"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#afd16cb59f3f566a6c1de0b2be82e50b3">eve::procgen::Params::setString</a></div><div class="ttdeci">void setString(const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00019">Params.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="BuiltinAlgorithms_8cpp_source.html#l00013">BuiltinAlgorithms.cpp:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

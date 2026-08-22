@@ -1,0 +1,823 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/voxel/VoxelWorld.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bb2c7d78d36a3976db7e40beef6b2dea.html">voxel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VoxelWorld.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VoxelWorld_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="VoxelWorld_8h.html">voxel/VoxelWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainSampler_8h.html">procgen/heightmap/TerrainSampler.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ByteData_8h.html">data/ByteData.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="IGraphics3D_8h.html">graphics/IGraphics3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Thread_8h.html">thread/Thread.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1voxel.html">eve::voxel</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a3d884cee3628bde869f5c1ec6e04c402">VoxelWorld::~VoxelWorld</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a24f28ab50dd31716c8a08d6bfd1268aa">   19</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a24f28ab50dd31716c8a08d6bfd1268aa">VoxelWorld::setTerrainParams</a>(uint32_t <a class="code hl_variable" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>, uint8_t top, uint8_t sub, uint8_t stone, <span class="keywordtype">float</span> baseHeight,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                                  <span class="keywordtype">float</span> amplitude, <span class="keywordtype">float</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (!terrainSampler_) terrainSampler_ = std::make_unique&lt;procgen::TerrainSampler&gt;();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    terrainSampler_-&gt;setSeed(<a class="code hl_variable" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    terrainSampler_-&gt;setBase(0.f);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    terrainSampler_-&gt;setAmplitude(1.f);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    terrainSampler_-&gt;setClamp(<span class="keyword">true</span>, 0.f, 1.f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    terrainSampler_-&gt;setFrequency(<a class="code hl_variable" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a> &gt; 0.f ? <a class="code hl_variable" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a> : 1.f / 32.f);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    terrainTop_       = top;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    terrainSub_       = sub;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    terrainStone_     = stone;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    terrainBase_      = baseHeight;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    terrainAmplitude_ = amplitude &lt; 0.f ? 0.f : amplitude;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    terrainEnabled_   = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a174d480945288faa19b21460fd10aacf">   35</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a174d480945288faa19b21460fd10aacf">VoxelWorld::terrainHeightAt</a>(<span class="keywordtype">int</span> wx, <span class="keywordtype">int</span> wz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (!terrainSampler_) <span class="keywordflow">return</span> int(terrainBase_);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> e = terrainSampler_-&gt;sample(<span class="keywordtype">float</span>(wx), <span class="keywordtype">float</span>(wz));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> int(std::floor(terrainBase_ + terrainAmplitude_ * e));</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment">// Cap remesh worker count: enough to parallelize chunk meshing without</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">// oversubscribing small devices / browser pthread pools.</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">constexpr</span> <span class="keywordtype">int</span> kMaxRemeshWorkers = 4;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">   47</a></span><a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">VoxelWorld::getOrCreateChunk</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> uint64_t k = key(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">auto</span> it = chunks_.find(k);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (it != chunks_.end()) <span class="keywordflow">return</span> it-&gt;second.get();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">auto</span> chunk = std::make_unique&lt;Chunk&gt;(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *raw = chunk.<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">get</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    chunks_.emplace(k, std::move(chunk));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> raw;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">   57</a></span><a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">VoxelWorld::getChunk</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">auto</span> it = chunks_.find(key(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz));</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> it == chunks_.end() ? nullptr : it-&gt;second.get();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a26886f9bbe11ae14609c4b61a04a98ab">   62</a></span><span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">VoxelWorld::getChunk</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">auto</span> it = chunks_.find(key(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> it == chunks_.end() ? nullptr : it-&gt;second.get();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#ac0759862af32015880433bd7683e0bb5">   67</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ac0759862af32015880433bd7683e0bb5">VoxelWorld::hasChunk</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> chunks_.find(key(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz)) != chunks_.end();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#ab6676ac6a61fdfa6cc35491fed213255">   71</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ab6676ac6a61fdfa6cc35491fed213255">VoxelWorld::removeChunk</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz) { chunks_.erase(key(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz)); }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#af81bbb01fbd6123bc43b6c1f3e9e74bd">   73</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#af81bbb01fbd6123bc43b6c1f3e9e74bd">VoxelWorld::clear</a>() {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    chunks_.clear();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    visible_.clear();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    visibleChunkKeys_.clear();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#ae550c82894b168308b1232bac84f1b06">   79</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ae550c82894b168308b1232bac84f1b06">VoxelWorld::unloadChunksOutside</a>(<span class="keywordtype">int</span> centerX, <span class="keywordtype">int</span> centerY, <span class="keywordtype">int</span> centerZ, <span class="keywordtype">int</span> radiusChunks) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (radiusChunks &lt; 0) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::vector&lt;uint64_t&gt; evict;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    evict.reserve(chunks_.size() / 4);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;kv : chunks_) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        unpackKey(kv.first, <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">const</span> int64_t dx = int64_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) - centerX;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keyword">const</span> int64_t dy = int64_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) - centerY;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keyword">const</span> int64_t dz = int64_t(cz) - centerZ;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">if</span> (dx * dx + dy * dy + dz * dz &gt; r2) evict.push_back(kv.first);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">for</span> (uint64_t k : evict) chunks_.erase(k);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (!evict.empty()) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="comment">// Batch pointers may dangle after eviction; force re-selection.</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        visible_.clear();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        visibleChunkKeys_.clear();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">return</span> int(evict.size());</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed">  101</a></span><a class="code hl_struct" href="structeve_1_1voxel_1_1StreamStats.html">StreamStats</a> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed">VoxelWorld::streamAround</a>(<span class="keywordtype">int</span> centerX, <span class="keywordtype">int</span> centerY, <span class="keywordtype">int</span> centerZ, <span class="keywordtype">int</span> radiusChunks,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                     <span class="keyword">const</span> std::function&lt;<span class="keywordtype">void</span>(<a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> &amp;, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>)&gt; &amp;generator) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_struct" href="structeve_1_1voxel_1_1StreamStats.html">StreamStats</a> stats;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (radiusChunks &lt; 0) <span class="keywordflow">return</span> stats;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="comment">// Evict first so far-away dirty chunks are not remeshed below.</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    stats.<a class="code hl_variable" href="structeve_1_1voxel_1_1StreamStats.html#a956b32121e6fce457ea59f82fc76dbb6">evicted</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ae550c82894b168308b1232bac84f1b06">unloadChunksOutside</a>(centerX, centerY, centerZ, radiusChunks);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">const</span> int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dz = -radiusChunks; dz &lt;= radiusChunks; ++dz)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dy = -radiusChunks; dy &lt;= radiusChunks; ++dy)</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dx = -radiusChunks; dx &lt;= radiusChunks; ++dx) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                <span class="keyword">const</span> int64_t d2 = int64_t(dx) * dx + int64_t(dy) * dy + int64_t(dz) * dz;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                <span class="keywordflow">if</span> (d2 &gt; r2) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> nx = centerX + dx;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> ny = centerY + dy;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> nz = centerZ + dz;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ac0759862af32015880433bd7683e0bb5">hasChunk</a>(nx, ny, nz)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">getOrCreateChunk</a>(nx, ny, nz);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <span class="keywordflow">if</span> (generator)</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                    generator(*<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, nx, ny, nz);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (terrainEnabled_) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                    <span class="comment">// Heightmap terrain via procgen::TerrainSampler: one column</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                    <span class="comment">// per (x, z); sampling world coords keeps chunk seams flush.</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                    <span class="keyword">const</span> <span class="keywordtype">int</span> wy0 = ny * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lz = 0; lz &lt; <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>; ++lz)</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lx = 0; lx &lt; <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>; ++lx) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a174d480945288faa19b21460fd10aacf">terrainHeightAt</a>(nx * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> + lx,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                                                          nz * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> + lz);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ly = 0; ly &lt; <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>; ++ly) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                                <span class="keyword">const</span> <span class="keywordtype">int</span> wy = wy0 + ly;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                <span class="keywordflow">if</span> (wy &lt;= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 4)</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;set(lx, ly, lz, terrainStone_);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (wy &lt;= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 1)</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;set(lx, ly, lz, terrainSub_);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (wy == <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;set(lx, ly, lz, terrainTop_);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                            }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                        }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                ++stats.<a class="code hl_variable" href="structeve_1_1voxel_1_1StreamStats.html#a8d7d822b9276dfdbb15c141bceffcb7c">created</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">if</span> (stats.<a class="code hl_variable" href="structeve_1_1voxel_1_1StreamStats.html#a8d7d822b9276dfdbb15c141bceffcb7c">created</a> &gt; 0) <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#af8718b00b3b9130b91d490cc6b539ab2">remeshDirty</a>();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">return</span> stats;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>}</div>
+</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="keywordtype">void</span> putU32(std::vector&lt;uint8_t&gt; &amp;out, uint32_t <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    out.push_back(uint8_t(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>));</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    out.push_back(uint8_t(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &gt;&gt; 8));</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    out.push_back(uint8_t(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &gt;&gt; 16));</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    out.push_back(uint8_t(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &gt;&gt; 24));</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>}</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="keywordtype">void</span> putI32(std::vector&lt;uint8_t&gt; &amp;out, int32_t <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { putU32(out, uint32_t(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)); }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="keywordtype">bool</span> getU32(<span class="keyword">const</span> uint8_t *&amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> uint8_t *end, uint32_t &amp;out) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (end - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> &lt; 4) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    out = uint32_t(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[0]) | (uint32_t(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[1]) &lt;&lt; 8) | (uint32_t(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[2]) &lt;&lt; 16) |</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>          (uint32_t(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[3]) &lt;&lt; 24);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> += 4;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>}</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="keywordtype">bool</span> getI32(<span class="keyword">const</span> uint8_t *&amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> uint8_t *end, int32_t &amp;out) {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    uint32_t <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">if</span> (!getU32(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, end, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    out = int32_t(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>}</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="foldopen" id="foldopen00176" data-start="{" data-end="}">
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#af9e8749766e5e4949fee1b70ff452d43">  176</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#af9e8749766e5e4949fee1b70ff452d43">VoxelWorld::serializeWorld</a>(std::vector&lt;uint8_t&gt; &amp;out)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    out.clear();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keyword">const</span> <span class="keywordtype">char</span> magic[4] = {<span class="charliteral">&#39;E&#39;</span>, <span class="charliteral">&#39;V&#39;</span>, <span class="charliteral">&#39;V&#39;</span>, <span class="charliteral">&#39;X&#39;</span>};</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    out.insert(out.end(), magic, magic + 4);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    out.push_back(1);  <span class="comment">// version</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    putU32(out, uint32_t(chunks_.size()));</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="comment">// Deterministic output: sort chunk keys so saves are byte-stable.</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    std::vector&lt;uint64_t&gt; keys;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    keys.reserve(chunks_.size());</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;kv : chunks_) keys.push_back(kv.first);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    std::sort(keys.begin(), keys.end());</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">for</span> (uint64_t key : keys) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;chunk = chunks_.at(key);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        unpackKey(key, <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        putI32(out, int32_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>));</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        putI32(out, int32_t(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>));</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        putI32(out, int32_t(cz));</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keyword">const</span> uint8_t *raw = chunk-&gt;rawVoxels();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        out.insert(out.end(), raw, raw + <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="foldopen" id="foldopen00200" data-start="{" data-end="}">
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a756358459772894265cf8c10ba30e16f">  200</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a756358459772894265cf8c10ba30e16f">VoxelWorld::deserializeWorld</a>(<span class="keyword">const</span> uint8_t *data, <span class="keywordtype">size_t</span> size) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keyword">const</span> uint8_t *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keyword">const</span> uint8_t *end = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> + size;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (size &lt; 9 || std::memcmp(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="stringliteral">&quot;EVVX&quot;</span>, 4) != 0 || <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>[4] != 1) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> += 5;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    uint32_t count = 0;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">if</span> (!getU32(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, end, count)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> voxelBytes = size_t(<a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>) * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keywordflow">if</span> (uint64_t(count) &gt; (uint64_t(end - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)) / (12 + voxelBytes)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#af81bbb01fbd6123bc43b6c1f3e9e74bd">clear</a>();</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; count; ++i) {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        int32_t <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = 0, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = 0, cz = 0;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">if</span> (!getI32(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, end, <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) || !getI32(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, end, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) || !getI32(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, end, cz)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">if</span> (<span class="keywordtype">size_t</span>(end - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) &lt; voxelBytes) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">getOrCreateChunk</a>(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;setVoxelData(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> += voxelBytes;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    }</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}</div>
+</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="foldopen" id="foldopen00222" data-start="{" data-end="}">
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a11f8769ce11ce31b375daac8fad29ca7">  222</a></span><a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a11f8769ce11ce31b375daac8fad29ca7">VoxelWorld::saveWorld</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    std::vector&lt;uint8_t&gt; bytes;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#af9e8749766e5e4949fee1b70ff452d43">serializeWorld</a>(bytes);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a>(bytes.data(), bytes.size());</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>}</div>
+</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="foldopen" id="foldopen00228" data-start="{" data-end="}">
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#aa6c4e648ee402c3ad08fa4f6335bf08d">  228</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#aa6c4e648ee402c3ad08fa4f6335bf08d">VoxelWorld::loadWorld</a>(<a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *bytes) {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordflow">if</span> (!bytes) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a756358459772894265cf8c10ba30e16f">deserializeWorld</a>(<span class="keyword">static_cast&lt;</span><span class="keyword">const </span>uint8_t *<span class="keyword">&gt;</span>(bytes-&gt;<a class="code hl_function" href="classeve_1_1data_1_1ByteData.html#a2ed8ddbfb09764fb2dc66ff5289bcd27">getData</a>()), bytes-&gt;<a class="code hl_function" href="classeve_1_1data_1_1ByteData.html#a4d39a42ee52886926e6526633901c2c4">getSize</a>());</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>}</div>
+</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="foldopen" id="foldopen00233" data-start="{" data-end="}">
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#af8718b00b3b9130b91d490cc6b539ab2">  233</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#af8718b00b3b9130b91d490cc6b539ab2">VoxelWorld::remeshDirty</a>(<span class="keywordtype">int</span> maxThreads) {</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    std::vector&lt;Chunk *&gt; <a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>.reserve(chunks_.size());</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;kv : chunks_) {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keywordflow">if</span> (kv.second-&gt;isDirty()) <a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>.push_back(kv.second.get());</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> count = int(<a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>.size());</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keywordflow">if</span> (count == 0) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keyword">const</span> <span class="keyword">auto</span> remeshOne = [<span class="keyword">this</span>](<a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;remesh(types_, &amp;VoxelWorld::chunkNeighborSampler, <span class="keyword">this</span>);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    };</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordtype">int</span> workers = maxThreads;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keywordflow">if</span> (workers &lt;= 0) {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        workers = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::thread::hardware_concurrency());</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keywordflow">if</span> (workers &lt; 1) workers = 1;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">if</span> (workers &gt; kMaxRemeshWorkers) workers = kMaxRemeshWorkers;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    }</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordflow">if</span> (workers &lt;= 1 || count &lt;= 1) {</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">for</span> (<a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : <a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>) remeshOne(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="keywordflow">return</span> count;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    }</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="comment">// Parallel remesh through the engine JobSystem: each child task remeshes</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="comment">// its own slice of distinct chunks. The sampler only reads the chunk map</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="comment">// (no concurrent mutation), and each chunk is touched by exactly one task,</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="comment">// so this is safe. wait() on the loop joins every slice.</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keyword">auto</span> *jobs = thread::Thread::create()-&gt;getJobSystem();</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">thread::Job</a> *loop = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        loop = jobs-&gt;parallelFor(0, count,</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            [<span class="keyword">this</span>, &amp;<a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>, &amp;remeshOne](<span class="keywordtype">int</span> first, <span class="keywordtype">int</span> last) {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = first; k &lt; last; ++k) remeshOne(<a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>[<span class="keywordtype">size_t</span>(k)]);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            },</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            (count + workers - 1) / workers);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="comment">// Job allocation failed (resource limits): finish everything serially.</span></div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="comment">// Remesh is idempotent, so any chunks already handled are done twice.</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        <span class="keywordflow">for</span> (<a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : <a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>) remeshOne(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">return</span> count;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    }</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    loop-&gt;<a class="code hl_function" href="classeve_1_1thread_1_1Job.html#acbd69143b51b29e45da0f6dd7647f7c2">wait</a>();</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keyword">delete</span> loop;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordflow">return</span> count;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>}</div>
+</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="foldopen" id="foldopen00281" data-start="{" data-end="}">
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#ab44721e5ac826f8e2625c2eb450a46a8">  281</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ab44721e5ac826f8e2625c2eb450a46a8">VoxelWorld::selectVisible</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *viewProj16, <span class="keywordtype">float</span> eyeX, <span class="keywordtype">float</span> eyeY, <span class="keywordtype">float</span> eyeZ,</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                               <span class="keywordtype">float</span> viewRange, <span class="keywordtype">bool</span> faceCull) {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    visible_.clear();</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    visibleChunkKeys_.clear();</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keywordflow">if</span> (!viewProj16) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1voxel_1_1Frustum.html">Frustum</a> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a51cfac5b6e1dfe719651340d9cf1243e">frustum</a> = <a class="code hl_function" href="structeve_1_1voxel_1_1Frustum.html#a06bb6764c0ce60668ac377e4bd58dca3">Frustum::fromViewProjColumnMajor</a>(viewProj16);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> rangeSq = viewRange &gt; 0.f ? viewRange * viewRange : 0.f;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;kv : chunks_) {</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *chunk = kv.second.<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">get</a>();</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="keywordtype">float</span> minX, minY, minZ, maxX, maxY, maxZ;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        chunk-&gt;<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a1cc529a4bc20446911c45056bfa02493">worldAABB</a>(minX, minY, minZ, maxX, maxY, maxZ);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = (minX + maxX) * 0.5f;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = (minY + maxY) * 0.5f;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> cz = (minZ + maxZ) * 0.5f;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="keywordflow">if</span> (viewRange &gt; 0.f) {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dx = <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - eyeX;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dy = <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> - eyeY;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dz = cz - eyeZ;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            <span class="keywordflow">if</span> (dx * dx + dy * dy + dz * dz &gt; rangeSq) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        }</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a51cfac5b6e1dfe719651340d9cf1243e">frustum</a>.intersectsAABB(minX, minY, minZ, maxX, maxY, maxZ)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="comment">// Mesh only after range/frustum culling so edits far outside the view</span></div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="comment">// are not remeshed every frame.</span></div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        chunk-&gt;<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a181e76a67268d73fc4beb626df8e18d9">ensureMeshed</a>(types_, &amp;VoxelWorld::chunkNeighborSampler, <span class="keyword">this</span>);</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        visibleChunkKeys_.push_back(kv.first);</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> toCamX = eyeX - <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> toCamY = eyeY - <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> toCamZ = eyeZ - cz;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_function" href="namespaceeve_1_1voxel.html#a3bf088c68febdca4636c2640709e5596">faceDirCount</a>(); ++i) {</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>            <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> = <a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a>(i);</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> count = chunk-&gt;<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a6297b0e5d156e48e369f48f0a9163fbf">faceRectCount</a>(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>);</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>            <span class="keywordflow">if</span> (count &lt;= 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>            <span class="keywordflow">if</span> (faceCull) {</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                <span class="keywordtype">float</span> nx, ny, nz;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                <a class="code hl_function" href="namespaceeve_1_1voxel.html#a1bf527b362f928c7f2bd36dc4246ab5b">faceNormal</a>(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>, nx, ny, nz);</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                <span class="keywordflow">if</span> (nx * toCamX + ny * toCamY + nz * toCamZ &lt;= 0.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>            }</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>            <a class="code hl_struct" href="structeve_1_1voxel_1_1DrawBatch.html">DrawBatch</a> batch;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            batch.<a class="code hl_variable" href="structeve_1_1voxel_1_1DrawBatch.html#a4f25310980b778da914138f4cc0a2a98">chunk</a> = chunk;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            batch.<a class="code hl_variable" href="structeve_1_1voxel_1_1DrawBatch.html#ab3ef810a4837a696f0efd0ec05a74b24">dir</a> = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>            batch.<a class="code hl_variable" href="structeve_1_1voxel_1_1DrawBatch.html#a30424cd78e64e2eb6e7cd29700cc5fe1">packed</a> = chunk-&gt;<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a34b7aee0d6541977846d9ae82242c82d">facePackedData</a>(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>);</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            batch.<a class="code hl_variable" href="structeve_1_1voxel_1_1DrawBatch.html#ab8ed1dca6172b942e86d6201ee90b1a5">ao</a> = chunk-&gt;<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a014359085aac79431507bf34f742aa07">faceAOPackedData</a>(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>            batch.<a class="code hl_variable" href="structeve_1_1voxel_1_1DrawBatch.html#a352b680bbb62338d5ed7a9cea9ee98b0">count</a> = count;</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            visible_.push_back(batch);</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        }</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    }</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>}</div>
+</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
+<div class="foldopen" id="foldopen00339" data-start="{" data-end="}">
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#ac040fc403acb113c73725dbd2b743b97">  339</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ac040fc403acb113c73725dbd2b743b97">VoxelWorld::getVisibleChunkCoord</a>(<span class="keywordtype">int</span> index, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> &amp;cz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <span class="keywordtype">int</span>(visibleChunkKeys_.size())) {</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = cz = 0;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    }</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    unpackKey(visibleChunkKeys_[<span class="keywordtype">size_t</span>(index)], <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>}</div>
+</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
+<div class="foldopen" id="foldopen00347" data-start="{" data-end="}">
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#ad30442d5043bc3fd9079c330aed2545b">  347</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#ad30442d5043bc3fd9079c330aed2545b">VoxelWorld::getVisibleRectCount</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = 0;</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> : visible_) <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> += <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.count;</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>}</div>
+</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
+<div class="foldopen" id="foldopen00353" data-start="{" data-end="}">
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a769a8002320ff345d5b0fa578f79516b">  353</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a769a8002320ff345d5b0fa578f79516b">VoxelWorld::drawVisible</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1IGraphics3D.html">graphics::IGraphics3D</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *atlas, <span class="keywordtype">int</span> tilesPerRow) {</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    <span class="keywordflow">if</span> (!gfx) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> : visible_) {</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.chunk || !<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.packed || <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.count &lt;= 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>        gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1IGraphics3D.html#aa1e91ad21653b2601c39358df22051ec">drawVoxelFaceInstances</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.packed, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.count, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.chunk-&gt;originX(), <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.chunk-&gt;originY(),</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>                                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.chunk-&gt;originZ(), <a class="code hl_function" href="namespaceeve_1_1voxel.html#a273d1289285c5e1a066f885a2f57eb4c">faceDirName</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.dir), atlas, tilesPerRow,</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>                                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.ao);</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>}</div>
+</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
+<div class="foldopen" id="foldopen00363" data-start="{" data-end="}">
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">  363</a></span>uint8_t <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">VoxelWorld::getVoxel</a>(<span class="keywordtype">int</span> wx, <span class="keywordtype">int</span> wy, <span class="keywordtype">int</span> wz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = floorDiv(wx);</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = floorDiv(wy);</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> cz = floorDiv(wz);</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">getChunk</a>(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;get(wx - <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>, wy - <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>, wz - cz * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>);</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>}</div>
+</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
+<div class="foldopen" id="foldopen00372" data-start="{" data-end="}">
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a775041b7658fbf350885aebb6a1a31e2">  372</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a775041b7658fbf350885aebb6a1a31e2">VoxelWorld::setVoxel</a>(<span class="keywordtype">int</span> wx, <span class="keywordtype">int</span> wy, <span class="keywordtype">int</span> wz, uint8_t texId) {</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = floorDiv(wx);</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = floorDiv(wy);</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> cz = floorDiv(wz);</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> lx = wx - <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>;</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> ly = wy - <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>;</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> lz = wz - cz * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>;</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">getChunk</a>(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <span class="keywordflow">if</span> (texId == 0) {</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        <span class="comment">// Clearing an unallocated chunk is a no-op (air needs no storage).</span></div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;set(lx, ly, lz, 0);</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">getOrCreateChunk</a>(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;set(lx, ly, lz, texId);</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    }</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    markNeighborChunksDirty(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz, lx, ly, lz);</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>}</div>
+</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span> </div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span><span class="keywordtype">void</span> VoxelWorld::markNeighborChunksDirty(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> cz, <span class="keywordtype">int</span> lx, <span class="keywordtype">int</span> ly, <span class="keywordtype">int</span> lz) {</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    <span class="keyword">auto</span> mark = [<span class="keyword">this</span>](<span class="keywordtype">int</span> nx, <span class="keywordtype">int</span> ny, <span class="keywordtype">int</span> nz) {</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">getChunk</a>(nx, ny, nz)) <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>-&gt;markDirty();</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    };</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    <span class="keywordflow">if</span> (lx == 0) mark(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - 1, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    <span class="keywordflow">if</span> (lx == <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> - 1) mark(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> + 1, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz);</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    <span class="keywordflow">if</span> (ly == 0) mark(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> - 1, cz);</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    <span class="keywordflow">if</span> (ly == <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> - 1) mark(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> + 1, cz);</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    <span class="keywordflow">if</span> (lz == 0) mark(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz - 1);</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    <span class="keywordflow">if</span> (lz == <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> - 1) mark(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, cz + 1);</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>}</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span> </div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>uint8_t VoxelWorld::chunkNeighborSampler(<span class="keywordtype">void</span> *userData, <span class="keywordtype">int</span> chunkX, <span class="keywordtype">int</span> chunkY, <span class="keywordtype">int</span> chunkZ,</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>                                         <span class="keywordtype">int</span> localX, <span class="keywordtype">int</span> localY, <span class="keywordtype">int</span> localZ) {</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    <span class="keyword">const</span> <span class="keyword">auto</span> *self = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a77645fa6f08effc78f0548c6337b8179">VoxelWorld</a> *<span class="keyword">&gt;</span>(userData);</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> wx = chunkX * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> + localX;</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> wy = chunkY * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> + localY;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> wz = chunkZ * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> + localZ;</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="keywordflow">return</span> self-&gt;getVoxel(wx, wy, wz);</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>}</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span> </div>
+<div class="foldopen" id="foldopen00413" data-start="{" data-end="}">
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a6df7659ee62c5baccaf94707f84f7ddc">  413</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a6df7659ee62c5baccaf94707f84f7ddc">VoxelWorld::raycast</a>(<span class="keywordtype">float</span> ox, <span class="keywordtype">float</span> oy, <span class="keywordtype">float</span> oz, <span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy, <span class="keywordtype">float</span> dz,</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>                         <span class="keywordtype">float</span> maxDist, <span class="keywordtype">int</span> &amp;hitX, <span class="keywordtype">int</span> &amp;hitY, <span class="keywordtype">int</span> &amp;hitZ, <span class="keywordtype">int</span> &amp;prevX,</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>                         <span class="keywordtype">int</span> &amp;prevY, <span class="keywordtype">int</span> &amp;prevZ, <span class="keywordtype">int</span> &amp;faceX, <span class="keywordtype">int</span> &amp;faceY, <span class="keywordtype">int</span> &amp;faceZ)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> lenSq = dx * dx + dy * dy + dz * dz;</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    <span class="keywordflow">if</span> (lenSq &lt;= 1e-12f || maxDist &lt;= 0.f) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> invLen = 1.f / std::sqrt(lenSq);</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> rx = dx * invLen;</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> ry = dy * invLen;</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> rz = dz * invLen;</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span> </div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>    <span class="keywordtype">int</span> ix = int(std::floor(ox));</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>    <span class="keywordtype">int</span> iy = int(std::floor(oy));</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>    <span class="keywordtype">int</span> iz = int(std::floor(oz));</div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span> </div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">getVoxel</a>(ix, iy, iz) != 0) {</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>        hitX = prevX = ix;</div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>        hitY = prevY = iy;</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>        hitZ = prevZ = iz;</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>        faceX = faceY = faceZ = 0;</div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>    }</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span> </div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> inf = std::numeric_limits&lt;float&gt;::infinity();</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> stepX = rx &gt; 0.f ? 1 : -1;</div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> stepY = ry &gt; 0.f ? 1 : -1;</div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> stepZ = rz &gt; 0.f ? 1 : -1;</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> absInvX = rx != 0.f ? std::fabs(1.f / rx) : inf;</div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> absInvY = ry != 0.f ? std::fabs(1.f / ry) : inf;</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> absInvZ = rz != 0.f ? std::fabs(1.f / rz) : inf;</div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>    <span class="keywordtype">float</span> tMaxX = rx != 0.f ? (rx &gt; 0.f ? float(ix + 1) - ox : ox - float(ix)) * absInvX : inf;</div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>    <span class="keywordtype">float</span> tMaxY = ry != 0.f ? (ry &gt; 0.f ? float(iy + 1) - oy : oy - float(iy)) * absInvY : inf;</div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    <span class="keywordtype">float</span> tMaxZ = rz != 0.f ? (rz &gt; 0.f ? float(iz + 1) - oz : oz - float(iz)) * absInvZ : inf;</div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span> </div>
+<div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span>    prevX = ix;</div>
+<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>    prevY = iy;</div>
+<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span>    prevZ = iz;</div>
+<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span>    faceX = faceY = faceZ = 0;</div>
+<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span> </div>
+<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>    <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kMaxSteps = 4096;</div>
+<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iter = 0; iter &lt; kMaxSteps; ++iter) {</div>
+<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span>        <span class="keywordtype">float</span> t;</div>
+<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span>        <span class="keywordflow">if</span> (tMaxX &lt;= tMaxY &amp;&amp; tMaxX &lt;= tMaxZ) {</div>
+<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>            ix += stepX;</div>
+<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>            t = tMaxX;</div>
+<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>            tMaxX += absInvX;</div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>            faceX = -stepX;</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>            faceY = 0;</div>
+<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span>            faceZ = 0;</div>
+<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (tMaxY &lt;= tMaxZ) {</div>
+<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>            iy += stepY;</div>
+<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span>            t = tMaxY;</div>
+<div class="line"><a id="l00464" name="l00464"></a><span class="lineno">  464</span>            tMaxY += absInvY;</div>
+<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>            faceX = 0;</div>
+<div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span>            faceY = -stepY;</div>
+<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>            faceZ = 0;</div>
+<div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00469" name="l00469"></a><span class="lineno">  469</span>            iz += stepZ;</div>
+<div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span>            t = tMaxZ;</div>
+<div class="line"><a id="l00471" name="l00471"></a><span class="lineno">  471</span>            tMaxZ += absInvZ;</div>
+<div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>            faceX = 0;</div>
+<div class="line"><a id="l00473" name="l00473"></a><span class="lineno">  473</span>            faceY = 0;</div>
+<div class="line"><a id="l00474" name="l00474"></a><span class="lineno">  474</span>            faceZ = -stepZ;</div>
+<div class="line"><a id="l00475" name="l00475"></a><span class="lineno">  475</span>        }</div>
+<div class="line"><a id="l00476" name="l00476"></a><span class="lineno">  476</span>        <span class="keywordflow">if</span> (t &gt; maxDist) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00477" name="l00477"></a><span class="lineno">  477</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">getVoxel</a>(ix, iy, iz) != 0) {</div>
+<div class="line"><a id="l00478" name="l00478"></a><span class="lineno">  478</span>            hitX = ix;</div>
+<div class="line"><a id="l00479" name="l00479"></a><span class="lineno">  479</span>            hitY = iy;</div>
+<div class="line"><a id="l00480" name="l00480"></a><span class="lineno">  480</span>            hitZ = iz;</div>
+<div class="line"><a id="l00481" name="l00481"></a><span class="lineno">  481</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00482" name="l00482"></a><span class="lineno">  482</span>        }</div>
+<div class="line"><a id="l00483" name="l00483"></a><span class="lineno">  483</span>        prevX = ix;</div>
+<div class="line"><a id="l00484" name="l00484"></a><span class="lineno">  484</span>        prevY = iy;</div>
+<div class="line"><a id="l00485" name="l00485"></a><span class="lineno">  485</span>        prevZ = iz;</div>
+<div class="line"><a id="l00486" name="l00486"></a><span class="lineno">  486</span>    }</div>
+<div class="line"><a id="l00487" name="l00487"></a><span class="lineno">  487</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00488" name="l00488"></a><span class="lineno">  488</span>}</div>
+</div>
+<div class="line"><a id="l00489" name="l00489"></a><span class="lineno">  489</span> </div>
+<div class="foldopen" id="foldopen00490" data-start="{" data-end="}">
+<div class="line"><a id="l00490" name="l00490"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a79a62848a45e43c515fd2f0c1239c666">  490</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a79a62848a45e43c515fd2f0c1239c666">VoxelWorld::raycastScript</a>(<span class="keywordtype">float</span> ox, <span class="keywordtype">float</span> oy, <span class="keywordtype">float</span> oz, <span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy, <span class="keywordtype">float</span> dz,</div>
+<div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>                               <span class="keywordtype">float</span> maxDist) {</div>
+<div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>    raycastHit_ = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a6df7659ee62c5baccaf94707f84f7ddc">raycast</a>(ox, oy, oz, dx, dy, dz, maxDist, raycastHitX_, raycastHitY_,</div>
+<div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>                          raycastHitZ_, raycastPrevX_, raycastPrevY_, raycastPrevZ_,</div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                          raycastFaceX_, raycastFaceY_, raycastFaceZ_);</div>
+<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>    <span class="keywordflow">return</span> raycastHit_;</div>
+<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>}</div>
+</div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span> </div>
+<div class="foldopen" id="foldopen00498" data-start="{" data-end="}">
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a22f71e96a1aee7f00653be3fe9d5aa06">  498</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a22f71e96a1aee7f00653be3fe9d5aa06">VoxelWorld::setVoxelByName</a>(<span class="keywordtype">int</span> wx, <span class="keywordtype">int</span> wy, <span class="keywordtype">int</span> wz, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">int</span> orientation) {</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> *t = types_.<a class="code hl_function" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a66f88607e6b3beed04409a882310eda5">find</a>(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>    uint8_t <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>    <span class="keywordflow">if</span> (t) <span class="keywordtype">id</span> = types_.<a class="code hl_function" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#ad7f09e0305b906f5503fa5203ca0a1cd">variantId</a>(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, orientation);</div>
+<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>    <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a775041b7658fbf350885aebb6a1a31e2">setVoxel</a>(wx, wy, wz, <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>}</div>
+</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span> </div>
+<div class="foldopen" id="foldopen00505" data-start="{" data-end="}">
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a9b55d1fdea1514b748fa1b8ce74a9eb1">  505</a></span>std::string <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a9b55d1fdea1514b748fa1b8ce74a9eb1">VoxelWorld::getCubeTypeName</a>(<span class="keywordtype">int</span> wx, <span class="keywordtype">int</span> wy, <span class="keywordtype">int</span> wz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1voxel_1_1CubeType.html">CubeType</a> *t = types_.<a class="code hl_function" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a66f88607e6b3beed04409a882310eda5">find</a>(<a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">getVoxel</a>(wx, wy, wz));</div>
+<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>    <span class="keywordflow">return</span> t ? t-&gt;<a class="code hl_variable" href="structeve_1_1voxel_1_1CubeType.html#af88ebe8b326fce21879af6716457f3ad">name</a> : std::string{};</div>
+<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>}</div>
+</div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span> </div>
+<div class="foldopen" id="foldopen00510" data-start="{" data-end="}">
+<div class="line"><a id="l00510" name="l00510"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1VoxelWorld.html#a257c615f5a61cb7ea9e1b0a7e4e4902a">  510</a></span>uint8_t <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a257c615f5a61cb7ea9e1b0a7e4e4902a">VoxelWorld::getCubeTypeTex</a>(<span class="keywordtype">int</span> wx, <span class="keywordtype">int</span> wy, <span class="keywordtype">int</span> wz, <span class="keyword">const</span> std::string &amp;faceDir)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>    <a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>;</div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1voxel.html#a6e5c87315642e1ff71c9e4f18a30dc6f">faceDirFromName</a>(faceDir, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>)) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>    <span class="keyword">const</span> uint8_t <span class="keywordtype">id</span> = <a class="code hl_function" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">getVoxel</a>(wx, wy, wz);</div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1voxel.html#a3977c880fa9301729fe2b16d41afa954">resolveFaceTex</a>(types_, <span class="keywordtype">id</span>, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>);</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>}</div>
+</div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span> </div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>}  <span class="comment">// namespace eve::voxel</span></div>
+<div class="ttc" id="aByteData_8h_html"><div class="ttname"><a href="ByteData_8h.html">ByteData.h</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00031">CardTypes.cpp:31</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00032">CardTypes.cpp:32</a></div></div>
+<div class="ttc" id="aCloudField_8cpp_html_a7a3a89c2bc797e681ec9d4867aa39a5f"><div class="ttname"><a href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a></div><div class="ttdeci">uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00020">CloudField.cpp:20</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aIGraphics3D_8h_html"><div class="ttname"><a href="IGraphics3D_8h.html">IGraphics3D.h</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ad25edacba00e4d0666a9959053b7cc10"><div class="ttname"><a href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a></div><div class="ttdeci">bool dirty</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00153">Pathfinder.cpp:153</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00444">RenderSystem3D.cpp:444</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a51cfac5b6e1dfe719651340d9cf1243e"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a51cfac5b6e1dfe719651340d9cf1243e">frustum</a></div><div class="ttdeci">FrustumPlanes frustum</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00488">RenderSystem3D.cpp:488</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_a6f364afbe132c4ecfea48bde1b0618ba"><div class="ttname"><a href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a></div><div class="ttdeci">int d</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aTerrainSampler_8h_html"><div class="ttname"><a href="TerrainSampler_8h.html">TerrainSampler.h</a></div></div>
+<div class="ttc" id="aThread_8h_html"><div class="ttname"><a href="Thread_8h.html">Thread.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a1d28dec57cce925ad92342891bd71e7c"><div class="ttname"><a href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00122">TreeMesh.cpp:122</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00121">TreeMesh.cpp:121</a></div></div>
+<div class="ttc" id="aVoxelWorld_8h_html"><div class="ttname"><a href="VoxelWorld_8h.html">VoxelWorld.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a></div><div class="ttdoc">In-memory byte buffer implementing eve::Data (ref-counted).</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8h_source.html#l00011">ByteData.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html_a2ed8ddbfb09764fb2dc66ff5289bcd27"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html#a2ed8ddbfb09764fb2dc66ff5289bcd27">eve::data::ByteData::getData</a></div><div class="ttdeci">void * getData() const override</div><div class="ttdoc">Gets a pointer to the data. This pointer will obviously not be valid if the Data object is destroyed.</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8cpp_source.html#l00047">ByteData.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html_a4d39a42ee52886926e6526633901c2c4"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html#a4d39a42ee52886926e6526633901c2c4">eve::data::ByteData::getSize</a></div><div class="ttdeci">size_t getSize() const override</div><div class="ttdoc">Gets the size of the Data in bytes.</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8cpp_source.html#l00049">ByteData.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IGraphics3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></div><div class="ttdoc">3D frame / mesh / light / shadow rendering surface.</div><div class="ttdef"><b>Definition</b> <a href="IGraphics3D_8h_source.html#l00028">IGraphics3D.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IGraphics3D_html_aa1e91ad21653b2601c39358df22051ec"><div class="ttname"><a href="classeve_1_1graphics_1_1IGraphics3D.html#aa1e91ad21653b2601c39358df22051ec">eve::graphics::IGraphics3D::drawVoxelFaceInstances</a></div><div class="ttdeci">virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY, float originZ, const std::string &amp;faceDir, Texture *atlas, int tilesPerRow=16, const uint32_t *ao=nullptr)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00017">Texture.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html">eve::thread::Job</a></div><div class="ttdoc">Handle to a single job inside a JobSystem.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00041">JobSystem.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_acbd69143b51b29e45da0f6dd7647f7c2"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#acbd69143b51b29e45da0f6dd7647f7c2">eve::thread::Job::wait</a></div><div class="ttdeci">virtual void wait()=0</div><div class="ttdoc">Block until this job finishes (done or failed).</div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html">eve::voxel::Chunk</a></div><div class="ttdoc">One 32³ voxel chunk with six direction-sorted packed-rect instance buffers. Coordinates: chunk (cx,...</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00018">Chunk.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a014359085aac79431507bf34f742aa07"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a014359085aac79431507bf34f742aa07">eve::voxel::Chunk::faceAOPackedData</a></div><div class="ttdeci">const uint32_t * faceAOPackedData(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00103">Chunk.h:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a181e76a67268d73fc4beb626df8e18d9"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a181e76a67268d73fc4beb626df8e18d9">eve::voxel::Chunk::ensureMeshed</a></div><div class="ttdeci">void ensureMeshed(const CubeTypeRegistry &amp;types=CubeTypeRegistry::empty(), ChunkSampler sampler=nullptr, void *samplerUserData=nullptr)</div><div class="ttdoc">Ensure mesh is up to date; remesh if dirty.</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00082">Chunk.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a1cc529a4bc20446911c45056bfa02493"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a1cc529a4bc20446911c45056bfa02493">eve::voxel::Chunk::worldAABB</a></div><div class="ttdeci">void worldAABB(float &amp;minX, float &amp;minY, float &amp;minZ, float &amp;maxX, float &amp;maxY, float &amp;maxZ) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00032">Chunk.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a34b7aee0d6541977846d9ae82242c82d"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a34b7aee0d6541977846d9ae82242c82d">eve::voxel::Chunk::facePackedData</a></div><div class="ttdeci">const uint32_t * facePackedData(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00094">Chunk.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a6297b0e5d156e48e369f48f0a9163fbf"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a6297b0e5d156e48e369f48f0a9163fbf">eve::voxel::Chunk::faceRectCount</a></div><div class="ttdeci">int faceRectCount(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00092">Chunk.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_abd1de75aa70dbef569278cd680b152a1"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">eve::voxel::Chunk::get</a></div><div class="ttdeci">uint8_t get(int x, int y, int z) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00042">Chunk.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1CubeTypeRegistry_html_a66f88607e6b3beed04409a882310eda5"><div class="ttname"><a href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a66f88607e6b3beed04409a882310eda5">eve::voxel::CubeTypeRegistry::find</a></div><div class="ttdeci">const CubeType * find(const std::string &amp;name) const</div><div class="ttdoc">按名字返回 0 度变体；未找到返回 nullptr。</div><div class="ttdef"><b>Definition</b> <a href="CubeTypeRegistry_8cpp_source.html#l00098">CubeTypeRegistry.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1CubeTypeRegistry_html_ad7f09e0305b906f5503fa5203ca0a1cd"><div class="ttname"><a href="classeve_1_1voxel_1_1CubeTypeRegistry.html#ad7f09e0305b906f5503fa5203ca0a1cd">eve::voxel::CubeTypeRegistry::variantId</a></div><div class="ttdeci">uint8_t variantId(const std::string &amp;name, int orientation) const</div><div class="ttdoc">名字 + orientation(0..3) 对应的具体类型 id；非方向性类型忽略 orientation。</div><div class="ttdef"><b>Definition</b> <a href="CubeTypeRegistry_8cpp_source.html#l00109">CubeTypeRegistry.cpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a11f8769ce11ce31b375daac8fad29ca7"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a11f8769ce11ce31b375daac8fad29ca7">eve::voxel::VoxelWorld::saveWorld</a></div><div class="ttdeci">data::ByteData * saveWorld() const</div><div class="ttdoc">Script-facing wrappers around serialize/deserialize.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00222">VoxelWorld.cpp:222</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a174d480945288faa19b21460fd10aacf"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a174d480945288faa19b21460fd10aacf">eve::voxel::VoxelWorld::terrainHeightAt</a></div><div class="ttdeci">int terrainHeightAt(int wx, int wz) const</div><div class="ttdoc">Terrain height (world blocks) at a column for the configured seed.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00035">VoxelWorld.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a1fb6fd02a1b10aeee452b9aa4a9ae7ed"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed">eve::voxel::VoxelWorld::streamAround</a></div><div class="ttdeci">StreamStats streamAround(int centerX, int centerY, int centerZ, int radiusChunks, const std::function&lt; void(Chunk &amp;, int, int, int)&gt; &amp;generator={})</div><div class="ttdoc">Player-centered streaming: evict chunks outside radiusChunks, then allocate + fill + mesh missing chu...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00101">VoxelWorld.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a22f71e96a1aee7f00653be3fe9d5aa06"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a22f71e96a1aee7f00653be3fe9d5aa06">eve::voxel::VoxelWorld::setVoxelByName</a></div><div class="ttdeci">void setVoxelByName(int wx, int wy, int wz, const std::string &amp;name, int orientation=0)</div><div class="ttdoc">按方块名 + orientation(0..3) 设置体素；内部解析为具体类型 id 后写 Chunk。 未注册的名字按空气(0)处理。</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00498">VoxelWorld.cpp:498</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a24f28ab50dd31716c8a08d6bfd1268aa"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a24f28ab50dd31716c8a08d6bfd1268aa">eve::voxel::VoxelWorld::setTerrainParams</a></div><div class="ttdeci">void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight, float amplitude, float scale)</div><div class="ttdoc">Configure the built-in terrain generator used by streamAround(). The sampling itself lives in procgen...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00019">VoxelWorld.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a257c615f5a61cb7ea9e1b0a7e4e4902a"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a257c615f5a61cb7ea9e1b0a7e4e4902a">eve::voxel::VoxelWorld::getCubeTypeTex</a></div><div class="ttdeci">uint8_t getCubeTypeTex(int wx, int wy, int wz, const std::string &amp;faceDir) const</div><div class="ttdoc">该体素在某面方向上的纹理 id（faceDir 如 &quot;posX&quot;/&quot;+y&quot;/&quot;negZ&quot;）。</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00510">VoxelWorld.cpp:510</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a2fb346bb73fd9750d9c79a96d5856250"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">eve::voxel::VoxelWorld::getVoxel</a></div><div class="ttdeci">uint8_t getVoxel(int wx, int wy, int wz) const</div><div class="ttdoc">World-space voxel get/set. Air (0) never allocates a chunk; a border edit also invalidates the adjace...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00363">VoxelWorld.cpp:363</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a3d884cee3628bde869f5c1ec6e04c402"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a3d884cee3628bde869f5c1ec6e04c402">eve::voxel::VoxelWorld::~VoxelWorld</a></div><div class="ttdeci">~VoxelWorld()</div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a4504d0cf863ba7d76e4b2ad55b96d297"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">eve::voxel::VoxelWorld::getOrCreateChunk</a></div><div class="ttdeci">Chunk * getOrCreateChunk(int cx, int cy, int cz)</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00047">VoxelWorld.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a6df7659ee62c5baccaf94707f84f7ddc"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a6df7659ee62c5baccaf94707f84f7ddc">eve::voxel::VoxelWorld::raycast</a></div><div class="ttdeci">bool raycast(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist, int &amp;hitX, int &amp;hitY, int &amp;hitZ, int &amp;prevX, int &amp;prevY, int &amp;prevZ, int &amp;faceX, int &amp;faceY, int &amp;faceZ) const</div><div class="ttdoc">Voxel raycast (Amanatides &amp; Woo DDA). Returns true when a solid voxel is found within maxDist world u...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00413">VoxelWorld.cpp:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a756358459772894265cf8c10ba30e16f"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a756358459772894265cf8c10ba30e16f">eve::voxel::VoxelWorld::deserializeWorld</a></div><div class="ttdeci">bool deserializeWorld(const uint8_t *data, size_t size)</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00200">VoxelWorld.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a769a8002320ff345d5b0fa578f79516b"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a769a8002320ff345d5b0fa578f79516b">eve::voxel::VoxelWorld::drawVisible</a></div><div class="ttdeci">void drawVisible(graphics::IGraphics3D *gfx, graphics::Texture *atlas, int tilesPerRow=16)</div><div class="ttdoc">Issue Graphics::drawVoxelFaceInstances for every visible batch. Requires begin3DFrame + setMesh3DView...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00353">VoxelWorld.cpp:353</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a775041b7658fbf350885aebb6a1a31e2"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a775041b7658fbf350885aebb6a1a31e2">eve::voxel::VoxelWorld::setVoxel</a></div><div class="ttdeci">void setVoxel(int wx, int wy, int wz, uint8_t texId)</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00372">VoxelWorld.cpp:372</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a77645fa6f08effc78f0548c6337b8179"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a77645fa6f08effc78f0548c6337b8179">eve::voxel::VoxelWorld::VoxelWorld</a></div><div class="ttdeci">VoxelWorld()=default</div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a79a62848a45e43c515fd2f0c1239c666"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a79a62848a45e43c515fd2f0c1239c666">eve::voxel::VoxelWorld::raycastScript</a></div><div class="ttdeci">bool raycastScript(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist)</div><div class="ttdoc">Script-facing raycast: stores the last result, returns hit/miss.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00490">VoxelWorld.cpp:490</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_a9b55d1fdea1514b748fa1b8ce74a9eb1"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#a9b55d1fdea1514b748fa1b8ce74a9eb1">eve::voxel::VoxelWorld::getCubeTypeName</a></div><div class="ttdeci">std::string getCubeTypeName(int wx, int wy, int wz) const</div><div class="ttdoc">该体素所属方块类型名（未注册或空气返回空串）。</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00505">VoxelWorld.cpp:505</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_aa6c4e648ee402c3ad08fa4f6335bf08d"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#aa6c4e648ee402c3ad08fa4f6335bf08d">eve::voxel::VoxelWorld::loadWorld</a></div><div class="ttdeci">bool loadWorld(data::ByteData *bytes)</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00228">VoxelWorld.cpp:228</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_ab44721e5ac826f8e2625c2eb450a46a8"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#ab44721e5ac826f8e2625c2eb450a46a8">eve::voxel::VoxelWorld::selectVisible</a></div><div class="ttdeci">void selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange, bool faceCull=true)</div><div class="ttdoc">Select chunks/faces to draw.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00281">VoxelWorld.cpp:281</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_ab6676ac6a61fdfa6cc35491fed213255"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#ab6676ac6a61fdfa6cc35491fed213255">eve::voxel::VoxelWorld::removeChunk</a></div><div class="ttdeci">void removeChunk(int cx, int cy, int cz)</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00071">VoxelWorld.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_abd8f2d0cb643890e7502837a70591be2"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">eve::voxel::VoxelWorld::getChunk</a></div><div class="ttdeci">Chunk * getChunk(int cx, int cy, int cz)</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00057">VoxelWorld.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_ac040fc403acb113c73725dbd2b743b97"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#ac040fc403acb113c73725dbd2b743b97">eve::voxel::VoxelWorld::getVisibleChunkCoord</a></div><div class="ttdeci">void getVisibleChunkCoord(int index, int &amp;cx, int &amp;cy, int &amp;cz) const</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00339">VoxelWorld.cpp:339</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_ac0759862af32015880433bd7683e0bb5"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#ac0759862af32015880433bd7683e0bb5">eve::voxel::VoxelWorld::hasChunk</a></div><div class="ttdeci">bool hasChunk(int cx, int cy, int cz) const</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00067">VoxelWorld.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_ad30442d5043bc3fd9079c330aed2545b"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#ad30442d5043bc3fd9079c330aed2545b">eve::voxel::VoxelWorld::getVisibleRectCount</a></div><div class="ttdeci">int getVisibleRectCount() const</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00347">VoxelWorld.cpp:347</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_ae550c82894b168308b1232bac84f1b06"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#ae550c82894b168308b1232bac84f1b06">eve::voxel::VoxelWorld::unloadChunksOutside</a></div><div class="ttdeci">int unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks)</div><div class="ttdoc">Streaming eviction: drop chunks whose center is farther than radiusChunks chunk units from (centerX,...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00079">VoxelWorld.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_af81bbb01fbd6123bc43b6c1f3e9e74bd"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#af81bbb01fbd6123bc43b6c1f3e9e74bd">eve::voxel::VoxelWorld::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00073">VoxelWorld.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_af8718b00b3b9130b91d490cc6b539ab2"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#af8718b00b3b9130b91d490cc6b539ab2">eve::voxel::VoxelWorld::remeshDirty</a></div><div class="ttdeci">int remeshDirty(int maxThreads=0)</div><div class="ttdoc">Remesh every dirty chunk. Returns number remeshed.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00233">VoxelWorld.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1VoxelWorld_html_af9e8749766e5e4949fee1b70ff452d43"><div class="ttname"><a href="classeve_1_1voxel_1_1VoxelWorld.html#af9e8749766e5e4949fee1b70ff452d43">eve::voxel::VoxelWorld::serializeWorld</a></div><div class="ttdeci">void serializeWorld(std::vector&lt; uint8_t &gt; &amp;out) const</div><div class="ttdoc">Persistence: serialize every chunk (coords + raw voxels) into out. Format is portable little-endian: ...</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8cpp_source.html#l00176">VoxelWorld.cpp:176</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html"><div class="ttname"><a href="namespaceeve_1_1voxel.html">eve::voxel</a></div><div class="ttdoc">方块类型定义：名字、各面图集纹理、方向性、组合声明。 方向性方块在注册时按 orientation 绕 Y 轴展开成多个&quot;具体类型&quot;变体， 每个变体持有旋转后的各面纹理；渲染端只消费纹理 id，不接触 ...</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00012">Chunk.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a0bc3632942a212e240afaf1c156d6f9a"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">eve::voxel::kChunkSize</a></div><div class="ttdeci">constexpr int kChunkSize</div><div class="ttdoc">Chunk edge length in voxels (fixed).</div><div class="ttdef"><b>Definition</b> <a href="VoxelPack_8h_source.html#l00008">VoxelPack.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a1bf527b362f928c7f2bd36dc4246ab5b"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a1bf527b362f928c7f2bd36dc4246ab5b">eve::voxel::faceNormal</a></div><div class="ttdeci">void faceNormal(FaceDir d, float &amp;nx, float &amp;ny, float &amp;nz)</div><div class="ttdoc">Outward unit normal for the face.</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00085">FaceDir.h:85</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a273d1289285c5e1a066f885a2f57eb4c"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a273d1289285c5e1a066f885a2f57eb4c">eve::voxel::faceDirName</a></div><div class="ttdeci">const char * faceDirName(FaceDir d)</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00029">FaceDir.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a3977c880fa9301729fe2b16d41afa954"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a3977c880fa9301729fe2b16d41afa954">eve::voxel::resolveFaceTex</a></div><div class="ttdeci">uint8_t resolveFaceTex(const CubeTypeRegistry &amp;types, uint8_t id, FaceDir dir)</div><div class="ttdoc">求某个体素在某面方向上的实际图集纹理 id。 未注册的 id 退化为“所有面 = 原 id”（向后兼容：体素值即纹理 id）。</div><div class="ttdef"><b>Definition</b> <a href="CubeTypeRegistry_8h_source.html#l00066">CubeTypeRegistry.h:66</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a3bf088c68febdca4636c2640709e5596"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a3bf088c68febdca4636c2640709e5596">eve::voxel::faceDirCount</a></div><div class="ttdeci">constexpr int faceDirCount()</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00027">FaceDir.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a6e5c87315642e1ff71c9e4f18a30dc6f"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a6e5c87315642e1ff71c9e4f18a30dc6f">eve::voxel::faceDirFromName</a></div><div class="ttdeci">bool faceDirFromName(const std::string &amp;name, FaceDir &amp;out)</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00041">FaceDir.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_af3d82bdb81c03035006348742ee8e877"><div class="ttname"><a href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">eve::voxel::FaceDir</a></div><div class="ttdeci">FaceDir</div><div class="ttdoc">Six axis-aligned face directions. Each chunk keeps a separate instance buffer per direction so camera...</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00017">FaceDir.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1CubeType_html"><div class="ttname"><a href="structeve_1_1voxel_1_1CubeType.html">eve::voxel::CubeType</a></div><div class="ttdef"><b>Definition</b> <a href="CubeType_8h_source.html#l00014">CubeType.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1CubeType_html_af88ebe8b326fce21879af6716457f3ad"><div class="ttname"><a href="structeve_1_1voxel_1_1CubeType.html#af88ebe8b326fce21879af6716457f3ad">eve::voxel::CubeType::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="CubeType_8h_source.html#l00015">CubeType.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1DrawBatch_html"><div class="ttname"><a href="structeve_1_1voxel_1_1DrawBatch.html">eve::voxel::DrawBatch</a></div><div class="ttdoc">One draw batch: all packed rects of one face direction for one chunk.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00039">VoxelWorld.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1DrawBatch_html_a30424cd78e64e2eb6e7cd29700cc5fe1"><div class="ttname"><a href="structeve_1_1voxel_1_1DrawBatch.html#a30424cd78e64e2eb6e7cd29700cc5fe1">eve::voxel::DrawBatch::packed</a></div><div class="ttdeci">const uint32_t * packed</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00042">VoxelWorld.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1DrawBatch_html_a352b680bbb62338d5ed7a9cea9ee98b0"><div class="ttname"><a href="structeve_1_1voxel_1_1DrawBatch.html#a352b680bbb62338d5ed7a9cea9ee98b0">eve::voxel::DrawBatch::count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00044">VoxelWorld.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1DrawBatch_html_a4f25310980b778da914138f4cc0a2a98"><div class="ttname"><a href="structeve_1_1voxel_1_1DrawBatch.html#a4f25310980b778da914138f4cc0a2a98">eve::voxel::DrawBatch::chunk</a></div><div class="ttdeci">const Chunk * chunk</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00040">VoxelWorld.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1DrawBatch_html_ab3ef810a4837a696f0efd0ec05a74b24"><div class="ttname"><a href="structeve_1_1voxel_1_1DrawBatch.html#ab3ef810a4837a696f0efd0ec05a74b24">eve::voxel::DrawBatch::dir</a></div><div class="ttdeci">FaceDir dir</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00041">VoxelWorld.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1DrawBatch_html_ab8ed1dca6172b942e86d6201ee90b1a5"><div class="ttname"><a href="structeve_1_1voxel_1_1DrawBatch.html#ab8ed1dca6172b942e86d6201ee90b1a5">eve::voxel::DrawBatch::ao</a></div><div class="ttdeci">const uint32_t * ao</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00043">VoxelWorld.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1Frustum_html"><div class="ttname"><a href="structeve_1_1voxel_1_1Frustum.html">eve::voxel::Frustum</a></div><div class="ttdoc">Six frustum planes in ax+by+cz+d &gt;= 0 form (normals point inward).</div><div class="ttdef"><b>Definition</b> <a href="Frustum_8h_source.html#l00008">Frustum.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1Frustum_html_a06bb6764c0ce60668ac377e4bd58dca3"><div class="ttname"><a href="structeve_1_1voxel_1_1Frustum.html#a06bb6764c0ce60668ac377e4bd58dca3">eve::voxel::Frustum::fromViewProjColumnMajor</a></div><div class="ttdeci">static Frustum fromViewProjColumnMajor(const float *m16)</div><div class="ttdoc">Extract from a column-major 4x4 view-projection matrix (RH + Vulkan ZO). Layout matches glm::mat4 mem...</div><div class="ttdef"><b>Definition</b> <a href="Frustum_8h_source.html#l00015">Frustum.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1StreamStats_html"><div class="ttname"><a href="structeve_1_1voxel_1_1StreamStats.html">eve::voxel::StreamStats</a></div><div class="ttdoc">Result of a streaming pass.</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00033">VoxelWorld.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1StreamStats_html_a8d7d822b9276dfdbb15c141bceffcb7c"><div class="ttname"><a href="structeve_1_1voxel_1_1StreamStats.html#a8d7d822b9276dfdbb15c141bceffcb7c">eve::voxel::StreamStats::created</a></div><div class="ttdeci">int created</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00034">VoxelWorld.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1voxel_1_1StreamStats_html_a956b32121e6fce457ea59f82fc76dbb6"><div class="ttname"><a href="structeve_1_1voxel_1_1StreamStats.html#a956b32121e6fce457ea59f82fc76dbb6">eve::voxel::StreamStats::evicted</a></div><div class="ttdeci">int evicted</div><div class="ttdef"><b>Definition</b> <a href="VoxelWorld_8h_source.html#l00035">VoxelWorld.h:35</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 声明式 UI模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">声明式 UI模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>声明式 UI模块</h1>
+<p><b>脚本入口：</b> <code>eve.UI()</code></p>
+<p>构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">ui.beginBuild();</div>
+<div class="line">ui.beginWindow(&quot;HUD&quot;, &quot;root&quot;);</div>
+<div class="line">ui.text(&quot;Ready&quot;, &quot;status&quot;);</div>
+<div class="line">ui.button(&quot;Start&quot;, &quot;start&quot;);</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.mountBuildAs(&quot;hud&quot;);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>UI</code> 管理多个命名 Host；Host 保存控件树；稳定 ID 标识控件；<code>UIComponent.build()</code> 可封装可复用树。事件返回完整 host/id 路径，修改接口在当前 selected host 中查找。</p>
+<h2>目标导向指南</h2>
+<h3>创建可交互 HUD</h3>
+<p><code>beginBuild()</code> 后用 Window/Flex/Group/List 组织控件，给每个交互控件稳定 ID，完成后 <code>mountBuildAs("hud")</code>。更新阶段循环 <code>consumeClick()</code> / <code>consumeChange()</code>，渲染阶段调用 <code>beginFrameAndRender()</code>。</p>
+<h3>使用弹性布局（Flex）</h3>
+<p><code>beginRow</code> / <code>beginColumn</code> / <code>beginFlex("row"|"column", id, gap)</code> 自动排列子控件，无需手写 <code>sameLine</code>。<code>spacer()</code> 吸收剩余空间；<code>setItemFlexGrow</code> / <code>setItemSize</code> 作用在刚添加的子项上；<code>setFlexAlign</code> / <code>setFlexJustify</code> 配置当前 Flex 容器。</p>
+<div class="fragment"><div class="line">ui.beginRow(&quot;toolbar&quot;, 8.0);</div>
+<div class="line">ui.setFlexJustify(&quot;space-between&quot;);</div>
+<div class="line">ui.button(&quot;Save&quot;, &quot;save&quot;);</div>
+<div class="line">ui.spacer(&quot;sp&quot;);</div>
+<div class="line">ui.button(&quot;Quit&quot;, &quot;quit&quot;);</div>
+<div class="line">ui.end();</div>
+</div><!-- fragment --><h3>更新而不重建整个 UI</h3>
+<p>文本变化用 <code>setText(id, value)</code>，进度用 <code>setValue()</code>，显示隐藏用 <code>setVisible()</code>；结构变化才重新 build 并 <code>remountBuildAs()</code>。多宿主时先 <code>select(host)</code> 再按局部 ID 操作。</p>
+<h3>切换统一主题</h3>
+<p>内置 <code>dark</code> / <code>light</code> 预设共享圆角、边框、间距与字体缩放，只切换配色。推荐 <code>setTheme("dark")</code> / <code>setTheme("light")</code>，用 <code>getTheme()</code> 读取当前名；也可用 <code>setThemeDark()</code> / <code>setThemeLight()</code>。DPI 用 <code>setScale()</code>，主题几何会按比例缩放。</p>
+<h2>常见问题</h2>
+<ul>
+<li>每帧重新 mount，丢失输入焦点与控件状态。</li>
+<li>多个控件使用同一 ID。</li>
+<li>未循环消费全部 click/change，队列在后续帧才清空。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>beginBuild()</code>、<code>beginChild()</code>、<code>beginCollapsing()</code>、<code>beginColumn()</code>、<code>beginFlex()</code>、<code>beginFrameAndRender()</code>、<code>beginGroup()</code>、<code>beginList()</code>、<code>beginRow()</code>、<code>beginScrollList()</code>、<code>beginWindow()</code>、<code>bindOwner()</code></li>
+<li><code>animateHostPos()</code>、<code>button()</code>、<code>checkbox()</code>、<code>combo()</code>、<code>consumeChange()</code>、<code>consumeClick()</code>、<code>dispatchEvents()</code>、<code>end()</code>、<code>getChecked()</code>、<code>getName()</code></li>
+<li><code>getScale()</code>、<code>getTheme()</code>、<code>getValue()</code>、<code>getValueText()</code>、<code>initBackend()</code>、<code>inputText()</code>、<code>isBackendReady()</code>、<code>listItem()</code>、<code>mountBuild()</code></li>
+<li><code>mountBuildAs()</code>、<code>mountSimple()</code>、<code>progress()</code>、<code>remountBuildAs()</code>、<code>sameLine()</code>、<code>select()</code>、<code>separator()</code>、<code>setChecked()</code></li>
+<li><code>setFlexAlign()</code>、<code>setFlexJustify()</code>、<code>setHostAnchor()</code>、<code>setHostLayer()</code>、<code>setHostModal()</code>、<code>setHostOverlay()</code>、<code>setHostPercent()</code>、<code>setHostPos()</code>、<code>setHostSize()</code>、<code>setHostVisible()</code>、<code>setImageCornerRadius()</code>、<code>setImageNinePatch()</code>、<code>setImageTint()</code>、<code>setImageUv()</code>、<code>setItemAbsolute()</code>、<code>setItemFlexGrow()</code>、<code>setItemMargin()</code>、<code>setItemMaxSize()</code>、<code>setItemMinSize()</code>、<code>setItemPadding()</code>、<code>setItemPercent()</code>、<code>setItemSize()</code>、<code>setNavGamepad()</code>、<code>setNavKeyboard()</code>、<code>setScale()</code>、<code>setText()</code></li>
+<li><code>setTextWrap()</code>、<code>setTheme()</code>、<code>setThemeDark()</code>、<code>setThemeLight()</code>、<code>setValue()</code>、<code>setValueText()</code>、<code>setVisible()</code>、<code>slider()</code>、<code>spacer()</code>、<code>text()</code>、<code>textWrapped()</code>、<code>wantCaptureKeyboard()</code></li>
+<li><code>wantCaptureMouse()</code></li>
+<li><code><a class="el" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image()</a></code>、<code>imageButton()</code>、<code>onClick()</code>、<code>onChange()</code>、<code>saveTreeJson()</code>、<code>loadTreeJson()</code>、<code>getStats()</code></li>
+<li><code>viewport()</code>、<code>viewportCanvas()</code>、<code>viewportHovered()</code>、<code>viewportActive()</code>、<code>viewportMouseX()</code>、<code>viewportMouseY()</code>、<code>viewportDragDX()</code>、<code>viewportDragDY()</code>、<code>viewportWheel()</code></li>
+</ul>
+<h2>内嵌渲染视口（Viewport）</h2>
+<p><code>ui.viewport(id, w, h)</code> 声明一个内嵌渲染目标控件：它维护一个离屏 <code>Canvas</code> （尺寸跟随控件矩形），游戏在 <code>eve_render</code> 里先把 2D（<code>gfx.setCanvas</code> + 立即模式绘制） 或 3D（<code>gfx.renderScene3DToCanvas(canvas, camera)</code>）渲染进去，然后 <code>ui.beginFrameAndRender()</code> 会把该 Canvas 纹理显示在控件中。视口交互输入 （悬停、按住、控件本地鼠标坐标、拖拽增量、滚轮）通过 <code>viewportHovered/Active/MouseX/ MouseY/DragDX/DragDY/Wheel(id)</code> 每帧读取。完整示例见 <code>examples/terrain-editor</code>（高度图地形 + orbit 相机 + 抬高/压低笔刷）。</p>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/ui/"><code>src/modules/ui/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>ui</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

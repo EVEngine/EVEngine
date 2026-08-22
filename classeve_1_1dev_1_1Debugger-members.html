@@ -1,0 +1,223 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1Debugger.html">Debugger</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::dev::Debugger 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a7ccd574ff3e1d9710a0a5571abd32f95">addWatch</a>(std::string expression)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#ad8270942e6fe1720729f1b21cb468cea">attach</a>(HSQUIRRELVM vm)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#ad1f6dfdc315bfc356eb715de4846a64c">breakOnError</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a1c5f5155f12687d8d4698f99be64d2d1">BreakpointEventFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#abf394cac1d68490689d8b63e295998c8">breakpoints</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#af9d714e0a4e4a1d6895b67608a06353c">breakpointsEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a8ede46b754e26520f1f1a89066609d0f">clearBreakpoint</a>(std::string source, int line)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#af52592a79a3498574315d63dfaee09bd">clearBreakpoints</a>(const std::string &amp;source={})</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#abc55604bb82c089d3b247f47be0de7ee">clearWatches</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a0fa9f56172fdaa95f5a2547487b6bdf3">containerChildren</a>(VarKind kind, int frame, const std::vector&lt; std::string &gt; &amp;path) const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a0656c42e64e773664fe953ea10da54a9">Debugger</a>(const Debugger &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#afbea0d1eb305e7ffc70279c5a8922dd6">detach</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#af3c21f3ec70078e92144a30481e566d8">evaluate</a>(const std::string &amp;expression, int frameLevel=0) const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a53724975a9e0e4b5de637fcb01db05c7">globals</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a09e3e6264f2da1cc91438203277bd424">hasBreakpoint</a>(const std::string &amp;source, int line) const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#aacc0e6e663b8094a98421d78b26d09c4">instance</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a02aa54fb95e37fa3a583b9fe484b151f">isAttached</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a4649a3fe820e7ee5225b41d840b204b8">isPaused</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#ae17dd5bb706315ba502da57e6af2860e">lastPauseReason</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a68e3fc4bddd4b74be0e532f2120804d0">locals</a>(int stackLevel=0) const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a46f0787529f7e0055c5a8e2b195ae0e2">mode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a4c3e640bc5731bca93a39499e287ce34">normalizeSource</a>(std::string source)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a2106660cc8acf3f5250cc71e6dca5c02">notifyFrameDone</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a2a85388acd454d21d17753bde116534f">onScriptLine</a>(const SourceLoc &amp;loc)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a7e0f037cce1d2ad1eafddd32d0fc6420">operator=</a>(const Debugger &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a8d40f2b549e7ed96ac4d7978daa865a9">pause</a>(PauseReason reason=PauseReason::PauseKey)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a99e47404d07c05e6e7c8cd5b9bb7c854">pauseLocation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a9589db29729810ef7941eddb8448f65b">PumpFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a13a1c6be329be86b09d60601057e5547">refreshWatches</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a6497db6cf46cc433d3fc3e881c625d25">removeWatch</a>(const std::string &amp;expression)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a3667524c97898cea89710b092cb4b2c2">resume</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a837b3b04ec6f0e7e124d3720bf9f9c98">scriptStackDepth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a116e225d06b84df33d16665cddf6c1b4">setBreakOnError</a>(bool on)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#aa10ae6a961e279d148eb4669bb42ea9b">setBreakpoint</a>(std::string source, int line, bool enabled=true, std::string condition={})</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a3a31a723c28521a768e28f440bf332f2">setBreakpointEventFn</a>(BreakpointEventFn fn)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a9833eae6d4569ae485607a262fdf4a62">setBreakpointsEnabled</a>(bool on)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#aaa2d8128821395ea68b9628e1107cb2c">setPump</a>(PumpFn pump)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a8a890c62f1b2add575c7bf241685c531">shouldRunUpdate</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a0f1ff7e4e3a9f0189d6adfaec90a0835">sourceBasename</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#ad793add341f289d02a8cd5f41af043b5">sourcesMatch</a>(const std::string &amp;a, const std::string &amp;b)</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#ae6247f535f3e394620ce5b72800d1dc1">stackTrace</a>(int maxFrames=32) const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#aca1e43483cf8a4cc1329c3eca29a189b">step</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a8fc1b3aaf5a4d411dbf7daa4feb112cd">stepFrame</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a123d1b20f2cebebcac5cd69cc37e4678">stepInto</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#aedfb35db2a8082a5f169828fef561a03">stepLine</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a22b6804c9fcc18e0dea6421a8a185ebd">stepOut</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a74483bf9ef3f98b3d9d996793297885d">stepOver</a>()</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a289396deb5090bbacd28effa41f50446">vm</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a0eba0872bd77f39115c6348946655091">waitWhilePaused</a>(const std::function&lt; void()&gt; &amp;pump={})</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html#a2d540aee42c5b81af547f23f4d87687a">watches</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::network 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Length-prefixed (big-endian uint32) message framing over a <a class="el" href="classeve_1_1network_1_1TcpSocket.html" title="TCP socket backed by Poco::Net; supports both client (connect) and server (listen/accept) roles....">TcpSocket</a>. <a class="el" href="classeve_1_1network_1_1Channel.html#a01835e02d0c36351372be822e8e32342" title="Sends one framed message.">sendMsg()</a> writes one framed message; <a class="el" href="classeve_1_1network_1_1Channel.html#a395b4b70d47c3b612c077a4ae54e641f" title="Feeds received bytes into the frame parser. Called on the main thread from Network::pump / the emitCo...">feed()</a> consumes bytes and emits received frames as "chmsg" events on the main thread via the Event module.  <a href="classeve_1_1network_1_1Channel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html">HttpRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronous HTTP request (Poco-based). Configure headers/body, call <a class="el" href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51" title="Queues the request on the worker; true when accepted.">submit()</a>, then receive the response through <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> as a <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">NetEvType::HttpResp</a> completion.  <a href="classeve_1_1network_1_1HttpRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One asynchronous network result/event. handle points at the originating TcpSocket/UdpSocket/HttpRequest/Channel; bytes carries received data; peer/reason/status describe connection context.  <a href="structeve_1_1network_1_1NetCompletion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html">NetHost</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html">NetReader</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetRpc.html">NetRpc</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1network_1_1Network.html" title="Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....">Network</a> module: TCP/UDP/HTTP factories, background worker, and completion event plumbing. Script: <code>net &lt;- eve.Network();</code>  <a href="classeve_1_1network_1_1Network.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetWorker.html">NetWorker</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Background thread that runs blocking socket I/O and HTTP jobs. Completions are queued and drained by <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> on the main thread.  <a href="classeve_1_1network_1_1NetWorker.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetWriter.html">NetWriter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Session.html">Session</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Named collection of Channels (a "session"). Lookup by name, close all. Does not own the channels; the caller owns them.  <a href="classeve_1_1network_1_1Session.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TCP socket backed by <a class="el" href="namespacePoco_1_1Net.html">Poco::Net</a>; supports both client (connect) and server (listen/accept) roles. <a class="el" href="classeve_1_1Data.html">Data</a> arrives via <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> as <a class="el" href="structeve_1_1network_1_1NetCompletion.html" title="One asynchronous network result/event. handle points at the originating TcpSocket/UdpSocket/HttpReque...">NetCompletion</a>.  <a href="classeve_1_1network_1_1TcpSocket.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UDP socket backed by <a class="el" href="namespacePoco_1_1Net.html">Poco::Net</a>; supports connect/bind and datagram send.  <a href="classeve_1_1network_1_1UdpSocket.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a2f14ffdce8f7a706e8da6a864c05965c" id="r_a2f14ffdce8f7a706e8da6a864c05965c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965c">NetKind</a> { <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520">Tcp</a>
+, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca81baba40274ccb30f9fdfa2c73cf0482">Udp</a>
+, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95">Http</a>
+, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca781dc97dc62331eec3ea9ec4373a3ca8">Channel</a>
+ }</td></tr>
+<tr class="memdesc:a2f14ffdce8f7a706e8da6a864c05965c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which transport produced a completion.  <a href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965c">更多...</a><br /></td></tr>
+<tr class="separator:a2f14ffdce8f7a706e8da6a864c05965c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e3c18777060ebf8cca9051452532bc9" id="r_a7e3c18777060ebf8cca9051452532bc9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9">NetEvType</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9aa32417899e2db4290fb0d3634d33c9a3">Conn</a>
+, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9af6068daa29dbb05a7ead1e3b5a48bbee">Data</a>
+, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">Err</a>
+, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">HttpResp</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9a663e84adcec4336be48e98ec79a72f96">ChMsg</a>
+, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ad96b927d572155ac1ba5f99a3222a311">ChClose</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a7e3c18777060ebf8cca9051452532bc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completion event type delivered through Network::pump.  <a href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9">更多...</a><br /></td></tr>
+<tr class="separator:a7e3c18777060ebf8cca9051452532bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ac00f3f0ed456c938f248184cd5587ae8" id="r_ac00f3f0ed456c938f248184cd5587ae8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1network.html#ac00f3f0ed456c938f248184cd5587ae8">Module_IMPL</a> (<a class="el" href="classeve_1_1network_1_1Network.html">Network</a>, new <a class="el" href="classeve_1_1network_1_1Network.html">Network</a>())</td></tr>
+<tr class="separator:ac00f3f0ed456c938f248184cd5587ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:aed7df0fbeac1eca875b34517f149aff6" id="r_aed7df0fbeac1eca875b34517f149aff6"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1network.html#aed7df0fbeac1eca875b34517f149aff6">kMaxSendBuffer</a> = 1024 * 1024</td></tr>
+<tr class="memdesc:aed7df0fbeac1eca875b34517f149aff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum outgoing send buffer size per socket (1 MiB).  <br /></td></tr>
+<tr class="separator:aed7df0fbeac1eca875b34517f149aff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a647d7f2cffb9f484784d232a92bc0668" id="r_a647d7f2cffb9f484784d232a92bc0668"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1network.html#a647d7f2cffb9f484784d232a92bc0668">kMaxFrameSize</a> = 1024 * 1024</td></tr>
+<tr class="memdesc:a647d7f2cffb9f484784d232a92bc0668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum framed message size for <a class="el" href="classeve_1_1network_1_1Channel.html" title="Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...">Channel</a> (1 MiB).  <br /></td></tr>
+<tr class="separator:a647d7f2cffb9f484784d232a92bc0668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a7e3c18777060ebf8cca9051452532bc9" name="a7e3c18777060ebf8cca9051452532bc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e3c18777060ebf8cca9051452532bc9">&#9670;&#160;</a></span>NetEvType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9">eve::network::NetEvType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Completion event type delivered through <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a>. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a7e3c18777060ebf8cca9051452532bc9aa32417899e2db4290fb0d3634d33c9a3" name="a7e3c18777060ebf8cca9051452532bc9aa32417899e2db4290fb0d3634d33c9a3"></a>Conn&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7e3c18777060ebf8cca9051452532bc9af6068daa29dbb05a7ead1e3b5a48bbee" name="a7e3c18777060ebf8cca9051452532bc9af6068daa29dbb05a7ead1e3b5a48bbee"></a>Data&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b" name="a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b"></a>Err&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6" name="a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6"></a>HttpResp&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7e3c18777060ebf8cca9051452532bc9a663e84adcec4336be48e98ec79a72f96" name="a7e3c18777060ebf8cca9051452532bc9a663e84adcec4336be48e98ec79a72f96"></a>ChMsg&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7e3c18777060ebf8cca9051452532bc9ad96b927d572155ac1ba5f99a3222a311" name="a7e3c18777060ebf8cca9051452532bc9ad96b927d572155ac1ba5f99a3222a311"></a>ChClose&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="NetTypes_8h_source.html">NetTypes.h</a> 第 <a class="el" href="NetTypes_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f14ffdce8f7a706e8da6a864c05965c" name="a2f14ffdce8f7a706e8da6a864c05965c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f14ffdce8f7a706e8da6a864c05965c">&#9670;&#160;</a></span>NetKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965c">eve::network::NetKind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Which transport produced a completion. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520" name="a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520"></a>Tcp&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2f14ffdce8f7a706e8da6a864c05965ca81baba40274ccb30f9fdfa2c73cf0482" name="a2f14ffdce8f7a706e8da6a864c05965ca81baba40274ccb30f9fdfa2c73cf0482"></a>Udp&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95" name="a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95"></a>Http&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2f14ffdce8f7a706e8da6a864c05965ca781dc97dc62331eec3ea9ec4373a3ca8" name="a2f14ffdce8f7a706e8da6a864c05965ca781dc97dc62331eec3ea9ec4373a3ca8"></a>Channel&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="NetTypes_8h_source.html">NetTypes.h</a> 第 <a class="el" href="NetTypes_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ac00f3f0ed456c938f248184cd5587ae8" name="ac00f3f0ed456c938f248184cd5587ae8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac00f3f0ed456c938f248184cd5587ae8">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Network</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a647d7f2cffb9f484784d232a92bc0668" name="a647d7f2cffb9f484784d232a92bc0668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a647d7f2cffb9f484784d232a92bc0668">&#9670;&#160;</a></span>kMaxFrameSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t eve::network::kMaxFrameSize = 1024 * 1024</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum framed message size for <a class="el" href="classeve_1_1network_1_1Channel.html" title="Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...">Channel</a> (1 MiB). </p>
+
+<p class="definition">在文件 <a class="el" href="NetTypes_8h_source.html">NetTypes.h</a> 第 <a class="el" href="NetTypes_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="network_2Channel_8cpp_source.html#l00065">eve::network::Channel::feed()</a> , 以及 <a class="el" href="network_2Channel_8cpp_source.html#l00038">eve::network::Channel::sendMsg()</a>.</p>
+
+</div>
+</div>
+<a id="aed7df0fbeac1eca875b34517f149aff6" name="aed7df0fbeac1eca875b34517f149aff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed7df0fbeac1eca875b34517f149aff6">&#9670;&#160;</a></span>kMaxSendBuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t eve::network::kMaxSendBuffer = 1024 * 1024</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum outgoing send buffer size per socket (1 MiB). </p>
+
+<p class="definition">在文件 <a class="el" href="NetTypes_8h_source.html">NetTypes.h</a> 第 <a class="el" href="NetTypes_8h_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00146">eve::network::TcpSocket::queueSend()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

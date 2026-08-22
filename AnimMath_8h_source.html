@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimMath.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimMath.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimMath_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="};">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1TransformTRS.html">    9</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">   10</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">px</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">py</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">pz</a> = 0.f;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">   11</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a> = 1.f;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">   12</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a> = 1.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a> = 1.f, <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a> = 1.f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1TransformTRS.html#a5a874a608f3f5ec2e43ea4a668c9e829">   14</a></span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> <a class="code hl_function" href="structeve_1_1animation_1_1TransformTRS.html#a5a874a608f3f5ec2e43ea4a668c9e829">identity</a>() { <span class="keywordflow">return</span> {}; }</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">   16</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">normalizeRotation</a>() {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> len = std::sqrt(<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> * <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> * <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> * <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a> * <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">if</span> (len &gt; 1e-8f) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> inv = 1.f / len;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> *= inv;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> *= inv;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> *= inv;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a> *= inv;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> = <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a> = <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a> = 0.f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>           = 1.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">   31</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, <span class="keywordtype">float</span> lo, <span class="keywordtype">float</span> hi) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> std::max(lo, std::min(hi, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">   35</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> t) { <span class="keywordflow">return</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) * t; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">   37</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">slerpQuat</a>(<span class="keywordtype">float</span> ax, <span class="keywordtype">float</span> ay, <span class="keywordtype">float</span> az, <span class="keywordtype">float</span> aw, <span class="keywordtype">float</span> bx, <span class="keywordtype">float</span> by, <span class="keywordtype">float</span> bz, <span class="keywordtype">float</span> bw,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                      <span class="keywordtype">float</span> t, <span class="keywordtype">float</span> &amp;ox, <span class="keywordtype">float</span> &amp;oy, <span class="keywordtype">float</span> &amp;oz, <span class="keywordtype">float</span> &amp;ow) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">float</span> cosTheta = ax * bx + ay * by + az * bz + aw * bw;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (cosTheta &lt; 0.f) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        bx       = -bx;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        by       = -by;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        bz       = -bz;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        bw       = -bw;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        cosTheta = -cosTheta;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (cosTheta &gt; 0.9995f) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        ox = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(ax, bx, t);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        oy = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(ay, by, t);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        oz = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(az, bz, t);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        ow = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(aw, bw, t);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> len = std::sqrt(ox * ox + oy * oy + oz * oz + ow * ow);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">if</span> (len &gt; 1e-8f) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> inv = 1.f / len;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            ox *= inv;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            oy *= inv;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            oz *= inv;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            ow *= inv;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> theta    = std::acos(<a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(cosTheta, -1.f, 1.f));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> sinTheta = std::sin(theta);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> w0       = std::sin((1.f - t) * theta) / sinTheta;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> w1       = std::sin(t * theta) / sinTheta;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    ox                   = ax * w0 + bx * w1;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    oy                   = ay * w0 + by * w1;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    oz                   = az * w0 + bz * w1;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    ow                   = aw * w0 + bw * w1;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a1a2ffd146fc223f785b3f49cec7d3604">   72</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> <a class="code hl_function" href="namespaceeve_1_1animation.html#a1a2ffd146fc223f785b3f49cec7d3604">blendTRS</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> t) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    t = <a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(t, 0.f, 1.f);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> out;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">px</a> = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.px, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.px, t);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">py</a> = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.py, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.py, t);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">pz</a> = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.pz, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pz, t);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a> = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.sx, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sx, t);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a> = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.sy, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sy, t);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a> = <a class="code hl_function" href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">lerpf</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.sz, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sz, t);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_function" href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">slerpQuat</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.qx, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.qy, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.qz, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.qw, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw, t, out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a>, out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a>, out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a>, out.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">   86</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">yawToForward</a>(<span class="keywordtype">float</span> yaw, <span class="keywordtype">float</span> &amp;fx, <span class="keywordtype">float</span> &amp;fz) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    fx = std::sin(yaw);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    fz = std::cos(yaw);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a6ebb3eb1d92f19abfe706898e0b2cc8a">   91</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#a6ebb3eb1d92f19abfe706898e0b2cc8a">length2</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) { <span class="keywordflow">return</span> std::sqrt(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> * <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>); }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="};">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1Mat4.html">   97</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">   98</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1Mat4.html#a59abf3a056ecffdecea17ab03af21aa6">  100</a></span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> <a class="code hl_function" href="structeve_1_1animation_1_1Mat4.html#a59abf3a056ecffdecea17ab03af21aa6">identity</a>() { <span class="keywordflow">return</span> {}; }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1Mat4.html#a72f19cbac07ebfc4bab50b304f93e50a">  102</a></span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> <a class="code hl_function" href="structeve_1_1animation_1_1Mat4.html#a72f19cbac07ebfc4bab50b304f93e50a">fromTRS</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;t) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> out;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> x2 = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, y2 = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> + <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, z2 = <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> xx = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> * x2, xy = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> * y2, xz = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> * z2;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> yy = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> * y2, yz = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> * z2, zz = <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> * z2;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> wx = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> * x2, wy = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> * y2, wz = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> * z2;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[0]  = (1.f - (yy + zz)) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[1]  = (xy + wz) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[2]  = (xz - wy) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[3]  = 0.f;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[4]  = (xy - wz) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[5]  = (1.f - (xx + zz)) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[6]  = (yz + wx) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[7]  = 0.f;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[8]  = (xz + wy) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[9]  = (yz - wx) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[10] = (1.f - (xx + yy)) * t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[11] = 0.f;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[12] = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">px</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[13] = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">py</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[14] = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">pz</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[15] = 1.f;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1Mat4.html#aa83dfd2a5662dec3ed2870bc638e11ec">  129</a></span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> <a class="code hl_function" href="structeve_1_1animation_1_1Mat4.html#aa83dfd2a5662dec3ed2870bc638e11ec">mul</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <a class="code hl_struct" href="structeve_1_1animation_1_1Mat4.html">Mat4</a> out;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> col = 0; col &lt; 4; ++col) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> row = 0; row &lt; 4; ++row) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                out.<a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[col * 4 + row] = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.m[0 * 4 + row] * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.m[col * 4 + 0] +</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                                       <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.m[1 * 4 + row] * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.m[col * 4 + 1] +</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                                       <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.m[2 * 4 + row] * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.m[col * 4 + 2] +</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                                       <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.m[3 * 4 + row] * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.m[col * 4 + 3];</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    }</div>
+</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="foldopen" id="foldopen00142" data-start="{" data-end="}">
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1Mat4.html#a9e6735a2a958572215f28991c628ad4b">  142</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1animation_1_1Mat4.html#a9e6735a2a958572215f28991c628ad4b">transformPoint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <span class="keywordtype">float</span> &amp;ox, <span class="keywordtype">float</span> &amp;oy, <span class="keywordtype">float</span> &amp;oz)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        ox = <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[0] * <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[4] * <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[8] * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[12];</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        oy = <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[1] * <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[5] * <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[9] * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[13];</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        oz = <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[2] * <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[6] * <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[10] * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <a class="code hl_variable" href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">m</a>[14];</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
+</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>};</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a1a2ffd146fc223f785b3f49cec7d3604"><div class="ttname"><a href="namespaceeve_1_1animation.html#a1a2ffd146fc223f785b3f49cec7d3604">eve::animation::blendTRS</a></div><div class="ttdeci">TransformTRS blendTRS(const TransformTRS &amp;a, const TransformTRS &amp;b, float t)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00072">AnimMath.h:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a1cce09aba063bd49f2ea648f95972479"><div class="ttname"><a href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">eve::animation::slerpQuat</a></div><div class="ttdeci">void slerpQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw, float t, float &amp;ox, float &amp;oy, float &amp;oz, float &amp;ow)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00037">AnimMath.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a65583bf1428722a0a4746f78a30a80cb"><div class="ttname"><a href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">eve::animation::yawToForward</a></div><div class="ttdeci">void yawToForward(float yaw, float &amp;fx, float &amp;fz)</div><div class="ttdoc">Rotate unit +Z by yaw (radians) around Y — used for planar facing.</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00086">AnimMath.h:86</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a6ebb3eb1d92f19abfe706898e0b2cc8a"><div class="ttname"><a href="namespaceeve_1_1animation.html#a6ebb3eb1d92f19abfe706898e0b2cc8a">eve::animation::length2</a></div><div class="ttdeci">float length2(float x, float z)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00091">AnimMath.h:91</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a7e6712da7e628c22933bb801e9fb4564"><div class="ttname"><a href="namespaceeve_1_1animation.html#a7e6712da7e628c22933bb801e9fb4564">eve::animation::lerpf</a></div><div class="ttdeci">float lerpf(float a, float b, float t)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00035">AnimMath.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aed1d423554b8269ca7e6992b332f9812"><div class="ttname"><a href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">eve::animation::clampf</a></div><div class="ttdeci">float clampf(float v, float lo, float hi)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00031">AnimMath.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1Mat4_html"><div class="ttname"><a href="structeve_1_1animation_1_1Mat4.html">eve::animation::Mat4</a></div><div class="ttdoc">Column-major 4x4 matrix (OpenGL / glTF / Assimp-compatible layout). Elements: m[col * 4 + row].</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00097">AnimMath.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1Mat4_html_a59abf3a056ecffdecea17ab03af21aa6"><div class="ttname"><a href="structeve_1_1animation_1_1Mat4.html#a59abf3a056ecffdecea17ab03af21aa6">eve::animation::Mat4::identity</a></div><div class="ttdeci">static Mat4 identity()</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00100">AnimMath.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1Mat4_html_a6495c966f5561d852f41096142719410"><div class="ttname"><a href="structeve_1_1animation_1_1Mat4.html#a6495c966f5561d852f41096142719410">eve::animation::Mat4::m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00098">AnimMath.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1Mat4_html_a72f19cbac07ebfc4bab50b304f93e50a"><div class="ttname"><a href="structeve_1_1animation_1_1Mat4.html#a72f19cbac07ebfc4bab50b304f93e50a">eve::animation::Mat4::fromTRS</a></div><div class="ttdeci">static Mat4 fromTRS(const TransformTRS &amp;t)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00102">AnimMath.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1Mat4_html_a9e6735a2a958572215f28991c628ad4b"><div class="ttname"><a href="structeve_1_1animation_1_1Mat4.html#a9e6735a2a958572215f28991c628ad4b">eve::animation::Mat4::transformPoint</a></div><div class="ttdeci">void transformPoint(float x, float y, float z, float &amp;ox, float &amp;oy, float &amp;oz) const</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00142">AnimMath.h:142</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1Mat4_html_aa83dfd2a5662dec3ed2870bc638e11ec"><div class="ttname"><a href="structeve_1_1animation_1_1Mat4.html#aa83dfd2a5662dec3ed2870bc638e11ec">eve::animation::Mat4::mul</a></div><div class="ttdeci">static Mat4 mul(const Mat4 &amp;a, const Mat4 &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00129">AnimMath.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a03ea248de97b2702d86e047f2e32d970"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">eve::animation::TransformTRS::qx</a></div><div class="ttdeci">float qx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a07535af69d95029348497d1516a7b7a7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">eve::animation::TransformTRS::sy</a></div><div class="ttdeci">float sy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a08d6b60e2b0994d1c24e494aa9c8593b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">eve::animation::TransformTRS::qz</a></div><div class="ttdeci">float qz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a0e8d5035666cdb5c28b749bf3e2a4d74"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">eve::animation::TransformTRS::qy</a></div><div class="ttdeci">float qy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a14236e7d34b16f26e502889402b0c3c8"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">eve::animation::TransformTRS::pz</a></div><div class="ttdeci">float pz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a5a874a608f3f5ec2e43ea4a668c9e829"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a5a874a608f3f5ec2e43ea4a668c9e829">eve::animation::TransformTRS::identity</a></div><div class="ttdeci">static TransformTRS identity()</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00014">AnimMath.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7988b734d588744dc063c61f10a7a11b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">eve::animation::TransformTRS::px</a></div><div class="ttdeci">float px</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7a07df45fde09cb8d1ad4b58172eefb7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">eve::animation::TransformTRS::qw</a></div><div class="ttdeci">float qw</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a953b11111e2cf55c349926235c41e767"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">eve::animation::TransformTRS::sx</a></div><div class="ttdeci">float sx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_aadc2748cb1a7d93ef3991b89ff314d56"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">eve::animation::TransformTRS::py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_acdbd275a8f3dff3e944200b1a6010e46"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#acdbd275a8f3dff3e944200b1a6010e46">eve::animation::TransformTRS::normalizeRotation</a></div><div class="ttdeci">void normalizeRotation()</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00016">AnimMath.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_afec8a11011d7b50d78f548575b9e0229"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">eve::animation::TransformTRS::sz</a></div><div class="ttdeci">float sz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

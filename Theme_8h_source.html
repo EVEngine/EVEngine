@@ -1,0 +1,326 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/Theme.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Theme.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Theme_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="comment">// --- Colors (RGBA 0..1) ---</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a80380b57fbbd0ddd9dae47392bd3f456">   14</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a80380b57fbbd0ddd9dae47392bd3f456">text</a>[4] = {0.92f, 0.93f, 0.95f, 1.f};</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a4b0abcf4985fc5838acb72f12f3aec17">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a4b0abcf4985fc5838acb72f12f3aec17">textDisabled</a>[4] = {0.50f, 0.52f, 0.55f, 1.f};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a992868a9264d44eafcb8b72d5cb8d159">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a992868a9264d44eafcb8b72d5cb8d159">windowBg</a>[4] = {0.09f, 0.10f, 0.12f, 0.96f};</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#acd152e649f07f34edfc56cf4616da067">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#acd152e649f07f34edfc56cf4616da067">childBg</a>[4] = {0.07f, 0.08f, 0.10f, 0.90f};</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a565bd5411f280da0dd7ff79b4da4c2a2">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a565bd5411f280da0dd7ff79b4da4c2a2">popupBg</a>[4] = {0.11f, 0.12f, 0.14f, 0.98f};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#aead5d6d841e28b9777c9bc14b4df009d">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#aead5d6d841e28b9777c9bc14b4df009d">border</a>[4] = {0.28f, 0.30f, 0.35f, 0.70f};</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a07ea00aa640e95236510b6fc464933ad">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a07ea00aa640e95236510b6fc464933ad">frameBg</a>[4] = {0.16f, 0.18f, 0.22f, 1.f};</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#abd36204f95d166695bde0cde37222b47">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#abd36204f95d166695bde0cde37222b47">frameBgHovered</a>[4] = {0.22f, 0.26f, 0.32f, 1.f};</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a92bbfeacc5016c06fd6b4bc2ab321d0a">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a92bbfeacc5016c06fd6b4bc2ab321d0a">frameBgActive</a>[4] = {0.26f, 0.32f, 0.40f, 1.f};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a0036a638025b308378e9abf217770195">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a0036a638025b308378e9abf217770195">titleBg</a>[4] = {0.07f, 0.08f, 0.10f, 1.f};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a565031c9b031ee388cabc09413a2c010">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a565031c9b031ee388cabc09413a2c010">titleBgActive</a>[4] = {0.12f, 0.18f, 0.28f, 1.f};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a7a3a540f7bd17a2a5c51e0c22d16db10">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a7a3a540f7bd17a2a5c51e0c22d16db10">titleBgCollapsed</a>[4] = {0.07f, 0.08f, 0.10f, 0.75f};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ad575176b44a39d2c1ec6df65063d4efd">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ad575176b44a39d2c1ec6df65063d4efd">button</a>[4] = {0.22f, 0.45f, 0.78f, 0.70f};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a1d94292cb240938b084bb217b17cd7af">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a1d94292cb240938b084bb217b17cd7af">buttonHovered</a>[4] = {0.28f, 0.55f, 0.92f, 1.f};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a3b8010450b69a24480646a43a07f62ab">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a3b8010450b69a24480646a43a07f62ab">buttonActive</a>[4] = {0.16f, 0.38f, 0.72f, 1.f};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a66ab334668e6a54b372b96b058a2fd3d">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a66ab334668e6a54b372b96b058a2fd3d">header</a>[4] = {0.22f, 0.45f, 0.78f, 0.45f};</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ababe2d47cde488b6c65a96d460aa802e">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ababe2d47cde488b6c65a96d460aa802e">headerHovered</a>[4] = {0.28f, 0.55f, 0.92f, 0.70f};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ad29a54bbfb23ca470068bd427e71324c">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ad29a54bbfb23ca470068bd427e71324c">headerActive</a>[4] = {0.22f, 0.45f, 0.78f, 1.f};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a11c7e0203454231c59f0131691c21e41">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a11c7e0203454231c59f0131691c21e41">checkMark</a>[4] = {0.45f, 0.75f, 1.f, 1.f};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a138308af85c1b33d54d35872b9040448">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a138308af85c1b33d54d35872b9040448">sliderGrab</a>[4] = {0.35f, 0.60f, 0.95f, 0.90f};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#aaedeb747a7f8cfa9c4032ad7e2605476">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#aaedeb747a7f8cfa9c4032ad7e2605476">sliderGrabActive</a>[4] = {0.45f, 0.70f, 1.f, 1.f};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a524a83e7ea67e8bd51f2975e73eac3e4">   35</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a524a83e7ea67e8bd51f2975e73eac3e4">separator</a>[4] = {0.35f, 0.38f, 0.42f, 0.60f};</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ad77a7e1e3867aa16671ff672b343bf30">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ad77a7e1e3867aa16671ff672b343bf30">scrollbarBg</a>[4] = {0.05f, 0.06f, 0.07f, 0.55f};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a15a3c14c1bea36a09a68095ea1877564">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a15a3c14c1bea36a09a68095ea1877564">scrollbarGrab</a>[4] = {0.35f, 0.38f, 0.42f, 0.80f};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a7cfdb3ebab4bf81198539d396958f125">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a7cfdb3ebab4bf81198539d396958f125">scrollbarGrabHovered</a>[4] = {0.45f, 0.48f, 0.52f, 0.90f};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a814f1cc38e59967281bbb43dd0d64836">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a814f1cc38e59967281bbb43dd0d64836">scrollbarGrabActive</a>[4] = {0.55f, 0.58f, 0.62f, 1.f};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// --- Geometry (design units @ scale 1) ---</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a9e70eab5a57b01e6f14ad1309f9a8029">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a9e70eab5a57b01e6f14ad1309f9a8029">windowRounding</a> = 6.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a45a3ab6e9de727ad4830889358da3b7e">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a45a3ab6e9de727ad4830889358da3b7e">childRounding</a> = 4.f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ad18992b3ae8cdd41b304ef35d7c5de2a">   44</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ad18992b3ae8cdd41b304ef35d7c5de2a">frameRounding</a> = 4.f;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#af671e7ef3431ffb5c7686bc6de62546c">   45</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#af671e7ef3431ffb5c7686bc6de62546c">popupRounding</a> = 6.f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a8a075e2db6d33980bd4cea6d530f065b">   46</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a8a075e2db6d33980bd4cea6d530f065b">scrollbarRounding</a> = 8.f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a919dc61da6a8194b09160b2432b633cb">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a919dc61da6a8194b09160b2432b633cb">grabRounding</a> = 3.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ae67929613d270b2c86dd32998c4c7388">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ae67929613d270b2c86dd32998c4c7388">tabRounding</a> = 4.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#aa122e90e69c54eb0d5f7a4c12990de71">   50</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#aa122e90e69c54eb0d5f7a4c12990de71">windowBorderSize</a> = 1.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ad14b290db63154bd38a68e0cd5499fdf">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ad14b290db63154bd38a68e0cd5499fdf">childBorderSize</a> = 1.f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ac9d9635bca6d67cf5605b9e75b4f503f">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ac9d9635bca6d67cf5605b9e75b4f503f">popupBorderSize</a> = 1.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a42701c1c237564f2f84e687c5937cf4c">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a42701c1c237564f2f84e687c5937cf4c">frameBorderSize</a> = 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a3d7f7f23dd8353dc4fc80e88f043cdf4">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a3d7f7f23dd8353dc4fc80e88f043cdf4">windowPaddingX</a> = 12.f;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a69d32ba8b6a7f7fa6baf19b374a2495e">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a69d32ba8b6a7f7fa6baf19b374a2495e">windowPaddingY</a> = 10.f;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#aa272d024f65983696920db446797af46">   57</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#aa272d024f65983696920db446797af46">framePaddingX</a> = 8.f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a7a9881217f502d7edf0f002474ef7ae1">   58</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a7a9881217f502d7edf0f002474ef7ae1">framePaddingY</a> = 5.f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a1227d900a74efce54746021c4a37d406">   59</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a1227d900a74efce54746021c4a37d406">itemSpacingX</a> = 8.f;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a292a9cfc2f3808c567a47175556b55f9">   60</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a292a9cfc2f3808c567a47175556b55f9">itemSpacingY</a> = 6.f;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a805322f636305f60ecc99a06f8fab482">   61</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a805322f636305f60ecc99a06f8fab482">itemInnerSpacingX</a> = 6.f;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#ab145cc96b8f68dbaddfde4aac488ee6a">   62</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#ab145cc96b8f68dbaddfde4aac488ee6a">itemInnerSpacingY</a> = 4.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a131d1810605f5ca56ccb6db64e951301">   63</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a131d1810605f5ca56ccb6db64e951301">indentSpacing</a> = 18.f;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a12c33f43baabc1c2fa35ce562e768656">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a12c33f43baabc1c2fa35ce562e768656">scrollbarSize</a> = 14.f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a66ff6c0e4d45f07cda60a2637e437f36">   65</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a66ff6c0e4d45f07cda60a2637e437f36">grabMinSize</a> = 12.f;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a601a8801c8a597d89854bd183c1ccf28">   69</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a601a8801c8a597d89854bd183c1ccf28">fontScale</a> = 1.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#a7baff0b6f0855f5cc87982eaf57d9e3c">   70</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#a7baff0b6f0855f5cc87982eaf57d9e3c">navEnableKeyboard</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1Theme.html#af2ed5779970f66793224ac13656b6379">   71</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1Theme.html#af2ed5779970f66793224ac13656b6379">navEnableGamepad</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> <a class="code hl_function" href="structeve_1_1ui_1_1Theme.html#ae7973840dda5bfa855a3f8dc395625ab">dark</a>();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> <a class="code hl_function" href="structeve_1_1ui_1_1Theme.html#aa6f38435f781262e3a13caa00e63d56a">light</a>();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="code hl_function" href="namespaceeve_1_1ui.html#ae30249b1982f32d04e54be3757a49dd8">globalTheme</a>();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">const</span> std::string &amp;<a class="code hl_function" href="namespaceeve_1_1ui.html#aceeb01e94733c6fb68077f043b463ab1">globalThemeName</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">setGlobalTheme</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">setGlobalTheme</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a5a449969e268e5ce472bf83071d4035a">setThemeByName</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a7b2f1bda1461646c5c751df5282084f2">setThemeUiScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a907f63a149b51fa02ab7ef2e586e87f9">themeUiScale</a>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a3efcb33e45f899de64fbe3d83129b440">setThemeDpiScale</a>(<span class="keywordtype">float</span> dpiScale);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a2cb33d7d08c4ad0280ecb6beb1a098d3">themeDpiScale</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a1c3b5002223f569bdb7d90971c5d2d89">applyThemeToImGui</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a1c3b5002223f569bdb7d90971c5d2d89">applyThemeToImGui</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1Theme.html">Theme</a> &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, <span class="keywordtype">float</span> uiScale);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a5f710e8aae55f49281331e55cd4f1c45"><div class="ttname"><a href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a></div><div class="ttdeci">Object::Ptr theme</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00458">EditorHost.cpp:458</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a1d28dec57cce925ad92342891bd71e7c"><div class="ttname"><a href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00122">TreeMesh.cpp:122</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1c3b5002223f569bdb7d90971c5d2d89"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1c3b5002223f569bdb7d90971c5d2d89">eve::ui::applyThemeToImGui</a></div><div class="ttdeci">void applyThemeToImGui(const Theme &amp;theme)</div><div class="ttdoc">Push tokens into ImGui style. Metrics are multiplied by uiScale (default: themeUiScale()).</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00135">Theme.cpp:135</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a2363ac6b57739cc492b7e7e5d486899d"><div class="ttname"><a href="namespaceeve_1_1ui.html#a2363ac6b57739cc492b7e7e5d486899d">eve::ui::setGlobalTheme</a></div><div class="ttdeci">void setGlobalTheme(const Theme &amp;theme)</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00103">Theme.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a2cb33d7d08c4ad0280ecb6beb1a098d3"><div class="ttname"><a href="namespaceeve_1_1ui.html#a2cb33d7d08c4ad0280ecb6beb1a098d3">eve::ui::themeDpiScale</a></div><div class="ttdeci">float themeDpiScale()</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00133">Theme.cpp:133</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a3efcb33e45f899de64fbe3d83129b440"><div class="ttname"><a href="namespaceeve_1_1ui.html#a3efcb33e45f899de64fbe3d83129b440">eve::ui::setThemeDpiScale</a></div><div class="ttdeci">void setThemeDpiScale(float dpiScale)</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00129">Theme.cpp:129</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a5a449969e268e5ce472bf83071d4035a"><div class="ttname"><a href="namespaceeve_1_1ui.html#a5a449969e268e5ce472bf83071d4035a">eve::ui::setThemeByName</a></div><div class="ttdeci">bool setThemeByName(const std::string &amp;name)</div><div class="ttdoc">Apply a named preset (&quot;dark&quot; / &quot;light&quot;). Case-insensitive. Returns false if unknown.</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00110">Theme.cpp:110</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a7b2f1bda1461646c5c751df5282084f2"><div class="ttname"><a href="namespaceeve_1_1ui.html#a7b2f1bda1461646c5c751df5282084f2">eve::ui::setThemeUiScale</a></div><div class="ttdeci">void setThemeUiScale(float scale)</div><div class="ttdoc">Logical (point-space) UI scale. Default 1.0.</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00123">Theme.cpp:123</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a907f63a149b51fa02ab7ef2e586e87f9"><div class="ttname"><a href="namespaceeve_1_1ui.html#a907f63a149b51fa02ab7ef2e586e87f9">eve::ui::themeUiScale</a></div><div class="ttdeci">float themeUiScale()</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00127">Theme.cpp:127</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_aceeb01e94733c6fb68077f043b463ab1"><div class="ttname"><a href="namespaceeve_1_1ui.html#aceeb01e94733c6fb68077f043b463ab1">eve::ui::globalThemeName</a></div><div class="ttdeci">const std::string &amp; globalThemeName()</div><div class="ttdoc">Current preset name: &quot;dark&quot;, &quot;light&quot;, or &quot;custom&quot;.</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00101">Theme.cpp:101</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_ae30249b1982f32d04e54be3757a49dd8"><div class="ttname"><a href="namespaceeve_1_1ui.html#ae30249b1982f32d04e54be3757a49dd8">eve::ui::globalTheme</a></div><div class="ttdeci">Theme &amp; globalTheme()</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00099">Theme.cpp:99</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html">eve::ui::Theme</a></div><div class="ttdoc">Unified UI design tokens (colors, geometry, typography). Applied to ImGui each frame via applyThemeTo...</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00012">Theme.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a0036a638025b308378e9abf217770195"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a0036a638025b308378e9abf217770195">eve::ui::Theme::titleBg</a></div><div class="ttdeci">float titleBg[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00023">Theme.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a07ea00aa640e95236510b6fc464933ad"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a07ea00aa640e95236510b6fc464933ad">eve::ui::Theme::frameBg</a></div><div class="ttdeci">float frameBg[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00020">Theme.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a11c7e0203454231c59f0131691c21e41"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a11c7e0203454231c59f0131691c21e41">eve::ui::Theme::checkMark</a></div><div class="ttdeci">float checkMark[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00032">Theme.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a1227d900a74efce54746021c4a37d406"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a1227d900a74efce54746021c4a37d406">eve::ui::Theme::itemSpacingX</a></div><div class="ttdeci">float itemSpacingX</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00059">Theme.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a12c33f43baabc1c2fa35ce562e768656"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a12c33f43baabc1c2fa35ce562e768656">eve::ui::Theme::scrollbarSize</a></div><div class="ttdeci">float scrollbarSize</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00064">Theme.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a131d1810605f5ca56ccb6db64e951301"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a131d1810605f5ca56ccb6db64e951301">eve::ui::Theme::indentSpacing</a></div><div class="ttdeci">float indentSpacing</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00063">Theme.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a138308af85c1b33d54d35872b9040448"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a138308af85c1b33d54d35872b9040448">eve::ui::Theme::sliderGrab</a></div><div class="ttdeci">float sliderGrab[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00033">Theme.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a15a3c14c1bea36a09a68095ea1877564"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a15a3c14c1bea36a09a68095ea1877564">eve::ui::Theme::scrollbarGrab</a></div><div class="ttdeci">float scrollbarGrab[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00037">Theme.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a1d94292cb240938b084bb217b17cd7af"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a1d94292cb240938b084bb217b17cd7af">eve::ui::Theme::buttonHovered</a></div><div class="ttdeci">float buttonHovered[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00027">Theme.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a292a9cfc2f3808c567a47175556b55f9"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a292a9cfc2f3808c567a47175556b55f9">eve::ui::Theme::itemSpacingY</a></div><div class="ttdeci">float itemSpacingY</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00060">Theme.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a3b8010450b69a24480646a43a07f62ab"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a3b8010450b69a24480646a43a07f62ab">eve::ui::Theme::buttonActive</a></div><div class="ttdeci">float buttonActive[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00028">Theme.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a3d7f7f23dd8353dc4fc80e88f043cdf4"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a3d7f7f23dd8353dc4fc80e88f043cdf4">eve::ui::Theme::windowPaddingX</a></div><div class="ttdeci">float windowPaddingX</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00055">Theme.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a42701c1c237564f2f84e687c5937cf4c"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a42701c1c237564f2f84e687c5937cf4c">eve::ui::Theme::frameBorderSize</a></div><div class="ttdeci">float frameBorderSize</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00053">Theme.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a45a3ab6e9de727ad4830889358da3b7e"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a45a3ab6e9de727ad4830889358da3b7e">eve::ui::Theme::childRounding</a></div><div class="ttdeci">float childRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00043">Theme.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a4b0abcf4985fc5838acb72f12f3aec17"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a4b0abcf4985fc5838acb72f12f3aec17">eve::ui::Theme::textDisabled</a></div><div class="ttdeci">float textDisabled[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00015">Theme.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a524a83e7ea67e8bd51f2975e73eac3e4"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a524a83e7ea67e8bd51f2975e73eac3e4">eve::ui::Theme::separator</a></div><div class="ttdeci">float separator[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00035">Theme.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a565031c9b031ee388cabc09413a2c010"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a565031c9b031ee388cabc09413a2c010">eve::ui::Theme::titleBgActive</a></div><div class="ttdeci">float titleBgActive[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00024">Theme.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a565bd5411f280da0dd7ff79b4da4c2a2"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a565bd5411f280da0dd7ff79b4da4c2a2">eve::ui::Theme::popupBg</a></div><div class="ttdeci">float popupBg[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00018">Theme.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a601a8801c8a597d89854bd183c1ccf28"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a601a8801c8a597d89854bd183c1ccf28">eve::ui::Theme::fontScale</a></div><div class="ttdeci">float fontScale</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00069">Theme.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a66ab334668e6a54b372b96b058a2fd3d"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a66ab334668e6a54b372b96b058a2fd3d">eve::ui::Theme::header</a></div><div class="ttdeci">float header[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00029">Theme.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a66ff6c0e4d45f07cda60a2637e437f36"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a66ff6c0e4d45f07cda60a2637e437f36">eve::ui::Theme::grabMinSize</a></div><div class="ttdeci">float grabMinSize</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00065">Theme.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a69d32ba8b6a7f7fa6baf19b374a2495e"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a69d32ba8b6a7f7fa6baf19b374a2495e">eve::ui::Theme::windowPaddingY</a></div><div class="ttdeci">float windowPaddingY</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00056">Theme.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a7a3a540f7bd17a2a5c51e0c22d16db10"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a7a3a540f7bd17a2a5c51e0c22d16db10">eve::ui::Theme::titleBgCollapsed</a></div><div class="ttdeci">float titleBgCollapsed[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00025">Theme.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a7a9881217f502d7edf0f002474ef7ae1"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a7a9881217f502d7edf0f002474ef7ae1">eve::ui::Theme::framePaddingY</a></div><div class="ttdeci">float framePaddingY</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00058">Theme.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a7baff0b6f0855f5cc87982eaf57d9e3c"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a7baff0b6f0855f5cc87982eaf57d9e3c">eve::ui::Theme::navEnableKeyboard</a></div><div class="ttdeci">bool navEnableKeyboard</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00070">Theme.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a7cfdb3ebab4bf81198539d396958f125"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a7cfdb3ebab4bf81198539d396958f125">eve::ui::Theme::scrollbarGrabHovered</a></div><div class="ttdeci">float scrollbarGrabHovered[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00038">Theme.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a80380b57fbbd0ddd9dae47392bd3f456"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a80380b57fbbd0ddd9dae47392bd3f456">eve::ui::Theme::text</a></div><div class="ttdeci">float text[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00014">Theme.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a805322f636305f60ecc99a06f8fab482"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a805322f636305f60ecc99a06f8fab482">eve::ui::Theme::itemInnerSpacingX</a></div><div class="ttdeci">float itemInnerSpacingX</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00061">Theme.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a814f1cc38e59967281bbb43dd0d64836"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a814f1cc38e59967281bbb43dd0d64836">eve::ui::Theme::scrollbarGrabActive</a></div><div class="ttdeci">float scrollbarGrabActive[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00039">Theme.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a8a075e2db6d33980bd4cea6d530f065b"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a8a075e2db6d33980bd4cea6d530f065b">eve::ui::Theme::scrollbarRounding</a></div><div class="ttdeci">float scrollbarRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00046">Theme.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a919dc61da6a8194b09160b2432b633cb"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a919dc61da6a8194b09160b2432b633cb">eve::ui::Theme::grabRounding</a></div><div class="ttdeci">float grabRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00047">Theme.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a92bbfeacc5016c06fd6b4bc2ab321d0a"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a92bbfeacc5016c06fd6b4bc2ab321d0a">eve::ui::Theme::frameBgActive</a></div><div class="ttdeci">float frameBgActive[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00022">Theme.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a992868a9264d44eafcb8b72d5cb8d159"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a992868a9264d44eafcb8b72d5cb8d159">eve::ui::Theme::windowBg</a></div><div class="ttdeci">float windowBg[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00016">Theme.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_a9e70eab5a57b01e6f14ad1309f9a8029"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#a9e70eab5a57b01e6f14ad1309f9a8029">eve::ui::Theme::windowRounding</a></div><div class="ttdeci">float windowRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00042">Theme.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_aa122e90e69c54eb0d5f7a4c12990de71"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#aa122e90e69c54eb0d5f7a4c12990de71">eve::ui::Theme::windowBorderSize</a></div><div class="ttdeci">float windowBorderSize</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00050">Theme.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_aa272d024f65983696920db446797af46"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#aa272d024f65983696920db446797af46">eve::ui::Theme::framePaddingX</a></div><div class="ttdeci">float framePaddingX</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00057">Theme.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_aa6f38435f781262e3a13caa00e63d56a"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#aa6f38435f781262e3a13caa00e63d56a">eve::ui::Theme::light</a></div><div class="ttdeci">static Theme light()</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00040">Theme.cpp:40</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_aaedeb747a7f8cfa9c4032ad7e2605476"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#aaedeb747a7f8cfa9c4032ad7e2605476">eve::ui::Theme::sliderGrabActive</a></div><div class="ttdeci">float sliderGrabActive[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00034">Theme.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ab145cc96b8f68dbaddfde4aac488ee6a"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ab145cc96b8f68dbaddfde4aac488ee6a">eve::ui::Theme::itemInnerSpacingY</a></div><div class="ttdeci">float itemInnerSpacingY</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00062">Theme.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ababe2d47cde488b6c65a96d460aa802e"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ababe2d47cde488b6c65a96d460aa802e">eve::ui::Theme::headerHovered</a></div><div class="ttdeci">float headerHovered[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00030">Theme.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_abd36204f95d166695bde0cde37222b47"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#abd36204f95d166695bde0cde37222b47">eve::ui::Theme::frameBgHovered</a></div><div class="ttdeci">float frameBgHovered[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00021">Theme.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ac9d9635bca6d67cf5605b9e75b4f503f"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ac9d9635bca6d67cf5605b9e75b4f503f">eve::ui::Theme::popupBorderSize</a></div><div class="ttdeci">float popupBorderSize</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00052">Theme.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_acd152e649f07f34edfc56cf4616da067"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#acd152e649f07f34edfc56cf4616da067">eve::ui::Theme::childBg</a></div><div class="ttdeci">float childBg[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00017">Theme.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ad14b290db63154bd38a68e0cd5499fdf"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ad14b290db63154bd38a68e0cd5499fdf">eve::ui::Theme::childBorderSize</a></div><div class="ttdeci">float childBorderSize</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00051">Theme.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ad18992b3ae8cdd41b304ef35d7c5de2a"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ad18992b3ae8cdd41b304ef35d7c5de2a">eve::ui::Theme::frameRounding</a></div><div class="ttdeci">float frameRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00044">Theme.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ad29a54bbfb23ca470068bd427e71324c"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ad29a54bbfb23ca470068bd427e71324c">eve::ui::Theme::headerActive</a></div><div class="ttdeci">float headerActive[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00031">Theme.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ad575176b44a39d2c1ec6df65063d4efd"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ad575176b44a39d2c1ec6df65063d4efd">eve::ui::Theme::button</a></div><div class="ttdeci">float button[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00026">Theme.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ad77a7e1e3867aa16671ff672b343bf30"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ad77a7e1e3867aa16671ff672b343bf30">eve::ui::Theme::scrollbarBg</a></div><div class="ttdeci">float scrollbarBg[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00036">Theme.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ae67929613d270b2c86dd32998c4c7388"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ae67929613d270b2c86dd32998c4c7388">eve::ui::Theme::tabRounding</a></div><div class="ttdeci">float tabRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00048">Theme.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_ae7973840dda5bfa855a3f8dc395625ab"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#ae7973840dda5bfa855a3f8dc395625ab">eve::ui::Theme::dark</a></div><div class="ttdeci">static Theme dark()</div><div class="ttdoc">Built-in presets with matching geometry; only colors differ.</div><div class="ttdef"><b>Definition</b> <a href="Theme_8cpp_source.html#l00034">Theme.cpp:34</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_aead5d6d841e28b9777c9bc14b4df009d"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#aead5d6d841e28b9777c9bc14b4df009d">eve::ui::Theme::border</a></div><div class="ttdeci">float border[4]</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00019">Theme.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_af2ed5779970f66793224ac13656b6379"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#af2ed5779970f66793224ac13656b6379">eve::ui::Theme::navEnableGamepad</a></div><div class="ttdeci">bool navEnableGamepad</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00071">Theme.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1Theme_html_af671e7ef3431ffb5c7686bc6de62546c"><div class="ttname"><a href="structeve_1_1ui_1_1Theme.html#af671e7ef3431ffb5c7686bc6de62546c">eve::ui::Theme::popupRounding</a></div><div class="ttdeci">float popupRounding</div><div class="ttdef"><b>Definition</b> <a href="Theme_8h_source.html#l00045">Theme.h:45</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

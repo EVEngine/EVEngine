@@ -1,0 +1,252 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ClusteredLight.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClusteredLight.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClusteredLight_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Light_8h.html">graphics/Light.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ClusteredLightConfig.html">ClusteredLightConfig</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">   13</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">kTilesX</a> = 16;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">   14</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">kTilesY</a> = 9;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">   15</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">kSlices</a> = 24;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a0cafcbfc78ac657c28520cc04cbd47dc">   16</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a0cafcbfc78ac657c28520cc04cbd47dc">kClusterCount</a> = <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">kTilesX</a> * <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">kTilesY</a> * <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">kSlices</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a37f9816f37ac6fe868d3ad8fe9e79026">   17</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a37f9816f37ac6fe868d3ad8fe9e79026">kMaxLights</a> = 256;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#adf8e0854d1b42c6cb42ba8b851380c3f">   18</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#adf8e0854d1b42c6cb42ba8b851380c3f">kMaxLightsPerCluster</a> = 32;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">   21</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1graphics_1_1Light3DGpu.html">ClusteredLightGpu</a> = <a class="code hl_struct" href="structeve_1_1graphics_1_1Light3DGpu.html">Light3DGpu</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusterTableEntry.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ClusterTableEntry.html">ClusterTableEntry</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusterTableEntry.html#a95e48dd7eec36e88d964040241f750be">   24</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusterTableEntry.html#a95e48dd7eec36e88d964040241f750be">offset</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusterTableEntry.html#a9b8e6605ead91545f4c2964a9a2ff2ee">   25</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusterTableEntry.html#a9b8e6605ead91545f4c2964a9a2ff2ee">count</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af295223d47aaf08318a8b0210c4fe4c6">   33</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af295223d47aaf08318a8b0210c4fe4c6">ambient</a>{0.12f, 0.12f, 0.14f, 0.f};</div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af8bbc8079a17d853ac35de2f7383a528">   34</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af8bbc8079a17d853ac35de2f7383a528">gridInfo</a>{float(<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">ClusteredLightConfig::kTilesX</a>), float(<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">ClusteredLightConfig::kTilesY</a>),</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                       float(<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">ClusteredLightConfig::kSlices</a>), 0.f};  <span class="comment">// w = point light count</span></div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a5c8c192b45cfe980d8dda91ef616f365">   36</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a5c8c192b45cfe980d8dda91ef616f365">clipInfo</a>{0.1f, 100.f, 1.f, 1.f};  <span class="comment">// near, far, screenW, screenH</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa7bc4b2eca6d29bf939fe93c8160c2d3">   37</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa7bc4b2eca6d29bf939fe93c8160c2d3">view</a>{1.f};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ac6a7937c579d97c9928e89ca26bbc7e9">   38</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ac6a7937c579d97c9928e89ca26bbc7e9">primaryDir</a>{0.4f, 1.f, 0.3f, 0.f};  <span class="comment">// toward surface; w=1 if valid</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa8fea97ab207e511833eca89749e8975">   39</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa8fea97ab207e511833eca89749e8975">primaryColor</a>{1.f, 1.f, 1.f, 1.f};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#accd2c1386ffb0db611424e08913edbe2">   40</a></span>    std::vector&lt;ClusteredLightGpu&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#accd2c1386ffb0db611424e08913edbe2">lights</a>;           <span class="comment">// point lights only (world space)</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#afcbd79f06b53f6986ef1ee7677edf5eb">   41</a></span>    std::vector&lt;ClusterTableEntry&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#afcbd79f06b53f6986ef1ee7677edf5eb">clusterTable</a>;     <span class="comment">// size = kClusterCount</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ad97f071392f144c4b5d1859e348aa3d8">   42</a></span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ad97f071392f144c4b5d1859e348aa3d8">lightIndices</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">   43</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">active</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><a class="code hl_struct" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a> <a class="code hl_function" href="namespaceeve_1_1graphics.html#aafffa4de2e1f00711aebd61f81cb9360">buildClusteredLighting</a>(<span class="keyword">const</span> std::vector&lt;ClusteredLightGpu&gt; &amp;<a class="code hl_variable" href="TreeMesh_8cpp.html#ab0d901dbc2b3a02f445b75b206b413f7">points</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                               <span class="keyword">const</span> std::vector&lt;ClusteredLightGpu&gt; &amp;dirs,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                               <span class="keyword">const</span> glm::mat4 &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, <span class="keywordtype">float</span> nearZ, <span class="keywordtype">float</span> farZ,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                               <span class="keywordtype">int</span> screenW, <span class="keywordtype">int</span> screenH, <span class="keywordtype">float</span> fovYRad,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                               <span class="keyword">const</span> glm::vec4 &amp;ambient);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aLight_8h_html"><div class="ttname"><a href="Light_8h.html">Light.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ada05f6cebac471a16afe32603db72cd2"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00485">RenderSystem3D.cpp:485</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ab0d901dbc2b3a02f445b75b206b413f7"><div class="ttname"><a href="TreeMesh_8cpp.html#ab0d901dbc2b3a02f445b75b206b413f7">points</a></div><div class="ttdeci">std::vector&lt; V3 &gt; points</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00126">TreeMesh.cpp:126</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aafffa4de2e1f00711aebd61f81cb9360"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aafffa4de2e1f00711aebd61f81cb9360">eve::graphics::buildClusteredLighting</a></div><div class="ttdeci">ClusteredLightingUpload buildClusteredLighting(const std::vector&lt; ClusteredLightGpu &gt; &amp;points, const std::vector&lt; ClusteredLightGpu &gt; &amp;dirs, const glm::mat4 &amp;view, float nearZ, float farZ, int screenW, int screenH, float fovYRad, const glm::vec4 &amp;ambient)</div><div class="ttdoc">Build clustered tables for point lights in view space.</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8cpp_source.html#l00009">ClusteredLight.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusterTableEntry_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusterTableEntry.html">eve::graphics::ClusterTableEntry</a></div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00023">ClusteredLight.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusterTableEntry_html_a95e48dd7eec36e88d964040241f750be"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusterTableEntry.html#a95e48dd7eec36e88d964040241f750be">eve::graphics::ClusterTableEntry::offset</a></div><div class="ttdeci">uint32_t offset</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00024">ClusteredLight.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusterTableEntry_html_a9b8e6605ead91545f4c2964a9a2ff2ee"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusterTableEntry.html#a9b8e6605ead91545f4c2964a9a2ff2ee">eve::graphics::ClusterTableEntry::count</a></div><div class="ttdeci">uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00025">ClusteredLight.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html">eve::graphics::ClusteredLightConfig</a></div><div class="ttdoc">Clustered forward grid (CPU assign, GPU consume).</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00012">ClusteredLight.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_a0cafcbfc78ac657c28520cc04cbd47dc"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a0cafcbfc78ac657c28520cc04cbd47dc">eve::graphics::ClusteredLightConfig::kClusterCount</a></div><div class="ttdeci">static constexpr int kClusterCount</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00016">ClusteredLight.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_a1184f79fc9939f1ad375e7401528cb92"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">eve::graphics::ClusteredLightConfig::kTilesY</a></div><div class="ttdeci">static constexpr int kTilesY</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00014">ClusteredLight.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_a37f9816f37ac6fe868d3ad8fe9e79026"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a37f9816f37ac6fe868d3ad8fe9e79026">eve::graphics::ClusteredLightConfig::kMaxLights</a></div><div class="ttdeci">static constexpr int kMaxLights</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00017">ClusteredLight.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_a501977928e18c11af19c35dd91ded6ca"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">eve::graphics::ClusteredLightConfig::kSlices</a></div><div class="ttdeci">static constexpr int kSlices</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00015">ClusteredLight.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_ac427f7215aed6688df9ea79171ecee3f"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">eve::graphics::ClusteredLightConfig::kTilesX</a></div><div class="ttdeci">static constexpr int kTilesX</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00013">ClusteredLight.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_adf8e0854d1b42c6cb42ba8b851380c3f"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#adf8e0854d1b42c6cb42ba8b851380c3f">eve::graphics::ClusteredLightConfig::kMaxLightsPerCluster</a></div><div class="ttdeci">static constexpr int kMaxLightsPerCluster</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00018">ClusteredLight.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">eve::graphics::ClusteredLightingUpload</a></div><div class="ttdoc">CPU-built clustered lighting upload for one frame/camera. Point lights are clustered; directional lig...</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00032">ClusteredLight.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_a5c8c192b45cfe980d8dda91ef616f365"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a5c8c192b45cfe980d8dda91ef616f365">eve::graphics::ClusteredLightingUpload::clipInfo</a></div><div class="ttdeci">glm::vec4 clipInfo</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00036">ClusteredLight.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_a7bb51aa582d15889e44e2d9c0ef04dd1"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">eve::graphics::ClusteredLightingUpload::active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00043">ClusteredLight.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_aa7bc4b2eca6d29bf939fe93c8160c2d3"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa7bc4b2eca6d29bf939fe93c8160c2d3">eve::graphics::ClusteredLightingUpload::view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00037">ClusteredLight.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_aa8fea97ab207e511833eca89749e8975"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa8fea97ab207e511833eca89749e8975">eve::graphics::ClusteredLightingUpload::primaryColor</a></div><div class="ttdeci">glm::vec4 primaryColor</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00039">ClusteredLight.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_ac6a7937c579d97c9928e89ca26bbc7e9"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ac6a7937c579d97c9928e89ca26bbc7e9">eve::graphics::ClusteredLightingUpload::primaryDir</a></div><div class="ttdeci">glm::vec4 primaryDir</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00038">ClusteredLight.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_accd2c1386ffb0db611424e08913edbe2"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#accd2c1386ffb0db611424e08913edbe2">eve::graphics::ClusteredLightingUpload::lights</a></div><div class="ttdeci">std::vector&lt; ClusteredLightGpu &gt; lights</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00040">ClusteredLight.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_ad97f071392f144c4b5d1859e348aa3d8"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ad97f071392f144c4b5d1859e348aa3d8">eve::graphics::ClusteredLightingUpload::lightIndices</a></div><div class="ttdeci">std::vector&lt; uint32_t &gt; lightIndices</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00042">ClusteredLight.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_af295223d47aaf08318a8b0210c4fe4c6"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af295223d47aaf08318a8b0210c4fe4c6">eve::graphics::ClusteredLightingUpload::ambient</a></div><div class="ttdeci">glm::vec4 ambient</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00033">ClusteredLight.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_af8bbc8079a17d853ac35de2f7383a528"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af8bbc8079a17d853ac35de2f7383a528">eve::graphics::ClusteredLightingUpload::gridInfo</a></div><div class="ttdeci">glm::vec4 gridInfo</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00034">ClusteredLight.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_afcbd79f06b53f6986ef1ee7677edf5eb"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#afcbd79f06b53f6986ef1ee7677edf5eb">eve::graphics::ClusteredLightingUpload::clusterTable</a></div><div class="ttdeci">std::vector&lt; ClusterTableEntry &gt; clusterTable</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00041">ClusteredLight.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Light3DGpu_html"><div class="ttname"><a href="structeve_1_1graphics_1_1Light3DGpu.html">eve::graphics::Light3DGpu</a></div><div class="ttdoc">GPU light packing for mesh3d / PBR (std140-friendly).</div><div class="ttdef"><b>Definition</b> <a href="Light_8h_source.html#l00085">Light.h:85</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::GrassField类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1GrassField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::GrassField类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*; GPU <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> / <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> / <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> are owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>.  
+ <a href="classeve_1_1graphics_1_1GrassField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Grass_8h_source.html">Grass.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GrassField_1_1BakeParams.html">BakeParams</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aeda2fb4e8e0417890a65cba153c22693" id="r_aeda2fb4e8e0417890a65cba153c22693"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#aeda2fb4e8e0417890a65cba153c22693">GrassField</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:aeda2fb4e8e0417890a65cba153c22693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4522371735d999e4a21cbe0308da0661" id="r_a4522371735d999e4a21cbe0308da0661"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a4522371735d999e4a21cbe0308da0661">~GrassField</a> ()=default</td></tr>
+<tr class="separator:a4522371735d999e4a21cbe0308da0661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41be355d320bdfbe5b63db720c821ef7" id="r_a41be355d320bdfbe5b63db720c821ef7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a41be355d320bdfbe5b63db720c821ef7">GrassField</a> (const <a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> &amp;)=delete</td></tr>
+<tr class="separator:a41be355d320bdfbe5b63db720c821ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c08931e1f8e7ac8f1379447033a719" id="r_a74c08931e1f8e7ac8f1379447033a719"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a74c08931e1f8e7ac8f1379447033a719">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> &amp;)=delete</td></tr>
+<tr class="separator:a74c08931e1f8e7ac8f1379447033a719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f549df39fdefb6c7539fec70990a5f7" id="r_a9f549df39fdefb6c7539fec70990a5f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a9f549df39fdefb6c7539fec70990a5f7">bake</a> (const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices, int indexCount, const <a class="el" href="structeve_1_1graphics_1_1GrassField_1_1BakeParams.html">BakeParams</a> &amp;params)</td></tr>
+<tr class="separator:a9f549df39fdefb6c7539fec70990a5f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa28041b660aa1afb6eaf732ffabbec43" id="r_aa28041b660aa1afb6eaf732ffabbec43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#aa28041b660aa1afb6eaf732ffabbec43">bakePlane</a> (float sizeX, float sizeZ, int segX, int segZ)</td></tr>
+<tr class="separator:aa28041b660aa1afb6eaf732ffabbec43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f864fbda97dc2e116bf6795efad2135" id="r_a6f864fbda97dc2e116bf6795efad2135"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a6f864fbda97dc2e116bf6795efad2135">bakePlane</a> (float sizeX, float sizeZ, int segX, int segZ, const <a class="el" href="structeve_1_1graphics_1_1GrassField_1_1BakeParams.html">BakeParams</a> &amp;params)</td></tr>
+<tr class="separator:a6f864fbda97dc2e116bf6795efad2135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5dfbda12860de7b979aa683ed09dd86" id="r_ae5dfbda12860de7b979aa683ed09dd86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#ae5dfbda12860de7b979aa683ed09dd86">update</a> (float dt)</td></tr>
+<tr class="separator:ae5dfbda12860de7b979aa683ed09dd86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92be888fc62538550a3f724ed2fce50" id="r_ac92be888fc62538550a3f724ed2fce50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#ac92be888fc62538550a3f724ed2fce50">setTime</a> (float seconds)</td></tr>
+<tr class="separator:ac92be888fc62538550a3f724ed2fce50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd87816da43eadf3740700ea993241c9" id="r_acd87816da43eadf3740700ea993241c9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#acd87816da43eadf3740700ea993241c9">getTime</a> () const</td></tr>
+<tr class="separator:acd87816da43eadf3740700ea993241c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2349557b724cb954b4b314d077fcf2f0" id="r_a2349557b724cb954b4b314d077fcf2f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a2349557b724cb954b4b314d077fcf2f0">setFrameDuration</a> (float seconds)</td></tr>
+<tr class="separator:a2349557b724cb954b4b314d077fcf2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9948f50d0c985051243774d79572846" id="r_ae9948f50d0c985051243774d79572846"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#ae9948f50d0c985051243774d79572846">getFrameDuration</a> () const</td></tr>
+<tr class="separator:ae9948f50d0c985051243774d79572846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81dc61aa5a5342e332d0eadc49e9626" id="r_ab81dc61aa5a5342e332d0eadc49e9626"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#ab81dc61aa5a5342e332d0eadc49e9626">draw</a> (const glm::mat4 &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="separator:ab81dc61aa5a5342e332d0eadc49e9626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9d594c34dd5d91f85442910b7fd9722" id="r_ab9d594c34dd5d91f85442910b7fd9722"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#ab9d594c34dd5d91f85442910b7fd9722">draw</a> ()</td></tr>
+<tr class="separator:ab9d594c34dd5d91f85442910b7fd9722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43e313fa2bcce2faef72daf3038b24ee" id="r_a43e313fa2bcce2faef72daf3038b24ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a43e313fa2bcce2faef72daf3038b24ee">getDenseMesh</a> () const</td></tr>
+<tr class="separator:a43e313fa2bcce2faef72daf3038b24ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a878a4a669541e8089a253a09b5e8fcdd" id="r_a878a4a669541e8089a253a09b5e8fcdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a878a4a669541e8089a253a09b5e8fcdd">getSparseMesh</a> () const</td></tr>
+<tr class="separator:a878a4a669541e8089a253a09b5e8fcdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411482ca1de312d3a0388df078a9592c" id="r_a411482ca1de312d3a0388df078a9592c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a411482ca1de312d3a0388df078a9592c">getShader</a> () const</td></tr>
+<tr class="separator:a411482ca1de312d3a0388df078a9592c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a633da47e839576511609777d2c0599c5" id="r_a633da47e839576511609777d2c0599c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a633da47e839576511609777d2c0599c5">getAtlas</a> () const</td></tr>
+<tr class="separator:a633da47e839576511609777d2c0599c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e1964ea7cd9cc241034d38ab9d125d9" id="r_a9e1964ea7cd9cc241034d38ab9d125d9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#a9e1964ea7cd9cc241034d38ab9d125d9">getDenseCount</a> () const</td></tr>
+<tr class="separator:a9e1964ea7cd9cc241034d38ab9d125d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae61c0677eea7fec1d0f8192c32e8dd14" id="r_ae61c0677eea7fec1d0f8192c32e8dd14"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html#ae61c0677eea7fec1d0f8192c32e8dd14">getSparseCount</a> () const</td></tr>
+<tr class="separator:ae61c0677eea7fec1d0f8192c32e8dd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*; GPU <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> / <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> / <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> are owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00124">124</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aeda2fb4e8e0417890a65cba153c22693" name="aeda2fb4e8e0417890a65cba153c22693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeda2fb4e8e0417890a65cba153c22693">&#9670;&#160;</a></span>GrassField() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::GrassField::GrassField </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00665">665</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4522371735d999e4a21cbe0308da0661" name="a4522371735d999e4a21cbe0308da0661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4522371735d999e4a21cbe0308da0661">&#9670;&#160;</a></span>~GrassField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::GrassField::~GrassField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41be355d320bdfbe5b63db720c821ef7" name="a41be355d320bdfbe5b63db720c821ef7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41be355d320bdfbe5b63db720c821ef7">&#9670;&#160;</a></span>GrassField() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::GrassField::GrassField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9f549df39fdefb6c7539fec70990a5f7" name="a9f549df39fdefb6c7539fec70990a5f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f549df39fdefb6c7539fec70990a5f7">&#9670;&#160;</a></span>bake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::bake </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>nrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1GrassField_1_1BakeParams.html">BakeParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00669">669</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8h_source.html#l00137">eve::graphics::GrassField::BakeParams::atlasFrameH</a>, <a class="el" href="Grass_8h_source.html#l00138">eve::graphics::GrassField::BakeParams::atlasFrames</a>, <a class="el" href="Grass_8h_source.html#l00136">eve::graphics::GrassField::BakeParams::atlasFrameW</a>, <a class="el" href="Grass_8cpp_source.html#l00321">eve::graphics::grass::bindAtlasLayout()</a>, <a class="el" href="Grass_8cpp_source.html#l00289">eve::graphics::grass::bindDefaults()</a>, <a class="el" href="Grass_8cpp_source.html#l00583">eve::graphics::grass::buildBillboards()</a>, <a class="el" href="Grass_8cpp_source.html#l00346">eve::graphics::grass::createShader()</a>, <a class="el" href="Grass_8cpp_source.html#l00383">eve::graphics::grass::createSwayAtlas()</a>, <a class="el" href="Grass_8cpp_source.html#l00505">eve::graphics::grass::createSwayAtlasFromFiles()</a>, <a class="el" href="Grass_8h_source.html#l00128">eve::graphics::GrassField::BakeParams::denseRadius</a>, <a class="el" href="Grass_8h_source.html#l00140">eve::graphics::GrassField::BakeParams::grassAtlasFiles</a>, <a class="el" href="Grass_8h_source.html#l00134">eve::graphics::GrassField::BakeParams::height</a>, <a class="el" href="EditorHost_8cpp_source.html#l00457">layout</a>, <a class="el" href="Grass_8h_source.html#l00141">eve::graphics::GrassField::BakeParams::leafAtlasFiles</a>, <a class="el" href="Grass_8h_source.html#l00130">eve::graphics::GrassField::BakeParams::maxDense</a>, <a class="el" href="Grass_8h_source.html#l00039">eve::graphics::grass::SampleParams::maxPoints</a>, <a class="el" href="Grass_8h_source.html#l00131">eve::graphics::GrassField::BakeParams::maxSparse</a>, <a class="el" href="Grass_8h_source.html#l00042">eve::graphics::grass::SampleParams::minSlopeDot</a>, <a class="el" href="Grass_8h_source.html#l00135">eve::graphics::GrassField::BakeParams::minSlopeDot</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="Grass_8h_source.html#l00038">eve::graphics::grass::SampleParams::radius</a>, <a class="el" href="Grass_8cpp_source.html#l00545">eve::graphics::grass::samplePoisson()</a>, <a class="el" href="Grass_8h_source.html#l00040">eve::graphics::grass::SampleParams::seed</a>, <a class="el" href="Grass_8h_source.html#l00132">eve::graphics::GrassField::BakeParams::seed</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="Grass_8h_source.html#l00129">eve::graphics::GrassField::BakeParams::sparseRadius</a> , 以及 <a class="el" href="Grass_8h_source.html#l00133">eve::graphics::GrassField::BakeParams::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00735">bakePlane()</a>.</p>
+
+</div>
+</div>
+<a id="aa28041b660aa1afb6eaf732ffabbec43" name="aa28041b660aa1afb6eaf732ffabbec43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa28041b660aa1afb6eaf732ffabbec43">&#9670;&#160;</a></span>bakePlane() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::bakePlane </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00731">731</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00731">bakePlane()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00731">bakePlane()</a>.</p>
+
+</div>
+</div>
+<a id="a6f864fbda97dc2e116bf6795efad2135" name="a6f864fbda97dc2e116bf6795efad2135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f864fbda97dc2e116bf6795efad2135">&#9670;&#160;</a></span>bakePlane() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::bakePlane </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1GrassField_1_1BakeParams.html">BakeParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00735">735</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00669">bake()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>, <a class="el" href="Grass_8cpp_source.html#l00618">eve::graphics::grass::makePlane()</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>.</p>
+
+</div>
+</div>
+<a id="ab9d594c34dd5d91f85442910b7fd9722" name="ab9d594c34dd5d91f85442910b7fd9722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9d594c34dd5d91f85442910b7fd9722">&#9670;&#160;</a></span>draw() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::draw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00757">757</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00757">draw()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00757">draw()</a>.</p>
+
+</div>
+</div>
+<a id="ab81dc61aa5a5342e332d0eadc49e9626" name="ab81dc61aa5a5342e332d0eadc49e9626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81dc61aa5a5342e332d0eadc49e9626">&#9670;&#160;</a></span>draw() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::draw </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00759">759</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00331">eve::graphics::grass::bindLayer()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#acbd057ac365c66502742391d4aa42807">eve::graphics::Graphics::drawMeshShader()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>, <a class="el" href="Grass_8cpp_source.html#l00341">eve::graphics::grass::setFrameDuration()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00336">eve::graphics::grass::setTime()</a>.</p>
+
+</div>
+</div>
+<a id="a633da47e839576511609777d2c0599c5" name="a633da47e839576511609777d2c0599c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a633da47e839576511609777d2c0599c5">&#9670;&#160;</a></span>getAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::GrassField::getAtlas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e1964ea7cd9cc241034d38ab9d125d9" name="a9e1964ea7cd9cc241034d38ab9d125d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e1964ea7cd9cc241034d38ab9d125d9">&#9670;&#160;</a></span>getDenseCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::GrassField::getDenseCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43e313fa2bcce2faef72daf3038b24ee" name="a43e313fa2bcce2faef72daf3038b24ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e313fa2bcce2faef72daf3038b24ee">&#9670;&#160;</a></span>getDenseMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::GrassField::getDenseMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00164">164</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9948f50d0c985051243774d79572846" name="ae9948f50d0c985051243774d79572846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9948f50d0c985051243774d79572846">&#9670;&#160;</a></span>getFrameDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GrassField::getFrameDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a411482ca1de312d3a0388df078a9592c" name="a411482ca1de312d3a0388df078a9592c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411482ca1de312d3a0388df078a9592c">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::GrassField::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae61c0677eea7fec1d0f8192c32e8dd14" name="ae61c0677eea7fec1d0f8192c32e8dd14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae61c0677eea7fec1d0f8192c32e8dd14">&#9670;&#160;</a></span>getSparseCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::GrassField::getSparseCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a878a4a669541e8089a253a09b5e8fcdd" name="a878a4a669541e8089a253a09b5e8fcdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a878a4a669541e8089a253a09b5e8fcdd">&#9670;&#160;</a></span>getSparseMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::GrassField::getSparseMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd87816da43eadf3740700ea993241c9" name="acd87816da43eadf3740700ea993241c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd87816da43eadf3740700ea993241c9">&#9670;&#160;</a></span>getTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::GrassField::getTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8h_source.html">Grass.h</a> 第 <a class="el" href="Grass_8h_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a74c08931e1f8e7ac8f1379447033a719" name="a74c08931e1f8e7ac8f1379447033a719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c08931e1f8e7ac8f1379447033a719">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> &amp; eve::graphics::GrassField::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2349557b724cb954b4b314d077fcf2f0" name="a2349557b724cb954b4b314d077fcf2f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2349557b724cb954b4b314d077fcf2f0">&#9670;&#160;</a></span>setFrameDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::setFrameDuration </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00752">752</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00341">eve::graphics::grass::setFrameDuration()</a>.</p>
+
+</div>
+</div>
+<a id="ac92be888fc62538550a3f724ed2fce50" name="ac92be888fc62538550a3f724ed2fce50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92be888fc62538550a3f724ed2fce50">&#9670;&#160;</a></span>setTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::setTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00747">747</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00336">eve::graphics::grass::setTime()</a>.</p>
+
+</div>
+</div>
+<a id="ae5dfbda12860de7b979aa683ed09dd86" name="ae5dfbda12860de7b979aa683ed09dd86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5dfbda12860de7b979aa683ed09dd86">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GrassField::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grass_8cpp_source.html">Grass.cpp</a> 第 <a class="el" href="Grass_8cpp_source.html#l00742">742</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00336">eve::graphics::grass::setTime()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Grass_8h_source.html">Grass.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Grass_8cpp_source.html">Grass.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

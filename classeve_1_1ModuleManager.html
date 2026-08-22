@@ -1,0 +1,824 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ModuleManager类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1ModuleManager.html">ModuleManager</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pro-static-methods">静态 Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="classeve_1_1ModuleManager-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ModuleManager类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Module_8h_source.html">Module.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ModuleManager_1_1ModuleInfo.html">ModuleInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a1d556460f4947d91015870240138f907" id="r_a1d556460f4947d91015870240138f907"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classeve_1_1Module.html">Module</a> *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a1d556460f4947d91015870240138f907">creator_t</a>) ()</td></tr>
+<tr class="separator:a1d556460f4947d91015870240138f907"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b44bcaf65e6c4ca9f66f083c9945e50" id="r_a2b44bcaf65e6c4ca9f66f083c9945e50"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a2b44bcaf65e6c4ca9f66f083c9945e50">exposer_t</a>) (ssq::Table &amp;)</td></tr>
+<tr class="separator:a2b44bcaf65e6c4ca9f66f083c9945e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aacc29b78872d17c2041e94f56ce46aa3" id="r_aacc29b78872d17c2041e94f56ce46aa3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1ModuleManager.html">ModuleManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#aacc29b78872d17c2041e94f56ce46aa3">inst</a> ()</td></tr>
+<tr class="memdesc:aacc29b78872d17c2041e94f56ce46aa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Singleton registry holding every registered engine module.  <br /></td></tr>
+<tr class="separator:aacc29b78872d17c2041e94f56ce46aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d39e8e1e979731759d7869ccec92d7c" id="r_a4d39e8e1e979731759d7869ccec92d7c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Module.html">Module</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a4d39e8e1e979731759d7869ccec92d7c">find</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a4d39e8e1e979731759d7869ccec92d7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a live module instance by name, or nullptr.  <br /></td></tr>
+<tr class="separator:a4d39e8e1e979731759d7869ccec92d7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad25a9c02f064f1ea0ee1e2ed1d1c1018" id="r_ad25a9c02f064f1ea0ee1e2ed1d1c1018"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#ad25a9c02f064f1ea0ee1e2ed1d1c1018">insert</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1Module.html">Module</a> *<a class="el" href="classeve_1_1ModuleManager.html#aacc29b78872d17c2041e94f56ce46aa3">inst</a>)</td></tr>
+<tr class="memdesc:ad25a9c02f064f1ea0ee1e2ed1d1c1018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores a module instance under a name (used by Module_IMPL).  <br /></td></tr>
+<tr class="separator:ad25a9c02f064f1ea0ee1e2ed1d1c1018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d0168905105f17b700e9e2e7948c840" id="r_a3d0168905105f17b700e9e2e7948c840"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a3d0168905105f17b700e9e2e7948c840">register_module</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1ModuleManager.html#a1d556460f4947d91015870240138f907">creator_t</a> <a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, <a class="el" href="classeve_1_1ModuleManager.html#a2b44bcaf65e6c4ca9f66f083c9945e50">exposer_t</a> e)</td></tr>
+<tr class="memdesc:a3d0168905105f17b700e9e2e7948c840"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a module factory (creator + script exposer) by name.  <br /></td></tr>
+<tr class="separator:a3d0168905105f17b700e9e2e7948c840"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4da730a6c4aaaa772c7465485044aefb" id="r_a4da730a6c4aaaa772c7465485044aefb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a4da730a6c4aaaa772c7465485044aefb">expose</a> (<a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;<a class="el" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">runtime</a>)</td></tr>
+<tr class="memdesc:a4da730a6c4aaaa772c7465485044aefb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes every registered module into the given runtime's root table.  <br /></td></tr>
+<tr class="separator:a4da730a6c4aaaa772c7465485044aefb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572304d2c2b9f9ccaf776ad72189c52e" id="r_a572304d2c2b9f9ccaf776ad72189c52e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a572304d2c2b9f9ccaf776ad72189c52e">expose</a> (ssq::VM &amp;<a class="el" href="classeve_1_1ModuleManager.html#ac6c179140700984c0a82147a849b221f">vm</a>)</td></tr>
+<tr class="separator:a572304d2c2b9f9ccaf776ad72189c52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a906841ddd053ea9fa6c1a94e7720d547" id="r_a906841ddd053ea9fa6c1a94e7720d547"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a906841ddd053ea9fa6c1a94e7720d547">expose_pending</a> ()</td></tr>
+<tr class="separator:a906841ddd053ea9fa6c1a94e7720d547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d5e99add5d64228d6098297913690f5" id="r_a4d5e99add5d64228d6098297913690f5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Runtime.html">Runtime</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">runtime</a> ()</td></tr>
+<tr class="memdesc:a4d5e99add5d64228d6098297913690f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active runtime associated with the last <a class="el" href="classeve_1_1ModuleManager.html#a4da730a6c4aaaa772c7465485044aefb" title="Exposes every registered module into the given runtime&#39;s root table.">expose()</a> call, or nullptr.  <br /></td></tr>
+<tr class="separator:a4d5e99add5d64228d6098297913690f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6c179140700984c0a82147a849b221f" id="r_ac6c179140700984c0a82147a849b221f"><td class="memItemLeft" align="right" valign="top">static ssq::VM *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#ac6c179140700984c0a82147a849b221f">vm</a> ()</td></tr>
+<tr class="memdesc:ac6c179140700984c0a82147a849b221f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script VM of the active runtime, or nullptr.  <br /></td></tr>
+<tr class="separator:ac6c179140700984c0a82147a849b221f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23fda62ecd95cf00bbb23d39f6ad6dae" id="r_a23fda62ecd95cf00bbb23d39f6ad6dae"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a23fda62ecd95cf00bbb23d39f6ad6dae">detach</a> (<a class="el" href="classeve_1_1Runtime.html">Runtime</a> *<a class="el" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">runtime</a>)</td></tr>
+<tr class="memdesc:a23fda62ecd95cf00bbb23d39f6ad6dae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the active runtime if it matches; called during shutdown.  <br /></td></tr>
+<tr class="separator:a23fda62ecd95cf00bbb23d39f6ad6dae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ac21ca48096b7fc855e93eb6c02f6e4" id="r_a2ac21ca48096b7fc855e93eb6c02f6e4"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a2ac21ca48096b7fc855e93eb6c02f6e4"><td class="memTemplItemLeft" align="right" valign="top">static T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a2ac21ca48096b7fc855e93eb6c02f6e4">getInstance</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a2ac21ca48096b7fc855e93eb6c02f6e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Casts the registered instance of a module to T (may be null).  <br /></td></tr>
+<tr class="separator:a2ac21ca48096b7fc855e93eb6c02f6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a746d061a785450fb84dd2cf6afab37ec" id="r_a746d061a785450fb84dd2cf6afab37ec"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a746d061a785450fb84dd2cf6afab37ec"><td class="memTemplItemLeft" align="right" valign="top">static T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a746d061a785450fb84dd2cf6afab37ec">requireInstance</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a746d061a785450fb84dd2cf6afab37ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the live instance, creating it lazily through the registered factory.  <br /></td></tr>
+<tr class="separator:a746d061a785450fb84dd2cf6afab37ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2234fd60717efde345dd334d754c3915" id="r_a2234fd60717efde345dd334d754c3915"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a2234fd60717efde345dd334d754c3915">requireAll</a> ()</td></tr>
+<tr class="memdesc:a2234fd60717efde345dd334d754c3915"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates every registered module through its factory.  <br /></td></tr>
+<tr class="separator:a2234fd60717efde345dd334d754c3915"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
+静态 Protected 成员函数</h2></td></tr>
+<tr class="memitem:a2aebe9cbe6212c4804e3c647f092e01a" id="r_a2aebe9cbe6212c4804e3c647f092e01a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a2aebe9cbe6212c4804e3c647f092e01a">exposeVM</a> (ssq::VM &amp;<a class="el" href="classeve_1_1ModuleManager.html#ac6c179140700984c0a82147a849b221f">vm</a>)</td></tr>
+<tr class="separator:a2aebe9cbe6212c4804e3c647f092e01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a1333509d72d7889c084781f66e3cfff7" id="r_a1333509d72d7889c084781f66e3cfff7"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1ModuleManager_1_1ModuleInfo.html">ModuleInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a1333509d72d7889c084781f66e3cfff7">registered_modules</a></td></tr>
+<tr class="separator:a1333509d72d7889c084781f66e3cfff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64df3f96719452044081409af8db09d6" id="r_a64df3f96719452044081409af8db09d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html#a64df3f96719452044081409af8db09d6">active_runtime_</a> = nullptr</td></tr>
+<tr class="separator:a64df3f96719452044081409af8db09d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00049">49</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a1d556460f4947d91015870240138f907" name="a1d556460f4947d91015870240138f907"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d556460f4947d91015870240138f907">&#9670;&#160;</a></span>creator_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classeve_1_1Module.html">Module</a> *(* eve::ModuleManager::creator_t) ()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b44bcaf65e6c4ca9f66f083c9945e50" name="a2b44bcaf65e6c4ca9f66f083c9945e50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b44bcaf65e6c4ca9f66f083c9945e50">&#9670;&#160;</a></span>exposer_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* eve::ModuleManager::exposer_t) (ssq::Table &amp;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a23fda62ecd95cf00bbb23d39f6ad6dae" name="a23fda62ecd95cf00bbb23d39f6ad6dae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23fda62ecd95cf00bbb23d39f6ad6dae">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::detach </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> *&#160;</td>
+          <td class="paramname"><em>runtime</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the active runtime if it matches; called during shutdown. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Module_8h_source.html#l00110">active_runtime_</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00075">runtime()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00411">eve::Runtime::initialize()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00432">eve::Runtime::shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="a4da730a6c4aaaa772c7465485044aefb" name="a4da730a6c4aaaa772c7465485044aefb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4da730a6c4aaaa772c7465485044aefb">&#9670;&#160;</a></span>expose() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::expose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Exposes every registered module into the given runtime's root table. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Module_8h_source.html#l00110">active_runtime_</a>, <a class="el" href="Module_8cpp_source.html#l00051">exposeVM()</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>, <a class="el" href="Module_8cpp_source.html#l00075">runtime()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00453">eve::Runtime::vm()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00411">eve::Runtime::initialize()</a>.</p>
+
+</div>
+</div>
+<a id="a572304d2c2b9f9ccaf776ad72189c52e" name="a572304d2c2b9f9ccaf776ad72189c52e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572304d2c2b9f9ccaf776ad72189c52e">&#9670;&#160;</a></span>expose() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::expose </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Module_8h_source.html#l00110">active_runtime_</a>, <a class="el" href="Module_8cpp_source.html#l00051">exposeVM()</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00077">vm()</a>.</p>
+
+</div>
+</div>
+<a id="a906841ddd053ea9fa6c1a94e7720d547" name="a906841ddd053ea9fa6c1a94e7720d547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a906841ddd053ea9fa6c1a94e7720d547">&#9670;&#160;</a></span>expose_pending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ModuleManager::expose_pending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00034">active</a>, <a class="el" href="Module_8h_source.html#l00110">active_runtime_</a>, <a class="el" href="Runtime_8h_source.html#l00241">eve::Runtime::enter()</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>, <a class="el" href="Module_8h_source.html#l00109">registered_modules</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Plugins_8cpp_source.html#l00035">eve::plugins::Plugins::load()</a>.</p>
+
+</div>
+</div>
+<a id="a2aebe9cbe6212c4804e3c647f092e01a" name="a2aebe9cbe6212c4804e3c647f092e01a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aebe9cbe6212c4804e3c647f092e01a">&#9670;&#160;</a></span>exposeVM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::exposeVM </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00562">eve::exposeECS()</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>, <a class="el" href="Module_8h_source.html#l00109">registered_modules</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00077">vm()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00065">expose()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00070">expose()</a>.</p>
+
+</div>
+</div>
+<a id="a4d39e8e1e979731759d7869ccec92d7c" name="a4d39e8e1e979731759d7869ccec92d7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d39e8e1e979731759d7869ccec92d7c">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Module.html">Module</a> * eve::ModuleManager::find </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Finds a live module instance by name, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="Module_8h_source.html#l00109">registered_modules</a>.</p>
+
+</div>
+</div>
+<a id="a2ac21ca48096b7fc855e93eb6c02f6e4" name="a2ac21ca48096b7fc855e93eb6c02f6e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac21ca48096b7fc855e93eb6c02f6e4">&#9670;&#160;</a></span>getInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static T * eve::ModuleManager::getInstance </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Casts the registered instance of a module to T (may be null). </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ad25a9c02f064f1ea0ee1e2ed1d1c1018" name="ad25a9c02f064f1ea0ee1e2ed1d1c1018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad25a9c02f064f1ea0ee1e2ed1d1c1018">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::insert </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Module.html">Module</a> *&#160;</td>
+          <td class="paramname"><em>inst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stores a module instance under a name (used by Module_IMPL). </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="Module_8h_source.html#l00109">registered_modules</a>.</p>
+
+</div>
+</div>
+<a id="aacc29b78872d17c2041e94f56ce46aa3" name="aacc29b78872d17c2041e94f56ce46aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc29b78872d17c2041e94f56ce46aa3">&#9670;&#160;</a></span>inst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ModuleManager.html">ModuleManager</a> &amp; eve::ModuleManager::inst </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Singleton registry holding every registered engine module. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00082">detach()</a>, <a class="el" href="Module_8cpp_source.html#l00065">expose()</a>, <a class="el" href="Module_8cpp_source.html#l00070">expose()</a>, <a class="el" href="Module_8cpp_source.html#l00086">expose_pending()</a>, <a class="el" href="Module_8cpp_source.html#l00051">exposeVM()</a>, <a class="el" href="Module_8cpp_source.html#l00017">find()</a>, <a class="el" href="Module_8cpp_source.html#l00024">insert()</a>, <a class="el" href="Module_8cpp_source.html#l00037">register_module()</a>, <a class="el" href="Module_8cpp_source.html#l00030">requireAll()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00075">runtime()</a>.</p>
+
+</div>
+</div>
+<a id="a3d0168905105f17b700e9e2e7948c840" name="a3d0168905105f17b700e9e2e7948c840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d0168905105f17b700e9e2e7948c840">&#9670;&#160;</a></span>register_module()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::register_module </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ModuleManager.html#a1d556460f4947d91015870240138f907">creator_t</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ModuleManager.html#a2b44bcaf65e6c4ca9f66f083c9945e50">exposer_t</a>&#160;</td>
+          <td class="paramname"><em>e</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers a module factory (creator + script exposer) by name. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="Module_8h_source.html#l00109">registered_modules</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00108">eve::ModuleRegister::ModuleRegister()</a>.</p>
+
+</div>
+</div>
+<a id="a2234fd60717efde345dd334d754c3915" name="a2234fd60717efde345dd334d754c3915"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2234fd60717efde345dd334d754c3915">&#9670;&#160;</a></span>requireAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ModuleManager::requireAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Instantiates every registered module through its factory. </p>
+<p>Mirrors what load.nut's module-binding loop does for <code>eve run</code>, so embedders that never run load.nut (e.g. the headless <code>eve mcp</code> host) still get the capability providers (<a class="el" href="classeve_1_1IEditorHost.html" title="Declarative editor-host control (provided by the ui module).">IEditorHost</a>, <a class="el" href="classeve_1_1IRenderCapture.html" title="Frame capture + camera + visible-entity inspection (graphics).">IRenderCapture</a>, ...). </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Module_8cpp_source.html#l00012">inst()</a> , 以及 <a class="el" href="Module_8h_source.html#l00109">registered_modules</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mcp_8cpp_source.html#l00069">eve::cmd::Cmdline::McpHost()</a>.</p>
+
+</div>
+</div>
+<a id="a746d061a785450fb84dd2cf6afab37ec" name="a746d061a785450fb84dd2cf6afab37ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746d061a785450fb84dd2cf6afab37ec">&#9670;&#160;</a></span>requireInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static T * eve::ModuleManager::requireInstance </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the live instance, creating it lazily through the registered factory. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a4d5e99add5d64228d6098297913690f5" name="a4d5e99add5d64228d6098297913690f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d5e99add5d64228d6098297913690f5">&#9670;&#160;</a></span>runtime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> * eve::ModuleManager::runtime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Active runtime associated with the last <a class="el" href="classeve_1_1ModuleManager.html#a4da730a6c4aaaa772c7465485044aefb" title="Exposes every registered module into the given runtime&#39;s root table.">expose()</a> call, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Module_8h_source.html#l00110">active_runtime_</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00012">inst()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00015">eve::ui::ObjectRegistry::create()</a>, <a class="el" href="Module_8cpp_source.html#l00082">detach()</a>, <a class="el" href="Module_8cpp_source.html#l00065">expose()</a>, <a class="el" href="UI_8cpp_source.html#l01136">eve::ui::UI::inspectSetPickHandler()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00071">eve::ui::DatabasePanel::refresh()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00026">eve::ui::ObjectRegistry::registerObject()</a>, <a class="el" href="UI_8cpp_source.html#l01284">eve::ui::UI::sceneSetPickHandler()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00296">eve::ui::DatabasePanel::sync()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00077">vm()</a>.</p>
+
+</div>
+</div>
+<a id="ac6c179140700984c0a82147a849b221f" name="ac6c179140700984c0a82147a849b221f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c179140700984c0a82147a849b221f">&#9670;&#160;</a></span>vm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::VM * eve::ModuleManager::vm </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Script VM of the active runtime, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Module_8cpp_source.html">Module.cpp</a> 第 <a class="el" href="Module_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00034">active</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00075">runtime()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00070">expose()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00051">exposeVM()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a64df3f96719452044081409af8db09d6" name="a64df3f96719452044081409af8db09d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64df3f96719452044081409af8db09d6">&#9670;&#160;</a></span>active_runtime_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html">Runtime</a>* eve::ModuleManager::active_runtime_ = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00082">detach()</a>, <a class="el" href="Module_8cpp_source.html#l00065">expose()</a>, <a class="el" href="Module_8cpp_source.html#l00070">expose()</a>, <a class="el" href="Module_8cpp_source.html#l00086">expose_pending()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00075">runtime()</a>.</p>
+
+</div>
+</div>
+<a id="a1333509d72d7889c084781f66e3cfff7" name="a1333509d72d7889c084781f66e3cfff7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1333509d72d7889c084781f66e3cfff7">&#9670;&#160;</a></span>registered_modules</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1ModuleManager_1_1ModuleInfo.html">ModuleInfo</a>&gt; eve::ModuleManager::registered_modules</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Module_8cpp_source.html#l00086">expose_pending()</a>, <a class="el" href="Module_8cpp_source.html#l00051">exposeVM()</a>, <a class="el" href="Module_8cpp_source.html#l00017">find()</a>, <a class="el" href="Module_8cpp_source.html#l00024">insert()</a>, <a class="el" href="Module_8cpp_source.html#l00037">register_module()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00030">requireAll()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Module_8h_source.html">Module.h</a></li>
+<li>src/engine/common/<a class="el" href="Module_8cpp_source.html">Module.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

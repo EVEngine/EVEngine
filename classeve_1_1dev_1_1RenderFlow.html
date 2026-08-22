@@ -1,0 +1,838 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::RenderFlow类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1dev_1_1RenderFlow-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::RenderFlow类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Render-pipeline flow tracer with a Weiser-style backward slice.  
+ <a href="classeve_1_1dev_1_1RenderFlow.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::dev::RenderFlow 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1dev_1_1RenderFlow.png" usemap="#eve::dev::RenderFlow_map" alt=""/>
+  <map id="eve::dev::RenderFlow_map" name="eve::dev::RenderFlow_map">
+<area href="classeve_1_1debug_1_1IRenderTracer.html" title="Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers; when no tracer is inst..." alt="eve::debug::IRenderTracer" shape="rect" coords="0,0,162,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chronological view over the live ring window (oldest → newest).  <a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1eae5897411210d30de41e313aa2c82c" id="r_a1eae5897411210d30de41e313aa2c82c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a1eae5897411210d30de41e313aa2c82c">RenderFlow</a> ()</td></tr>
+<tr class="separator:a1eae5897411210d30de41e313aa2c82c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ef9ce40ca721d59bc34b2f91a70f184" id="r_a3ef9ce40ca721d59bc34b2f91a70f184"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a3ef9ce40ca721d59bc34b2f91a70f184">~RenderFlow</a> () override</td></tr>
+<tr class="separator:a3ef9ce40ca721d59bc34b2f91a70f184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fe3b10351a224d5ae124c31dda84f6f" id="r_a7fe3b10351a224d5ae124c31dda84f6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a7fe3b10351a224d5ae124c31dda84f6f">clear</a> ()</td></tr>
+<tr class="separator:a7fe3b10351a224d5ae124c31dda84f6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52b0324817ba94748f09c6ec8f9730ee" id="r_a52b0324817ba94748f09c6ec8f9730ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a52b0324817ba94748f09c6ec8f9730ee">setMaxEvents</a> (size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:a52b0324817ba94748f09c6ec8f9730ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3191e70bc8b767af39f5b71606d1b46" id="r_ad3191e70bc8b767af39f5b71606d1b46"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#ad3191e70bc8b767af39f5b71606d1b46">maxEvents</a> () const</td></tr>
+<tr class="separator:ad3191e70bc8b767af39f5b71606d1b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23a7340e8ed3a87550834de8f6b30570" id="r_a23a7340e8ed3a87550834de8f6b30570"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a23a7340e8ed3a87550834de8f6b30570">eventCount</a> () const</td></tr>
+<tr class="separator:a23a7340e8ed3a87550834de8f6b30570"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc142d5c45180dbdfe39fb03eeb58392" id="r_abc142d5c45180dbdfe39fb03eeb58392"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#abc142d5c45180dbdfe39fb03eeb58392">events</a> () const</td></tr>
+<tr class="separator:abc142d5c45180dbdfe39fb03eeb58392"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fbd61481e012631eb1464c3d8b1dd9e" id="r_a0fbd61481e012631eb1464c3d8b1dd9e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a0fbd61481e012631eb1464c3d8b1dd9e">event</a> (uint32_t <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a0fbd61481e012631eb1464c3d8b1dd9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e68ebe15edd0908888b4962d781805c" id="r_a7e68ebe15edd0908888b4962d781805c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a7e68ebe15edd0908888b4962d781805c">frameBegin</a> () override</td></tr>
+<tr class="separator:a7e68ebe15edd0908888b4962d781805c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa968ba81b5a77db6a1e22cf27679bcbb" id="r_aa968ba81b5a77db6a1e22cf27679bcbb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#aa968ba81b5a77db6a1e22cf27679bcbb">frameEnd</a> () override</td></tr>
+<tr class="separator:aa968ba81b5a77db6a1e22cf27679bcbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae672d283b2c1ab92e05bd0b995b62206" id="r_ae672d283b2c1ab92e05bd0b995b62206"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#ae672d283b2c1ab92e05bd0b995b62206">passBegin</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) override</td></tr>
+<tr class="separator:ae672d283b2c1ab92e05bd0b995b62206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc37e4d30eef4207f1f63f2ebe311d49" id="r_afc37e4d30eef4207f1f63f2ebe311d49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#afc37e4d30eef4207f1f63f2ebe311d49">passEnd</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) override</td></tr>
+<tr class="separator:afc37e4d30eef4207f1f63f2ebe311d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e04952250ec6ed94a224e4c55a02fb" id="r_a03e04952250ec6ed94a224e4c55a02fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a03e04952250ec6ed94a224e4c55a02fb">target</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) override</td></tr>
+<tr class="separator:a03e04952250ec6ed94a224e4c55a02fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815310dc8c0212db352875cbd8cc037d" id="r_a815310dc8c0212db352875cbd8cc037d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a815310dc8c0212db352875cbd8cc037d">bind</a> (const char *<a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) override</td></tr>
+<tr class="separator:a815310dc8c0212db352875cbd8cc037d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b98e923fe310701e7419031fb9caf62" id="r_a0b98e923fe310701e7419031fb9caf62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a0b98e923fe310701e7419031fb9caf62">draw</a> (const char *api, const char *detail) override</td></tr>
+<tr class="separator:a0b98e923fe310701e7419031fb9caf62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7e138ff0f4721becadda238cd04cbec" id="r_aa7e138ff0f4721becadda238cd04cbec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#aa7e138ff0f4721becadda238cd04cbec">error</a> (const char *message) override</td></tr>
+<tr class="separator:aa7e138ff0f4721becadda238cd04cbec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8b085bcfb398babc5687a4e3c058f6b" id="r_ac8b085bcfb398babc5687a4e3c058f6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1dev_1_1RenderSliceResult.html">RenderSliceResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#ac8b085bcfb398babc5687a4e3c058f6b">sliceBackward</a> (const <a class="el" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>={}) const</td></tr>
+<tr class="separator:ac8b085bcfb398babc5687a4e3c058f6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a322354d45779725fbfad36d27286e6ed" id="r_a322354d45779725fbfad36d27286e6ed"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a322354d45779725fbfad36d27286e6ed">formatErrorReport</a> (const std::string &amp;errorMessage, const <a class="el" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>={}) const</td></tr>
+<tr class="separator:a322354d45779725fbfad36d27286e6ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1debug_1_1IRenderTracer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1debug_1_1IRenderTracer')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html">eve::debug::IRenderTracer</a></td></tr>
+<tr class="memitem:adfcd1c50038e6868e5e026334953cfa8 inherit pub_methods_classeve_1_1debug_1_1IRenderTracer" id="r_adfcd1c50038e6868e5e026334953cfa8"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#adfcd1c50038e6868e5e026334953cfa8">~IRenderTracer</a> ()=default</td></tr>
+<tr class="separator:adfcd1c50038e6868e5e026334953cfa8 inherit pub_methods_classeve_1_1debug_1_1IRenderTracer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a9a160477d7f33ea3b95c658b3eed7bc9" id="r_a9a160477d7f33ea3b95c658b3eed7bc9"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a9a160477d7f33ea3b95c658b3eed7bc9">EventsView</a></td></tr>
+<tr class="separator:a9a160477d7f33ea3b95c658b3eed7bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03bc5eaf6adb6fb5e49100a11eaa5345" id="r_a03bc5eaf6adb6fb5e49100a11eaa5345"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a03bc5eaf6adb6fb5e49100a11eaa5345">EventsView::const_iterator</a></td></tr>
+<tr class="separator:a03bc5eaf6adb6fb5e49100a11eaa5345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Render-pipeline flow tracer with a Weiser-style backward slice. </p>
+<p>Models pass nesting + bind→draw resource data-flow so a Graphics exception can be attributed to the active pass and the resources that fed the draw.</p>
+<p>Event storage is a fixed ring buffer: when full, new events overwrite the oldest slot in place (O(1)). </p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00056">56</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1eae5897411210d30de41e313aa2c82c" name="a1eae5897411210d30de41e313aa2c82c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eae5897411210d30de41e313aa2c82c">&#9670;&#160;</a></span>RenderFlow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::RenderFlow::RenderFlow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ef9ce40ca721d59bc34b2f91a70f184" name="a3ef9ce40ca721d59bc34b2f91a70f184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ef9ce40ca721d59bc34b2f91a70f184">&#9670;&#160;</a></span>~RenderFlow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::RenderFlow::~RenderFlow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a815310dc8c0212db352875cbd8cc037d" name="a815310dc8c0212db352875cbd8cc037d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815310dc8c0212db352875cbd8cc037d">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::bind </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#a877e3636b0701c2b958efbe955261c5d">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581">eve::dev::Bind</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a7fe3b10351a224d5ae124c31dda84f6f" name="a7fe3b10351a224d5ae124c31dda84f6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe3b10351a224d5ae124c31dda84f6f">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b98e923fe310701e7419031fb9caf62" name="a0b98e923fe310701e7419031fb9caf62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b98e923fe310701e7419031fb9caf62">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::draw </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>api</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>detail</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#ad29202300ee107fd4f278ae1c1f16b65">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2">eve::dev::Draw</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00088">event()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="RenderFlow_8hpp_source.html#l00032">eve::dev::RenderEvent::passId</a>.</p>
+
+</div>
+</div>
+<a id="aa7e138ff0f4721becadda238cd04cbec" name="aa7e138ff0f4721becadda238cd04cbec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7e138ff0f4721becadda238cd04cbec">&#9670;&#160;</a></span>error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::error </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#a04beecd64c289b1d110093e0b08f6435">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581">eve::dev::Bind</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2">eve::dev::Draw</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd">eve::dev::Error</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00027">eve::dev::RenderEvent::id</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00028">eve::dev::RenderEvent::kind</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">eve::dev::PassBegin</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00032">eve::dev::RenderEvent::passId</a> , 以及 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5">eve::dev::Target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00628">eve::dev::DevTool::notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a0fbd61481e012631eb1464c3d8b1dd9e" name="a0fbd61481e012631eb1464c3d8b1dd9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fbd61481e012631eb1464c3d8b1dd9e">&#9670;&#160;</a></span>event()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a> * eve::dev::RenderFlow::event </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderFlow_8hpp_source.html#l00027">eve::dev::RenderEvent::id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderFlow_8cpp_source.html#l00123">draw()</a> , 以及 <a class="el" href="RenderFlow_8cpp_source.html#l00175">sliceBackward()</a>.</p>
+
+</div>
+</div>
+<a id="a23a7340e8ed3a87550834de8f6b30570" name="a23a7340e8ed3a87550834de8f6b30570"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23a7340e8ed3a87550834de8f6b30570">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::dev::RenderFlow::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc142d5c45180dbdfe39fb03eeb58392" name="abc142d5c45180dbdfe39fb03eeb58392"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc142d5c45180dbdfe39fb03eeb58392">&#9670;&#160;</a></span>events()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a> eve::dev::RenderFlow::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00628">eve::dev::DevTool::notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a322354d45779725fbfad36d27286e6ed" name="a322354d45779725fbfad36d27286e6ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a322354d45779725fbfad36d27286e6ed">&#9670;&#160;</a></span>formatErrorReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::RenderFlow::formatErrorReport </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>errorMessage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581">eve::dev::Bind</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2">eve::dev::Draw</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd">eve::dev::Error</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15">eve::dev::FrameBegin</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666">eve::dev::FrameEnd</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>, <a class="el" href="KernelGen_8cpp_source.html#l00125">os</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">eve::dev::PassBegin</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1">eve::dev::PassEnd</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00043">eve::dev::RenderSliceResult::passes</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00042">eve::dev::RenderSliceResult::path</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00175">sliceBackward()</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00044">eve::dev::RenderSliceResult::summary</a> , 以及 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5">eve::dev::Target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00628">eve::dev::DevTool::notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a7e68ebe15edd0908888b4962d781805c" name="a7e68ebe15edd0908888b4962d781805c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e68ebe15edd0908888b4962d781805c">&#9670;&#160;</a></span>frameBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::frameBegin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#aa28233e22dab9c1a63c9a469315f91f5">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15">eve::dev::FrameBegin</a>.</p>
+
+</div>
+</div>
+<a id="aa968ba81b5a77db6a1e22cf27679bcbb" name="aa968ba81b5a77db6a1e22cf27679bcbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa968ba81b5a77db6a1e22cf27679bcbb">&#9670;&#160;</a></span>frameEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::frameEnd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#aff70e0d011d464a1a35ef88ea350d8b6">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666">eve::dev::FrameEnd</a>.</p>
+
+</div>
+</div>
+<a id="ad3191e70bc8b767af39f5b71606d1b46" name="ad3191e70bc8b767af39f5b71606d1b46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3191e70bc8b767af39f5b71606d1b46">&#9670;&#160;</a></span>maxEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::dev::RenderFlow::maxEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae672d283b2c1ab92e05bd0b995b62206" name="ae672d283b2c1ab92e05bd0b995b62206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae672d283b2c1ab92e05bd0b995b62206">&#9670;&#160;</a></span>passBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::passBegin </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#a9f9c59c280d253701df5c7968382298f">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">eve::dev::PassBegin</a> , 以及 <a class="el" href="RenderFlow_8hpp_source.html#l00032">eve::dev::RenderEvent::passId</a>.</p>
+
+</div>
+</div>
+<a id="afc37e4d30eef4207f1f63f2ebe311d49" name="afc37e4d30eef4207f1f63f2ebe311d49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc37e4d30eef4207f1f63f2ebe311d49">&#9670;&#160;</a></span>passEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::passEnd </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#ae0dc1b140a43d183606673361d7de531">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1">eve::dev::PassEnd</a>.</p>
+
+</div>
+</div>
+<a id="a52b0324817ba94748f09c6ec8f9730ee" name="a52b0324817ba94748f09c6ec8f9730ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52b0324817ba94748f09c6ec8f9730ee">&#9670;&#160;</a></span>setMaxEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::setMaxEvents </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+</div>
+</div>
+<a id="ac8b085bcfb398babc5687a4e3c058f6b" name="ac8b085bcfb398babc5687a4e3c058f6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8b085bcfb398babc5687a4e3c058f6b">&#9670;&#160;</a></span>sliceBackward()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dev_1_1RenderSliceResult.html">RenderSliceResult</a> eve::dev::RenderFlow::sliceBackward </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em> = <code>{}</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00088">event()</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00041">eve::dev::RenderSliceResult::eventIds</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00027">eve::dev::RenderEvent::id</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00028">eve::dev::RenderEvent::kind</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00029">eve::dev::RenderEvent::name</a>, <a class="el" href="KernelGen_8cpp_source.html#l00125">os</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00031">eve::dev::RenderEvent::parentId</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">eve::dev::PassBegin</a>, <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1">eve::dev::PassEnd</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00043">eve::dev::RenderSliceResult::passes</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00032">eve::dev::RenderEvent::passId</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00042">eve::dev::RenderSliceResult::path</a>, <a class="el" href="CloudField_8cpp_source.html#l00020">seed</a> , 以及 <a class="el" href="RenderFlow_8hpp_source.html#l00044">eve::dev::RenderSliceResult::summary</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderFlow_8cpp_source.html#l00231">formatErrorReport()</a>.</p>
+
+</div>
+</div>
+<a id="a03e04952250ec6ed94a224e4c55a02fb" name="a03e04952250ec6ed94a224e4c55a02fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03e04952250ec6ed94a224e4c55a02fb">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderFlow::target </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#af3c13bc8e7f350b9236c4b32455710dd">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a> 第 <a class="el" href="RenderFlow_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5">eve::dev::Target</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a9a160477d7f33ea3b95c658b3eed7bc9" name="a9a160477d7f33ea3b95c658b3eed7bc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a160477d7f33ea3b95c658b3eed7bc9">&#9670;&#160;</a></span>EventsView</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03bc5eaf6adb6fb5e49100a11eaa5345" name="a03bc5eaf6adb6fb5e49100a11eaa5345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03bc5eaf6adb6fb5e49100a11eaa5345">&#9670;&#160;</a></span>EventsView::const_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">EventsView::const_iterator</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a> 第 <a class="el" href="RenderFlow_8hpp_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="RenderFlow_8hpp_source.html">RenderFlow.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="RenderFlow_8cpp_source.html">RenderFlow.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

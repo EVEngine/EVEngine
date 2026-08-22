@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/system/System.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_074c460ee2062b3ab5ace82159b3dfe1.html">system</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">System.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="System_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1system.html">eve::system</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1system_1_1System.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1system_1_1System.html">System</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1system_1_1System.html#a2ab44a1318b0b1825ae8164fb88dfe8e">   18</a></span>    <a class="code hl_function" href="classeve_1_1system_1_1System.html#a2ab44a1318b0b1825ae8164fb88dfe8e">Module_REG</a>(<a class="code hl_class" href="classeve_1_1system_1_1System.html">System</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_function" href="classeve_1_1system_1_1System.html#ab1d3e2c4ac95ee6c97f5079e5a64a1ac">System</a>();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1system_1_1System.html#a1b059ba60dea3e4902ba5d1ee5c2de7c">   20</a></span>    <a class="code hl_function" href="classeve_1_1system_1_1System.html#a1b059ba60dea3e4902ba5d1ee5c2de7c">~System</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#ae95eafef74bb5f6aae48e995a9de1cc6">getEngineVersion</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#a6f4d117ccea8d6623210c013d88afcd7">getPlatform</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#a8454c1433beb7186cc4bee3e9fc1ab20">getOS</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#a1ce1a21e06325bbb7ee14b6063e24ca2">getProcessorCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#a74e472516f8d7c0a9e2d5ef53d35b153">getCPUCacheLineSize</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#ab767d37a600d17cfc6f7714f697b7c1e">getSystemRAM</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#a347b2ef03e262b413cb1f1795716ba49">getProcessMemoryMB</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#a556a4fce2afd1838e09e54ea2a2cab2e">getWallTime</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#ae6ac8d907fc1b2c55ad15b74ba60c26c">sleepMilliseconds</a>(<span class="keywordtype">int</span> ms);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#a9b4dd15de9e953ec70f0bf11c4e4d5a7">getPowerState</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#a2de57b267351f4d325fd5fba91a76e4c">getPowerSecondsLeft</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#a91ccc779d7ee59fd2f5735ecae78727e">getPowerPercent</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#aaa9bb337436f501c86920ff24a2e4923">getClipboardText</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span>        <a class="code hl_function" href="classeve_1_1system_1_1System.html#ad31eb565948e83d5f6f236cf30f9aaef">setClipboardText</a>(<span class="keyword">const</span> std::string &amp;text);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#a1eb8a966458a3bcb18e367c8fbe27d39">getGpuName</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#a55c36924a38f7e01bda3bc8ef9e223c1">getGpuVendor</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::string <a class="code hl_function" href="classeve_1_1system_1_1System.html#a281a6b019b8b729913ccb066a52bb655">getGpuDeviceType</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1system_1_1System.html#ab1a3ba8b01d0d0de6d1068e294dc9835">getGpuMemoryTotalMB</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}  <span class="comment">// namespace eve::system</span></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html"><div class="ttname"><a href="classeve_1_1system_1_1System.html">eve::system::System</a></div><div class="ttdoc">System module — OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Tim...</div><div class="ttdef"><b>Definition</b> <a href="System_8h_source.html#l00016">System.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a1b059ba60dea3e4902ba5d1ee5c2de7c"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a1b059ba60dea3e4902ba5d1ee5c2de7c">eve::system::System::~System</a></div><div class="ttdeci">~System() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a1ce1a21e06325bbb7ee14b6063e24ca2"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a1ce1a21e06325bbb7ee14b6063e24ca2">eve::system::System::getProcessorCount</a></div><div class="ttdeci">int getProcessorCount() const</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00070">System.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a1eb8a966458a3bcb18e367c8fbe27d39"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a1eb8a966458a3bcb18e367c8fbe27d39">eve::system::System::getGpuName</a></div><div class="ttdeci">std::string getGpuName() const</div><div class="ttdoc">GPU queries — empty/0 if Graphics not initialized yet.</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00169">System.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a281a6b019b8b729913ccb066a52bb655"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a281a6b019b8b729913ccb066a52bb655">eve::system::System::getGpuDeviceType</a></div><div class="ttdeci">std::string getGpuDeviceType() const</div><div class="ttdoc">&quot;discrete&quot; | &quot;integrated&quot; | &quot;virtual&quot; | &quot;cpu&quot; | &quot;other&quot; | &quot;&quot;</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00179">System.cpp:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a2ab44a1318b0b1825ae8164fb88dfe8e"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a2ab44a1318b0b1825ae8164fb88dfe8e">eve::system::System::Module_REG</a></div><div class="ttdeci">Module_REG(System)</div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a2de57b267351f4d325fd5fba91a76e4c"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a2de57b267351f4d325fd5fba91a76e4c">eve::system::System::getPowerSecondsLeft</a></div><div class="ttdeci">int getPowerSecondsLeft() const</div><div class="ttdoc">Estimated seconds of battery left (-1 if unknown).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00143">System.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a347b2ef03e262b413cb1f1795716ba49"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a347b2ef03e262b413cb1f1795716ba49">eve::system::System::getProcessMemoryMB</a></div><div class="ttdeci">int getProcessMemoryMB() const</div><div class="ttdoc">Current process resident memory in megabytes (0 if unknown).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00085">System.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a556a4fce2afd1838e09e54ea2a2cab2e"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a556a4fce2afd1838e09e54ea2a2cab2e">eve::system::System::getWallTime</a></div><div class="ttdeci">float getWallTime() const</div><div class="ttdoc">UTC wall-clock seconds since Unix epoch (float for script).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00118">System.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a55c36924a38f7e01bda3bc8ef9e223c1"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a55c36924a38f7e01bda3bc8ef9e223c1">eve::system::System::getGpuVendor</a></div><div class="ttdeci">std::string getGpuVendor() const</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00174">System.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a6f4d117ccea8d6623210c013d88afcd7"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a6f4d117ccea8d6623210c013d88afcd7">eve::system::System::getPlatform</a></div><div class="ttdeci">std::string getPlatform() const</div><div class="ttdoc">Raw SDL platform string (e.g. &quot;Mac OS X&quot;, &quot;Windows&quot;).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00049">System.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a74e472516f8d7c0a9e2d5ef53d35b153"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a74e472516f8d7c0a9e2d5ef53d35b153">eve::system::System::getCPUCacheLineSize</a></div><div class="ttdeci">int getCPUCacheLineSize() const</div><div class="ttdoc">CPU L1 cache line size in bytes (0 if unknown).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00075">System.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a8454c1433beb7186cc4bee3e9fc1ab20"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a8454c1433beb7186cc4bee3e9fc1ab20">eve::system::System::getOS</a></div><div class="ttdeci">std::string getOS() const</div><div class="ttdoc">Normalized OS id for games: &quot;Windows&quot; | &quot;OS X&quot; | &quot;Linux&quot; | &quot;Android&quot; | &quot;iOS&quot; | &quot;Unknown&quot;</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00054">System.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a91ccc779d7ee59fd2f5735ecae78727e"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a91ccc779d7ee59fd2f5735ecae78727e">eve::system::System::getPowerPercent</a></div><div class="ttdeci">int getPowerPercent() const</div><div class="ttdoc">Battery percent 0–100, or -1 if unknown.</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00149">System.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_a9b4dd15de9e953ec70f0bf11c4e4d5a7"><div class="ttname"><a href="classeve_1_1system_1_1System.html#a9b4dd15de9e953ec70f0bf11c4e4d5a7">eve::system::System::getPowerState</a></div><div class="ttdeci">std::string getPowerState() const</div><div class="ttdoc">Power state string: &quot;unknown&quot; | &quot;on_battery&quot; | &quot;no_battery&quot; | &quot;charging&quot; | &quot;charged&quot;</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00131">System.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_aaa9bb337436f501c86920ff24a2e4923"><div class="ttname"><a href="classeve_1_1system_1_1System.html#aaa9bb337436f501c86920ff24a2e4923">eve::system::System::getClipboardText</a></div><div class="ttdeci">std::string getClipboardText() const</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00155">System.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_ab1a3ba8b01d0d0de6d1068e294dc9835"><div class="ttname"><a href="classeve_1_1system_1_1System.html#ab1a3ba8b01d0d0de6d1068e294dc9835">eve::system::System::getGpuMemoryTotalMB</a></div><div class="ttdeci">int getGpuMemoryTotalMB() const</div><div class="ttdoc">Sum of DEVICE_LOCAL heap sizes in MB (0 if unknown / not ready).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00184">System.cpp:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_ab1d3e2c4ac95ee6c97f5079e5a64a1ac"><div class="ttname"><a href="classeve_1_1system_1_1System.html#ab1d3e2c4ac95ee6c97f5079e5a64a1ac">eve::system::System::System</a></div><div class="ttdeci">System()</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00045">System.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_ab767d37a600d17cfc6f7714f697b7c1e"><div class="ttname"><a href="classeve_1_1system_1_1System.html#ab767d37a600d17cfc6f7714f697b7c1e">eve::system::System::getSystemRAM</a></div><div class="ttdeci">int getSystemRAM() const</div><div class="ttdoc">System RAM in megabytes (0 if unknown).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00080">System.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_ad31eb565948e83d5f6f236cf30f9aaef"><div class="ttname"><a href="classeve_1_1system_1_1System.html#ad31eb565948e83d5f6f236cf30f9aaef">eve::system::System::setClipboardText</a></div><div class="ttdeci">void setClipboardText(const std::string &amp;text)</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00164">System.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_ae6ac8d907fc1b2c55ad15b74ba60c26c"><div class="ttname"><a href="classeve_1_1system_1_1System.html#ae6ac8d907fc1b2c55ad15b74ba60c26c">eve::system::System::sleepMilliseconds</a></div><div class="ttdeci">void sleepMilliseconds(int ms)</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00125">System.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1system_1_1System_html_ae95eafef74bb5f6aae48e995a9de1cc6"><div class="ttname"><a href="classeve_1_1system_1_1System.html#ae95eafef74bb5f6aae48e995a9de1cc6">eve::system::System::getEngineVersion</a></div><div class="ttdeci">std::string getEngineVersion() const</div><div class="ttdoc">Engine version string (e.g. &quot;v0.1.0&quot;).</div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00047">System.cpp:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1system_html"><div class="ttname"><a href="namespaceeve_1_1system.html">eve::system</a></div><div class="ttdef"><b>Definition</b> <a href="System_8cpp_source.html#l00032">System.cpp:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

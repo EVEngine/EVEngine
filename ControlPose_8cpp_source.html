@@ -1,0 +1,546 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/ControlPose.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ControlPose.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ControlPose_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ControlPose_8h.html">animation/ControlPose.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimSkeleton_8h.html">animation/AnimSkeleton.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a8550f759d2d5dbc7847a39a0b1528016">   11</a></span><a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a8550f759d2d5dbc7847a39a0b1528016">ControlPose::ControlPose</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton) : skeleton_(skeleton) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    refreshCoeffs();</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = skeleton_ ? skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>() : 0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    ensureBones(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">if</span> (skeleton_ &amp;&amp; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> &gt; 0) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">applyBindPose</a>(&amp;pose_);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">applyBindPose</a>(&amp;target_);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        readTargetIntoState(&amp;target_, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        hasTarget_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        writePoseFromState();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#adcdc71802bb3f7c69eb5e916c1ff441f">   24</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#adcdc71802bb3f7c69eb5e916c1ff441f">ControlPose::setFrequency</a>(<span class="keywordtype">float</span> frequencyHz) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    frequencyHz_ = frequencyHz;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    refreshCoeffs();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a0633395edbd1f579900588aa5b41cb99">   29</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a0633395edbd1f579900588aa5b41cb99">ControlPose::setDamping</a>(<span class="keywordtype">float</span> dampingZeta) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    dampingZeta_ = dampingZeta;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    refreshCoeffs();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#ab645ce54f02e5b0babb16335477c1130">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#ab645ce54f02e5b0babb16335477c1130">ControlPose::setResponse</a>(<span class="keywordtype">float</span> response) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    response_ = response;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    refreshCoeffs();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#af6f3e945e60069451779743a9ecc2520">   39</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#af6f3e945e60069451779743a9ecc2520">ControlPose::setIntegrator</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a> == <span class="stringliteral">&quot;secondOrder&quot;</span>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        integrator_ = Integrator::SecondOrder;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a> == <span class="stringliteral">&quot;spring&quot;</span>) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        integrator_ = Integrator::Spring;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a> == <span class="stringliteral">&quot;pd&quot;</span>) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        integrator_ = Integrator::Pd;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;ControlPose::setIntegrator: unknown kind &#39;%s&#39; (expected secondOrder|spring|pd)&quot;</span>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                        <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>.c_str());</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#aa218b3e33ee266af9f432ed50a24da86">   52</a></span>std::string <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#aa218b3e33ee266af9f432ed50a24da86">ControlPose::getIntegrator</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">switch</span> (integrator_) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">case</span> Integrator::SecondOrder: <span class="keywordflow">return</span> <span class="stringliteral">&quot;secondOrder&quot;</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">case</span> Integrator::Spring:      <span class="keywordflow">return</span> <span class="stringliteral">&quot;spring&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">case</span> Integrator::Pd:          <span class="keywordflow">return</span> <span class="stringliteral">&quot;pd&quot;</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;secondOrder&quot;</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keywordtype">void</span> ControlPose::refreshCoeffs() {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    coeffs_ = <a class="code hl_function" href="namespaceeve_1_1animation.html#ad5392874e50dcc3cf175c4a91ce9b671">makeSecondOrderCoeffs</a>(frequencyHz_, dampingZeta_, response_);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_function" href="namespaceeve_1_1animation.html#ab7cd5a060443700cfb34e19ee95168f7">pdGainsFromOmegaZeta</a>(<a class="code hl_function" href="namespaceeve_1_1animation.html#ad804af3077704623911d24c54f281799">hzToOmega</a>(frequencyHz_), dampingZeta_, kp_, kd_);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keywordtype">void</span> ControlPose::ensureBones(<span class="keywordtype">int</span> count) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (count &lt; 0) count = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// AnimPose::resize always resets locals to identity — only call when size changes.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">getBoneCount</a>() != count) pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(count);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">if</span> (target_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">getBoneCount</a>() != count) target_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(count);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bones_.size()) != count) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        bones_.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(count));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a001354d683f071f46b21a9705a92c168">   76</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a001354d683f071f46b21a9705a92c168">ControlPose::setBoneWeight</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> weight) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bones_.size())) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    bones_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].weight = <a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(weight, 0.f, 1.f);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a243f0e0758ccca9b8bbfeb1ff1bd6232">   81</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a243f0e0758ccca9b8bbfeb1ff1bd6232">ControlPose::getBoneWeight</a>(<span class="keywordtype">int</span> boneIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bones_.size())) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> bones_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(boneIndex)].weight;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keywordtype">void</span> ControlPose::readTargetIntoState(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *target, <span class="keywordtype">bool</span> snap) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (!target) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = target-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">getBoneCount</a>();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    ensureBones(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;t = target-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">local</a>(i);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        BoneState &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>          = bones_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">auto</span> assign = [snap](ScalarState &amp;<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.hasPrev || snap) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.y       = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.yd      = 0.f;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.xp      = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.hasPrev = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        };</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.px, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">px</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.py, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">py</a>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pz, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">pz</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="comment">// Shortest-path quaternion: flip target if needed relative to current.</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordtype">float</span> tqx = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a>, tqy = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a>, tqz = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a>, tqw = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.hasPrev) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dot = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y * tqx + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y * tqy + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y * tqz + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y * tqw;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="keywordflow">if</span> (dot &lt; 0.f) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                tqx = -tqx;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                tqy = -tqy;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                tqz = -tqz;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                tqw = -tqw;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx, tqx);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy, tqy);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz, tqz);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw, tqw);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sx, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sy, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        assign(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sz, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>}</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="foldopen" id="foldopen00130" data-start="{" data-end="}">
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a309dab66322b456a4710a5ba6291e406">  130</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a309dab66322b456a4710a5ba6291e406">ControlPose::setTargetPose</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *target) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (!target) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;ControlPose::setTargetPose: target is null&quot;</span>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    target_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">copyFrom</a>(target);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    readTargetIntoState(&amp;target_, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    hasTarget_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    writePoseFromState();</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>}</div>
+</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="}">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a76f39944da8e5cd1bd1661a2462723e2">  140</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a76f39944da8e5cd1bd1661a2462723e2">ControlPose::snapToTarget</a>() {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (!hasTarget_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    readTargetIntoState(&amp;target_, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    writePoseFromState();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a53fd810f7267be710eda214504b2ce56">  146</a></span><a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *<a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a53fd810f7267be710eda214504b2ce56">ControlPose::getPose</a>() {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    writePoseFromState();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">return</span> &amp;pose_;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>}</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#ae98ffe0b7c12a78628da271369e10a9f">  151</a></span><a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *<a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#ae98ffe0b7c12a78628da271369e10a9f">ControlPose::getTargetPose</a>() { <span class="keywordflow">return</span> &amp;target_; }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keywordtype">void</span> ControlPose::stepScalar(<span class="keywordtype">float</span> dt, <span class="keywordtype">float</span> xd, ScalarState &amp;<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> omega = <a class="code hl_function" href="namespaceeve_1_1animation.html#ad804af3077704623911d24c54f281799">hzToOmega</a>(frequencyHz_);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">switch</span> (integrator_) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordflow">case</span> Integrator::SecondOrder:</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <a class="code hl_function" href="namespaceeve_1_1animation.html#a948f35c766ea0be2250cd441570a6696">stepSecondOrder</a>(dt, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x, xd, coeffs_, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.y, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.yd);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keywordflow">case</span> Integrator::Spring:</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <a class="code hl_function" href="namespaceeve_1_1animation.html#af4bdde8d264cb4c904985f606dc0178f">stepDampedSpring</a>(dt, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x, omega, dampingZeta_, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.y, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.yd);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">case</span> Integrator::Pd:</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <a class="code hl_function" href="namespaceeve_1_1animation.html#a4e520c7d8df60bea57d5e43af4cc7a75">stepPd</a>(dt, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x, xd, kp_, kd_, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.y, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.yd);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="keywordtype">void</span> ControlPose::writePoseFromState() {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bones_.size());</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keyword">const</span> BoneState &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = bones_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        TransformTRS trs;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        trs.px = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.px.y;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        trs.py = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.py.y;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        trs.pz = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pz.y;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        trs.qx = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        trs.qy = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        trs.qz = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        trs.qw = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        trs.sx = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sx.y;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        trs.sy = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sy.y;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        trs.sz = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sz.y;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        trs.normalizeRotation();</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.weight &lt; 1.f - 1e-6f) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            <span class="comment">// Blend dynamics output toward hard target.</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            TransformTRS hard = target_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">local</a>(i);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            <span class="comment">// Shortest path for hard target vs dynamics result.</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dot =</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                trs.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a> * hard.qx + trs.qy * hard.qy + trs.qz * hard.qz + trs.qw * hard.qw;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordflow">if</span> (dot &lt; 0.f) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                hard.qx = -hard.qx;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                hard.qy = -hard.qy;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                hard.qz = -hard.qz;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                hard.qw = -hard.qw;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            trs = <a class="code hl_function" href="namespaceeve_1_1animation.html#a1a2ffd146fc223f785b3f49cec7d3604">blendTRS</a>(hard, trs, <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.weight);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">local</a>(i) = trs;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>}</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="foldopen" id="foldopen00204" data-start="{" data-end="}">
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlPose.html#a286fefccd335ac6d7178acd90ab6c83a">  204</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlPose.html#a286fefccd335ac6d7178acd90ab6c83a">ControlPose::update</a>(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordflow">if</span> (dt &lt;= 0.f || !hasTarget_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="comment">// Refresh targets from stored target_ (weights / integrator may have changed).</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = target_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">getBoneCount</a>();</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    ensureBones(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;t = target_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">local</a>(i);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        BoneState &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>          = bones_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keyword">auto</span> prep = [](ScalarState &amp;<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.hasPrev) {</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.y       = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.yd      = 0.f;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.xp      = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.hasPrev = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        };</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.px, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">px</a>);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.py, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">py</a>);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pz, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">pz</a>);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keywordtype">float</span> tqx = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">qx</a>, tqy = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">qy</a>, tqz = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">qz</a>, tqw = t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">qw</a>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dot = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y * tqx + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y * tqy + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y * tqz + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y * tqw;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">if</span> (dot &lt; 0.f) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            tqx = -tqx;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            tqy = -tqy;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            tqz = -tqz;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            tqw = -tqw;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        }</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx, tqx);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy, tqy);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz, tqz);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw, tqw);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sx, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">sx</a>);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sy, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">sy</a>);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        prep(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sz, t.<a class="code hl_variable" href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">sz</a>);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="keyword">auto</span> advance = [&amp;](ScalarState &amp;<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) {</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keywordtype">float</span> xd = 0.f;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.hasPrev &amp;&amp; dt &gt; 1e-8f) xd = (<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x - <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.xp) / dt;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.xp = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            stepScalar(dt, xd, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        };</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.weight &lt;= 1e-6f) {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            <span class="comment">// Hard follow</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            <span class="keyword">auto</span> hard = [](ScalarState &amp;<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) {</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.y  = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.yd = 0.f;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.xp = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.x;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            };</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.px);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.py);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pz);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sx);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sy);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            hard(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sz);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.px);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.py);</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pz);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx);</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="comment">// Renormalize quaternion state after component integration.</span></div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            {</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                <span class="keywordtype">float</span> len = std::sqrt(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y +</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                                      <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y * <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                <span class="keywordflow">if</span> (len &gt; 1e-8f) {</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> inv = 1.f / len;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y *= inv;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y *= inv;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y *= inv;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y *= inv;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qx.y = 0.f;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qy.y = 0.f;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qz.y = 0.f;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.qw.y = 1.f;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                }</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>            }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sx);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sy);</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            advance(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.sz);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        }</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    }</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    writePoseFromState();</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>}</div>
+</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimSkeleton_8h_html"><div class="ttname"><a href="AnimSkeleton_8h.html">AnimSkeleton.h</a></div></div>
+<div class="ttc" id="aControlPose_8h_html"><div class="ttname"><a href="ControlPose_8h.html">ControlPose.h</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5744cedb1550b25c28b21ecb540428ca"><div class="ttname"><a href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a></div><div class="ttdeci">Tok kind</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00017">DnutParser.cpp:17</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a42f24b4aa49f85b29b69157dfcb06f9d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a42f24b4aa49f85b29b69157dfcb06f9d">eve::animation::AnimPose::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00025">AnimPose.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_ab2c58886bd52cd4167b21cad65a8a2a6"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#ab2c58886bd52cd4167b21cad65a8a2a6">eve::animation::AnimPose::local</a></div><div class="ttdeci">TransformTRS &amp; local(int boneIndex)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00074">AnimPose.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_acc150d76b9d3ea4d86972aeaca80a220"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">eve::animation::AnimPose::copyFrom</a></div><div class="ttdeci">void copyFrom(const AnimPose *other)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00056">AnimPose.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_aeea32fec7441e303ac3c6216448d4e33"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">eve::animation::AnimPose::resize</a></div><div class="ttdeci">void resize(int boneCount)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00044">AnimPose.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a44d26194685931ff9c09672982daddba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">eve::animation::AnimSkeleton::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00028">AnimSkeleton.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_afc96c35f3802fb1d494d11f49526571d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">eve::animation::AnimSkeleton::applyBindPose</a></div><div class="ttdeci">void applyBindPose(class AnimPose *pose) const</div><div class="ttdoc">Fill pose locals with bind pose.</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00121">AnimSkeleton.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a001354d683f071f46b21a9705a92c168"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a001354d683f071f46b21a9705a92c168">eve::animation::ControlPose::setBoneWeight</a></div><div class="ttdeci">void setBoneWeight(int boneIndex, float weight)</div><div class="ttdoc">Per-bone blend weight in [0,1]; 1 = full dynamics, 0 = hard snap to target.</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00076">ControlPose.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a0633395edbd1f579900588aa5b41cb99"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a0633395edbd1f579900588aa5b41cb99">eve::animation::ControlPose::setDamping</a></div><div class="ttdeci">void setDamping(float dampingZeta)</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00029">ControlPose.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a243f0e0758ccca9b8bbfeb1ff1bd6232"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a243f0e0758ccca9b8bbfeb1ff1bd6232">eve::animation::ControlPose::getBoneWeight</a></div><div class="ttdeci">float getBoneWeight(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00081">ControlPose.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a286fefccd335ac6d7178acd90ab6c83a"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a286fefccd335ac6d7178acd90ab6c83a">eve::animation::ControlPose::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00204">ControlPose.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a309dab66322b456a4710a5ba6291e406"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a309dab66322b456a4710a5ba6291e406">eve::animation::ControlPose::setTargetPose</a></div><div class="ttdeci">void setTargetPose(const AnimPose *target)</div><div class="ttdoc">Copy target pose. Channels without prior state snap; existing state keeps momentum.</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00130">ControlPose.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a53fd810f7267be710eda214504b2ce56"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a53fd810f7267be710eda214504b2ce56">eve::animation::ControlPose::getPose</a></div><div class="ttdeci">AnimPose * getPose()</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00146">ControlPose.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a76f39944da8e5cd1bd1661a2462723e2"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a76f39944da8e5cd1bd1661a2462723e2">eve::animation::ControlPose::snapToTarget</a></div><div class="ttdeci">void snapToTarget()</div><div class="ttdoc">Snap current state to the last target without changing the target.</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00140">ControlPose.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_a8550f759d2d5dbc7847a39a0b1528016"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#a8550f759d2d5dbc7847a39a0b1528016">eve::animation::ControlPose::ControlPose</a></div><div class="ttdeci">ControlPose(AnimSkeleton *skeleton)</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00011">ControlPose.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_aa218b3e33ee266af9f432ed50a24da86"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#aa218b3e33ee266af9f432ed50a24da86">eve::animation::ControlPose::getIntegrator</a></div><div class="ttdeci">std::string getIntegrator() const</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00052">ControlPose.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_ab645ce54f02e5b0babb16335477c1130"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#ab645ce54f02e5b0babb16335477c1130">eve::animation::ControlPose::setResponse</a></div><div class="ttdeci">void setResponse(float response)</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00034">ControlPose.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_adcdc71802bb3f7c69eb5e916c1ff441f"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#adcdc71802bb3f7c69eb5e916c1ff441f">eve::animation::ControlPose::setFrequency</a></div><div class="ttdeci">void setFrequency(float frequencyHz)</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00024">ControlPose.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_ae98ffe0b7c12a78628da271369e10a9f"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#ae98ffe0b7c12a78628da271369e10a9f">eve::animation::ControlPose::getTargetPose</a></div><div class="ttdeci">AnimPose * getTargetPose()</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00151">ControlPose.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlPose_html_af6f3e945e60069451779743a9ecc2520"><div class="ttname"><a href="classeve_1_1animation_1_1ControlPose.html#af6f3e945e60069451779743a9ecc2520">eve::animation::ControlPose::setIntegrator</a></div><div class="ttdeci">void setIntegrator(const std::string &amp;kind)</div><div class="ttdef"><b>Definition</b> <a href="ControlPose_8cpp_source.html#l00039">ControlPose.cpp:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a1a2ffd146fc223f785b3f49cec7d3604"><div class="ttname"><a href="namespaceeve_1_1animation.html#a1a2ffd146fc223f785b3f49cec7d3604">eve::animation::blendTRS</a></div><div class="ttdeci">TransformTRS blendTRS(const TransformTRS &amp;a, const TransformTRS &amp;b, float t)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00072">AnimMath.h:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a4e520c7d8df60bea57d5e43af4cc7a75"><div class="ttname"><a href="namespaceeve_1_1animation.html#a4e520c7d8df60bea57d5e43af4cc7a75">eve::animation::stepPd</a></div><div class="ttdeci">void stepPd(float dt, float target, float targetVel, float kp, float kd, float &amp;y, float &amp;yd)</div><div class="ttdoc">Semi-implicit Euler PD step (unit mass): a = Kp (target − y) + Kd (targetVel − yd),...</div><div class="ttdef"><b>Definition</b> <a href="AnimControlMath_8h_source.html#l00137">AnimControlMath.h:137</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a948f35c766ea0be2250cd441570a6696"><div class="ttname"><a href="namespaceeve_1_1animation.html#a948f35c766ea0be2250cd441570a6696">eve::animation::stepSecondOrder</a></div><div class="ttdeci">void stepSecondOrder(float dt, float x, float xd, const SecondOrderCoeffs &amp;c, float &amp;y, float &amp;yd)</div><div class="ttdoc">Stable semi-implicit Euler step for a second-order tracker. Estimates input velocity from consecutive...</div><div class="ttdef"><b>Definition</b> <a href="AnimControlMath_8h_source.html#l00044">AnimControlMath.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ab7cd5a060443700cfb34e19ee95168f7"><div class="ttname"><a href="namespaceeve_1_1animation.html#ab7cd5a060443700cfb34e19ee95168f7">eve::animation::pdGainsFromOmegaZeta</a></div><div class="ttdeci">void pdGainsFromOmegaZeta(float omega, float zeta, float &amp;kp, float &amp;kd)</div><div class="ttdoc">Unit-mass PD gains from natural frequency ω (rad/s) and damping ratio ζ.</div><div class="ttdef"><b>Definition</b> <a href="AnimControlMath_8h_source.html#l00126">AnimControlMath.h:126</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ad5392874e50dcc3cf175c4a91ce9b671"><div class="ttname"><a href="namespaceeve_1_1animation.html#ad5392874e50dcc3cf175c4a91ce9b671">eve::animation::makeSecondOrderCoeffs</a></div><div class="ttdeci">SecondOrderCoeffs makeSecondOrderCoeffs(float frequencyHz, float dampingZeta, float response)</div><div class="ttdoc">Build second-order coefficients from frequency (Hz), damping ζ, response r.</div><div class="ttdef"><b>Definition</b> <a href="AnimControlMath_8h_source.html#l00027">AnimControlMath.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ad804af3077704623911d24c54f281799"><div class="ttname"><a href="namespaceeve_1_1animation.html#ad804af3077704623911d24c54f281799">eve::animation::hzToOmega</a></div><div class="ttdeci">float hzToOmega(float frequencyHz)</div><div class="ttdoc">ω (rad/s) from frequency in Hz.</div><div class="ttdef"><b>Definition</b> <a href="AnimControlMath_8h_source.html#l00146">AnimControlMath.h:146</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aed1d423554b8269ca7e6992b332f9812"><div class="ttname"><a href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">eve::animation::clampf</a></div><div class="ttdeci">float clampf(float v, float lo, float hi)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00031">AnimMath.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_af4bdde8d264cb4c904985f606dc0178f"><div class="ttname"><a href="namespaceeve_1_1animation.html#af4bdde8d264cb4c904985f606dc0178f">eve::animation::stepDampedSpring</a></div><div class="ttdeci">void stepDampedSpring(float dt, float target, float angularFrequency, float dampingRatio, float &amp;pos, float &amp;vel)</div><div class="ttdoc">Advance position/velocity relative to a set-point using closed-form spring step.</div><div class="ttdef"><b>Definition</b> <a href="AnimControlMath_8h_source.html#l00114">AnimControlMath.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a03ea248de97b2702d86e047f2e32d970"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a03ea248de97b2702d86e047f2e32d970">eve::animation::TransformTRS::qx</a></div><div class="ttdeci">float qx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a07535af69d95029348497d1516a7b7a7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a07535af69d95029348497d1516a7b7a7">eve::animation::TransformTRS::sy</a></div><div class="ttdeci">float sy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a08d6b60e2b0994d1c24e494aa9c8593b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a08d6b60e2b0994d1c24e494aa9c8593b">eve::animation::TransformTRS::qz</a></div><div class="ttdeci">float qz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a0e8d5035666cdb5c28b749bf3e2a4d74"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a0e8d5035666cdb5c28b749bf3e2a4d74">eve::animation::TransformTRS::qy</a></div><div class="ttdeci">float qy</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a14236e7d34b16f26e502889402b0c3c8"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a14236e7d34b16f26e502889402b0c3c8">eve::animation::TransformTRS::pz</a></div><div class="ttdeci">float pz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7988b734d588744dc063c61f10a7a11b"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7988b734d588744dc063c61f10a7a11b">eve::animation::TransformTRS::px</a></div><div class="ttdeci">float px</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a7a07df45fde09cb8d1ad4b58172eefb7"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a7a07df45fde09cb8d1ad4b58172eefb7">eve::animation::TransformTRS::qw</a></div><div class="ttdeci">float qw</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00011">AnimMath.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_a953b11111e2cf55c349926235c41e767"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#a953b11111e2cf55c349926235c41e767">eve::animation::TransformTRS::sx</a></div><div class="ttdeci">float sx</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_aadc2748cb1a7d93ef3991b89ff314d56"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#aadc2748cb1a7d93ef3991b89ff314d56">eve::animation::TransformTRS::py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00010">AnimMath.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html_afec8a11011d7b50d78f548575b9e0229"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html#afec8a11011d7b50d78f548575b9e0229">eve::animation::TransformTRS::sz</a></div><div class="ttdeci">float sz</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00012">AnimMath.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpgpu::ComputeShader类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpgpu.html">gpgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="classeve_1_1gpgpu_1_1ComputeShader-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpgpu::ComputeShader类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Backend-agnostic compute program. Bind storage buffers then dispatch via <a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html#acf0c575551c055a8b0fbec32b6208c23" title="Record + submit a compute dispatch and wait for completion (sync). groups*: workgroup counts (not thr...">Gpgpu::dispatch</a>. Push constants: float[32] (same size as <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">graphics::Shader</a>).  
+ <a href="classeve_1_1gpgpu_1_1ComputeShader.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::gpgpu::ComputeShader 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1gpgpu_1_1ComputeShader.png" usemap="#eve::gpgpu::ComputeShader_map" alt=""/>
+  <map id="eve::gpgpu::ComputeShader_map" name="eve::gpgpu::ComputeShader_map">
+<area href="classeve_1_1gpgpu_1_1VulkanComputeShader.html" title="Vulkan 计算着色器（SPIR-V pipeline + descriptor 管理）。" alt="eve::gpgpu::VulkanComputeShader" shape="rect" coords="0,56,218,80"/>
+<area href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html" title="Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V input is rejected (browsers ..." alt="eve::gpgpu::WebGpuComputeShader" shape="rect" coords="228,56,446,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5f100dc6ffca119d9a13d215adfab386" id="r_a5f100dc6ffca119d9a13d215adfab386"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a5f100dc6ffca119d9a13d215adfab386">ComputeShader</a> ()=default</td></tr>
+<tr class="separator:a5f100dc6ffca119d9a13d215adfab386"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99fb64bf089bdac3d3780cb0cf3dbe82" id="r_a99fb64bf089bdac3d3780cb0cf3dbe82"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a99fb64bf089bdac3d3780cb0cf3dbe82">~ComputeShader</a> ()=default</td></tr>
+<tr class="separator:a99fb64bf089bdac3d3780cb0cf3dbe82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3437ba4402ec365dc78ca5120168c4d6" id="r_a3437ba4402ec365dc78ca5120168c4d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a3437ba4402ec365dc78ca5120168c4d6">ComputeShader</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;)=delete</td></tr>
+<tr class="separator:a3437ba4402ec365dc78ca5120168c4d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc12527bbeac87c0cbba33f5fb47b659" id="r_abc12527bbeac87c0cbba33f5fb47b659"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#abc12527bbeac87c0cbba33f5fb47b659">operator=</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;)=delete</td></tr>
+<tr class="separator:abc12527bbeac87c0cbba33f5fb47b659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaf8369ad9145505f5dd5e966b737cf5" id="r_afaf8369ad9145505f5dd5e966b737cf5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#afaf8369ad9145505f5dd5e966b737cf5">bindBuffer</a> (int binding, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buffer)=0</td></tr>
+<tr class="memdesc:afaf8369ad9145505f5dd5e966b737cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings).  <br /></td></tr>
+<tr class="separator:afaf8369ad9145505f5dd5e966b737cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66995b46d5c2bb55964d4afdd28ef7df" id="r_a66995b46d5c2bb55964d4afdd28ef7df"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a66995b46d5c2bb55964d4afdd28ef7df">getBoundBuffer</a> (int binding) const =0</td></tr>
+<tr class="separator:a66995b46d5c2bb55964d4afdd28ef7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44b71449ed92daf0e6c9dad0a052e135" id="r_a44b71449ed92daf0e6c9dad0a052e135"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a44b71449ed92daf0e6c9dad0a052e135">setFloat</a> (int index, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)=0</td></tr>
+<tr class="separator:a44b71449ed92daf0e6c9dad0a052e135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b5b0454125c65d53f1edc3773d922e" id="r_af4b5b0454125c65d53f1edc3773d922e"><td class="memItemLeft" align="right" valign="top">virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#af4b5b0454125c65d53f1edc3773d922e">getFloat</a> (int index) const =0</td></tr>
+<tr class="separator:af4b5b0454125c65d53f1edc3773d922e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abadcbdd3b758467ef913085189bac449" id="r_abadcbdd3b758467ef913085189bac449"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#abadcbdd3b758467ef913085189bac449">clearBindings</a> ()=0</td></tr>
+<tr class="separator:abadcbdd3b758467ef913085189bac449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad66bc18ed29643e9780e5147bdb66976" id="r_ad66bc18ed29643e9780e5147bdb66976"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#ad66bc18ed29643e9780e5147bdb66976">pushConstantData</a> () const</td></tr>
+<tr class="separator:ad66bc18ed29643e9780e5147bdb66976"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a04a7141434a2ed6e3c62a4816e3686e2" id="r_a04a7141434a2ed6e3c62a4816e3686e2"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a> = 8</td></tr>
+<tr class="separator:a04a7141434a2ed6e3c62a4816e3686e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1a2502dfd9daec795b6d942976c3c4" id="r_a2b1a2502dfd9daec795b6d942976c3c4"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> = 32</td></tr>
+<tr class="separator:a2b1a2502dfd9daec795b6d942976c3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83368c146e8652192f87b4c6623aa7b5" id="r_a83368c146e8652192f87b4c6623aa7b5"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">kPushConstantBytes</a> = uint32_t(<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> * sizeof(float))</td></tr>
+<tr class="separator:a83368c146e8652192f87b4c6623aa7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a31895118df3a71bf1aa310884546516e" id="r_a31895118df3a71bf1aa310884546516e"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a31895118df3a71bf1aa310884546516e">push_</a> {}</td></tr>
+<tr class="separator:a31895118df3a71bf1aa310884546516e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Backend-agnostic compute program. Bind storage buffers then dispatch via <a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html#acf0c575551c055a8b0fbec32b6208c23" title="Record + submit a compute dispatch and wait for completion (sync). groups*: workgroup counts (not thr...">Gpgpu::dispatch</a>. Push constants: float[32] (same size as <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">graphics::Shader</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a> 第 <a class="el" href="ComputeShader_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5f100dc6ffca119d9a13d215adfab386" name="a5f100dc6ffca119d9a13d215adfab386"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f100dc6ffca119d9a13d215adfab386">&#9670;&#160;</a></span>ComputeShader() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::ComputeShader::ComputeShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a99fb64bf089bdac3d3780cb0cf3dbe82" name="a99fb64bf089bdac3d3780cb0cf3dbe82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99fb64bf089bdac3d3780cb0cf3dbe82">&#9670;&#160;</a></span>~ComputeShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::gpgpu::ComputeShader::~ComputeShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3437ba4402ec365dc78ca5120168c4d6" name="a3437ba4402ec365dc78ca5120168c4d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3437ba4402ec365dc78ca5120168c4d6">&#9670;&#160;</a></span>ComputeShader() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::ComputeShader::ComputeShader </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="afaf8369ad9145505f5dd5e966b737cf5" name="afaf8369ad9145505f5dd5e966b737cf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaf8369ad9145505f5dd5e966b737cf5">&#9670;&#160;</a></span>bindBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::gpgpu::ComputeShader::bindBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings). </p>
+
+<p>在 <a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a304adae8f132d966143c3475cdcad033">eve::gpgpu::VulkanComputeShader</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">eve::gpgpu::WebGpuComputeShader</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00100">eve::gpgpu::ShaderSystem::dispatch()</a>.</p>
+
+</div>
+</div>
+<a id="abadcbdd3b758467ef913085189bac449" name="abadcbdd3b758467ef913085189bac449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abadcbdd3b758467ef913085189bac449">&#9670;&#160;</a></span>clearBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::gpgpu::ComputeShader::clearBindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a238849b99aee87a8d9679f561f9667d3">eve::gpgpu::VulkanComputeShader</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">eve::gpgpu::WebGpuComputeShader</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a66995b46d5c2bb55964d4afdd28ef7df" name="a66995b46d5c2bb55964d4afdd28ef7df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66995b46d5c2bb55964d4afdd28ef7df">&#9670;&#160;</a></span>getBoundBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> * eve::gpgpu::ComputeShader::getBoundBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#ab84caa5261fcba19a748557712a15288">eve::gpgpu::VulkanComputeShader</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">eve::gpgpu::WebGpuComputeShader</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af4b5b0454125c65d53f1edc3773d922e" name="af4b5b0454125c65d53f1edc3773d922e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b5b0454125c65d53f1edc3773d922e">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual float eve::gpgpu::ComputeShader::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#a0b04b795d7de291d1b8b5e5d6c311c8a">eve::gpgpu::VulkanComputeShader</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">eve::gpgpu::WebGpuComputeShader</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00095">eve::gpgpu::ShaderSystem::getFloat()</a>.</p>
+
+</div>
+</div>
+<a id="abc12527bbeac87c0cbba33f5fb47b659" name="abc12527bbeac87c0cbba33f5fb47b659"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc12527bbeac87c0cbba33f5fb47b659">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp; eve::gpgpu::ComputeShader::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad66bc18ed29643e9780e5147bdb66976" name="ad66bc18ed29643e9780e5147bdb66976"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad66bc18ed29643e9780e5147bdb66976">&#9670;&#160;</a></span>pushConstantData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float * eve::gpgpu::ComputeShader::pushConstantData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a> 第 <a class="el" href="ComputeShader_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ComputeShader_8h_source.html#l00039">push_</a>.</p>
+
+</div>
+</div>
+<a id="a44b71449ed92daf0e6c9dad0a052e135" name="a44b71449ed92daf0e6c9dad0a052e135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44b71449ed92daf0e6c9dad0a052e135">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::gpgpu::ComputeShader::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#afe6b8035ebb6b7bc59222b9cb982af8c">eve::gpgpu::VulkanComputeShader</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">eve::gpgpu::WebGpuComputeShader</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00100">eve::gpgpu::ShaderSystem::dispatch()</a> , 以及 <a class="el" href="ShaderSystem_8cpp_source.html#l00090">eve::gpgpu::ShaderSystem::setFloat()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a04a7141434a2ed6e3c62a4816e3686e2" name="a04a7141434a2ed6e3c62a4816e3686e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04a7141434a2ed6e3c62a4816e3686e2">&#9670;&#160;</a></span>kMaxBindings</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::gpgpu::ComputeShader::kMaxBindings = 8</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a> 第 <a class="el" href="ComputeShader_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00046">eve::gpgpu::VulkanComputeShader::bindBuffer()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00053">eve::gpgpu::WebGpuComputeShader::bindBuffer()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00072">eve::gpgpu::VulkanComputeShader::flushDescriptors()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00052">eve::gpgpu::VulkanComputeShader::getBoundBuffer()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00058">eve::gpgpu::WebGpuComputeShader::getBoundBuffer()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00013">eve::gpgpu::vulkanNewShaderFromSpirv()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00208">eve::gpgpu::webgpuDispatch()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00077">eve::gpgpu::webgpuNewShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a2b1a2502dfd9daec795b6d942976c3c4" name="a2b1a2502dfd9daec795b6d942976c3c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1a2502dfd9daec795b6d942976c3c4">&#9670;&#160;</a></span>kMaxFloats</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::gpgpu::ComputeShader::kMaxFloats = 32</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a> 第 <a class="el" href="ComputeShader_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00062">eve::gpgpu::VulkanComputeShader::getFloat()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00068">eve::gpgpu::WebGpuComputeShader::getFloat()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00057">eve::gpgpu::VulkanComputeShader::setFloat()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00063">eve::gpgpu::WebGpuComputeShader::setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a83368c146e8652192f87b4c6623aa7b5" name="a83368c146e8652192f87b4c6623aa7b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83368c146e8652192f87b4c6623aa7b5">&#9670;&#160;</a></span>kPushConstantBytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t eve::gpgpu::ComputeShader::kPushConstantBytes = uint32_t(<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> * sizeof(float))</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a> 第 <a class="el" href="ComputeShader_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00098">eve::gpgpu::vulkanDispatch()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00013">eve::gpgpu::vulkanNewShaderFromSpirv()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00145">eve::gpgpu::vulkanSequenceRecordDispatch()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00208">eve::gpgpu::webgpuDispatch()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00077">eve::gpgpu::webgpuNewShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a31895118df3a71bf1aa310884546516e" name="a31895118df3a71bf1aa310884546516e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31895118df3a71bf1aa310884546516e">&#9670;&#160;</a></span>push_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a>&gt; eve::gpgpu::ComputeShader::push_ {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a> 第 <a class="el" href="ComputeShader_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanComputeShader_8cpp_source.html#l00062">eve::gpgpu::VulkanComputeShader::getFloat()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00068">eve::gpgpu::WebGpuComputeShader::getFloat()</a>, <a class="el" href="ComputeShader_8h_source.html#l00036">pushConstantData()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00057">eve::gpgpu::VulkanComputeShader::setFloat()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00063">eve::gpgpu::WebGpuComputeShader::setFloat()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/gpgpu/<a class="el" href="ComputeShader_8h_source.html">ComputeShader.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

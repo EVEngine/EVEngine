@@ -1,0 +1,350 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::dtlutil 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1dtlutil.html">dtlutil</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::dtlutil 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a7beeea62d75f7a201775d08a2142e943" id="r_a7beeea62d75f7a201775d08a2142e943"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7beeea62d75f7a201775d08a2142e943">seedEngine</a> (uint32_t <a class="el" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>)</td></tr>
+<tr class="separator:a7beeea62d75f7a201775d08a2142e943"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab543f4c6312e8e95bc425aef24024155" id="r_ab543f4c6312e8e95bc425aef24024155"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; std::uint_fast8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1dtlutil.html#ab543f4c6312e8e95bc425aef24024155">makeMatrix</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, std::uint_fast8_t fill=0)</td></tr>
+<tr class="separator:ab543f4c6312e8e95bc425aef24024155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b5e246bbdde880c19e8d57e4dc0bb1" id="r_a59b5e246bbdde880c19e8d57e4dc0bb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1dtlutil.html#a59b5e246bbdde880c19e8d57e4dc0bb1">copyMatrixToGrid</a> (const std::vector&lt; std::vector&lt; std::uint_fast8_t &gt; &gt; &amp;matrix, <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;grid, const std::function&lt; uint32_t(std::uint_fast8_t)&gt; &amp;mapValue)</td></tr>
+<tr class="separator:a59b5e246bbdde880c19e8d57e4dc0bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc32130c08e9caa59dc75af9320c3bd" id="r_a7bc32130c08e9caa59dc75af9320c3bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">placeSpawnAndStairs</a> (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;grid, uint32_t <a class="el" href="CloudField_8cpp.html#a7a3a89c2bc797e681ec9d4867aa39a5f">seed</a>)</td></tr>
+<tr class="memdesc:a7bc32130c08e9caa59dc75af9320c3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place spawn + stairs on walkable cells (floor/corridor/grass/dirt/sand).  <br /></td></tr>
+<tr class="separator:a7bc32130c08e9caa59dc75af9320c3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a59b5e246bbdde880c19e8d57e4dc0bb1" name="a59b5e246bbdde880c19e8d57e4dc0bb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b5e246bbdde880c19e8d57e4dc0bb1">&#9670;&#160;</a></span>copyMatrixToGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::dtlutil::copyMatrixToGrid </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; std::uint_fast8_t &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; uint32_t(std::uint_fast8_t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>mapValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DtlHelpers_8h_source.html">DtlHelpers.h</a> 第 <a class="el" href="DtlHelpers_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="Grid2D_8cpp_source.html#l00013">eve::procgen::Grid2D::resize()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00023">eve::procgen::Grid2D::setCell()</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ab543f4c6312e8e95bc425aef24024155" name="ab543f4c6312e8e95bc425aef24024155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab543f4c6312e8e95bc425aef24024155">&#9670;&#160;</a></span>makeMatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::vector&lt; std::uint_fast8_t &gt; &gt; eve::procgen::dtlutil::makeMatrix </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint_fast8_t&#160;</td>
+          <td class="paramname"><em>fill</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DtlHelpers_8h_source.html">DtlHelpers.h</a> 第 <a class="el" href="DtlHelpers_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="a7bc32130c08e9caa59dc75af9320c3bd" name="a7bc32130c08e9caa59dc75af9320c3bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc32130c08e9caa59dc75af9320c3bd">&#9670;&#160;</a></span>placeSpawnAndStairs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::dtlutil::placeSpawnAndStairs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Place spawn + stairs on walkable cells (floor/corridor/grass/dirt/sand). </p>
+
+<p class="definition">在文件 <a class="el" href="DtlHelpers_8h_source.html">DtlHelpers.h</a> 第 <a class="el" href="DtlHelpers_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Grid2D_8cpp_source.html#l00056">eve::procgen::Grid2D::addObjectAt()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="Grid2D_8cpp_source.html#l00054">eve::procgen::Grid2D::clearObjects()</a>, <a class="el" href="Semantic_8h_source.html#l00013">eve::procgen::Semantic::Corridor</a>, <a class="el" href="Semantic_8h_source.html#l00017">eve::procgen::Semantic::Dirt</a>, <a class="el" href="Semantic_8h_source.html#l00012">eve::procgen::Semantic::Floor</a>, <a class="el" href="Grid2D_8cpp_source.html#l00028">eve::procgen::Grid2D::getCell()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00021">eve::procgen::Grid2D::getHeight()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00020">eve::procgen::Grid2D::getWidth()</a>, <a class="el" href="Semantic_8h_source.html#l00016">eve::procgen::Semantic::Grass</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>, <a class="el" href="Semantic_8h_source.html#l00015">eve::procgen::Semantic::Sand</a>, <a class="el" href="CloudField_8cpp_source.html#l00020">seed</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a7beeea62d75f7a201775d08a2142e943" name="a7beeea62d75f7a201775d08a2142e943"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7beeea62d75f7a201775d08a2142e943">&#9670;&#160;</a></span>seedEngine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::dtlutil::seedEngine </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DtlHelpers_8h_source.html">DtlHelpers.h</a> 第 <a class="el" href="DtlHelpers_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CloudField_8cpp_source.html#l00020">seed</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

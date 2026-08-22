@@ -1,0 +1,496 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::StyleChain类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1StyleChain-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::StyleChain类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Ordered multi-pass stylize pipeline (extension point).  
+ <a href="classeve_1_1stylize_1_1StyleChain.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StyleChain_8h_source.html">StyleChain.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a72f0fb39c309bdc1c1475bd69ac2296d" id="r_a72f0fb39c309bdc1c1475bd69ac2296d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#a72f0fb39c309bdc1c1475bd69ac2296d">StyleChain</a> ()=default</td></tr>
+<tr class="separator:a72f0fb39c309bdc1c1475bd69ac2296d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf3e301008f080e2610a8b4cb0ef8d9c" id="r_aaf3e301008f080e2610a8b4cb0ef8d9c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#aaf3e301008f080e2610a8b4cb0ef8d9c">~StyleChain</a> ()=default</td></tr>
+<tr class="separator:aaf3e301008f080e2610a8b4cb0ef8d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e1d7e9758f609230fd71b86727431b1" id="r_a1e1d7e9758f609230fd71b86727431b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#a1e1d7e9758f609230fd71b86727431b1">StyleChain</a> (const <a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> &amp;)=delete</td></tr>
+<tr class="separator:a1e1d7e9758f609230fd71b86727431b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa00b016bd4904af8b161420101167348" id="r_aa00b016bd4904af8b161420101167348"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#aa00b016bd4904af8b161420101167348">operator=</a> (const <a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> &amp;)=delete</td></tr>
+<tr class="separator:aa00b016bd4904af8b161420101167348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0ec34f628143758f2e6a9545622e70a" id="r_ae0ec34f628143758f2e6a9545622e70a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#ae0ec34f628143758f2e6a9545622e70a">clear</a> ()</td></tr>
+<tr class="separator:ae0ec34f628143758f2e6a9545622e70a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad54bb9a5e5e2b992e48362c20ed3331d" id="r_ad54bb9a5e5e2b992e48362c20ed3331d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#ad54bb9a5e5e2b992e48362c20ed3331d">add</a> (<a class="el" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> *pass)</td></tr>
+<tr class="separator:ad54bb9a5e5e2b992e48362c20ed3331d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20ea6f11c30067051a637c5d25292bca" id="r_a20ea6f11c30067051a637c5d25292bca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#a20ea6f11c30067051a637c5d25292bca">getPassCount</a> () const</td></tr>
+<tr class="separator:a20ea6f11c30067051a637c5d25292bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2dc0849d75d6a50f359f423fe441514" id="r_ac2dc0849d75d6a50f359f423fe441514"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#ac2dc0849d75d6a50f359f423fe441514">getPass</a> (int index) const</td></tr>
+<tr class="separator:ac2dc0849d75d6a50f359f423fe441514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8655c1f3a1331758668a7f70a9fa557a" id="r_a8655c1f3a1331758668a7f70a9fa557a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#a8655c1f3a1331758668a7f70a9fa557a">apply</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *source, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *dest, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *<a class="el" href="KernelGen_8cpp.html#a641790cd524e40a148a1376998102e25">temp</a>=nullptr)</td></tr>
+<tr class="memdesc:a8655c1f3a1331758668a7f70a9fa557a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run passes in order into <code>dest</code>. When more than one pass is present, <code>temp</code> is required for ping-pong (same size as dest, sampleable via getTexture()).  <br /></td></tr>
+<tr class="separator:a8655c1f3a1331758668a7f70a9fa557a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bbad5edc5b708c379121ed9cbb00e25" id="r_a4bbad5edc5b708c379121ed9cbb00e25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html#a4bbad5edc5b708c379121ed9cbb00e25">applyCanvas</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *source, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *dest, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *<a class="el" href="KernelGen_8cpp.html#a641790cd524e40a148a1376998102e25">temp</a>=nullptr)</td></tr>
+<tr class="separator:a4bbad5edc5b708c379121ed9cbb00e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Ordered multi-pass stylize pipeline (extension point). </p>
+<p>Future NPR often needs ping-pong chains (separable bleed, outline then shade, depth-aware contour, etc.). This type owns the sequencing contract; built-in styles today are still single-pass, but callers can already compose them.</p>
+<p>Passes are NOT owned — create via <a class="el" href="classeve_1_1stylize_1_1Stylize.html#a37bc50ab7147111f16e1a6527b3efc0c" title="Post-process StylePass (shader owned by Graphics).">Stylize::newPass</a> / newPassFromShader.</p>
+<p>Script: <code>chain &lt;- stylize.newChain(); chain.add(passA); chain.add(passB);</code> </p>
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8h_source.html">StyleChain.h</a> 第 <a class="el" href="StyleChain_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a72f0fb39c309bdc1c1475bd69ac2296d" name="a72f0fb39c309bdc1c1475bd69ac2296d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72f0fb39c309bdc1c1475bd69ac2296d">&#9670;&#160;</a></span>StyleChain() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::StyleChain::StyleChain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf3e301008f080e2610a8b4cb0ef8d9c" name="aaf3e301008f080e2610a8b4cb0ef8d9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf3e301008f080e2610a8b4cb0ef8d9c">&#9670;&#160;</a></span>~StyleChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::StyleChain::~StyleChain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1e1d7e9758f609230fd71b86727431b1" name="a1e1d7e9758f609230fd71b86727431b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1d7e9758f609230fd71b86727431b1">&#9670;&#160;</a></span>StyleChain() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::StyleChain::StyleChain </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad54bb9a5e5e2b992e48362c20ed3331d" name="ad54bb9a5e5e2b992e48362c20ed3331d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad54bb9a5e5e2b992e48362c20ed3331d">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleChain::add </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> *&#160;</td>
+          <td class="paramname"><em>pass</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8cpp_source.html">StyleChain.cpp</a> 第 <a class="el" href="StyleChain_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8655c1f3a1331758668a7f70a9fa557a" name="a8655c1f3a1331758668a7f70a9fa557a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8655c1f3a1331758668a7f70a9fa557a">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleChain::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *&#160;</td>
+          <td class="paramname"><em>temp</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run passes in order into <code>dest</code>. When more than one pass is present, <code>temp</code> is required for ping-pong (same size as dest, sampleable via getTexture()). </p>
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8cpp_source.html">StyleChain.cpp</a> 第 <a class="el" href="StyleChain_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00927">eve::graphics::Graphics::drawTexturedRect()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00126">temp</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StyleChain_8cpp_source.html#l00064">applyCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a4bbad5edc5b708c379121ed9cbb00e25" name="a4bbad5edc5b708c379121ed9cbb00e25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bbad5edc5b708c379121ed9cbb00e25">&#9670;&#160;</a></span>applyCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleChain::applyCanvas </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *&#160;</td>
+          <td class="paramname"><em>temp</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8cpp_source.html">StyleChain.cpp</a> 第 <a class="el" href="StyleChain_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleChain_8cpp_source.html#l00026">apply()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00126">temp</a>.</p>
+
+</div>
+</div>
+<a id="ae0ec34f628143758f2e6a9545622e70a" name="ae0ec34f628143758f2e6a9545622e70a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0ec34f628143758f2e6a9545622e70a">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleChain::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8cpp_source.html">StyleChain.cpp</a> 第 <a class="el" href="StyleChain_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2dc0849d75d6a50f359f423fe441514" name="ac2dc0849d75d6a50f359f423fe441514"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2dc0849d75d6a50f359f423fe441514">&#9670;&#160;</a></span>getPass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> * eve::stylize::StyleChain::getPass </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8cpp_source.html">StyleChain.cpp</a> 第 <a class="el" href="StyleChain_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20ea6f11c30067051a637c5d25292bca" name="a20ea6f11c30067051a637c5d25292bca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20ea6f11c30067051a637c5d25292bca">&#9670;&#160;</a></span>getPassCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::stylize::StyleChain::getPassCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleChain_8h_source.html">StyleChain.h</a> 第 <a class="el" href="StyleChain_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa00b016bd4904af8b161420101167348" name="aa00b016bd4904af8b161420101167348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa00b016bd4904af8b161420101167348">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> &amp; eve::stylize::StyleChain::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1StyleChain.html">StyleChain</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="StyleChain_8h_source.html">StyleChain.h</a></li>
+<li>src/modules/stylize/<a class="el" href="StyleChain_8cpp_source.html">StyleChain.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

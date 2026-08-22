@@ -1,0 +1,289 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/gpgpu/webgpu/WebGpuGpgpu.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5202d7c976d63b5a703bfe0e65224392.html">gpgpu</a></li><li class="navelem"><a class="el" href="dir_a48d659908f6bfd27cb3c3bb83910ae8.html">webgpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WebGpuGpgpu.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WebGpuGpgpu_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ComputeShader_8h.html">gpgpu/ComputeShader.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="GpuBuffer_8h.html">gpgpu/GpuBuffer.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;webgpu/webgpu_cpp.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>WebGpuGpuBuffer;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#acd3f66f643044e1876c8eeec010e40aa">   22</a></span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#acd3f66f643044e1876c8eeec010e40aa">WebGpuComputeShader</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#af52ba832ceb61f30296cd6e7d51a8d0c">   23</a></span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#af52ba832ceb61f30296cd6e7d51a8d0c">~WebGpuComputeShader</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">bindBuffer</a>(<span class="keywordtype">int</span> binding, <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buffer) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *<a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">getBoundBuffer</a>(<span class="keywordtype">int</span> binding) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">setFloat</a>(<span class="keywordtype">int</span> index, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">getFloat</a>(<span class="keywordtype">int</span> index) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">clearBindings</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ad9d46b9d022363aeccec68f246d61175">   33</a></span>    wgpu::ComputePipeline <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ad9d46b9d022363aeccec68f246d61175">pipeline</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a6b6bd12fc7086ec4aaa7eda397e3cbc6">   34</a></span>    wgpu::PipelineLayout <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a6b6bd12fc7086ec4aaa7eda397e3cbc6">pipelineLayout</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a48dc7531d9fd2e683fb6187abb90fd66">   35</a></span>    wgpu::BindGroupLayout <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a48dc7531d9fd2e683fb6187abb90fd66">setLayout</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ae17ad1ca80068a31369076dfc861a271">   36</a></span>    wgpu::Buffer <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ae17ad1ca80068a31369076dfc861a271">pushUbo</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#afc624010c9a6b5cc6a88f2fad2c8f712">   37</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#afc624010c9a6b5cc6a88f2fad2c8f712">ready</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::array&lt;GpuBuffer *, kMaxBindings&gt; bindings_{};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">   44</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a5588b1249204f5664099477b5f17a56c">   46</a></span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a5588b1249204f5664099477b5f17a56c">WebGpuGpuBuffer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a693d2e3a3f4676de0051d7254e982528">   47</a></span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a693d2e3a3f4676de0051d7254e982528">~WebGpuGpuBuffer</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa4e03aab0f88d86070037a38e8f5b7c1">   49</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa4e03aab0f88d86070037a38e8f5b7c1">getSize</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> int(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a>); }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a8794478f3c94617f41537867a3e76ca1">   50</a></span>    std::string <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a8794478f3c94617f41537867a3e76ca1">getUsage</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c82771921fbc12a719efc06382da185">usage_</a>; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ac3e5936c6989914da694af7f846de337">writeData</a>(<a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *data, <span class="keywordtype">int</span> dstOffset = 0) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *<a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a2fbe0bb99ba4b7690677d06da45dee5c">readData</a>(<span class="keywordtype">int</span> srcOffset = 0, <span class="keywordtype">int</span> size = -1) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a836b3e22b768dc6031af784e2e8d58e8">writeFloat32</a>(<span class="keywordtype">int</span> floatIndex, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a0a650b3cc60a476f6a7d8fded5f5c9be">readFloat32</a>(<span class="keywordtype">int</span> floatIndex) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae409ee578f290c56736c8a17ec4b63d4">fillFloat32</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa62c02394fa8f5b620bf47262857eec6">writeFloat32s</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *data, <span class="keywordtype">int</span> count, <span class="keywordtype">int</span> startIndex = 0) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a90aab58b87d8e25933ed92c61564a722">readFloat32s</a>(<span class="keywordtype">float</span> *out, <span class="keywordtype">int</span> count, <span class="keywordtype">int</span> startIndex = 0) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">uploadBytes</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *src, uint64_t nbytes, uint64_t dstOffset = 0) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">downloadBytes</a>(<span class="keywordtype">void</span> *dst, uint64_t nbytes, uint64_t srcOffset = 0) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">   65</a></span>    wgpu::Buffer <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">buffer</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">   66</a></span>    uint64_t <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c82771921fbc12a719efc06382da185">   67</a></span>    std::string <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c82771921fbc12a719efc06382da185">usage_</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment">// Backend entry points (mirror gpgpu/vulkan/VulkanGpgpu.h).</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a2fed65def15b16fd27e26bd98c994f1b">webgpuGpgpuReady</a>();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *<a class="code hl_function" href="namespaceeve_1_1gpgpu.html#abbdec5324b498f8b40dd2fb04059e3c4">webgpuNewShaderFromWgsl</a>(<span class="keyword">const</span> std::string &amp;wgsl);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *<a class="code hl_function" href="namespaceeve_1_1gpgpu.html#aabec05c308a71d2824c27b27c61dfa09">webgpuNewShaderFromSpirv</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;spv);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> *<a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">webgpuNewBuffer</a>(<span class="keywordtype">int</span> byteSize, <span class="keyword">const</span> std::string &amp;usage);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a3a407eec24dd9fcb0a38b16067f799c0">webgpuDispatch</a>(<a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keywordtype">int</span> groupsX, <span class="keywordtype">int</span> groupsY, <span class="keywordtype">int</span> groupsZ);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::gpgpu</span></div>
+<div class="ttc" id="aComputeShader_8h_html"><div class="ttname"><a href="ComputeShader_8h.html">ComputeShader.h</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aGpuBuffer_8h_html"><div class="ttname"><a href="GpuBuffer_8h.html">GpuBuffer.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00529">RenderSystem3D.cpp:529</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a></div><div class="ttdoc">In-memory byte buffer implementing eve::Data (ref-counted).</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8h_source.html#l00011">ByteData.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></div><div class="ttdoc">Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch....</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00015">ComputeShader.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1GpuBuffer_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a></div><div class="ttdoc">Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...</div><div class="ttdef"><b>Definition</b> <a href="GpuBuffer_8h_source.html#l00016">GpuBuffer.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">eve::gpgpu::WebGpuComputeShader</a></div><div class="ttdoc">Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V input is rejected (browsers ...</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00020">WebGpuGpgpu.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a45c48349f8904716ef4c49d4548a94fc"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">eve::gpgpu::WebGpuComputeShader::getFloat</a></div><div class="ttdeci">float getFloat(int index) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00068">WebGpuGpgpu.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a48dc7531d9fd2e683fb6187abb90fd66"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a48dc7531d9fd2e683fb6187abb90fd66">eve::gpgpu::WebGpuComputeShader::setLayout</a></div><div class="ttdeci">wgpu::BindGroupLayout setLayout</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00035">WebGpuGpgpu.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a4d97409fec97b270cffdea30797f69d2"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">eve::gpgpu::WebGpuComputeShader::bindBuffer</a></div><div class="ttdeci">void bindBuffer(int binding, GpuBuffer *buffer) override</div><div class="ttdoc">Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings).</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00053">WebGpuGpgpu.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a65b7383a88c421b197f8a273619a48cb"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">eve::gpgpu::WebGpuComputeShader::setFloat</a></div><div class="ttdeci">void setFloat(int index, float value) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00063">WebGpuGpgpu.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a6b6bd12fc7086ec4aaa7eda397e3cbc6"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a6b6bd12fc7086ec4aaa7eda397e3cbc6">eve::gpgpu::WebGpuComputeShader::pipelineLayout</a></div><div class="ttdeci">wgpu::PipelineLayout pipelineLayout</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00034">WebGpuGpgpu.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a7f367374e3a8ecb60bba804f87f32d46"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">eve::gpgpu::WebGpuComputeShader::clearBindings</a></div><div class="ttdeci">void clearBindings() override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00073">WebGpuGpgpu.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a8d4d7ba2eadaae4a504ca51898758ea6"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">eve::gpgpu::WebGpuComputeShader::getBoundBuffer</a></div><div class="ttdeci">GpuBuffer * getBoundBuffer(int binding) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00058">WebGpuGpgpu.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_acd3f66f643044e1876c8eeec010e40aa"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#acd3f66f643044e1876c8eeec010e40aa">eve::gpgpu::WebGpuComputeShader::WebGpuComputeShader</a></div><div class="ttdeci">WebGpuComputeShader()=default</div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_ad9d46b9d022363aeccec68f246d61175"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ad9d46b9d022363aeccec68f246d61175">eve::gpgpu::WebGpuComputeShader::pipeline</a></div><div class="ttdeci">wgpu::ComputePipeline pipeline</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00033">WebGpuGpgpu.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_ae17ad1ca80068a31369076dfc861a271"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ae17ad1ca80068a31369076dfc861a271">eve::gpgpu::WebGpuComputeShader::pushUbo</a></div><div class="ttdeci">wgpu::Buffer pushUbo</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00036">WebGpuGpgpu.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_af52ba832ceb61f30296cd6e7d51a8d0c"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#af52ba832ceb61f30296cd6e7d51a8d0c">eve::gpgpu::WebGpuComputeShader::~WebGpuComputeShader</a></div><div class="ttdeci">~WebGpuComputeShader() override</div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_afc624010c9a6b5cc6a88f2fad2c8f712"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#afc624010c9a6b5cc6a88f2fad2c8f712">eve::gpgpu::WebGpuComputeShader::ready</a></div><div class="ttdeci">bool ready</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00037">WebGpuGpgpu.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">eve::gpgpu::WebGpuGpuBuffer</a></div><div class="ttdoc">Storage / staging buffer for the WebGPU backend.</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00044">WebGpuGpgpu.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a0a650b3cc60a476f6a7d8fded5f5c9be"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a0a650b3cc60a476f6a7d8fded5f5c9be">eve::gpgpu::WebGpuGpuBuffer::readFloat32</a></div><div class="ttdeci">float readFloat32(int floatIndex) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00292">WebGpuGpgpu.cpp:292</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a208fcf4b0932109f36522610417476d4"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">eve::gpgpu::WebGpuGpuBuffer::downloadBytes</a></div><div class="ttdeci">void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset=0) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00265">WebGpuGpgpu.cpp:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a2fbe0bb99ba4b7690677d06da45dee5c"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a2fbe0bb99ba4b7690677d06da45dee5c">eve::gpgpu::WebGpuGpuBuffer::readData</a></div><div class="ttdeci">data::ByteData * readData(int srcOffset=0, int size=-1) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00277">WebGpuGpgpu.cpp:277</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a5588b1249204f5664099477b5f17a56c"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a5588b1249204f5664099477b5f17a56c">eve::gpgpu::WebGpuGpuBuffer::WebGpuGpuBuffer</a></div><div class="ttdeci">WebGpuGpuBuffer()=default</div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a693d2e3a3f4676de0051d7254e982528"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a693d2e3a3f4676de0051d7254e982528">eve::gpgpu::WebGpuGpuBuffer::~WebGpuGpuBuffer</a></div><div class="ttdeci">~WebGpuGpuBuffer() override</div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a7c3cd47c45ce1f66e04b7ee55bd4a80a"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">eve::gpgpu::WebGpuGpuBuffer::buffer</a></div><div class="ttdeci">wgpu::Buffer buffer</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00065">WebGpuGpgpu.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a7c82771921fbc12a719efc06382da185"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c82771921fbc12a719efc06382da185">eve::gpgpu::WebGpuGpuBuffer::usage_</a></div><div class="ttdeci">std::string usage_</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00067">WebGpuGpgpu.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a836b3e22b768dc6031af784e2e8d58e8"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a836b3e22b768dc6031af784e2e8d58e8">eve::gpgpu::WebGpuGpuBuffer::writeFloat32</a></div><div class="ttdeci">void writeFloat32(int floatIndex, float value) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00287">WebGpuGpgpu.cpp:287</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a8794478f3c94617f41537867a3e76ca1"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a8794478f3c94617f41537867a3e76ca1">eve::gpgpu::WebGpuGpuBuffer::getUsage</a></div><div class="ttdeci">std::string getUsage() const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00050">WebGpuGpgpu.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a90aab58b87d8e25933ed92c61564a722"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a90aab58b87d8e25933ed92c61564a722">eve::gpgpu::WebGpuGpuBuffer::readFloat32s</a></div><div class="ttdeci">void readFloat32s(float *out, int count, int startIndex=0) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00304">WebGpuGpgpu.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a913ecda89a3183831aa1e7e7dfb5fcdb"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">eve::gpgpu::WebGpuGpuBuffer::uploadBytes</a></div><div class="ttdeci">void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset=0) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00258">WebGpuGpgpu.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_aa4e03aab0f88d86070037a38e8f5b7c1"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa4e03aab0f88d86070037a38e8f5b7c1">eve::gpgpu::WebGpuGpuBuffer::getSize</a></div><div class="ttdeci">int getSize() const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00049">WebGpuGpgpu.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_aa62c02394fa8f5b620bf47262857eec6"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa62c02394fa8f5b620bf47262857eec6">eve::gpgpu::WebGpuGpuBuffer::writeFloat32s</a></div><div class="ttdeci">void writeFloat32s(const float *data, int count, int startIndex=0) override</div><div class="ttdoc">Bulk float upload/download (one transfer). startIndex is in floats.</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00299">WebGpuGpgpu.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_ac3e5936c6989914da694af7f846de337"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ac3e5936c6989914da694af7f846de337">eve::gpgpu::WebGpuGpuBuffer::writeData</a></div><div class="ttdeci">void writeData(data::ByteData *data, int dstOffset=0) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00272">WebGpuGpgpu.cpp:272</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_ae37446603258b0973f15bb964843abb9"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">eve::gpgpu::WebGpuGpuBuffer::size_</a></div><div class="ttdeci">uint64_t size_</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00066">WebGpuGpgpu.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_ae409ee578f290c56736c8a17ec4b63d4"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae409ee578f290c56736c8a17ec4b63d4">eve::gpgpu::WebGpuGpuBuffer::fillFloat32</a></div><div class="ttdeci">void fillFloat32(float value) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00309">WebGpuGpgpu.cpp:309</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a></div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8cpp_source.html#l00003">ComputeShader.cpp:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_a2fed65def15b16fd27e26bd98c994f1b"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#a2fed65def15b16fd27e26bd98c994f1b">eve::gpgpu::webgpuGpgpuReady</a></div><div class="ttdeci">bool webgpuGpgpuReady()</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00039">WebGpuGpgpu.cpp:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_a3a407eec24dd9fcb0a38b16067f799c0"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#a3a407eec24dd9fcb0a38b16067f799c0">eve::gpgpu::webgpuDispatch</a></div><div class="ttdeci">void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00208">WebGpuGpgpu.cpp:208</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_a5a434c9d4817f0e14f552ac67be4a655"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">eve::gpgpu::webgpuNewBuffer</a></div><div class="ttdeci">WebGpuGpuBuffer * webgpuNewBuffer(int byteSize, const std::string &amp;usage)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00141">WebGpuGpgpu.cpp:141</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_aabec05c308a71d2824c27b27c61dfa09"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#aabec05c308a71d2824c27b27c61dfa09">eve::gpgpu::webgpuNewShaderFromSpirv</a></div><div class="ttdeci">WebGpuComputeShader * webgpuNewShaderFromSpirv(const std::vector&lt; uint32_t &gt; &amp;spv)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00135">WebGpuGpgpu.cpp:135</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_abbdec5324b498f8b40dd2fb04059e3c4"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#abbdec5324b498f8b40dd2fb04059e3c4">eve::gpgpu::webgpuNewShaderFromWgsl</a></div><div class="ttdeci">WebGpuComputeShader * webgpuNewShaderFromWgsl(const std::string &amp;wgsl)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00077">WebGpuGpgpu.cpp:77</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

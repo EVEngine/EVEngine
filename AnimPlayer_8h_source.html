@@ -1,0 +1,260 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimPlayer.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimPlayer.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimPlayer_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimPose_8h.html">animation/AnimPose.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span>AnimClip;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a469f4af42a0c884de98a5a29a83455f5">   17</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a469f4af42a0c884de98a5a29a83455f5">~AnimPlayer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a41eb2e4499caf837adefe5352c6b20f7">   19</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a41eb2e4499caf837adefe5352c6b20f7">AnimPlayer</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a9b6b1feee78cfddd8eede4d5736e5fa9">   20</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a9b6b1feee78cfddd8eede4d5736e5fa9">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a8f8ced806a950bef23deb142595df1e5">   22</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a8f8ced806a950bef23deb142595df1e5">getSkeleton</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> skeleton_; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#afcf4c43989bc7ead627d1c0f2b6c4833">play</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *clip);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a660605e3f44e061191968f244abfbcdc">crossFade</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *clip, <span class="keywordtype">float</span> blendSeconds);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a9c1414cf531b594b29f9f839a505a92f">stop</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ab3c7c6d88ddab36882625c6d22275e8e">pause</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a48b61f8ff0ca0eee0c5d570293e5c852">resume</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a11ece9b96fee367b5ee707b5dca424a4">setSpeed</a>(<span class="keywordtype">float</span> speed);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a367fd08913066f27d1ae50199a3fe779">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a367fd08913066f27d1ae50199a3fe779">getSpeed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> speed_; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a2b64bfab052920132408d98d603cd19b">setTime</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a363cbfea3079424c7c99b5b93e190e44">   35</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a363cbfea3079424c7c99b5b93e190e44">getTime</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> time_; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a58d15d3f223bce3bc898cd7569000ee2">   36</a></span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a58d15d3f223bce3bc898cd7569000ee2">setLoop</a>(<span class="keywordtype">bool</span> loop) { loopOverride_ = loop; hasLoopOverride_ = <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span>  <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#abc1d7f37cc8bce8ce8c22f5d30bb5d54">getLoop</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#ae8e681f4888d125560341f1081c61982">   39</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ae8e681f4888d125560341f1081c61982">isPlaying</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> playing_ &amp;&amp; clip_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#a679399f8de994084fb9b78af07cb797b">   40</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a679399f8de994084fb9b78af07cb797b">isPaused</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> paused_; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimPlayer.html#af94dbeba2f86c0ca9696ba1c82f6ed26">   42</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#af94dbeba2f86c0ca9696ba1c82f6ed26">getClip</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> clip_; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a9245b63e6522e94816d1a00fd6719071">getPose</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a5b36951ee92ed42666f993fc157805ca">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">bool</span> effectiveLoop() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>     *clip_             = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>     *prevClip_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>      pose_;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>      prevPose_;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">float</span>         time_             = 0.f;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">float</span>         prevTime_         = 0.f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">float</span>         speed_            = 1.f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">float</span>         blendDuration_    = 0.f;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">float</span>         blendElapsed_     = 0.f;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span>          blending_         = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">bool</span>          playing_          = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">bool</span>          paused_           = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">bool</span>          hasLoopOverride_  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">bool</span>          loopOverride_     = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimPose_8h_html"><div class="ttname"><a href="AnimPose_8h.html">AnimPose.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00017">AnimClip.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html">eve::animation::AnimPlayer</a></div><div class="ttdoc">Single-clip (or cross-fading) 3D animation player. Script type: AnimPlayer.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00014">AnimPlayer.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a11ece9b96fee367b5ee707b5dca424a4"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a11ece9b96fee367b5ee707b5dca424a4">eve::animation::AnimPlayer::setSpeed</a></div><div class="ttdeci">void setSpeed(float speed)</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00023">AnimPlayer.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a2b64bfab052920132408d98d603cd19b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a2b64bfab052920132408d98d603cd19b">eve::animation::AnimPlayer::setTime</a></div><div class="ttdeci">void setTime(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00028">AnimPlayer.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a363cbfea3079424c7c99b5b93e190e44"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a363cbfea3079424c7c99b5b93e190e44">eve::animation::AnimPlayer::getTime</a></div><div class="ttdeci">float getTime() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00035">AnimPlayer.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a367fd08913066f27d1ae50199a3fe779"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a367fd08913066f27d1ae50199a3fe779">eve::animation::AnimPlayer::getSpeed</a></div><div class="ttdeci">float getSpeed() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00033">AnimPlayer.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a41eb2e4499caf837adefe5352c6b20f7"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a41eb2e4499caf837adefe5352c6b20f7">eve::animation::AnimPlayer::AnimPlayer</a></div><div class="ttdeci">AnimPlayer(const AnimPlayer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a469f4af42a0c884de98a5a29a83455f5"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a469f4af42a0c884de98a5a29a83455f5">eve::animation::AnimPlayer::~AnimPlayer</a></div><div class="ttdeci">~AnimPlayer()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a48b61f8ff0ca0eee0c5d570293e5c852"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a48b61f8ff0ca0eee0c5d570293e5c852">eve::animation::AnimPlayer::resume</a></div><div class="ttdeci">void resume()</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00080">AnimPlayer.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a58d15d3f223bce3bc898cd7569000ee2"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a58d15d3f223bce3bc898cd7569000ee2">eve::animation::AnimPlayer::setLoop</a></div><div class="ttdeci">void setLoop(bool loop)</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00036">AnimPlayer.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a5b36951ee92ed42666f993fc157805ca"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a5b36951ee92ed42666f993fc157805ca">eve::animation::AnimPlayer::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Advance playback and sample into internal pose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00086">AnimPlayer.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a660605e3f44e061191968f244abfbcdc"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a660605e3f44e061191968f244abfbcdc">eve::animation::AnimPlayer::crossFade</a></div><div class="ttdeci">void crossFade(AnimClip *clip, float blendSeconds)</div><div class="ttdoc">Cross-fade to clip over blendSeconds (keeps sampling previous until done).</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00047">AnimPlayer.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a679399f8de994084fb9b78af07cb797b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a679399f8de994084fb9b78af07cb797b">eve::animation::AnimPlayer::isPaused</a></div><div class="ttdeci">bool isPaused() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00040">AnimPlayer.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a8f8ced806a950bef23deb142595df1e5"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a8f8ced806a950bef23deb142595df1e5">eve::animation::AnimPlayer::getSkeleton</a></div><div class="ttdeci">AnimSkeleton * getSkeleton() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00022">AnimPlayer.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a9245b63e6522e94816d1a00fd6719071"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a9245b63e6522e94816d1a00fd6719071">eve::animation::AnimPlayer::getPose</a></div><div class="ttdeci">AnimPose * getPose()</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00084">AnimPlayer.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a9b6b1feee78cfddd8eede4d5736e5fa9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a9b6b1feee78cfddd8eede4d5736e5fa9">eve::animation::AnimPlayer::operator=</a></div><div class="ttdeci">AnimPlayer &amp; operator=(const AnimPlayer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a9c1414cf531b594b29f9f839a505a92f"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a9c1414cf531b594b29f9f839a505a92f">eve::animation::AnimPlayer::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00066">AnimPlayer.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ab3c7c6d88ddab36882625c6d22275e8e"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ab3c7c6d88ddab36882625c6d22275e8e">eve::animation::AnimPlayer::pause</a></div><div class="ttdeci">void pause()</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00076">AnimPlayer.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_abc1d7f37cc8bce8ce8c22f5d30bb5d54"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#abc1d7f37cc8bce8ce8c22f5d30bb5d54">eve::animation::AnimPlayer::getLoop</a></div><div class="ttdeci">bool getLoop() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00021">AnimPlayer.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ae8e681f4888d125560341f1081c61982"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ae8e681f4888d125560341f1081c61982">eve::animation::AnimPlayer::isPlaying</a></div><div class="ttdeci">bool isPlaying() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00039">AnimPlayer.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_af94dbeba2f86c0ca9696ba1c82f6ed26"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#af94dbeba2f86c0ca9696ba1c82f6ed26">eve::animation::AnimPlayer::getClip</a></div><div class="ttdeci">AnimClip * getClip() const</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00042">AnimPlayer.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_afcf4c43989bc7ead627d1c0f2b6c4833"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#afcf4c43989bc7ead627d1c0f2b6c4833">eve::animation::AnimPlayer::play</a></div><div class="ttdeci">void play(AnimClip *clip)</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00036">AnimPlayer.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

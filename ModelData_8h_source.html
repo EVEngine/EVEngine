@@ -1,0 +1,303 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/model3d/ModelData.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b99705db17efdedd7514aeec310cf9fc.html">model3d</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ModelData.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ModelData_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Resource_8h.html">common/Resource.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;medialoader/model/ModelScene.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">struct </span>aiMesh;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">struct </span>aiScene;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">struct </span>aiMaterial;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>ImageData;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>model3d {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1model3d_1_1ModelData.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a>(medialoader::ModelScene scene, std::string <a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a> = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1model3d_1_1ModelData.html#a4e26c21e616e8ec10ea201aa45b43073">   26</a></span>    <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a4e26c21e616e8ec10ea201aa45b43073">~ModelData</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a019505178c5fa438faf49e0e63beb1f9">empty</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a0600e9c623a072029f79407576228ed3">getMeshCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ad9292899e800da2de4fecc14d46f85f9">getMaterialCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#af73fe52d9b263e4ecef8cd711916f60e">getVertexCount</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a4213baf07025117a06f552ac544acc07">getFaceCount</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a4977bd6e5163fdb7b573aaca991f9655">hasNormals</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ace7c760a4a3d28990f3835e80fade6cb">hasTexCoords</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// ---- material accessors ----</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ad99fa43da14ee252613791cfdd4ce317">getMaterialIndex</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::string <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a88ac5ce0373d3ec9c8e2d47322a20647">getMaterialName</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a19f540bb3e3e037e8336ee33251fbfea">getMaterialBaseColorR</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a260abdf12f5d1e182121c43caaa4d417">getMaterialBaseColorG</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a1c0402019eecc04854123c29fa26ab24">getMaterialBaseColorB</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ab8623914e7f2e6d0f84140c790b0ad81">getMaterialBaseColorA</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a1a23bb559285f710210295ec136b8794">getMaterialMetallicFactor</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ae0a2cc41dac83a2046d29665eff425ca">getMaterialRoughnessFactor</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a698091540d72324ebcd53932311c4b69">getMaterialOpacity</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a95ae0a5edcf3588b59b678af1d0c5074">getMaterialTwoSided</a>(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a7df187001c5bbc86dc6074b7922f6d2a">getMaterialTextureSlotCount</a>(<span class="keywordtype">int</span> matIndex, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::string <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a7c79c2063ccab369fd252a90cfea7ef1">getMaterialTexturePath</a>(<span class="keywordtype">int</span> matIndex, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, <span class="keywordtype">int</span> slot = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#adad7d27e7fa798dabbe91b97722291d2">getMaterialTextureEmbeddedIndex</a>(<span class="keywordtype">int</span> matIndex, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, <span class="keywordtype">int</span> slot = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// ---- embedded textures (glTF / FBX can embed PNG/JPEG blobs) ----</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a05644e2428b31304f0db0b12d6955a7c">getEmbeddedTextureCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::string <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#afd19fd8f3e88eb000deb0dc13babcf45">getEmbeddedTextureName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a956b9b00aff7608a839607d3abc6ca11">getEmbeddedTextureWidth</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a59a60d6a2857e09ac8c983ba1251e268">getEmbeddedTextureHeight</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ad1edbbe3481fecbf01a33c2d931464eb">getEmbeddedTextureImageData</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#afe715aaa433c1ff82fae953b60900c4f">getMorphTargetCount</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    std::string <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ac647b56a1e3b9db18da6ff1300016b56">getMorphTargetName</a>(<span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> morphIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ae4bdec0a3f52e4cd696ff54757794b77">hasBones</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a65814757cf04ef55ce29a23e25263f64">getBoneCount</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::string <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#af5656dadc851de0e666e3b1da2bb3829">getBoneName</a>(<span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a88a5afe81540a4ee90bbf9a5b21aecb7">getInverseBindMatrixElement</a>(<span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> elementIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a66a0f16e43bfffd1309c97c63f471fc1">getBoneWeightCount</a>(<span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#acefe251382d3ce645bd0007c73d77fa2">getBoneWeightVertex</a>(<span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> weightIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#ac2c36f8891aa8111d1cbdb620866848e">getBoneWeightValue</a>(<span class="keywordtype">int</span> meshIndex, <span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> weightIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#a9af44eacd6c13734ff8a3659aeac88ed">getAnimationCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    std::string <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#aca9e29d13c85f0b814d2145c028a35d9">getAnimationName</a>(<span class="keywordtype">int</span> animIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">const</span> aiScene *<a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#abdcc64b6090136d61d0a57c9f268ed1e">getScene</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> aiMesh *<a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#aee8f2dca9d0921ad1b1f6029a8750f4c">getMesh</a>(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1model3d_1_1ModelData.html#afcb92bd4e90acbc45bf8b4da88fbb198">adopt</a>(<a class="code hl_class" href="classeve_1_1Resource.html">eve::Resource</a> &amp;replacement) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> aiMesh *meshAt(<span class="keywordtype">int</span> meshIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> aiMaterial *materialAt(<span class="keywordtype">int</span> matIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    medialoader::ModelScene scene;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>};</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}  <span class="comment">// namespace model3d</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a75b160f574a0be26114bae2c7686a5e1"><div class="ttname"><a href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00444">EditorHost.cpp:444</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ae40354a1051342eb5a9db005715dcfa9"><div class="ttname"><a href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a></div><div class="ttdeci">int idx</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00290">Pathfinder.cpp:290</a></div></div>
+<div class="ttc" id="aResource_8h_html"><div class="ttname"><a href="Resource_8h.html">Resource.h</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a96b4a087acee7543a7624102a67fc14d"><div class="ttname"><a href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a></div><div class="ttdeci">std::string image</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00111">TileConfig.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html"><div class="ttname"><a href="classeve_1_1Resource.html">eve::Resource</a></div><div class="ttdoc">Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00035">Resource.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a1f7295af4abb7e69aef94b0daeb4bcee"><div class="ttname"><a href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">eve::Resource::uri</a></div><div class="ttdeci">std::string uri</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00062">Resource.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00025">ImageData.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></div><div class="ttdoc">CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ...</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8h_source.html#l00023">ModelData.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a019505178c5fa438faf49e0e63beb1f9"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a019505178c5fa438faf49e0e63beb1f9">eve::model3d::ModelData::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00063">ModelData.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a05644e2428b31304f0db0b12d6955a7c"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a05644e2428b31304f0db0b12d6955a7c">eve::model3d::ModelData::getEmbeddedTextureCount</a></div><div class="ttdeci">int getEmbeddedTextureCount() const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00218">ModelData.cpp:218</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a0600e9c623a072029f79407576228ed3"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a0600e9c623a072029f79407576228ed3">eve::model3d::ModelData::getMeshCount</a></div><div class="ttdeci">int getMeshCount() const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00087">ModelData.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a19f540bb3e3e037e8336ee33251fbfea"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a19f540bb3e3e037e8336ee33251fbfea">eve::model3d::ModelData::getMaterialBaseColorR</a></div><div class="ttdeci">float getMaterialBaseColorR(int matIndex) const</div><div class="ttdoc">Base color: glTF BASE_COLOR, falling back to OBJ/legacy DIFFUSE.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00139">ModelData.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a1a23bb559285f710210295ec136b8794"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a1a23bb559285f710210295ec136b8794">eve::model3d::ModelData::getMaterialMetallicFactor</a></div><div class="ttdeci">float getMaterialMetallicFactor(int matIndex) const</div><div class="ttdoc">PBR factors; defaults 0 (metallic) / 0.45 (roughness) when absent.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00155">ModelData.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a1c0402019eecc04854123c29fa26ab24"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a1c0402019eecc04854123c29fa26ab24">eve::model3d::ModelData::getMaterialBaseColorB</a></div><div class="ttdeci">float getMaterialBaseColorB(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00147">ModelData.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a260abdf12f5d1e182121c43caaa4d417"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a260abdf12f5d1e182121c43caaa4d417">eve::model3d::ModelData::getMaterialBaseColorG</a></div><div class="ttdeci">float getMaterialBaseColorG(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00143">ModelData.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a4213baf07025117a06f552ac544acc07"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a4213baf07025117a06f552ac544acc07">eve::model3d::ModelData::getFaceCount</a></div><div class="ttdeci">int getFaceCount(int meshIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00104">ModelData.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a4977bd6e5163fdb7b573aaca991f9655"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a4977bd6e5163fdb7b573aaca991f9655">eve::model3d::ModelData::hasNormals</a></div><div class="ttdeci">bool hasNormals(int meshIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00111">ModelData.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a4e26c21e616e8ec10ea201aa45b43073"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a4e26c21e616e8ec10ea201aa45b43073">eve::model3d::ModelData::~ModelData</a></div><div class="ttdeci">~ModelData() override</div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a59a60d6a2857e09ac8c983ba1251e268"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a59a60d6a2857e09ac8c983ba1251e268">eve::model3d::ModelData::getEmbeddedTextureHeight</a></div><div class="ttdeci">int getEmbeddedTextureHeight(int idx) const</div><div class="ttdoc">0 means a compressed blob (use getEmbeddedTextureImageData to decode).</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00239">ModelData.cpp:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a65814757cf04ef55ce29a23e25263f64"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a65814757cf04ef55ce29a23e25263f64">eve::model3d::ModelData::getBoneCount</a></div><div class="ttdeci">int getBoneCount(int meshIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00298">ModelData.cpp:298</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a66a0f16e43bfffd1309c97c63f471fc1"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a66a0f16e43bfffd1309c97c63f471fc1">eve::model3d::ModelData::getBoneWeightCount</a></div><div class="ttdeci">int getBoneWeightCount(int meshIndex, int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00339">ModelData.cpp:339</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a698091540d72324ebcd53932311c4b69"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a698091540d72324ebcd53932311c4b69">eve::model3d::ModelData::getMaterialOpacity</a></div><div class="ttdeci">float getMaterialOpacity(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00173">ModelData.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a7c79c2063ccab369fd252a90cfea7ef1"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a7c79c2063ccab369fd252a90cfea7ef1">eve::model3d::ModelData::getMaterialTexturePath</a></div><div class="ttdeci">std::string getMaterialTexturePath(int matIndex, const std::string &amp;type, int slot=0) const</div><div class="ttdoc">External file path, or &quot;*N&quot; for an embedded texture. Empty when absent.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00199">ModelData.cpp:199</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a7df187001c5bbc86dc6074b7922f6d2a"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a7df187001c5bbc86dc6074b7922f6d2a">eve::model3d::ModelData::getMaterialTextureSlotCount</a></div><div class="ttdeci">int getMaterialTextureSlotCount(int matIndex, const std::string &amp;type) const</div><div class="ttdoc">Texture type names (Squirrel strings): &quot;base_color&quot;, &quot;diffuse&quot;, &quot;normals&quot;, &quot;height&quot;,...</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00191">ModelData.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a88a5afe81540a4ee90bbf9a5b21aecb7"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a88a5afe81540a4ee90bbf9a5b21aecb7">eve::model3d::ModelData::getInverseBindMatrixElement</a></div><div class="ttdeci">float getInverseBindMatrixElement(int meshIndex, int boneIndex, int elementIndex) const</div><div class="ttdoc">Inverse-bind (offset) matrix element, column-major, elementIndex in [0,15].</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00314">ModelData.cpp:314</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a88ac5ce0373d3ec9c8e2d47322a20647"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a88ac5ce0373d3ec9c8e2d47322a20647">eve::model3d::ModelData::getMaterialName</a></div><div class="ttdeci">std::string getMaterialName(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00130">ModelData.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a956b9b00aff7608a839607d3abc6ca11"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a956b9b00aff7608a839607d3abc6ca11">eve::model3d::ModelData::getEmbeddedTextureWidth</a></div><div class="ttdeci">int getEmbeddedTextureWidth(int idx) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00232">ModelData.cpp:232</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a95ae0a5edcf3588b59b678af1d0c5074"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a95ae0a5edcf3588b59b678af1d0c5074">eve::model3d::ModelData::getMaterialTwoSided</a></div><div class="ttdeci">bool getMaterialTwoSided(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00182">ModelData.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_a9af44eacd6c13734ff8a3659aeac88ed"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#a9af44eacd6c13734ff8a3659aeac88ed">eve::model3d::ModelData::getAnimationCount</a></div><div class="ttdeci">int getAnimationCount() const</div><div class="ttdoc">Scene-level animation clips (aiAnimation).</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00367">ModelData.cpp:367</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ab8623914e7f2e6d0f84140c790b0ad81"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ab8623914e7f2e6d0f84140c790b0ad81">eve::model3d::ModelData::getMaterialBaseColorA</a></div><div class="ttdeci">float getMaterialBaseColorA(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00151">ModelData.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_abdcc64b6090136d61d0a57c9f268ed1e"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#abdcc64b6090136d61d0a57c9f268ed1e">eve::model3d::ModelData::getScene</a></div><div class="ttdeci">const aiScene * getScene() const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00065">ModelData.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ac2c36f8891aa8111d1cbdb620866848e"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ac2c36f8891aa8111d1cbdb620866848e">eve::model3d::ModelData::getBoneWeightValue</a></div><div class="ttdeci">float getBoneWeightValue(int meshIndex, int boneIndex, int weightIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00357">ModelData.cpp:357</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ac647b56a1e3b9db18da6ff1300016b56"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ac647b56a1e3b9db18da6ff1300016b56">eve::model3d::ModelData::getMorphTargetName</a></div><div class="ttdeci">std::string getMorphTargetName(int meshIndex, int morphIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00280">ModelData.cpp:280</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_aca9e29d13c85f0b814d2145c028a35d9"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#aca9e29d13c85f0b814d2145c028a35d9">eve::model3d::ModelData::getAnimationName</a></div><div class="ttdeci">std::string getAnimationName(int animIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00372">ModelData.cpp:372</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ace7c760a4a3d28990f3835e80fade6cb"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ace7c760a4a3d28990f3835e80fade6cb">eve::model3d::ModelData::hasTexCoords</a></div><div class="ttdeci">bool hasTexCoords(int meshIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00118">ModelData.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_acefe251382d3ce645bd0007c73d77fa2"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#acefe251382d3ce645bd0007c73d77fa2">eve::model3d::ModelData::getBoneWeightVertex</a></div><div class="ttdeci">int getBoneWeightVertex(int meshIndex, int boneIndex, int weightIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00347">ModelData.cpp:347</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ad1edbbe3481fecbf01a33c2d931464eb"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ad1edbbe3481fecbf01a33c2d931464eb">eve::model3d::ModelData::getEmbeddedTextureImageData</a></div><div class="ttdeci">image::ImageData * getEmbeddedTextureImageData(int idx) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00246">ModelData.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ad9292899e800da2de4fecc14d46f85f9"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ad9292899e800da2de4fecc14d46f85f9">eve::model3d::ModelData::getMaterialCount</a></div><div class="ttdeci">int getMaterialCount() const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00092">ModelData.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ad99fa43da14ee252613791cfdd4ce317"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ad99fa43da14ee252613791cfdd4ce317">eve::model3d::ModelData::getMaterialIndex</a></div><div class="ttdeci">int getMaterialIndex(int meshIndex) const</div><div class="ttdoc">Assimp material slot referenced by a mesh; -1 when invalid.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00125">ModelData.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_adad7d27e7fa798dabbe91b97722291d2"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#adad7d27e7fa798dabbe91b97722291d2">eve::model3d::ModelData::getMaterialTextureEmbeddedIndex</a></div><div class="ttdeci">int getMaterialTextureEmbeddedIndex(int matIndex, const std::string &amp;type, int slot=0) const</div><div class="ttdoc">Scene texture index for embedded &quot;*N&quot; references; -1 for external files.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00211">ModelData.cpp:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ae0a2cc41dac83a2046d29665eff425ca"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ae0a2cc41dac83a2046d29665eff425ca">eve::model3d::ModelData::getMaterialRoughnessFactor</a></div><div class="ttdeci">float getMaterialRoughnessFactor(int matIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00164">ModelData.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_ae4bdec0a3f52e4cd696ff54757794b77"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#ae4bdec0a3f52e4cd696ff54757794b77">eve::model3d::ModelData::hasBones</a></div><div class="ttdeci">bool hasBones(int meshIndex) const</div><div class="ttdoc">Assimp skeletal skin data (aiBone / vertex weights) on a mesh.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00291">ModelData.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_aee8f2dca9d0921ad1b1f6029a8750f4c"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#aee8f2dca9d0921ad1b1f6029a8750f4c">eve::model3d::ModelData::getMesh</a></div><div class="ttdeci">const aiMesh * getMesh(int meshIndex) const</div><div class="ttdoc">Raw Assimp mesh at meshIndex; returns nullptr when out of range.</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00085">ModelData.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_af5656dadc851de0e666e3b1da2bb3829"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#af5656dadc851de0e666e3b1da2bb3829">eve::model3d::ModelData::getBoneName</a></div><div class="ttdeci">std::string getBoneName(int meshIndex, int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00305">ModelData.cpp:305</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_af73fe52d9b263e4ecef8cd711916f60e"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#af73fe52d9b263e4ecef8cd711916f60e">eve::model3d::ModelData::getVertexCount</a></div><div class="ttdeci">int getVertexCount(int meshIndex) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00097">ModelData.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_afcb92bd4e90acbc45bf8b4da88fbb198"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#afcb92bd4e90acbc45bf8b4da88fbb198">eve::model3d::ModelData::adopt</a></div><div class="ttdeci">void adopt(eve::Resource &amp;replacement) override</div><div class="ttdoc">Replace this scene with replacement's (cache reload).</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00058">ModelData.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_afd19fd8f3e88eb000deb0dc13babcf45"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#afd19fd8f3e88eb000deb0dc13babcf45">eve::model3d::ModelData::getEmbeddedTextureName</a></div><div class="ttdeci">std::string getEmbeddedTextureName(int idx) const</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00223">ModelData.cpp:223</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html_afe715aaa433c1ff82fae953b60900c4f"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html#afe715aaa433c1ff82fae953b60900c4f">eve::model3d::ModelData::getMorphTargetCount</a></div><div class="ttdeci">int getMorphTargetCount(int meshIndex) const</div><div class="ttdoc">Assimp morph / blend-shape targets on a mesh (aiAnimMesh).</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8cpp_source.html#l00274">ModelData.cpp:274</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

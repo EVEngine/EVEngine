@@ -1,0 +1,377 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::voxel::GreedyMesher类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1voxel.html">voxel</a></li><li class="navelem"><a class="el" href="classeve_1_1voxel_1_1GreedyMesher.html">GreedyMesher</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1voxel_1_1GreedyMesher-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::voxel::GreedyMesher类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Greedy rectangle mesher for one 32³ dense voxel volume. <a class="el" href="classeve_1_1voxel_1_1Voxel.html" title="High-performance voxel rendering module.">Voxel</a> storage: index = x + y*32 + z*32*32. Value 0 = air; 1..255 = type id.  
+ <a href="classeve_1_1voxel_1_1GreedyMesher.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GreedyMesher_8h_source.html">GreedyMesher.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a3fea423bfc898d1fa9cf6bf5040b84d1" id="r_a3fea423bfc898d1fa9cf6bf5040b84d1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1GreedyMesher.html#a3fea423bfc898d1fa9cf6bf5040b84d1">meshChunk</a> (const uint8_t *voxels, std::vector&lt; <a class="el" href="structeve_1_1voxel_1_1PackedRect.html">PackedRect</a> &gt; outFaces[6], const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types=<a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>(), <a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a> sampler=nullptr, void *samplerUserData=nullptr, int chunkX=0, int chunkY=0, int chunkZ=0, std::vector&lt; uint32_t &gt; aoOut[6]=nullptr)</td></tr>
+<tr class="memdesc:a3fea423bfc898d1fa9cf6bf5040b84d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mesh all six faces. Clears and fills <code>outFaces[6]</code>.  <br /></td></tr>
+<tr class="separator:a3fea423bfc898d1fa9cf6bf5040b84d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09170028449eb34265150303122d5db9" id="r_a09170028449eb34265150303122d5db9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1GreedyMesher.html#a09170028449eb34265150303122d5db9">meshFace</a> (const uint8_t *voxels, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>, std::vector&lt; <a class="el" href="structeve_1_1voxel_1_1PackedRect.html">PackedRect</a> &gt; &amp;out, const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types=<a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>(), <a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a> sampler=nullptr, void *samplerUserData=nullptr, int chunkX=0, int chunkY=0, int chunkZ=0, std::vector&lt; uint32_t &gt; *aoOut=nullptr)</td></tr>
+<tr class="memdesc:a09170028449eb34265150303122d5db9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mesh a single face direction into <code>out</code> (appended; caller may clear).  <br /></td></tr>
+<tr class="separator:a09170028449eb34265150303122d5db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Greedy rectangle mesher for one 32³ dense voxel volume. <a class="el" href="classeve_1_1voxel_1_1Voxel.html" title="High-performance voxel rendering module.">Voxel</a> storage: index = x + y*32 + z*32*32. Value 0 = air; 1..255 = type id. </p>
+<p>每个体素的类型 id 通过注册表解析为“各面纹理 id”后合并；输出 <a class="el" href="structeve_1_1voxel_1_1PackedRect.html#a56270b59cfa129fa1cad8f2abc6a92f5">PackedRect.tex</a> 始终是纹理 id（0..127），渲染端无需感知“类型”概念。 空注册表下 resolveFaceTex 退化为 id，行为与旧的“体素值 == 纹理 id”一致。</p>
+<p>Emits packed rects into six face buffers (caller-provided). Out-of-chunk neighbors consult the optional ChunkSampler so shared faces between adjacent chunks are culled (no duplicate interior faces). </p>
+
+<p class="definition">在文件 <a class="el" href="GreedyMesher_8h_source.html">GreedyMesher.h</a> 第 <a class="el" href="GreedyMesher_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a3fea423bfc898d1fa9cf6bf5040b84d1" name="a3fea423bfc898d1fa9cf6bf5040b84d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fea423bfc898d1fa9cf6bf5040b84d1">&#9670;&#160;</a></span>meshChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::GreedyMesher::meshChunk </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>voxels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1voxel_1_1PackedRect.html">PackedRect</a> &gt;&#160;</td>
+          <td class="paramname"><em>outFaces</em>[6], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>types</em> = <code><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a>&#160;</td>
+          <td class="paramname"><em>sampler</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>samplerUserData</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkX</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkY</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkZ</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>aoOut</em>[6] = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mesh all six faces. Clears and fills <code>outFaces[6]</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="GreedyMesher_8cpp_source.html">GreedyMesher.cpp</a> 第 <a class="el" href="GreedyMesher_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FaceDir_8h_source.html#l00027">eve::voxel::faceDirCount()</a> , 以及 <a class="el" href="GreedyMesher_8cpp_source.html#l00160">meshFace()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Chunk_8h_source.html#l00073">eve::voxel::Chunk::remesh()</a>.</p>
+
+</div>
+</div>
+<a id="a09170028449eb34265150303122d5db9" name="a09170028449eb34265150303122d5db9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09170028449eb34265150303122d5db9">&#9670;&#160;</a></span>meshFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::GreedyMesher::meshFace </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>voxels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a>&#160;</td>
+          <td class="paramname"><em>dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1voxel_1_1PackedRect.html">PackedRect</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>types</em> = <code><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a>&#160;</td>
+          <td class="paramname"><em>sampler</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>samplerUserData</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkX</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkY</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkZ</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint32_t &gt; *&#160;</td>
+          <td class="paramname"><em>aoOut</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mesh a single face direction into <code>out</code> (appended; caller may clear). </p>
+
+<p class="definition">在文件 <a class="el" href="GreedyMesher_8cpp_source.html">GreedyMesher.cpp</a> 第 <a class="el" href="GreedyMesher_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a5276b74ca8086b2184730591f7d35caf">eve::voxel::NegX</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a3cc799b6d11892251fa390549c833e06">eve::voxel::NegY</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877ac5be1c63c2e2a9df2f563ce95b35f422">eve::voxel::NegZ</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a05695693370a026c84acf4d674a62fd5">eve::voxel::PosX</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a7e75cf965eba430083929d0ec26c12a7">eve::voxel::PosY</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877afddb9fb1311023128eeb738f978ce061">eve::voxel::PosZ</a>, <a class="el" href="CubeTypeRegistry_8h_source.html#l00066">eve::voxel::resolveFaceTex()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00234">u</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GreedyMesher_8cpp_source.html#l00254">meshChunk()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/voxel/<a class="el" href="GreedyMesher_8h_source.html">GreedyMesher.h</a></li>
+<li>src/modules/voxel/<a class="el" href="GreedyMesher_8cpp_source.html">GreedyMesher.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

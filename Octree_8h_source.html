@@ -1,0 +1,282 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/spatial/Octree.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_13b5d118cdf9e2fac2bbe79fb4fa947a.html">spatial</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Octree.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Octree_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Bounds_8h.html">spatial/Bounds.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="QueryIds_8h.html">spatial/QueryIds.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1spatial.html">eve::spatial</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1spatial_1_1Octree.html">Octree</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_class" href="classeve_1_1spatial_1_1Octree.html">Octree</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>           <span class="keywordtype">int</span> maxDepth = 8, <span class="keywordtype">int</span> maxPerNode = 8);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#afc1045d7d3d591b27ddbb92b328cce7f">   21</a></span>    <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#afc1045d7d3d591b27ddbb92b328cce7f">~Octree</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#a085ae0099c0c935dc692cec14255b384">   23</a></span>    <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a085ae0099c0c935dc692cec14255b384">Octree</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#aa0177426af6b2a47cb778fdab43a9b3d">   24</a></span>    <a class="code hl_class" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;<a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#aa0177426af6b2a47cb778fdab43a9b3d">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#abe18acc183104356ea8b9eb1d737c517">clear</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a3213bd289d006b716d4598a1dbe21cfb">insert</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#aeb6a616d5b8de13c0bcf2351d967104e">remove</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a69cb83c3cc708c2ce61112a5ff1c8079">update</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#aa41bf191015e5d79ad3f3c360cc0d134">contains</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#ae20e221b770133393425e9b8f0bb1ef6">   35</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#ae20e221b770133393425e9b8f0bb1ef6">getCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(items_.size()); }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a54675dc69c71fdb288957f0116f8350f">queryPoint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a68e9b2f82fa7dcca5cf054ad751a5485">queryAABB</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a6c0e9410fb20ef1275e8bdc946af24f6">querySphere</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> cz, <span class="keywordtype">float</span> radius);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#abf28cbe33c2d9f1b5723f4672e459ed0">   43</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#abf28cbe33c2d9f1b5723f4672e459ed0">getResultCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> results_.<a class="code hl_function" href="classeve_1_1spatial_1_1QueryIds.html#a9c5d49f346f98fd3664d84e9aa7ea44a">getCount</a>(); }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#ad2b40f2de03d97f66b3c3c9d8f82df13">   44</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#ad2b40f2de03d97f66b3c3c9d8f82df13">getResultId</a>(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> results_.<a class="code hl_function" href="classeve_1_1spatial_1_1QueryIds.html#a5e7177abb388718c0372890f44752c00">getId</a>(index); }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#a7efc02fe224df1435a65fbc1e88529b2">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a7efc02fe224df1435a65fbc1e88529b2">getMinX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a>; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#ad6d5cdf90ca88876a0da94be0b0b3198">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#ad6d5cdf90ca88876a0da94be0b0b3198">getMinY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a>; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#a75d9a5f9b59426c74783b713ced3a1e0">   49</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a75d9a5f9b59426c74783b713ced3a1e0">getMinZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a>; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#ac379a7817185ad6f914e860c2253fa06">   50</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#ac379a7817185ad6f914e860c2253fa06">getMaxX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a>; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#a95f94e579b7bb3589273e14b7ac650e8">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a95f94e579b7bb3589273e14b7ac650e8">getMaxY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a>; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#a43c2a193c291a6fd6233f6ed197ff27f">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a43c2a193c291a6fd6233f6ed197ff27f">getMaxZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#ac00f7e8078a247b8bfa3344fae808171">   53</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#ac00f7e8078a247b8bfa3344fae808171">getMaxDepth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxDepth_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1Octree.html#a5f9f625e93abe7934e567e7161551304">   54</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1spatial_1_1Octree.html#a5f9f625e93abe7934e567e7161551304">getMaxPerNode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxPerNode_; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">struct </span>Node {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a>            bounds;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordtype">int</span>              <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        std::vector&lt;int&gt; itemIds;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        std::unique_ptr&lt;Node&gt; <a class="code hl_variable" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>[8];</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">bool</span>             isLeaf()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>[0] == <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    };</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span>  rebuild();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">bool</span>  insertInto(Node &amp;node, <span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> AABB3 &amp;bounds);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span>  split(Node &amp;node);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span>  collect(Node &amp;node, <span class="keyword">const</span> AABB3 *box, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> cz, <span class="keywordtype">float</span> radius,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                  <span class="keywordtype">bool</span> useSphere);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    Node *ensureRoot();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    AABB3                              rootBounds_;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">int</span>                                maxDepth_   = 8;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">int</span>                                maxPerNode_ = 8;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::unique_ptr&lt;Node&gt;              root_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::unordered_map&lt;int, AABB3&gt;     items_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    QueryIds                           results_;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}  <span class="comment">// namespace eve::spatial</span></div>
+<div class="ttc" id="aBounds_8h_html"><div class="ttname"><a href="Bounds_8h.html">Bounds.h</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00031">CardTypes.cpp:31</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00032">CardTypes.cpp:32</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aQueryIds_8h_html"><div class="ttname"><a href="QueryIds_8h.html">QueryIds.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a93ed9b546e7fadad14615c5ef0065277"><div class="ttname"><a href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a></div><div class="ttdeci">int children</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00177">TreeMesh.cpp:177</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html">eve::spatial::Octree</a></div><div class="ttdoc">Region octree for 3D AABB broad-phase / scene culling. Same storage rules as QuadTree (smallest fully...</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00016">Octree.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a085ae0099c0c935dc692cec14255b384"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a085ae0099c0c935dc692cec14255b384">eve::spatial::Octree::Octree</a></div><div class="ttdeci">Octree(const Octree &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a3213bd289d006b716d4598a1dbe21cfb"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a3213bd289d006b716d4598a1dbe21cfb">eve::spatial::Octree::insert</a></div><div class="ttdeci">bool insert(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdoc">插入一个 AABB 对象；false 表示越界或已存在。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00037">Octree.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a43c2a193c291a6fd6233f6ed197ff27f"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a43c2a193c291a6fd6233f6ed197ff27f">eve::spatial::Octree::getMaxZ</a></div><div class="ttdeci">float getMaxZ() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00052">Octree.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a54675dc69c71fdb288957f0116f8350f"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a54675dc69c71fdb288957f0116f8350f">eve::spatial::Octree::queryPoint</a></div><div class="ttdeci">int queryPoint(float x, float y, float z)</div><div class="ttdoc">查询：点 / AABB / 球体，命中写入结果缓冲区。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00161">Octree.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a5f9f625e93abe7934e567e7161551304"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a5f9f625e93abe7934e567e7161551304">eve::spatial::Octree::getMaxPerNode</a></div><div class="ttdeci">int getMaxPerNode() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00054">Octree.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a68e9b2f82fa7dcca5cf054ad751a5485"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a68e9b2f82fa7dcca5cf054ad751a5485">eve::spatial::Octree::queryAABB</a></div><div class="ttdeci">int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00167">Octree.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a69cb83c3cc708c2ce61112a5ff1c8079"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a69cb83c3cc708c2ce61112a5ff1c8079">eve::spatial::Octree::update</a></div><div class="ttdeci">bool update(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00056">Octree.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a6c0e9410fb20ef1275e8bdc946af24f6"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a6c0e9410fb20ef1275e8bdc946af24f6">eve::spatial::Octree::querySphere</a></div><div class="ttdeci">int querySphere(float cx, float cy, float cz, float radius)</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00174">Octree.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a75d9a5f9b59426c74783b713ced3a1e0"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a75d9a5f9b59426c74783b713ced3a1e0">eve::spatial::Octree::getMinZ</a></div><div class="ttdeci">float getMinZ() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00049">Octree.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a7efc02fe224df1435a65fbc1e88529b2"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a7efc02fe224df1435a65fbc1e88529b2">eve::spatial::Octree::getMinX</a></div><div class="ttdeci">float getMinX() const</div><div class="ttdoc">根包围盒与分裂参数。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00047">Octree.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_a95f94e579b7bb3589273e14b7ac650e8"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#a95f94e579b7bb3589273e14b7ac650e8">eve::spatial::Octree::getMaxY</a></div><div class="ttdeci">float getMaxY() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00051">Octree.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_aa0177426af6b2a47cb778fdab43a9b3d"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#aa0177426af6b2a47cb778fdab43a9b3d">eve::spatial::Octree::operator=</a></div><div class="ttdeci">Octree &amp; operator=(const Octree &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_aa41bf191015e5d79ad3f3c360cc0d134"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#aa41bf191015e5d79ad3f3c360cc0d134">eve::spatial::Octree::contains</a></div><div class="ttdeci">bool contains(int id) const</div><div class="ttdoc">对象是否存在。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00035">Octree.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_abe18acc183104356ea8b9eb1d737c517"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#abe18acc183104356ea8b9eb1d737c517">eve::spatial::Octree::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">清空全部对象。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00028">Octree.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_abf28cbe33c2d9f1b5723f4672e459ed0"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#abf28cbe33c2d9f1b5723f4672e459ed0">eve::spatial::Octree::getResultCount</a></div><div class="ttdeci">int getResultCount() const</div><div class="ttdoc">最近一次查询的结果。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00043">Octree.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_ac00f7e8078a247b8bfa3344fae808171"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#ac00f7e8078a247b8bfa3344fae808171">eve::spatial::Octree::getMaxDepth</a></div><div class="ttdeci">int getMaxDepth() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00053">Octree.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_ac379a7817185ad6f914e860c2253fa06"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#ac379a7817185ad6f914e860c2253fa06">eve::spatial::Octree::getMaxX</a></div><div class="ttdeci">float getMaxX() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00050">Octree.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_ad2b40f2de03d97f66b3c3c9d8f82df13"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#ad2b40f2de03d97f66b3c3c9d8f82df13">eve::spatial::Octree::getResultId</a></div><div class="ttdeci">int getResultId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00044">Octree.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_ad6d5cdf90ca88876a0da94be0b0b3198"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#ad6d5cdf90ca88876a0da94be0b0b3198">eve::spatial::Octree::getMinY</a></div><div class="ttdeci">float getMinY() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00048">Octree.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_ae20e221b770133393425e9b8f0bb1ef6"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#ae20e221b770133393425e9b8f0bb1ef6">eve::spatial::Octree::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdef"><b>Definition</b> <a href="Octree_8h_source.html#l00035">Octree.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_aeb6a616d5b8de13c0bcf2351d967104e"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#aeb6a616d5b8de13c0bcf2351d967104e">eve::spatial::Octree::remove</a></div><div class="ttdeci">bool remove(int id)</div><div class="ttdoc">移除 / 更新一个对象。</div><div class="ttdef"><b>Definition</b> <a href="Octree_8cpp_source.html#l00049">Octree.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1Octree_html_afc1045d7d3d591b27ddbb92b328cce7f"><div class="ttname"><a href="classeve_1_1spatial_1_1Octree.html#afc1045d7d3d591b27ddbb92b328cce7f">eve::spatial::Octree::~Octree</a></div><div class="ttdeci">~Octree()=default</div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1QueryIds_html_a5e7177abb388718c0372890f44752c00"><div class="ttname"><a href="classeve_1_1spatial_1_1QueryIds.html#a5e7177abb388718c0372890f44752c00">eve::spatial::QueryIds::getId</a></div><div class="ttdeci">int getId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="QueryIds_8h_source.html#l00026">QueryIds.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1QueryIds_html_a9c5d49f346f98fd3664d84e9aa7ea44a"><div class="ttname"><a href="classeve_1_1spatial_1_1QueryIds.html#a9c5d49f346f98fd3664d84e9aa7ea44a">eve::spatial::QueryIds::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdef"><b>Definition</b> <a href="QueryIds_8h_source.html#l00024">QueryIds.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html"><div class="ttname"><a href="namespaceeve_1_1spatial.html">eve::spatial</a></div><div class="ttdef"><b>Definition</b> <a href="Scene_8h_source.html#l00033">Scene.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html">eve::spatial::AABB3</a></div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00043">Bounds.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a21eef7c1729c52ce6e74b47881db776c"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">eve::spatial::AABB3::minY</a></div><div class="ttdeci">float minY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00045">Bounds.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a80c74214171a3b7db1e7cd5d76f955ab"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">eve::spatial::AABB3::minZ</a></div><div class="ttdeci">float minZ</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00046">Bounds.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a88d9382c015265338385b9a90cdb7986"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">eve::spatial::AABB3::maxY</a></div><div class="ttdeci">float maxY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00048">Bounds.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a93e178b8da81983797d7db776069a148"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">eve::spatial::AABB3::maxZ</a></div><div class="ttdeci">float maxZ</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00049">Bounds.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aa7300240fc2c08194393a6fd374fa364"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">eve::spatial::AABB3::maxX</a></div><div class="ttdeci">float maxX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00047">Bounds.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aacbce7e0812fb4fb71e5178af350c210"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">eve::spatial::AABB3::minX</a></div><div class="ttdeci">float minX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00044">Bounds.h:44</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

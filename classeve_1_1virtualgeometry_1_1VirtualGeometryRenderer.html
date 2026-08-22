@@ -1,0 +1,874 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::virtualgeometry::VirtualGeometryRenderer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1virtualgeometry.html">virtualgeometry</a></li><li class="navelem"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::virtualgeometry::VirtualGeometryRenderer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A virtual-geometry renderer: preprocesses a mesh into a cluster DAG, uploads it to the GPU, then each frame runs GPU-driven culling + a software rasterizer into a visibility buffer.  
+ <a href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acc7ffd908759621b92261db6d794db7f" id="r_acc7ffd908759621b92261db6d794db7f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#acc7ffd908759621b92261db6d794db7f">VirtualGeometryRenderer</a> ()</td></tr>
+<tr class="separator:acc7ffd908759621b92261db6d794db7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a317d3487451189a4d540faf14ddb460e" id="r_a317d3487451189a4d540faf14ddb460e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a317d3487451189a4d540faf14ddb460e">~VirtualGeometryRenderer</a> ()</td></tr>
+<tr class="separator:a317d3487451189a4d540faf14ddb460e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db0edcb54875cdd7bdf76b1e32d1242" id="r_a1db0edcb54875cdd7bdf76b1e32d1242"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a1db0edcb54875cdd7bdf76b1e32d1242">VirtualGeometryRenderer</a> (const <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a> &amp;)=delete</td></tr>
+<tr class="separator:a1db0edcb54875cdd7bdf76b1e32d1242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29b9bccf4d750587b83c3f2c29b66f0a" id="r_a29b9bccf4d750587b83c3f2c29b66f0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a29b9bccf4d750587b83c3f2c29b66f0a">operator=</a> (const <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a> &amp;)=delete</td></tr>
+<tr class="separator:a29b9bccf4d750587b83c3f2c29b66f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c8656f606ba01f0901b1745c6906f3" id="r_aa0c8656f606ba01f0901b1745c6906f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#aa0c8656f606ba01f0901b1745c6906f3">isReady</a> () const</td></tr>
+<tr class="separator:aa0c8656f606ba01f0901b1745c6906f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7806194d26470dc6c4e89072414cdaf6" id="r_a7806194d26470dc6c4e89072414cdaf6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a7806194d26470dc6c4e89072414cdaf6">build</a> (const float *positions, int vertexCount, const std::uint32_t *indices, int indexCount)</td></tr>
+<tr class="separator:a7806194d26470dc6c4e89072414cdaf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af70be936a326c3b090feba2c5ff93171" id="r_af70be936a326c3b090feba2c5ff93171"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#af70be936a326c3b090feba2c5ff93171">build</a> (const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryBuilder_1_1MeshInput.html">VirtualGeometryBuilder::MeshInput</a> &amp;in)</td></tr>
+<tr class="separator:af70be936a326c3b090feba2c5ff93171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03023c5bfdfea10afa27f820aebbacad" id="r_a03023c5bfdfea10afa27f820aebbacad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a03023c5bfdfea10afa27f820aebbacad">buildIcosphere</a> (int subdiv)</td></tr>
+<tr class="memdesc:a03023c5bfdfea10afa27f820aebbacad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: procedural unit icosphere, <code>subdiv</code> subdivision levels.  <br /></td></tr>
+<tr class="separator:a03023c5bfdfea10afa27f820aebbacad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d711edf364c5aa0a52485e3b2a5ddca" id="r_a0d711edf364c5aa0a52485e3b2a5ddca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a0d711edf364c5aa0a52485e3b2a5ddca">setViewport</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, float fovYDeg, float errorPx=1.0f)</td></tr>
+<tr class="separator:a0d711edf364c5aa0a52485e3b2a5ddca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b5d739f5c7b03167bbe80e624403d42" id="r_a5b5d739f5c7b03167bbe80e624403d42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a5b5d739f5c7b03167bbe80e624403d42">setCamera</a> (const float <a class="el" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>[16], const float <a class="el" href="RenderSystem3D_8cpp.html#ae69f27b46404dc5747fef70b7be4bced">proj</a>[16], const float <a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>[16], const float camPos[3])</td></tr>
+<tr class="separator:a5b5d739f5c7b03167bbe80e624403d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a539961a18d986eee551bead9a1039653" id="r_a539961a18d986eee551bead9a1039653"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a539961a18d986eee551bead9a1039653">setCameraSimple</a> (float camX, float camY, float camZ, float nearZ=0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float farZ=100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a539961a18d986eee551bead9a1039653"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-friendly: identity view (camera looking down -Z) + perspective.  <br /></td></tr>
+<tr class="separator:a539961a18d986eee551bead9a1039653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fe96fa2e8a1e6f3cd4f8b1b094c776a" id="r_a4fe96fa2e8a1e6f3cd4f8b1b094c776a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a4fe96fa2e8a1e6f3cd4f8b1b094c776a">setModelYaw</a> (float yaw)</td></tr>
+<tr class="memdesc:a4fe96fa2e8a1e6f3cd4f8b1b094c776a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spin the virtualized model about Y by <code>yaw</code> radians each frame.  <br /></td></tr>
+<tr class="separator:a4fe96fa2e8a1e6f3cd4f8b1b094c776a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a118cb9b1dfcc5f5fb9110436df6b69e1" id="r_a118cb9b1dfcc5f5fb9110436df6b69e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a118cb9b1dfcc5f5fb9110436df6b69e1">update</a> ()</td></tr>
+<tr class="memdesc:a118cb9b1dfcc5f5fb9110436df6b69e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run cull + raster; returns the number of visible clusters.  <br /></td></tr>
+<tr class="separator:a118cb9b1dfcc5f5fb9110436df6b69e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae87df724f63f2908e23832b5600ee01b" id="r_ae87df724f63f2908e23832b5600ee01b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#ae87df724f63f2908e23832b5600ee01b">resolve</a> (unsigned char *outRgba, int &amp;outW, int &amp;outH)</td></tr>
+<tr class="separator:ae87df724f63f2908e23832b5600ee01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd070f840b05c5f855259c6e6f418ed2" id="r_afd070f840b05c5f855259c6e6f418ed2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#afd070f840b05c5f855259c6e6f418ed2">resolveByteData</a> ()</td></tr>
+<tr class="memdesc:afd070f840b05c5f855259c6e6f418ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve into a heap ByteData (RGBA) for scripting/display.  <br /></td></tr>
+<tr class="separator:afd070f840b05c5f855259c6e6f418ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad474085aa5340be4d6c224bd23cd10e1" id="r_ad474085aa5340be4d6c224bd23cd10e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#ad474085aa5340be4d6c224bd23cd10e1">getViewWidth</a> () const</td></tr>
+<tr class="separator:ad474085aa5340be4d6c224bd23cd10e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a939dbd65ae30aadca0b784e178099dab" id="r_a939dbd65ae30aadca0b784e178099dab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a939dbd65ae30aadca0b784e178099dab">getViewHeight</a> () const</td></tr>
+<tr class="separator:a939dbd65ae30aadca0b784e178099dab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a253ad53a5a4593859357eda0e2d35f26" id="r_a253ad53a5a4593859357eda0e2d35f26"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a253ad53a5a4593859357eda0e2d35f26">getClusterCount</a> () const</td></tr>
+<tr class="separator:a253ad53a5a4593859357eda0e2d35f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7af6cc3699b398ec7178475dfe19aa41" id="r_a7af6cc3699b398ec7178475dfe19aa41"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a7af6cc3699b398ec7178475dfe19aa41">getVisibleCount</a> () const</td></tr>
+<tr class="separator:a7af6cc3699b398ec7178475dfe19aa41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e19f77cb725b454d2957c806736d2ce" id="r_a7e19f77cb725b454d2957c806736d2ce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a7e19f77cb725b454d2957c806736d2ce">getTotalTriangleCount</a> () const</td></tr>
+<tr class="separator:a7e19f77cb725b454d2957c806736d2ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf0f7bbaf9336bf76747140577f3506" id="r_a9cf0f7bbaf9336bf76747140577f3506"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a9cf0f7bbaf9336bf76747140577f3506">getLodLevel</a> (int clusterId) const</td></tr>
+<tr class="separator:a9cf0f7bbaf9336bf76747140577f3506"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a612f823a5e5d879e2ae2450a8e8ad2cc" id="r_a612f823a5e5d879e2ae2450a8e8ad2cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#a612f823a5e5d879e2ae2450a8e8ad2cc">getMaxLodLevel</a> () const</td></tr>
+<tr class="separator:a612f823a5e5d879e2ae2450a8e8ad2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A virtual-geometry renderer: preprocesses a mesh into a cluster DAG, uploads it to the GPU, then each frame runs GPU-driven culling + a software rasterizer into a visibility buffer. </p>
+<p>Lifecycle (Squirrel): r &lt;- vg.newRenderer() r.buildIcosphere(4) (or build(...) with raw arrays) r.setViewport(w, h, fovYDeg, errorPx) r.setCamera(view[16], proj[16], model[16], cam[3]) visible &lt;- r.update() ok &lt;- r.resolve(rgbaArray, w, h) // CPU readback of the visibility buffer </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a> 第 <a class="el" href="VirtualGeometryRenderer_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acc7ffd908759621b92261db6d794db7f" name="acc7ffd908759621b92261db6d794db7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc7ffd908759621b92261db6d794db7f">&#9670;&#160;</a></span>VirtualGeometryRenderer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::virtualgeometry::VirtualGeometryRenderer::VirtualGeometryRenderer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00068">eve::virtualgeometry::vgCreate()</a>.</p>
+
+</div>
+</div>
+<a id="a317d3487451189a4d540faf14ddb460e" name="a317d3487451189a4d540faf14ddb460e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a317d3487451189a4d540faf14ddb460e">&#9670;&#160;</a></span>~VirtualGeometryRenderer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::virtualgeometry::VirtualGeometryRenderer::~VirtualGeometryRenderer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00083">eve::virtualgeometry::vgDestroy()</a>.</p>
+
+</div>
+</div>
+<a id="a1db0edcb54875cdd7bdf76b1e32d1242" name="a1db0edcb54875cdd7bdf76b1e32d1242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db0edcb54875cdd7bdf76b1e32d1242">&#9670;&#160;</a></span>VirtualGeometryRenderer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::virtualgeometry::VirtualGeometryRenderer::VirtualGeometryRenderer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7806194d26470dc6c4e89072414cdaf6" name="a7806194d26470dc6c4e89072414cdaf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7806194d26470dc6c4e89072414cdaf6">&#9670;&#160;</a></span>build() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::virtualgeometry::VirtualGeometryRenderer::build </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>positions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::uint32_t *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00051">build()</a>, <a class="el" href="Builder_8h_source.html#l00028">eve::virtualgeometry::VirtualGeometryBuilder::MeshInput::indexCount</a>, <a class="el" href="Builder_8h_source.html#l00027">eve::virtualgeometry::VirtualGeometryBuilder::MeshInput::indices</a>, <a class="el" href="Builder_8h_source.html#l00025">eve::virtualgeometry::VirtualGeometryBuilder::MeshInput::positions</a> , 以及 <a class="el" href="Builder_8h_source.html#l00024">eve::virtualgeometry::VirtualGeometryBuilder::MeshInput::vertexCount</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00051">build()</a> , 以及 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00111">buildIcosphere()</a>.</p>
+
+</div>
+</div>
+<a id="af70be936a326c3b090feba2c5ff93171" name="af70be936a326c3b090feba2c5ff93171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af70be936a326c3b090feba2c5ff93171">&#9670;&#160;</a></span>build() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::virtualgeometry::VirtualGeometryRenderer::build </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryBuilder_1_1MeshInput.html">VirtualGeometryBuilder::MeshInput</a> &amp;&#160;</td>
+          <td class="paramname"><em>in</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Builder_8cpp_source.html#l00337">eve::virtualgeometry::VirtualGeometryBuilder::build()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00158">eve::virtualgeometry::vgReset()</a> , 以及 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00099">eve::virtualgeometry::vgUpload()</a>.</p>
+
+</div>
+</div>
+<a id="a03023c5bfdfea10afa27f820aebbacad" name="a03023c5bfdfea10afa27f820aebbacad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03023c5bfdfea10afa27f820aebbacad">&#9670;&#160;</a></span>buildIcosphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::virtualgeometry::VirtualGeometryRenderer::buildIcosphere </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>subdiv</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: procedural unit icosphere, <code>subdiv</code> subdivision levels. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00051">build()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>.</p>
+
+</div>
+</div>
+<a id="a253ad53a5a4593859357eda0e2d35f26" name="a253ad53a5a4593859357eda0e2d35f26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253ad53a5a4593859357eda0e2d35f26">&#9670;&#160;</a></span>getClusterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getClusterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a>.</p>
+
+</div>
+</div>
+<a id="a9cf0f7bbaf9336bf76747140577f3506" name="a9cf0f7bbaf9336bf76747140577f3506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf0f7bbaf9336bf76747140577f3506">&#9670;&#160;</a></span>getLodLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getLodLevel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>clusterId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a>.</p>
+
+</div>
+</div>
+<a id="a612f823a5e5d879e2ae2450a8e8ad2cc" name="a612f823a5e5d879e2ae2450a8e8ad2cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a612f823a5e5d879e2ae2450a8e8ad2cc">&#9670;&#160;</a></span>getMaxLodLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getMaxLodLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a> , 以及 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>.</p>
+
+</div>
+</div>
+<a id="a7e19f77cb725b454d2957c806736d2ce" name="a7e19f77cb725b454d2957c806736d2ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e19f77cb725b454d2957c806736d2ce">&#9670;&#160;</a></span>getTotalTriangleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getTotalTriangleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryAsset_8h_source.html#l00054">eve::virtualgeometry::VirtualGeometryAsset::totalTriangles()</a>.</p>
+
+</div>
+</div>
+<a id="a939dbd65ae30aadca0b784e178099dab" name="a939dbd65ae30aadca0b784e178099dab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a939dbd65ae30aadca0b784e178099dab">&#9670;&#160;</a></span>getViewHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getViewHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a> 第 <a class="el" href="VirtualGeometryRenderer_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad474085aa5340be4d6c224bd23cd10e1" name="ad474085aa5340be4d6c224bd23cd10e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad474085aa5340be4d6c224bd23cd10e1">&#9670;&#160;</a></span>getViewWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getViewWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a> 第 <a class="el" href="VirtualGeometryRenderer_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7af6cc3699b398ec7178475dfe19aa41" name="a7af6cc3699b398ec7178475dfe19aa41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af6cc3699b398ec7178475dfe19aa41">&#9670;&#160;</a></span>getVisibleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::getVisibleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a> 第 <a class="el" href="VirtualGeometryRenderer_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0c8656f606ba01f0901b1745c6906f3" name="aa0c8656f606ba01f0901b1745c6906f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c8656f606ba01f0901b1745c6906f3">&#9670;&#160;</a></span>isReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::virtualgeometry::VirtualGeometryRenderer::isReady </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a> 第 <a class="el" href="VirtualGeometryRenderer_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>.</p>
+
+</div>
+</div>
+<a id="a29b9bccf4d750587b83c3f2c29b66f0a" name="a29b9bccf4d750587b83c3f2c29b66f0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29b9bccf4d750587b83c3f2c29b66f0a">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a> &amp; eve::virtualgeometry::VirtualGeometryRenderer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae87df724f63f2908e23832b5600ee01b" name="ae87df724f63f2908e23832b5600ee01b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae87df724f63f2908e23832b5600ee01b">&#9670;&#160;</a></span>resolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::virtualgeometry::VirtualGeometryRenderer::resolve </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>outRgba</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>outW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>outH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Resolve the visibility buffer to RGBA (w*h*4 bytes). </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Grass_8cpp_source.html#l00234">u</a> , 以及 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00197">eve::virtualgeometry::vgReadPixels()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00224">resolveByteData()</a>.</p>
+
+</div>
+</div>
+<a id="afd070f840b05c5f855259c6e6f418ed2" name="afd070f840b05c5f855259c6e6f418ed2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd070f840b05c5f855259c6e6f418ed2">&#9670;&#160;</a></span>resolveByteData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a> * eve::virtualgeometry::VirtualGeometryRenderer::resolveByteData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve into a heap ByteData (RGBA) for scripting/display. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00191">resolve()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a5b5d739f5c7b03167bbe80e624403d42" name="a5b5d739f5c7b03167bbe80e624403d42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b5d739f5c7b03167bbe80e624403d42">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::VirtualGeometryRenderer::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>view</em>[16], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>proj</em>[16], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>model</em>[16], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>camPos</em>[3]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00013">eve::virtualgeometry::VgUniforms::cameraPos</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00012">eve::virtualgeometry::VgUniforms::model</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00486">proj</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00485">view</a> , 以及 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00011">eve::virtualgeometry::VgUniforms::viewProj</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00147">setCameraSimple()</a>.</p>
+
+</div>
+</div>
+<a id="a539961a18d986eee551bead9a1039653" name="a539961a18d986eee551bead9a1039653"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a539961a18d986eee551bead9a1039653">&#9670;&#160;</a></span>setCameraSimple()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::VirtualGeometryRenderer::setCameraSimple </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>camX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>camY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>camZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em> = <code>0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em> = <code>100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script-friendly: identity view (camera looking down -Z) + perspective. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00014">eve::virtualgeometry::VgUniforms::params</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00486">proj</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00129">setCamera()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00485">view</a>.</p>
+
+</div>
+</div>
+<a id="a4fe96fa2e8a1e6f3cd4f8b1b094c776a" name="a4fe96fa2e8a1e6f3cd4f8b1b094c776a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fe96fa2e8a1e6f3cd4f8b1b094c776a">&#9670;&#160;</a></span>setModelYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::VirtualGeometryRenderer::setModelYaw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spin the virtualized model about Y by <code>yaw</code> radians each frame. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d711edf364c5aa0a52485e3b2a5ddca" name="a0d711edf364c5aa0a52485e3b2a5ddca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d711edf364c5aa0a52485e3b2a5ddca">&#9670;&#160;</a></span>setViewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::VirtualGeometryRenderer::setViewport </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>errorPx</em> = <code>1.0f</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00014">eve::virtualgeometry::VgUniforms::params</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="a118cb9b1dfcc5f5fb9110436df6b69e1" name="a118cb9b1dfcc5f5fb9110436df6b69e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a118cb9b1dfcc5f5fb9110436df6b69e1">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::VirtualGeometryRenderer::update </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Run cull + raster; returns the number of visible clusters. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a> 第 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a> , 以及 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00174">eve::virtualgeometry::vgUpdate()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/virtualgeometry/<a class="el" href="VirtualGeometryRenderer_8h_source.html">VirtualGeometryRenderer.h</a></li>
+<li>src/modules/virtualgeometry/<a class="el" href="VirtualGeometryRenderer_8cpp_source.html">VirtualGeometryRenderer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

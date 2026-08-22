@@ -1,0 +1,549 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::grid::GridConfig结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1grid.html">grid</a></li><li class="navelem"><a class="el" href="structeve_1_1grid_1_1GridConfig.html">GridConfig</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1grid_1_1GridConfig-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::grid::GridConfig结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="GridConfig_8h_source.html">GridConfig.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a203e065baca8fc00b1d79dd6fc4b6a0a" id="r_a203e065baca8fc00b1d79dd6fc4b6a0a"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a203e065baca8fc00b1d79dd6fc4b6a0a">layoutName</a> (<a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55c">GridLayout</a> l)</td></tr>
+<tr class="separator:a203e065baca8fc00b1d79dd6fc4b6a0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af951d7637b895761de6173fc0e1fed82" id="r_af951d7637b895761de6173fc0e1fed82"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55c">GridLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#af951d7637b895761de6173fc0e1fed82">layoutFromName</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:af951d7637b895761de6173fc0e1fed82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63cd4f8d9709d90c6a6b89ce0d0a2ab1" id="r_a63cd4f8d9709d90c6a6b89ce0d0a2ab1"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a63cd4f8d9709d90c6a6b89ce0d0a2ab1">planeName</a> (<a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3">GridPlane</a> <a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="separator:a63cd4f8d9709d90c6a6b89ce0d0a2ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b9717b019bed6c3aea2079aa51486dd" id="r_a6b9717b019bed6c3aea2079aa51486dd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3">GridPlane</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a6b9717b019bed6c3aea2079aa51486dd">planeFromName</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a6b9717b019bed6c3aea2079aa51486dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a0d7d0c9c0122114a8b7bd977fdf42ba7" id="r_a0d7d0c9c0122114a8b7bd977fdf42ba7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55c">GridLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a0d7d0c9c0122114a8b7bd977fdf42ba7">layout</a> = <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">GridLayout::Rectangle</a></td></tr>
+<tr class="separator:a0d7d0c9c0122114a8b7bd977fdf42ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeff4746a6a362239c9e6e489f9777f15" id="r_aeff4746a6a362239c9e6e489f9777f15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3">GridPlane</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#aeff4746a6a362239c9e6e489f9777f15">plane</a> = <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a74c53bcd3dcb2bb79993b2fec37d362a">GridPlane::XY</a></td></tr>
+<tr class="separator:aeff4746a6a362239c9e6e489f9777f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44260b66e8883e7f950a9b1b13e5c650" id="r_a44260b66e8883e7f950a9b1b13e5c650"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a44260b66e8883e7f950a9b1b13e5c650">cellW</a> = 32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a44260b66e8883e7f950a9b1b13e5c650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad75a5aee4036e050438ee4828117695" id="r_aad75a5aee4036e050438ee4828117695"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">cellH</a> = 32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aad75a5aee4036e050438ee4828117695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a227530fc4bc3ae7cb82112b7f33ae11d" id="r_a227530fc4bc3ae7cb82112b7f33ae11d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a227530fc4bc3ae7cb82112b7f33ae11d">cellGapX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a227530fc4bc3ae7cb82112b7f33ae11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e3e06f3823d8c68bcaf1e58dc4e2b24" id="r_a3e3e06f3823d8c68bcaf1e58dc4e2b24"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a3e3e06f3823d8c68bcaf1e58dc4e2b24">cellGapY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3e3e06f3823d8c68bcaf1e58dc4e2b24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80aeb87591571ccb18a12398c696f512" id="r_a80aeb87591571ccb18a12398c696f512"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a80aeb87591571ccb18a12398c696f512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a210a414c441320ceabb293648d8b9094" id="r_a210a414c441320ceabb293648d8b9094"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a210a414c441320ceabb293648d8b9094"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2873838d999ece4555a738b48f9ae36" id="r_ad2873838d999ece4555a738b48f9ae36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6">StaggerAxis</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#ad2873838d999ece4555a738b48f9ae36">staggerAxis</a> = <a class="el" href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6a57cec4137b614c87cb4e24a3d003a3e0">StaggerAxis::Y</a></td></tr>
+<tr class="separator:ad2873838d999ece4555a738b48f9ae36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad48f543472c48f2af3f40f6b6446cac6" id="r_ad48f543472c48f2af3f40f6b6446cac6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1grid.html#aaf6b155ab24d52705325d7d90d936fde">StaggerIndex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#ad48f543472c48f2af3f40f6b6446cac6">staggerIndex</a> = <a class="el" href="namespaceeve_1_1grid.html#aaf6b155ab24d52705325d7d90d936fdea37b6bd7fe61d651735cec3d3b0356c66">StaggerIndex::Odd</a></td></tr>
+<tr class="separator:ad48f543472c48f2af3f40f6b6446cac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea7864e9fae158a87a17fe65d0a1897f" id="r_aea7864e9fae158a87a17fe65d0a1897f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1grid_1_1GridConfig.html#aea7864e9fae158a87a17fe65d0a1897f">hexSideLength</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aea7864e9fae158a87a17fe65d0a1897f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>网格配置：形状拓扑 + 尺寸 + 原点 + 平面轴。 </p>
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="af951d7637b895761de6173fc0e1fed82" name="af951d7637b895761de6173fc0e1fed82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af951d7637b895761de6173fc0e1fed82">&#9670;&#160;</a></span>layoutFromName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55c">GridLayout</a> eve::grid::GridConfig::layoutFromName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8cpp_source.html">GridConfig.cpp</a> 第 <a class="el" href="GridConfig_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca125e13c182697c5a282e4de6d7999eb0">eve::grid::Hexagon</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca93fe1f7c5ca2e09af063aca96d0625cc">eve::grid::Isometric</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cadc8dc724c78acb80f3a350ec583b3c84">eve::grid::IsometricZAsY</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">eve::grid::Rectangle</a> , 以及 <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55caf421d06a10620aa57ae6ebaec46cffe9">eve::grid::Staggered</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00053">eve::building::PlacementWorld::setGridLayout()</a>.</p>
+
+</div>
+</div>
+<a id="a203e065baca8fc00b1d79dd6fc4b6a0a" name="a203e065baca8fc00b1d79dd6fc4b6a0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a203e065baca8fc00b1d79dd6fc4b6a0a">&#9670;&#160;</a></span>layoutName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::grid::GridConfig::layoutName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55c">GridLayout</a>&#160;</td>
+          <td class="paramname"><em>l</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8cpp_source.html">GridConfig.cpp</a> 第 <a class="el" href="GridConfig_8cpp_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca125e13c182697c5a282e4de6d7999eb0">eve::grid::Hexagon</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca93fe1f7c5ca2e09af063aca96d0625cc">eve::grid::Isometric</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cadc8dc724c78acb80f3a350ec583b3c84">eve::grid::IsometricZAsY</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">eve::grid::Rectangle</a> , 以及 <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55caf421d06a10620aa57ae6ebaec46cffe9">eve::grid::Staggered</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00057">eve::building::PlacementWorld::getGridLayoutName()</a>.</p>
+
+</div>
+</div>
+<a id="a6b9717b019bed6c3aea2079aa51486dd" name="a6b9717b019bed6c3aea2079aa51486dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b9717b019bed6c3aea2079aa51486dd">&#9670;&#160;</a></span>planeFromName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3">GridPlane</a> eve::grid::GridConfig::planeFromName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8cpp_source.html">GridConfig.cpp</a> 第 <a class="el" href="GridConfig_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a74c53bcd3dcb2bb79993b2fec37d362a">eve::grid::XY</a> , 以及 <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a27db3b98d01e664c17a6620b222c6469">eve::grid::XZ</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00061">eve::building::PlacementWorld::setGridPlane()</a>.</p>
+
+</div>
+</div>
+<a id="a63cd4f8d9709d90c6a6b89ce0d0a2ab1" name="a63cd4f8d9709d90c6a6b89ce0d0a2ab1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63cd4f8d9709d90c6a6b89ce0d0a2ab1">&#9670;&#160;</a></span>planeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::grid::GridConfig::planeName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3">GridPlane</a>&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8cpp_source.html">GridConfig.cpp</a> 第 <a class="el" href="GridConfig_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a27db3b98d01e664c17a6620b222c6469">eve::grid::XZ</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00065">eve::building::PlacementWorld::getGridPlaneName()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a227530fc4bc3ae7cb82112b7f33ae11d" name="a227530fc4bc3ae7cb82112b7f33ae11d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a227530fc4bc3ae7cb82112b7f33ae11d">&#9670;&#160;</a></span>cellGapX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::cellGapX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridConfig_8h_source.html#l00043">eve::grid::cellPitchX()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00069">eve::building::PlacementWorld::setCellGap()</a>.</p>
+
+</div>
+</div>
+<a id="a3e3e06f3823d8c68bcaf1e58dc4e2b24" name="a3e3e06f3823d8c68bcaf1e58dc4e2b24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e3e06f3823d8c68bcaf1e58dc4e2b24">&#9670;&#160;</a></span>cellGapY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::cellGapY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridConfig_8h_source.html#l00044">eve::grid::cellPitchY()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00069">eve::building::PlacementWorld::setCellGap()</a>.</p>
+
+</div>
+</div>
+<a id="aad75a5aee4036e050438ee4828117695" name="aad75a5aee4036e050438ee4828117695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad75a5aee4036e050438ee4828117695">&#9670;&#160;</a></span>cellH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::cellH = 32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridConfig_8h_source.html#l00044">eve::grid::cellPitchY()</a>, <a class="el" href="GridProjection_8cpp_source.html#l00063">eve::grid::cellToDepthY()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00392">eve::buildingfx::BuildingFx::drawGrid2D()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00017">eve::building::PlacementWorld::PlacementWorld()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00030">eve::building::PlacementWorld::setCellSize()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00239">eve::buildingfx::BuildingFx::updateGhost()</a> , 以及 <a class="el" href="GridProjection_8cpp_source.html#l00069">eve::grid::worldToCell()</a>.</p>
+
+</div>
+</div>
+<a id="a44260b66e8883e7f950a9b1b13e5c650" name="a44260b66e8883e7f950a9b1b13e5c650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44260b66e8883e7f950a9b1b13e5c650">&#9670;&#160;</a></span>cellW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::cellW = 32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridConfig_8h_source.html#l00043">eve::grid::cellPitchX()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00392">eve::buildingfx::BuildingFx::drawGrid2D()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00044">eve::building::PlacementWorld::getCellSize()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00017">eve::building::PlacementWorld::PlacementWorld()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00030">eve::building::PlacementWorld::setCellSize()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00239">eve::buildingfx::BuildingFx::updateGhost()</a> , 以及 <a class="el" href="GridProjection_8cpp_source.html#l00069">eve::grid::worldToCell()</a>.</p>
+
+</div>
+</div>
+<a id="aea7864e9fae158a87a17fe65d0a1897f" name="aea7864e9fae158a87a17fe65d0a1897f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea7864e9fae158a87a17fe65d0a1897f">&#9670;&#160;</a></span>hexSideLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::hexSideLength = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridProjection_8cpp_source.html#l00030">eve::grid::cellToWorld()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00074">eve::building::PlacementWorld::setHexSideLength()</a>.</p>
+
+</div>
+</div>
+<a id="a0d7d0c9c0122114a8b7bd977fdf42ba7" name="a0d7d0c9c0122114a8b7bd977fdf42ba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d7d0c9c0122114a8b7bd977fdf42ba7">&#9670;&#160;</a></span>layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55c">GridLayout</a> eve::grid::GridConfig::layout = <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">GridLayout::Rectangle</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridProjection_8cpp_source.html#l00030">eve::grid::cellToWorld()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00057">eve::building::PlacementWorld::getGridLayoutName()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00053">eve::building::PlacementWorld::setGridLayout()</a> , 以及 <a class="el" href="GridProjection_8cpp_source.html#l00069">eve::grid::worldToCell()</a>.</p>
+
+</div>
+</div>
+<a id="a80aeb87591571ccb18a12398c696f512" name="a80aeb87591571ccb18a12398c696f512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80aeb87591571ccb18a12398c696f512">&#9670;&#160;</a></span>originX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::originX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridProjection_8cpp_source.html#l00030">eve::grid::cellToWorld()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00047">eve::building::PlacementWorld::getOriginX()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00037">eve::building::PlacementWorld::setOrigin()</a> , 以及 <a class="el" href="GridProjection_8cpp_source.html#l00069">eve::grid::worldToCell()</a>.</p>
+
+</div>
+</div>
+<a id="a210a414c441320ceabb293648d8b9094" name="a210a414c441320ceabb293648d8b9094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a210a414c441320ceabb293648d8b9094">&#9670;&#160;</a></span>originY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::grid::GridConfig::originY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridProjection_8cpp_source.html#l00030">eve::grid::cellToWorld()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00048">eve::building::PlacementWorld::getOriginY()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00037">eve::building::PlacementWorld::setOrigin()</a> , 以及 <a class="el" href="GridProjection_8cpp_source.html#l00069">eve::grid::worldToCell()</a>.</p>
+
+</div>
+</div>
+<a id="aeff4746a6a362239c9e6e489f9777f15" name="aeff4746a6a362239c9e6e489f9777f15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeff4746a6a362239c9e6e489f9777f15">&#9670;&#160;</a></span>plane</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3">GridPlane</a> eve::grid::GridConfig::plane = <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a74c53bcd3dcb2bb79993b2fec37d362a">GridPlane::XY</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00141">eve::building::PlacementWorld::cellToWorld3D()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00136">eve::building::PlacementSystem::ensureBuiltins()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00335">eve::building::PlacementWorld::getBuildingWorldY()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00343">eve::building::PlacementWorld::getBuildingWorldZ()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00065">eve::building::PlacementWorld::getGridPlaneName()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00061">eve::building::PlacementWorld::setGridPlane()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00271">eve::building::PlacementSystem::snap3D()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00174">eve::building::PlacementWorld::worldToCell3D()</a>.</p>
+
+</div>
+</div>
+<a id="ad2873838d999ece4555a738b48f9ae36" name="ad2873838d999ece4555a738b48f9ae36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2873838d999ece4555a738b48f9ae36">&#9670;&#160;</a></span>staggerAxis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6">StaggerAxis</a> eve::grid::GridConfig::staggerAxis = <a class="el" href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6a57cec4137b614c87cb4e24a3d003a3e0">StaggerAxis::Y</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridProjection_8cpp_source.html#l00030">eve::grid::cellToWorld()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00076">eve::building::PlacementWorld::setStagger()</a>.</p>
+
+</div>
+</div>
+<a id="ad48f543472c48f2af3f40f6b6446cac6" name="ad48f543472c48f2af3f40f6b6446cac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48f543472c48f2af3f40f6b6446cac6">&#9670;&#160;</a></span>staggerIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1grid.html#aaf6b155ab24d52705325d7d90d936fde">StaggerIndex</a> eve::grid::GridConfig::staggerIndex = <a class="el" href="namespaceeve_1_1grid.html#aaf6b155ab24d52705325d7d90d936fdea37b6bd7fe61d651735cec3d3b0356c66">StaggerIndex::Odd</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GridConfig_8h_source.html">GridConfig.h</a> 第 <a class="el" href="GridConfig_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00083">eve::building::PlacementWorld::setGridFromLayer()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00076">eve::building::PlacementWorld::setStagger()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/grid/<a class="el" href="GridConfig_8h_source.html">GridConfig.h</a></li>
+<li>src/modules/grid/<a class="el" href="GridConfig_8cpp_source.html">GridConfig.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

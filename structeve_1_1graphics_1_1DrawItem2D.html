@@ -1,0 +1,861 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::DrawItem2D结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1DrawItem2D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::DrawItem2D结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Shared 2D draw queue item (sprites + tiles).  
+ <a href="structeve_1_1graphics_1_1DrawItem2D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad68ec315288a9d3c346a79e89eb98ce4" id="r_ad68ec315288a9d3c346a79e89eb98ce4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ad68ec315288a9d3c346a79e89eb98ce4">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad68ec315288a9d3c346a79e89eb98ce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c568107cb4eb1d7228cda45236fa434" id="r_a0c568107cb4eb1d7228cda45236fa434"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a0c568107cb4eb1d7228cda45236fa434">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0c568107cb4eb1d7228cda45236fa434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae663f58c7a1d042da7c73ee26bbec906" id="r_ae663f58c7a1d042da7c73ee26bbec906"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ae663f58c7a1d042da7c73ee26bbec906">w</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae663f58c7a1d042da7c73ee26bbec906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af064312392030d25c1cd1585e7b0b273" id="r_af064312392030d25c1cd1585e7b0b273"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#af064312392030d25c1cd1585e7b0b273">h</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af064312392030d25c1cd1585e7b0b273"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51186ada81b5027c81d789ea98900f0" id="r_ae51186ada81b5027c81d789ea98900f0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ae51186ada81b5027c81d789ea98900f0">depthY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae51186ada81b5027c81d789ea98900f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2b24a9b7572e93f57e389e8173e782c" id="r_af2b24a9b7572e93f57e389e8173e782c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#af2b24a9b7572e93f57e389e8173e782c">rotation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:af2b24a9b7572e93f57e389e8173e782c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Degrees, clockwise, around the rectangle center (screen Y-down).  <br /></td></tr>
+<tr class="separator:af2b24a9b7572e93f57e389e8173e782c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b7b011438ccc947cd45e205137b20a" id="r_ab7b7b011438ccc947cd45e205137b20a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ab7b7b011438ccc947cd45e205137b20a">order</a> = 0</td></tr>
+<tr class="separator:ab7b7b011438ccc947cd45e205137b20a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83fb9f66f6f550daabc2104350e2fa6c" id="r_a83fb9f66f6f550daabc2104350e2fa6c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a83fb9f66f6f550daabc2104350e2fa6c">hasOrder</a> = false</td></tr>
+<tr class="separator:a83fb9f66f6f550daabc2104350e2fa6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71a9aa09a5ed5fa39bc95281da9df984" id="r_a71a9aa09a5ed5fa39bc95281da9df984"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a71a9aa09a5ed5fa39bc95281da9df984">color</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a71a9aa09a5ed5fa39bc95281da9df984"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7ae99074f55ea4ba608e6beece47d4" id="r_a8b7ae99074f55ea4ba608e6beece47d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a8b7ae99074f55ea4ba608e6beece47d4">layer</a> = 0</td></tr>
+<tr class="separator:a8b7ae99074f55ea4ba608e6beece47d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9b7a0fb3f191e506241a74b33bcc10" id="r_a2c9b7a0fb3f191e506241a74b33bcc10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4">BlendMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a2c9b7a0fb3f191e506241a74b33bcc10">blend</a> = <a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a></td></tr>
+<tr class="memdesc:a2c9b7a0fb3f191e506241a74b33bcc10"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D quad blending (alpha / additive / opaque).  <br /></td></tr>
+<tr class="separator:a2c9b7a0fb3f191e506241a74b33bcc10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01ee809f16b5bdcd9043e79c2b2a284" id="r_ae01ee809f16b5bdcd9043e79c2b2a284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">texture</a> = nullptr</td></tr>
+<tr class="separator:ae01ee809f16b5bdcd9043e79c2b2a284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e3888519d315c9d5a3d7a90b1ce092e" id="r_a9e3888519d315c9d5a3d7a90b1ce092e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a9e3888519d315c9d5a3d7a90b1ce092e">normal</a> = nullptr</td></tr>
+<tr class="separator:a9e3888519d315c9d5a3d7a90b1ce092e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb72351345554dc5f93e937b0daa4a97" id="r_aeb72351345554dc5f93e937b0daa4a97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Quad.html">Quad</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">quad</a> = nullptr</td></tr>
+<tr class="separator:aeb72351345554dc5f93e937b0daa4a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac64eff41c30ded2f47e8a89d0caa1fcb" id="r_ac64eff41c30ded2f47e8a89d0caa1fcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ac64eff41c30ded2f47e8a89d0caa1fcb">shader</a> = nullptr</td></tr>
+<tr class="separator:ac64eff41c30ded2f47e8a89d0caa1fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a7d897f0508827281fb687bcf725478" id="r_a7a7d897f0508827281fb687bcf725478"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a7a7d897f0508827281fb687bcf725478">canvas</a> = nullptr</td></tr>
+<tr class="separator:a7a7d897f0508827281fb687bcf725478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3c7bc9c777d9c49f6d5add3e336ff2c" id="r_ad3c7bc9c777d9c49f6d5add3e336ff2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ad3c7bc9c777d9c49f6d5add3e336ff2c">camera</a> = nullptr</td></tr>
+<tr class="separator:ad3c7bc9c777d9c49f6d5add3e336ff2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68889a095074058fdf81f07210f83ba4" id="r_a68889a095074058fdf81f07210f83ba4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a68889a095074058fdf81f07210f83ba4">receiveLight</a> = true</td></tr>
+<tr class="separator:a68889a095074058fdf81f07210f83ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7119c5e9d080fca5748de64943d373" id="r_afc7119c5e9d080fca5748de64943d373"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#afc7119c5e9d080fca5748de64943d373">litPath</a> = false</td></tr>
+<tr class="separator:afc7119c5e9d080fca5748de64943d373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2022347fd63e0767ff0b2462169f075d" id="r_a2022347fd63e0767ff0b2462169f075d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a2022347fd63e0767ff0b2462169f075d">hasUV</a> = false</td></tr>
+<tr class="separator:a2022347fd63e0767ff0b2462169f075d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34f2da8061390e0de226ce3601189238" id="r_a34f2da8061390e0de226ce3601189238"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a34f2da8061390e0de226ce3601189238">rotatedUV</a> = false</td></tr>
+<tr class="memdesc:a34f2da8061390e0de226ce3601189238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atlas-packed rotated region: corner UVs are remapped (rotated 90°).  <br /></td></tr>
+<tr class="separator:a34f2da8061390e0de226ce3601189238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71153f41788c0cc99aa7b55c5d27c9c9" id="r_a71153f41788c0cc99aa7b55c5d27c9c9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a71153f41788c0cc99aa7b55c5d27c9c9">u0</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a71153f41788c0cc99aa7b55c5d27c9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a532e00f2a7d4c7541f65f643cc0767b5" id="r_a532e00f2a7d4c7541f65f643cc0767b5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a532e00f2a7d4c7541f65f643cc0767b5">v0</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a532e00f2a7d4c7541f65f643cc0767b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a520405c99335d2a5f4910851c1ff1aae" id="r_a520405c99335d2a5f4910851c1ff1aae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a520405c99335d2a5f4910851c1ff1aae">u1</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a520405c99335d2a5f4910851c1ff1aae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab49a210f7dc5b3de131c34220847421" id="r_aab49a210f7dc5b3de131c34220847421"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#aab49a210f7dc5b3de131c34220847421">v1</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aab49a210f7dc5b3de131c34220847421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6be74c8789d88216e2913e9adb5122f6" id="r_a6be74c8789d88216e2913e9adb5122f6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a6be74c8789d88216e2913e9adb5122f6">camX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a6be74c8789d88216e2913e9adb5122f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space camera already resolved; if cameraEntity set, <a class="el" href="classeve_1_1graphics_1_1RenderSystem.html" title="Walks ECS Renderable2D views and draws via Graphics batch path.">RenderSystem</a> resolves.  <br /></td></tr>
+<tr class="separator:a6be74c8789d88216e2913e9adb5122f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95036e946a431bdce7bae0bbb93f0e1" id="r_ab95036e946a431bdce7bae0bbb93f0e1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ab95036e946a431bdce7bae0bbb93f0e1">camY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab95036e946a431bdce7bae0bbb93f0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2cc2a77ac8b9734c0c859fcdc5487df" id="r_ac2cc2a77ac8b9734c0c859fcdc5487df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ac2cc2a77ac8b9734c0c859fcdc5487df">camZoom</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac2cc2a77ac8b9734c0c859fcdc5487df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a838deb0b22ef3b498ec1e2a2da00e903" id="r_a838deb0b22ef3b498ec1e2a2da00e903"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a838deb0b22ef3b498ec1e2a2da00e903">camValid</a> = false</td></tr>
+<tr class="separator:a838deb0b22ef3b498ec1e2a2da00e903"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a111c9cf42eb3c95e7c134e33397d94a8" id="r_a111c9cf42eb3c95e7c134e33397d94a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a111c9cf42eb3c95e7c134e33397d94a8">camClear</a> {0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a111c9cf42eb3c95e7c134e33397d94a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a162803ce357f7b43e271b65edb6b6bc1" id="r_a162803ce357f7b43e271b65edb6b6bc1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a162803ce357f7b43e271b65edb6b6bc1">camAmbientR</a> = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a162803ce357f7b43e271b65edb6b6bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab08de2647c342c3b1bfe4e57de88b64a" id="r_ab08de2647c342c3b1bfe4e57de88b64a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#ab08de2647c342c3b1bfe4e57de88b64a">camAmbientG</a> = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab08de2647c342c3b1bfe4e57de88b64a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2747cfc821b0f82c0e5a0c534111fa58" id="r_a2747cfc821b0f82c0e5a0c534111fa58"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html#a2747cfc821b0f82c0e5a0c534111fa58">camAmbientB</a> = 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2747cfc821b0f82c0e5a0c534111fa58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Shared 2D draw queue item (sprites + tiles). </p>
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00018">18</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a2c9b7a0fb3f191e506241a74b33bcc10" name="a2c9b7a0fb3f191e506241a74b33bcc10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9b7a0fb3f191e506241a74b33bcc10">&#9670;&#160;</a></span>blend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4">BlendMode</a> eve::graphics::DrawItem2D::blend = <a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>2D quad blending (alpha / additive / opaque). </p>
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2747cfc821b0f82c0e5a0c534111fa58" name="a2747cfc821b0f82c0e5a0c534111fa58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2747cfc821b0f82c0e5a0c534111fa58">&#9670;&#160;</a></span>camAmbientB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::camAmbientB = 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ab08de2647c342c3b1bfe4e57de88b64a" name="ab08de2647c342c3b1bfe4e57de88b64a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab08de2647c342c3b1bfe4e57de88b64a">&#9670;&#160;</a></span>camAmbientG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::camAmbientG = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a162803ce357f7b43e271b65edb6b6bc1" name="a162803ce357f7b43e271b65edb6b6bc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a162803ce357f7b43e271b65edb6b6bc1">&#9670;&#160;</a></span>camAmbientR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::camAmbientR = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a111c9cf42eb3c95e7c134e33397d94a8" name="a111c9cf42eb3c95e7c134e33397d94a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a111c9cf42eb3c95e7c134e33397d94a8">&#9670;&#160;</a></span>camClear</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> eve::graphics::DrawItem2D::camClear {0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ad3c7bc9c777d9c49f6d5add3e336ff2c" name="ad3c7bc9c777d9c49f6d5add3e336ff2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3c7bc9c777d9c49f6d5add3e336ff2c">&#9670;&#160;</a></span>camera</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a>* eve::graphics::DrawItem2D::camera = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a838deb0b22ef3b498ec1e2a2da00e903" name="a838deb0b22ef3b498ec1e2a2da00e903"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a838deb0b22ef3b498ec1e2a2da00e903">&#9670;&#160;</a></span>camValid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::DrawItem2D::camValid = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a6be74c8789d88216e2913e9adb5122f6" name="a6be74c8789d88216e2913e9adb5122f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6be74c8789d88216e2913e9adb5122f6">&#9670;&#160;</a></span>camX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::camX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Screen-space camera already resolved; if cameraEntity set, <a class="el" href="classeve_1_1graphics_1_1RenderSystem.html" title="Walks ECS Renderable2D views and draws via Graphics batch path.">RenderSystem</a> resolves. </p>
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ab95036e946a431bdce7bae0bbb93f0e1" name="ab95036e946a431bdce7bae0bbb93f0e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab95036e946a431bdce7bae0bbb93f0e1">&#9670;&#160;</a></span>camY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::camY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ac2cc2a77ac8b9734c0c859fcdc5487df" name="ac2cc2a77ac8b9734c0c859fcdc5487df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2cc2a77ac8b9734c0c859fcdc5487df">&#9670;&#160;</a></span>camZoom</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::camZoom = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a7a7d897f0508827281fb687bcf725478" name="a7a7d897f0508827281fb687bcf725478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a7d897f0508827281fb687bcf725478">&#9670;&#160;</a></span>canvas</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a>* eve::graphics::DrawItem2D::canvas = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a71a9aa09a5ed5fa39bc95281da9df984" name="a71a9aa09a5ed5fa39bc95281da9df984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71a9aa09a5ed5fa39bc95281da9df984">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> eve::graphics::DrawItem2D::color {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ae51186ada81b5027c81d789ea98900f0" name="ae51186ada81b5027c81d789ea98900f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51186ada81b5027c81d789ea98900f0">&#9670;&#160;</a></span>depthY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::depthY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="af064312392030d25c1cd1585e7b0b273" name="af064312392030d25c1cd1585e7b0b273"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af064312392030d25c1cd1585e7b0b273">&#9670;&#160;</a></span>h</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::h = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a83fb9f66f6f550daabc2104350e2fa6c" name="a83fb9f66f6f550daabc2104350e2fa6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83fb9f66f6f550daabc2104350e2fa6c">&#9670;&#160;</a></span>hasOrder</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::DrawItem2D::hasOrder = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a>.</p>
+
+</div>
+</div>
+<a id="a2022347fd63e0767ff0b2462169f075d" name="a2022347fd63e0767ff0b2462169f075d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2022347fd63e0767ff0b2462169f075d">&#9670;&#160;</a></span>hasUV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::DrawItem2D::hasUV = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a8b7ae99074f55ea4ba608e6beece47d4" name="a8b7ae99074f55ea4ba608e6beece47d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7ae99074f55ea4ba608e6beece47d4">&#9670;&#160;</a></span>layer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::DrawItem2D::layer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="afc7119c5e9d080fca5748de64943d373" name="afc7119c5e9d080fca5748de64943d373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7119c5e9d080fca5748de64943d373">&#9670;&#160;</a></span>litPath</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::DrawItem2D::litPath = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a9e3888519d315c9d5a3d7a90b1ce092e" name="a9e3888519d315c9d5a3d7a90b1ce092e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e3888519d315c9d5a3d7a90b1ce092e">&#9670;&#160;</a></span>normal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::DrawItem2D::normal = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ab7b7b011438ccc947cd45e205137b20a" name="ab7b7b011438ccc947cd45e205137b20a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7b7b011438ccc947cd45e205137b20a">&#9670;&#160;</a></span>order</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::DrawItem2D::order = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Explicit back-to-front order (e.g. Spine slot draw order). When set on both items it takes priority over depthY. </p>
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a>.</p>
+
+</div>
+</div>
+<a id="aeb72351345554dc5f93e937b0daa4a97" name="aeb72351345554dc5f93e937b0daa4a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb72351345554dc5f93e937b0daa4a97">&#9670;&#160;</a></span>quad</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Quad.html">Quad</a>* eve::graphics::DrawItem2D::quad = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a68889a095074058fdf81f07210f83ba4" name="a68889a095074058fdf81f07210f83ba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68889a095074058fdf81f07210f83ba4">&#9670;&#160;</a></span>receiveLight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::DrawItem2D::receiveLight = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a34f2da8061390e0de226ce3601189238" name="a34f2da8061390e0de226ce3601189238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34f2da8061390e0de226ce3601189238">&#9670;&#160;</a></span>rotatedUV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::DrawItem2D::rotatedUV = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atlas-packed rotated region: corner UVs are remapped (rotated 90°). </p>
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a>.</p>
+
+</div>
+</div>
+<a id="af2b24a9b7572e93f57e389e8173e782c" name="af2b24a9b7572e93f57e389e8173e782c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2b24a9b7572e93f57e389e8173e782c">&#9670;&#160;</a></span>rotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::rotation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Degrees, clockwise, around the rectangle center (screen Y-down). </p>
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a>.</p>
+
+</div>
+</div>
+<a id="ac64eff41c30ded2f47e8a89d0caa1fcb" name="ac64eff41c30ded2f47e8a89d0caa1fcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64eff41c30ded2f47e8a89d0caa1fcb">&#9670;&#160;</a></span>shader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a>* eve::graphics::DrawItem2D::shader = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ae01ee809f16b5bdcd9043e79c2b2a284" name="ae01ee809f16b5bdcd9043e79c2b2a284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01ee809f16b5bdcd9043e79c2b2a284">&#9670;&#160;</a></span>texture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::DrawItem2D::texture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a71153f41788c0cc99aa7b55c5d27c9c9" name="a71153f41788c0cc99aa7b55c5d27c9c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71153f41788c0cc99aa7b55c5d27c9c9">&#9670;&#160;</a></span>u0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::u0 = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a520405c99335d2a5f4910851c1ff1aae" name="a520405c99335d2a5f4910851c1ff1aae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a520405c99335d2a5f4910851c1ff1aae">&#9670;&#160;</a></span>u1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::u1 = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a532e00f2a7d4c7541f65f643cc0767b5" name="a532e00f2a7d4c7541f65f643cc0767b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a532e00f2a7d4c7541f65f643cc0767b5">&#9670;&#160;</a></span>v0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::v0 = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="aab49a210f7dc5b3de131c34220847421" name="aab49a210f7dc5b3de131c34220847421"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab49a210f7dc5b3de131c34220847421">&#9670;&#160;</a></span>v1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::v1 = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ae663f58c7a1d042da7c73ee26bbec906" name="ae663f58c7a1d042da7c73ee26bbec906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae663f58c7a1d042da7c73ee26bbec906">&#9670;&#160;</a></span>w</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::w = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="ad68ec315288a9d3c346a79e89eb98ce4" name="ad68ec315288a9d3c346a79e89eb98ce4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad68ec315288a9d3c346a79e89eb98ce4">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<a id="a0c568107cb4eb1d7228cda45236fa434" name="a0c568107cb4eb1d7228cda45236fa434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c568107cb4eb1d7228cda45236fa434">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::DrawItem2D::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileSystem_8cpp_source.html#l00073">eve::map::TileRenderSystem::collect()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00396">eve::animation::SpineAnim::collectDrawItems()</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00197">eve::graphics::RenderSystem::collectSprites()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

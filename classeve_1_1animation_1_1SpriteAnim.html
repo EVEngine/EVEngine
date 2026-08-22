@@ -1,0 +1,921 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::SpriteAnim类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1animation_1_1SpriteAnim-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::SpriteAnim类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>2D sprite-sheet clip player.  
+ <a href="classeve_1_1animation_1_1SpriteAnim.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aface2f64f8cbe22ad02d90760c2ec014" id="r_aface2f64f8cbe22ad02d90760c2ec014"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#aface2f64f8cbe22ad02d90760c2ec014">SpriteAnim</a> ()</td></tr>
+<tr class="separator:aface2f64f8cbe22ad02d90760c2ec014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af80ba0f3893c2efd7f88cc6f2f05cf26" id="r_af80ba0f3893c2efd7f88cc6f2f05cf26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#af80ba0f3893c2efd7f88cc6f2f05cf26">~SpriteAnim</a> ()</td></tr>
+<tr class="separator:af80ba0f3893c2efd7f88cc6f2f05cf26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed70021a7a1c2a4e59571f5f0a7a7d8d" id="r_aed70021a7a1c2a4e59571f5f0a7a7d8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#aed70021a7a1c2a4e59571f5f0a7a7d8d">SpriteAnim</a> (const <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a> &amp;)=delete</td></tr>
+<tr class="separator:aed70021a7a1c2a4e59571f5f0a7a7d8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79738c78eba0f0b0ccb3db7aa9b6e839" id="r_a79738c78eba0f0b0ccb3db7aa9b6e839"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a79738c78eba0f0b0ccb3db7aa9b6e839">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a> &amp;)=delete</td></tr>
+<tr class="separator:a79738c78eba0f0b0ccb3db7aa9b6e839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a8349be5a6b9d4e7b63d49c3cdc2923" id="r_a3a8349be5a6b9d4e7b63d49c3cdc2923"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a3a8349be5a6b9d4e7b63d49c3cdc2923">setSheet</a> (<a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> *sheet)</td></tr>
+<tr class="memdesc:a3a8349be5a6b9d4e7b63d49c3cdc2923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional sheet used by applyToQuad / bindQuad.  <br /></td></tr>
+<tr class="separator:a3a8349be5a6b9d4e7b63d49c3cdc2923"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00967fc7ee1ecdd6069ec48edf38d9b7" id="r_a00967fc7ee1ecdd6069ec48edf38d9b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a00967fc7ee1ecdd6069ec48edf38d9b7">getSheet</a> () const</td></tr>
+<tr class="separator:a00967fc7ee1ecdd6069ec48edf38d9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b5c2d0580b3825d9dde40fdef87b9c6" id="r_a2b5c2d0580b3825d9dde40fdef87b9c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a2b5c2d0580b3825d9dde40fdef87b9c6">play</a> (<a class="el" href="classeve_1_1animation_1_1SpriteClip.html">SpriteClip</a> *clip)</td></tr>
+<tr class="separator:a2b5c2d0580b3825d9dde40fdef87b9c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef57e56f85967170ad597fe7c8d7b6f" id="r_a4ef57e56f85967170ad597fe7c8d7b6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a4ef57e56f85967170ad597fe7c8d7b6f">stop</a> ()</td></tr>
+<tr class="separator:a4ef57e56f85967170ad597fe7c8d7b6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17751135d58e992fa296c1cd8bb1b8e9" id="r_a17751135d58e992fa296c1cd8bb1b8e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a17751135d58e992fa296c1cd8bb1b8e9">pause</a> ()</td></tr>
+<tr class="separator:a17751135d58e992fa296c1cd8bb1b8e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44ca16324ebbc523a2df7da80660e160" id="r_a44ca16324ebbc523a2df7da80660e160"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a44ca16324ebbc523a2df7da80660e160">resume</a> ()</td></tr>
+<tr class="separator:a44ca16324ebbc523a2df7da80660e160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a375bc15aa7b6f2af24027e6c1fcfacdb" id="r_a375bc15aa7b6f2af24027e6c1fcfacdb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a375bc15aa7b6f2af24027e6c1fcfacdb">setSpeed</a> (float speed)</td></tr>
+<tr class="separator:a375bc15aa7b6f2af24027e6c1fcfacdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e864f82f6c639c41bd717ec5f7ecfdc" id="r_a4e864f82f6c639c41bd717ec5f7ecfdc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a4e864f82f6c639c41bd717ec5f7ecfdc">getSpeed</a> () const</td></tr>
+<tr class="separator:a4e864f82f6c639c41bd717ec5f7ecfdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2410a15e23de4cfaa7fc9e79108f75be" id="r_a2410a15e23de4cfaa7fc9e79108f75be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a2410a15e23de4cfaa7fc9e79108f75be">setTime</a> (float seconds)</td></tr>
+<tr class="separator:a2410a15e23de4cfaa7fc9e79108f75be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af243b23244846447a025d72a1aa37f7e" id="r_af243b23244846447a025d72a1aa37f7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#af243b23244846447a025d72a1aa37f7e">getTime</a> () const</td></tr>
+<tr class="separator:af243b23244846447a025d72a1aa37f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20c1072e82f308094e4ceb85c5b97cd6" id="r_a20c1072e82f308094e4ceb85c5b97cd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a20c1072e82f308094e4ceb85c5b97cd6">setLoop</a> (bool loop)</td></tr>
+<tr class="separator:a20c1072e82f308094e4ceb85c5b97cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eeb28565ccb9a1263eba3cac4af25a5" id="r_a7eeb28565ccb9a1263eba3cac4af25a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a7eeb28565ccb9a1263eba3cac4af25a5">getLoop</a> () const</td></tr>
+<tr class="separator:a7eeb28565ccb9a1263eba3cac4af25a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabf466ef79c8ebc267c48746d233ae1c" id="r_aabf466ef79c8ebc267c48746d233ae1c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#aabf466ef79c8ebc267c48746d233ae1c">isPlaying</a> () const</td></tr>
+<tr class="separator:aabf466ef79c8ebc267c48746d233ae1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcfeb046a77cfad062d4e5215707b976" id="r_abcfeb046a77cfad062d4e5215707b976"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#abcfeb046a77cfad062d4e5215707b976">isPaused</a> () const</td></tr>
+<tr class="separator:abcfeb046a77cfad062d4e5215707b976"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12c69b9d0616e21de73396345c102477" id="r_a12c69b9d0616e21de73396345c102477"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a12c69b9d0616e21de73396345c102477">isFinished</a> () const</td></tr>
+<tr class="separator:a12c69b9d0616e21de73396345c102477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66f6d79bc42b283ed4e9d5295100599" id="r_aa66f6d79bc42b283ed4e9d5295100599"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpriteClip.html">SpriteClip</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#aa66f6d79bc42b283ed4e9d5295100599">getClip</a> () const</td></tr>
+<tr class="separator:aa66f6d79bc42b283ed4e9d5295100599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a485610496a399b7bf5dcb1a4e3700528" id="r_a485610496a399b7bf5dcb1a4e3700528"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a485610496a399b7bf5dcb1a4e3700528">getClipFrame</a> () const</td></tr>
+<tr class="memdesc:a485610496a399b7bf5dcb1a4e3700528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index inside the current clip (0..clipFrameCount-1), or -1.  <br /></td></tr>
+<tr class="separator:a485610496a399b7bf5dcb1a4e3700528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1439051d1988ee50d70766801d75364" id="r_ae1439051d1988ee50d70766801d75364"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#ae1439051d1988ee50d70766801d75364">getSheetFrame</a> () const</td></tr>
+<tr class="memdesc:ae1439051d1988ee50d70766801d75364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sheet frame index for the current cell, or -1.  <br /></td></tr>
+<tr class="separator:ae1439051d1988ee50d70766801d75364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10b0c132e442bfd9832e9ac125e133f0" id="r_a10b0c132e442bfd9832e9ac125e133f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a10b0c132e442bfd9832e9ac125e133f0">bindQuad</a> (<a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *quad)</td></tr>
+<tr class="memdesc:a10b0c132e442bfd9832e9ac125e133f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keep this Quad's viewport updated each update/play.  <br /></td></tr>
+<tr class="separator:a10b0c132e442bfd9832e9ac125e133f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c12d47d60072843e706647f46908f53" id="r_a6c12d47d60072843e706647f46908f53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a6c12d47d60072843e706647f46908f53">unbindQuad</a> ()</td></tr>
+<tr class="separator:a6c12d47d60072843e706647f46908f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c45fe063aae411ce325a6995b7290a9" id="r_a6c45fe063aae411ce325a6995b7290a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a6c45fe063aae411ce325a6995b7290a9">getBoundQuad</a> () const</td></tr>
+<tr class="separator:a6c45fe063aae411ce325a6995b7290a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec49ab67236c3b47be041eb8adc657e" id="r_a6ec49ab67236c3b47be041eb8adc657e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a6ec49ab67236c3b47be041eb8adc657e">applyToQuad</a> (<a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *quad) const</td></tr>
+<tr class="memdesc:a6ec49ab67236c3b47be041eb8adc657e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write current sheet frame into quad (requires sheet).  <br /></td></tr>
+<tr class="separator:a6ec49ab67236c3b47be041eb8adc657e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a134c003ddc547d530338fa8ccfcb9765" id="r_a134c003ddc547d530338fa8ccfcb9765"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a134c003ddc547d530338fa8ccfcb9765">update</a> (float dt)</td></tr>
+<tr class="memdesc:a134c003ddc547d530338fa8ccfcb9765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance playback. Returns true while still active (playing or paused). Auto-applies to boundQuad when sheet is set.  <br /></td></tr>
+<tr class="separator:a134c003ddc547d530338fa8ccfcb9765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:af47625f50036c466946f960db7320bcf" id="r_af47625f50036c466946f960db7320bcf"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#af47625f50036c466946f960db7320bcf">Animation</a></td></tr>
+<tr class="separator:af47625f50036c466946f960db7320bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>2D sprite-sheet clip player. </p>
+<p>Advances frame time, optionally keeps a bound Quad in sync with the current sheet cell. Register with <a class="el" href="classeve_1_1animation_1_1Animation.html" title="Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal playback (player / state mac...">Animation</a> for module-level <code>anim.update(dt)</code>. Script type: <code><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html" title="2D sprite-sheet clip player.">SpriteAnim</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aface2f64f8cbe22ad02d90760c2ec014" name="aface2f64f8cbe22ad02d90760c2ec014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aface2f64f8cbe22ad02d90760c2ec014">&#9670;&#160;</a></span>SpriteAnim() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpriteAnim::SpriteAnim </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af80ba0f3893c2efd7f88cc6f2f05cf26" name="af80ba0f3893c2efd7f88cc6f2f05cf26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af80ba0f3893c2efd7f88cc6f2f05cf26">&#9670;&#160;</a></span>~SpriteAnim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpriteAnim::~SpriteAnim </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed70021a7a1c2a4e59571f5f0a7a7d8d" name="aed70021a7a1c2a4e59571f5f0a7a7d8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed70021a7a1c2a4e59571f5f0a7a7d8d">&#9670;&#160;</a></span>SpriteAnim() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpriteAnim::SpriteAnim </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6ec49ab67236c3b47be041eb8adc657e" name="a6ec49ab67236c3b47be041eb8adc657e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec49ab67236c3b47be041eb8adc657e">&#9670;&#160;</a></span>applyToQuad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::applyToQuad </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *&#160;</td>
+          <td class="paramname"><em>quad</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write current sheet frame into quad (requires sheet). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteSheet_8cpp_source.html#l00087">eve::animation::SpriteSheet::applyToQuad()</a> , 以及 <a class="el" href="SpriteAnim_8cpp_source.html#l00069">getSheetFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a10b0c132e442bfd9832e9ac125e133f0" name="a10b0c132e442bfd9832e9ac125e133f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10b0c132e442bfd9832e9ac125e133f0">&#9670;&#160;</a></span>bindQuad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::bindQuad </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *&#160;</td>
+          <td class="paramname"><em>quad</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Keep this Quad's viewport updated each update/play. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c45fe063aae411ce325a6995b7290a9" name="a6c45fe063aae411ce325a6995b7290a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c45fe063aae411ce325a6995b7290a9">&#9670;&#160;</a></span>getBoundQuad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> * eve::animation::SpriteAnim::getBoundQuad </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa66f6d79bc42b283ed4e9d5295100599" name="aa66f6d79bc42b283ed4e9d5295100599"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa66f6d79bc42b283ed4e9d5295100599">&#9670;&#160;</a></span>getClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpriteClip.html">SpriteClip</a> * eve::animation::SpriteAnim::getClip </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a485610496a399b7bf5dcb1a4e3700528" name="a485610496a399b7bf5dcb1a4e3700528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a485610496a399b7bf5dcb1a4e3700528">&#9670;&#160;</a></span>getClipFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteAnim::getClipFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Index inside the current clip (0..clipFrameCount-1), or -1. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7eeb28565ccb9a1263eba3cac4af25a5" name="a7eeb28565ccb9a1263eba3cac4af25a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eeb28565ccb9a1263eba3cac4af25a5">&#9670;&#160;</a></span>getLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpriteAnim::getLoop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteClip_8h_source.html#l00026">eve::animation::SpriteClip::getLoop()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteAnim_8cpp_source.html#l00131">update()</a>.</p>
+
+</div>
+</div>
+<a id="a00967fc7ee1ecdd6069ec48edf38d9b7" name="a00967fc7ee1ecdd6069ec48edf38d9b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00967fc7ee1ecdd6069ec48edf38d9b7">&#9670;&#160;</a></span>getSheet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> * eve::animation::SpriteAnim::getSheet </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1439051d1988ee50d70766801d75364" name="ae1439051d1988ee50d70766801d75364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1439051d1988ee50d70766801d75364">&#9670;&#160;</a></span>getSheetFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteAnim::getSheetFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sheet frame index for the current cell, or -1. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteClip_8cpp_source.html#l00038">eve::animation::SpriteClip::getSheetFrame()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteAnim_8cpp_source.html#l00081">applyToQuad()</a>.</p>
+
+</div>
+</div>
+<a id="a4e864f82f6c639c41bd717ec5f7ecfdc" name="a4e864f82f6c639c41bd717ec5f7ecfdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e864f82f6c639c41bd717ec5f7ecfdc">&#9670;&#160;</a></span>getSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpriteAnim::getSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af243b23244846447a025d72a1aa37f7e" name="af243b23244846447a025d72a1aa37f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af243b23244846447a025d72a1aa37f7e">&#9670;&#160;</a></span>getTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::SpriteAnim::getTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12c69b9d0616e21de73396345c102477" name="a12c69b9d0616e21de73396345c102477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c69b9d0616e21de73396345c102477">&#9670;&#160;</a></span>isFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpriteAnim::isFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abcfeb046a77cfad062d4e5215707b976" name="abcfeb046a77cfad062d4e5215707b976"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcfeb046a77cfad062d4e5215707b976">&#9670;&#160;</a></span>isPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpriteAnim::isPaused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabf466ef79c8ebc267c48746d233ae1c" name="aabf466ef79c8ebc267c48746d233ae1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf466ef79c8ebc267c48746d233ae1c">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpriteAnim::isPlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79738c78eba0f0b0ccb3db7aa9b6e839" name="a79738c78eba0f0b0ccb3db7aa9b6e839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79738c78eba0f0b0ccb3db7aa9b6e839">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a> &amp; eve::animation::SpriteAnim::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html">SpriteAnim</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17751135d58e992fa296c1cd8bb1b8e9" name="a17751135d58e992fa296c1cd8bb1b8e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17751135d58e992fa296c1cd8bb1b8e9">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::pause </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b5c2d0580b3825d9dde40fdef87b9c6" name="a2b5c2d0580b3825d9dde40fdef87b9c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b5c2d0580b3825d9dde40fdef87b9c6">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::play </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1SpriteClip.html">SpriteClip</a> *&#160;</td>
+          <td class="paramname"><em>clip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a44ca16324ebbc523a2df7da80660e160" name="a44ca16324ebbc523a2df7da80660e160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44ca16324ebbc523a2df7da80660e160">&#9670;&#160;</a></span>resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::resume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20c1072e82f308094e4ceb85c5b97cd6" name="a20c1072e82f308094e4ceb85c5b97cd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20c1072e82f308094e4ceb85c5b97cd6">&#9670;&#160;</a></span>setLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::setLoop </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loop</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a8349be5a6b9d4e7b63d49c3cdc2923" name="a3a8349be5a6b9d4e7b63d49c3cdc2923"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a8349be5a6b9d4e7b63d49c3cdc2923">&#9670;&#160;</a></span>setSheet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::setSheet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> *&#160;</td>
+          <td class="paramname"><em>sheet</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional sheet used by applyToQuad / bindQuad. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a375bc15aa7b6f2af24027e6c1fcfacdb" name="a375bc15aa7b6f2af24027e6c1fcfacdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a375bc15aa7b6f2af24027e6c1fcfacdb">&#9670;&#160;</a></span>setSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::setSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2410a15e23de4cfaa7fc9e79108f75be" name="a2410a15e23de4cfaa7fc9e79108f75be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2410a15e23de4cfaa7fc9e79108f75be">&#9670;&#160;</a></span>setTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::setTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ef57e56f85967170ad597fe7c8d7b6f" name="a4ef57e56f85967170ad597fe7c8d7b6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ef57e56f85967170ad597fe7c8d7b6f">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c12d47d60072843e706647f46908f53" name="a6c12d47d60072843e706647f46908f53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c12d47d60072843e706647f46908f53">&#9670;&#160;</a></span>unbindQuad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteAnim::unbindQuad </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a134c003ddc547d530338fa8ccfcb9765" name="a134c003ddc547d530338fa8ccfcb9765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a134c003ddc547d530338fa8ccfcb9765">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::SpriteAnim::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance playback. Returns true while still active (playing or paused). Auto-applies to boundQuad when sheet is set. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a> 第 <a class="el" href="SpriteAnim_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteClip_8cpp_source.html#l00048">eve::animation::SpriteClip::getDuration()</a> , 以及 <a class="el" href="SpriteAnim_8cpp_source.html#l00065">getLoop()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="af47625f50036c466946f960db7320bcf" name="af47625f50036c466946f960db7320bcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af47625f50036c466946f960db7320bcf">&#9670;&#160;</a></span>Animation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1animation_1_1Animation.html">Animation</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a> 第 <a class="el" href="SpriteAnim_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="SpriteAnim_8h_source.html">SpriteAnim.h</a></li>
+<li>src/modules/animation/<a class="el" href="SpriteAnim_8cpp_source.html">SpriteAnim.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

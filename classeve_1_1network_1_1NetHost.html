@@ -1,0 +1,654 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network::NetHost类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1NetHost.html">NetHost</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1network_1_1NetHost-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::network::NetHost类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="NetHost_8h_source.html">NetHost.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:ac7a20bd39a08fa461083b428ee8bd0df" id="r_ac7a20bd39a08fa461083b428ee8bd0df"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#ac7a20bd39a08fa461083b428ee8bd0df">MessageHandler</a> = std::function&lt; void(uint32_t peerId, <a class="el" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">UdpLink::MsgType</a>, uint8_t channel, const char *, size_t)&gt;</td></tr>
+<tr class="separator:ac7a20bd39a08fa461083b428ee8bd0df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0143c7d785a7c391e23e06e2087222" id="r_aca0143c7d785a7c391e23e06e2087222"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#aca0143c7d785a7c391e23e06e2087222">PeerHandler</a> = std::function&lt; void(uint32_t peerId)&gt;</td></tr>
+<tr class="separator:aca0143c7d785a7c391e23e06e2087222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af1b1651fd0ef8586a2b0773f956ca760" id="r_af1b1651fd0ef8586a2b0773f956ca760"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#af1b1651fd0ef8586a2b0773f956ca760">NetHost</a> (<a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *net)</td></tr>
+<tr class="separator:af1b1651fd0ef8586a2b0773f956ca760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0dd33f95422525f31fd7f40f4da9fc5" id="r_ad0dd33f95422525f31fd7f40f4da9fc5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#ad0dd33f95422525f31fd7f40f4da9fc5">~NetHost</a> ()</td></tr>
+<tr class="separator:ad0dd33f95422525f31fd7f40f4da9fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94411e432ca33a665b3df2c94dc18c98" id="r_a94411e432ca33a665b3df2c94dc18c98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#a94411e432ca33a665b3df2c94dc18c98">start</a> (uint16_t port)</td></tr>
+<tr class="separator:a94411e432ca33a665b3df2c94dc18c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a0c6322b50bf777246a4d643501e74f" id="r_a4a0c6322b50bf777246a4d643501e74f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#a4a0c6322b50bf777246a4d643501e74f">setLossRate</a> (float rate)</td></tr>
+<tr class="separator:a4a0c6322b50bf777246a4d643501e74f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab63b1b6fe3b2519a2a3ae2cbc5bf5c60" id="r_ab63b1b6fe3b2519a2a3ae2cbc5bf5c60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#ab63b1b6fe3b2519a2a3ae2cbc5bf5c60">setTimeoutMs</a> (int ms)</td></tr>
+<tr class="separator:ab63b1b6fe3b2519a2a3ae2cbc5bf5c60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79941642974e647f6ccb77786b6dee5a" id="r_a79941642974e647f6ccb77786b6dee5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#a79941642974e647f6ccb77786b6dee5a">onDatagram</a> (const std::vector&lt; char &gt; &amp;bytes, const std::string &amp;from)</td></tr>
+<tr class="separator:a79941642974e647f6ccb77786b6dee5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc1fedc0a3abf79a0073661290743f3" id="r_a7bc1fedc0a3abf79a0073661290743f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#a7bc1fedc0a3abf79a0073661290743f3">pump</a> (int64_t nowMs)</td></tr>
+<tr class="separator:a7bc1fedc0a3abf79a0073661290743f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7dd194f4f0652dae90fa61baad5e67c" id="r_af7dd194f4f0652dae90fa61baad5e67c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#af7dd194f4f0652dae90fa61baad5e67c">linkByPeerId</a> (uint32_t peerId) const</td></tr>
+<tr class="separator:af7dd194f4f0652dae90fa61baad5e67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8ba2d806591a42f0de2e13129d099ef" id="r_ad8ba2d806591a42f0de2e13129d099ef"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#ad8ba2d806591a42f0de2e13129d099ef">peerCount</a> () const</td></tr>
+<tr class="separator:ad8ba2d806591a42f0de2e13129d099ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf8e4c707a7e4757374d062db2d7a7e9" id="r_aaf8e4c707a7e4757374d062db2d7a7e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#aaf8e4c707a7e4757374d062db2d7a7e9">sendTo</a> (uint32_t peerId, <a class="el" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">UdpLink::MsgType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, uint8_t channel, const void *data, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:aaf8e4c707a7e4757374d062db2d7a7e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce4024ee6f46846623b2f4731f979e5" id="r_a2ce4024ee6f46846623b2f4731f979e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#a2ce4024ee6f46846623b2f4731f979e5">sendStringTo</a> (uint32_t peerId, <a class="el" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">UdpLink::MsgType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, uint8_t channel, const std::string &amp;<a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="separator:a2ce4024ee6f46846623b2f4731f979e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15411610eff42baccdf067438206d37f" id="r_a15411610eff42baccdf067438206d37f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#a15411610eff42baccdf067438206d37f">setMessageHandler</a> (<a class="el" href="classeve_1_1network_1_1NetHost.html#ac7a20bd39a08fa461083b428ee8bd0df">MessageHandler</a> <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:a15411610eff42baccdf067438206d37f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada983c9f299ef88c6bd93d271a9fdca3" id="r_ada983c9f299ef88c6bd93d271a9fdca3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#ada983c9f299ef88c6bd93d271a9fdca3">setPeerConnectedHandler</a> (<a class="el" href="classeve_1_1network_1_1NetHost.html#aca0143c7d785a7c391e23e06e2087222">PeerHandler</a> <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:ada983c9f299ef88c6bd93d271a9fdca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae788416e39152a2cc4652a2a1935dbb9" id="r_ae788416e39152a2cc4652a2a1935dbb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetHost.html#ae788416e39152a2cc4652a2a1935dbb9">setPeerDisconnectedHandler</a> (<a class="el" href="classeve_1_1network_1_1NetHost.html#aca0143c7d785a7c391e23e06e2087222">PeerHandler</a> <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:ae788416e39152a2cc4652a2a1935dbb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UDP host: one bound socket shared by all peers. Datagrams are routed by the sender address string to a per-peer <a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a>; new addresses get a peer id and emit peerconn. Link death (timeout) emits peerdisconn and removes the peer. All state is main-thread; <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> calls onDatagram/pump. </p>
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="ac7a20bd39a08fa461083b428ee8bd0df" name="ac7a20bd39a08fa461083b428ee8bd0df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a20bd39a08fa461083b428ee8bd0df">&#9670;&#160;</a></span>MessageHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1network_1_1NetHost.html#ac7a20bd39a08fa461083b428ee8bd0df">eve::network::NetHost::MessageHandler</a> =  std::function&lt;void(uint32_t peerId, <a class="el" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">UdpLink::MsgType</a>, uint8_t channel, const char*, size_t)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca0143c7d785a7c391e23e06e2087222" name="aca0143c7d785a7c391e23e06e2087222"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca0143c7d785a7c391e23e06e2087222">&#9670;&#160;</a></span>PeerHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1network_1_1NetHost.html#aca0143c7d785a7c391e23e06e2087222">eve::network::NetHost::PeerHandler</a> =  std::function&lt;void(uint32_t peerId)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af1b1651fd0ef8586a2b0773f956ca760" name="af1b1651fd0ef8586a2b0773f956ca760"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1b1651fd0ef8586a2b0773f956ca760">&#9670;&#160;</a></span>NetHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::NetHost::NetHost </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *&#160;</td>
+          <td class="paramname"><em>net</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0dd33f95422525f31fd7f40f4da9fc5" name="ad0dd33f95422525f31fd7f40f4da9fc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0dd33f95422525f31fd7f40f4da9fc5">&#9670;&#160;</a></span>~NetHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::NetHost::~NetHost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Network_8cpp_source.html#l00164">eve::network::Network::unbindUdpHost()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af7dd194f4f0652dae90fa61baad5e67c" name="af7dd194f4f0652dae90fa61baad5e67c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7dd194f4f0652dae90fa61baad5e67c">&#9670;&#160;</a></span>linkByPeerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> * eve::network::NetHost::linkByPeerId </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>peerId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetHost_8cpp_source.html#l00087">sendStringTo()</a> , 以及 <a class="el" href="NetHost_8cpp_source.html#l00081">sendTo()</a>.</p>
+
+</div>
+</div>
+<a id="a79941642974e647f6ccb77786b6dee5a" name="a79941642974e647f6ccb77786b6dee5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79941642974e647f6ccb77786b6dee5a">&#9670;&#160;</a></span>onDatagram()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::onDatagram </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>from</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+</div>
+</div>
+<a id="ad8ba2d806591a42f0de2e13129d099ef" name="ad8ba2d806591a42f0de2e13129d099ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8ba2d806591a42f0de2e13129d099ef">&#9670;&#160;</a></span>peerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::network::NetHost::peerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bc1fedc0a3abf79a0073661290743f3" name="a7bc1fedc0a3abf79a0073661290743f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc1fedc0a3abf79a0073661290743f3">&#9670;&#160;</a></span>pump()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::pump </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>nowMs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ce4024ee6f46846623b2f4731f979e5" name="a2ce4024ee6f46846623b2f4731f979e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ce4024ee6f46846623b2f4731f979e5">&#9670;&#160;</a></span>sendStringTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::NetHost::sendStringTo </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>peerId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">UdpLink::MsgType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetHost_8cpp_source.html#l00076">linkByPeerId()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="UdpLink_8cpp_source.html#l00236">eve::network::UdpLink::sendString()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="aaf8e4c707a7e4757374d062db2d7a7e9" name="aaf8e4c707a7e4757374d062db2d7a7e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf8e4c707a7e4757374d062db2d7a7e9">&#9670;&#160;</a></span>sendTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::sendTo </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>peerId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0">UdpLink::MsgType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>, <a class="el" href="NetHost_8cpp_source.html#l00076">linkByPeerId()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="UdpLink_8cpp_source.html#l00164">eve::network::UdpLink::send()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="a4a0c6322b50bf777246a4d643501e74f" name="a4a0c6322b50bf777246a4d643501e74f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a0c6322b50bf777246a4d643501e74f">&#9670;&#160;</a></span>setLossRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::setLossRate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a15411610eff42baccdf067438206d37f" name="a15411610eff42baccdf067438206d37f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15411610eff42baccdf067438206d37f">&#9670;&#160;</a></span>setMessageHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::setMessageHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1NetHost.html#ac7a20bd39a08fa461083b428ee8bd0df">MessageHandler</a>&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+</div>
+</div>
+<a id="ada983c9f299ef88c6bd93d271a9fdca3" name="ada983c9f299ef88c6bd93d271a9fdca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada983c9f299ef88c6bd93d271a9fdca3">&#9670;&#160;</a></span>setPeerConnectedHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::setPeerConnectedHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1NetHost.html#aca0143c7d785a7c391e23e06e2087222">PeerHandler</a>&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+</div>
+</div>
+<a id="ae788416e39152a2cc4652a2a1935dbb9" name="ae788416e39152a2cc4652a2a1935dbb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae788416e39152a2cc4652a2a1935dbb9">&#9670;&#160;</a></span>setPeerDisconnectedHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::setPeerDisconnectedHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1NetHost.html#aca0143c7d785a7c391e23e06e2087222">PeerHandler</a>&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8h_source.html">NetHost.h</a> 第 <a class="el" href="NetHost_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+</div>
+</div>
+<a id="ab63b1b6fe3b2519a2a3ae2cbc5bf5c60" name="ab63b1b6fe3b2519a2a3ae2cbc5bf5c60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab63b1b6fe3b2519a2a3ae2cbc5bf5c60">&#9670;&#160;</a></span>setTimeoutMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::NetHost::setTimeoutMs </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94411e432ca33a665b3df2c94dc18c98" name="a94411e432ca33a665b3df2c94dc18c98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94411e432ca33a665b3df2c94dc18c98">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::NetHost::start </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a> 第 <a class="el" href="NetHost_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpSocket_8cpp_source.html#l00022">eve::network::UdpSocket::bind()</a>, <a class="el" href="Network_8cpp_source.html#l00160">eve::network::Network::bindUdpHost()</a> , 以及 <a class="el" href="Network_8cpp_source.html#l00080">eve::network::Network::newUdp()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/network/<a class="el" href="NetHost_8h_source.html">NetHost.h</a></li>
+<li>src/modules/network/<a class="el" href="NetHost_8cpp_source.html">NetHost.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

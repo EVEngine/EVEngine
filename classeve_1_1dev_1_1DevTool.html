@@ -1,0 +1,1349 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::DevTool类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1dev_1_1DevTool-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::DevTool类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Platform-level script + render debugger / dynamic slicer front-end.  
+ <a href="classeve_1_1dev_1_1DevTool.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1DevTool_1_1ProfileEntry.html">ProfileEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-function script profile (line-hook timing).  <a href="structeve_1_1dev_1_1DevTool_1_1ProfileEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8363eb13e6b43cfe8e06be614df195ae" id="r_a8363eb13e6b43cfe8e06be614df195ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a8363eb13e6b43cfe8e06be614df195ae">DevTool</a> (const <a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp;)=delete</td></tr>
+<tr class="separator:a8363eb13e6b43cfe8e06be614df195ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7eaf15cc1a1d174dc7aa00f45b4170c" id="r_ae7eaf15cc1a1d174dc7aa00f45b4170c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#ae7eaf15cc1a1d174dc7aa00f45b4170c">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp;)=delete</td></tr>
+<tr class="separator:ae7eaf15cc1a1d174dc7aa00f45b4170c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41d438c61ca5e6f7ec3db7beb54927bc" id="r_a41d438c61ca5e6f7ec3db7beb54927bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a41d438c61ca5e6f7ec3db7beb54927bc">attach</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, bool <a class="el" href="classeve_1_1dev_1_1DevTool.html#a78d1dc7d7f0eb831425206012d9e3616">sampleLocals</a>=true)</td></tr>
+<tr class="memdesc:a41d438c61ca5e6f7ec3db7beb54927bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach script tracer to VM and enable render tracing.  <br /></td></tr>
+<tr class="separator:a41d438c61ca5e6f7ec3db7beb54927bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fab6410513bd1463ba36af3da3c9f3b" id="r_a4fab6410513bd1463ba36af3da3c9f3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a4fab6410513bd1463ba36af3da3c9f3b">attach</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, bool <a class="el" href="classeve_1_1dev_1_1DevTool.html#a78d1dc7d7f0eb831425206012d9e3616">sampleLocals</a>=true)</td></tr>
+<tr class="separator:a4fab6410513bd1463ba36af3da3c9f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a323886a2e66cb9920e9be06c3bb2dda2" id="r_a323886a2e66cb9920e9be06c3bb2dda2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a323886a2e66cb9920e9be06c3bb2dda2">enableRenderTrace</a> (bool on=true)</td></tr>
+<tr class="memdesc:a323886a2e66cb9920e9be06c3bb2dda2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable render-flow tracing without a Squirrel VM (C++ / unit tests).  <br /></td></tr>
+<tr class="separator:a323886a2e66cb9920e9be06c3bb2dda2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75bca794b35b8bea4a74e60c6b910622" id="r_a75bca794b35b8bea4a74e60c6b910622"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a75bca794b35b8bea4a74e60c6b910622">detach</a> ()</td></tr>
+<tr class="separator:a75bca794b35b8bea4a74e60c6b910622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49ee31c2108a8d58f2d79a69ac153c0a" id="r_a49ee31c2108a8d58f2d79a69ac153c0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a49ee31c2108a8d58f2d79a69ac153c0a">exposeScriptApi</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a49ee31c2108a8d58f2d79a69ac153c0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose <code><a class="el" href="namespaceeve_1_1dev.html">eve.dev</a></code> script API (pause/breakpoint/watch/snapshot/AI).  <br /></td></tr>
+<tr class="separator:a49ee31c2108a8d58f2d79a69ac153c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a331b4447543f2322eab4d6db992eda5e" id="r_a331b4447543f2322eab4d6db992eda5e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a331b4447543f2322eab4d6db992eda5e">startDap</a> (uint16_t port)</td></tr>
+<tr class="memdesc:a331b4447543f2322eab4d6db992eda5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start DAP server; returns bound port (0 on failure).  <br /></td></tr>
+<tr class="separator:a331b4447543f2322eab4d6db992eda5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a7a5fe7a19e6fd066809e08b046a18a" id="r_a3a7a5fe7a19e6fd066809e08b046a18a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a3a7a5fe7a19e6fd066809e08b046a18a">stopDap</a> ()</td></tr>
+<tr class="separator:a3a7a5fe7a19e6fd066809e08b046a18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815b5717e41590bd2cee3638760efe04" id="r_a815b5717e41590bd2cee3638760efe04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a815b5717e41590bd2cee3638760efe04">startMcp</a> (uint16_t port)</td></tr>
+<tr class="memdesc:a815b5717e41590bd2cee3638760efe04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start MCP server for AI tooling; returns bound port (0 on failure).  <br /></td></tr>
+<tr class="separator:a815b5717e41590bd2cee3638760efe04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b4b0422ed30e06d1e2848b06f76bd32" id="r_a5b4b0422ed30e06d1e2848b06f76bd32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a5b4b0422ed30e06d1e2848b06f76bd32">stopMcp</a> ()</td></tr>
+<tr class="separator:a5b4b0422ed30e06d1e2848b06f76bd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab43d0edd5d149b884a22c86b0fe4c60d" id="r_ab43d0edd5d149b884a22c86b0fe4c60d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#ab43d0edd5d149b884a22c86b0fe4c60d">poll</a> ()</td></tr>
+<tr class="separator:ab43d0edd5d149b884a22c86b0fe4c60d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc320eeec29837bbcedd183ccb5eeacc" id="r_acc320eeec29837bbcedd183ccb5eeacc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#acc320eeec29837bbcedd183ccb5eeacc">drawAiPanel</a> ()</td></tr>
+<tr class="memdesc:acc320eeec29837bbcedd183ccb5eeacc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw DevTools AI <a class="el" href="namespaceImGui.html">ImGui</a> panel when visible (call from UI/frame loop).  <br /></td></tr>
+<tr class="separator:acc320eeec29837bbcedd183ccb5eeacc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa54c842bf421e4a114319399a4cb331c" id="r_aa54c842bf421e4a114319399a4cb331c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#aa54c842bf421e4a114319399a4cb331c">drawConsolePanel</a> ()</td></tr>
+<tr class="memdesc:aa54c842bf421e4a114319399a4cb331c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw DevTools console <a class="el" href="namespaceImGui.html">ImGui</a> panel when visible (call from UI/frame loop).  <br /></td></tr>
+<tr class="separator:aa54c842bf421e4a114319399a4cb331c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad65e10bff5059442bcd9aeb1d33fb0c" id="r_aad65e10bff5059442bcd9aeb1d33fb0c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#aad65e10bff5059442bcd9aeb1d33fb0c">isAttached</a> () const</td></tr>
+<tr class="separator:aad65e10bff5059442bcd9aeb1d33fb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac4ee93cf7a138ead1005414a030fb5" id="r_a3ac4ee93cf7a138ead1005414a030fb5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a3ac4ee93cf7a138ead1005414a030fb5">renderTraceEnabled</a> () const</td></tr>
+<tr class="separator:a3ac4ee93cf7a138ead1005414a030fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d1dc7d7f0eb831425206012d9e3616" id="r_a78d1dc7d7f0eb831425206012d9e3616"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a78d1dc7d7f0eb831425206012d9e3616">sampleLocals</a> () const</td></tr>
+<tr class="separator:a78d1dc7d7f0eb831425206012d9e3616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a4c51e3e70c690d5cb9e86508080ac2" id="r_a8a4c51e3e70c690d5cb9e86508080ac2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a8a4c51e3e70c690d5cb9e86508080ac2">setSampleLocals</a> (bool on)</td></tr>
+<tr class="separator:a8a4c51e3e70c690d5cb9e86508080ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a664a81d25aede6d265cc6071ba9f953e" id="r_a664a81d25aede6d265cc6071ba9f953e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a664a81d25aede6d265cc6071ba9f953e">graph</a> ()</td></tr>
+<tr class="separator:a664a81d25aede6d265cc6071ba9f953e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4a933607d599fcde12506351644278c" id="r_aa4a933607d599fcde12506351644278c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#aa4a933607d599fcde12506351644278c">graph</a> () const</td></tr>
+<tr class="separator:aa4a933607d599fcde12506351644278c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42918902229d007ef97c92277ec2c5c2" id="r_a42918902229d007ef97c92277ec2c5c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a42918902229d007ef97c92277ec2c5c2">renderFlow</a> ()</td></tr>
+<tr class="separator:a42918902229d007ef97c92277ec2c5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0c08e8e866b412bad7c846cc216f993" id="r_af0c08e8e866b412bad7c846cc216f993"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#af0c08e8e866b412bad7c846cc216f993">renderFlow</a> () const</td></tr>
+<tr class="separator:af0c08e8e866b412bad7c846cc216f993"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40da0272e0a6a9697a2938ded98aac5b" id="r_a40da0272e0a6a9697a2938ded98aac5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1Debugger.html">Debugger</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a40da0272e0a6a9697a2938ded98aac5b">debugger</a> ()</td></tr>
+<tr class="separator:a40da0272e0a6a9697a2938ded98aac5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50c9cb31b9991252dc33214ed49651a8" id="r_a50c9cb31b9991252dc33214ed49651a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a50c9cb31b9991252dc33214ed49651a8">snapshot</a> ()</td></tr>
+<tr class="separator:a50c9cb31b9991252dc33214ed49651a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed24df2047ddb831a0a8876718bdf48b" id="r_aed24df2047ddb831a0a8876718bdf48b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1DebugAdapter.html">DebugAdapter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#aed24df2047ddb831a0a8876718bdf48b">dap</a> ()</td></tr>
+<tr class="separator:aed24df2047ddb831a0a8876718bdf48b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41bc4451cc1d92d63d2b90f357769a99" id="r_a41bc4451cc1d92d63d2b90f357769a99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a41bc4451cc1d92d63d2b90f357769a99">mcp</a> ()</td></tr>
+<tr class="separator:a41bc4451cc1d92d63d2b90f357769a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa07a789af3d9b26a06ee2d168f58a396" id="r_aa07a789af3d9b26a06ee2d168f58a396"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#aa07a789af3d9b26a06ee2d168f58a396">ai</a> ()</td></tr>
+<tr class="separator:aa07a789af3d9b26a06ee2d168f58a396"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98a4335133f787dc1f8d47ae4dfb87be" id="r_a98a4335133f787dc1f8d47ae4dfb87be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1ConsolePanel.html">ConsolePanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a98a4335133f787dc1f8d47ae4dfb87be">console</a> ()</td></tr>
+<tr class="separator:a98a4335133f787dc1f8d47ae4dfb87be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6b8cf9c3a53b9b68472b2c3a462d991" id="r_ae6b8cf9c3a53b9b68472b2c3a462d991"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1dev_1_1SliceResult.html">SliceResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#ae6b8cf9c3a53b9b68472b2c3a462d991">analyzeError</a> (const std::string &amp;errorMessage, const std::vector&lt; std::string &gt; &amp;hintVars={}) const</td></tr>
+<tr class="separator:ae6b8cf9c3a53b9b68472b2c3a462d991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb3273680c491a44c13440ce23a6779f" id="r_acb3273680c491a44c13440ce23a6779f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#acb3273680c491a44c13440ce23a6779f">formatError</a> (const std::string &amp;errorMessage, const std::vector&lt; std::string &gt; &amp;hintVars={}) const</td></tr>
+<tr class="separator:acb3273680c491a44c13440ce23a6779f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bcc50793b250056dfbeb090e783ebe7" id="r_a1bcc50793b250056dfbeb090e783ebe7"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a1bcc50793b250056dfbeb090e783ebe7">lastReport</a> () const</td></tr>
+<tr class="separator:a1bcc50793b250056dfbeb090e783ebe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fefbf0e20f248e104a9838f4d2e0d17" id="r_a4fefbf0e20f248e104a9838f4d2e0d17"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a4fefbf0e20f248e104a9838f4d2e0d17">lastError</a> () const</td></tr>
+<tr class="separator:a4fefbf0e20f248e104a9838f4d2e0d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43883bf3d426335569a6e54d628fac41" id="r_a43883bf3d426335569a6e54d628fac41"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1dev_1_1DevTool_1_1ProfileEntry.html">ProfileEntry</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a43883bf3d426335569a6e54d628fac41">profile</a> () const</td></tr>
+<tr class="separator:a43883bf3d426335569a6e54d628fac41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f2927eb2bb421c4aaa291c62f8a780b" id="r_a2f2927eb2bb421c4aaa291c62f8a780b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a2f2927eb2bb421c4aaa291c62f8a780b">profileClear</a> ()</td></tr>
+<tr class="separator:a2f2927eb2bb421c4aaa291c62f8a780b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa74aa715802d7d70c5df410c03c4149d" id="r_aa74aa715802d7d70c5df410c03c4149d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#aa74aa715802d7d70c5df410c03c4149d">formatProfileReport</a> () const</td></tr>
+<tr class="separator:aa74aa715802d7d70c5df410c03c4149d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8afed80153b50dbba927de73cc345e98" id="r_a8afed80153b50dbba927de73cc345e98"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a8afed80153b50dbba927de73cc345e98">notifyError</a> (const std::string &amp;errorMessage, const std::vector&lt; std::string &gt; &amp;hintVars={})</td></tr>
+<tr class="memdesc:a8afed80153b50dbba927de73cc345e98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record an error; includes script slice and render-pipeline slice when enabled.  <br /></td></tr>
+<tr class="separator:a8afed80153b50dbba927de73cc345e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f628b2848d62ad137e3ac0b9e52da43" id="r_a3f628b2848d62ad137e3ac0b9e52da43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#a3f628b2848d62ad137e3ac0b9e52da43">handleDebugEvent</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, int <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const char *source, int <a class="el" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, const char *funcname)</td></tr>
+<tr class="separator:a3f628b2848d62ad137e3ac0b9e52da43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad8c6a691ea8e9f9d99b58cbd8a56ebc3" id="r_ad8c6a691ea8e9f9d99b58cbd8a56ebc3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1DevTool.html#ad8c6a691ea8e9f9d99b58cbd8a56ebc3">instance</a> ()</td></tr>
+<tr class="separator:ad8c6a691ea8e9f9d99b58cbd8a56ebc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Platform-level script + render debugger / dynamic slicer front-end. </p>
+<p>When attached (typically via <code>eve run --debug</code>):</p><ul>
+<li>Squirrel: debug hook → <a class="el" href="classeve_1_1dev_1_1CallGraph.html" title="Runtime call graph + dynamic data-flow tracer with backward slicing.">CallGraph</a> (call stack + Def/Use data-flow)</li>
+<li>Breakpoints / watches / pause-step via <a class="el" href="classeve_1_1dev_1_1Debugger.html" title="Script + frame debugger: pause/step, breakpoints, watches.">Debugger</a></li>
+<li>Optional DAP TCP server for the VS Code eve-debug extension</li>
+<li>Optional MCP TCP server for AI agents (tools/resources/prompts)</li>
+<li>Script-state <a class="el" href="classeve_1_1dev_1_1Snapshot.html" title="Script + native state snapshot for state hot reload.">Snapshot</a> (engine treated as stateless)</li>
+<li>Render: installs <a class="el" href="classeve_1_1dev_1_1RenderFlow.html" title="Render-pipeline flow tracer with a Weiser-style backward slice.">RenderFlow</a> as <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html" title="Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers; when no tracer is inst...">eve::debug::IRenderTracer</a></li>
+<li>on errors: Weiser-style backward slice for script and/or render pipeline</li>
+<li>AI panel: session log + optional <a class="el" href="namespaceImGui.html">ImGui</a> "AI / MCP" window</li>
+</ul>
+<p>Not shipped on Android/iOS trimmed runtimes (EVDevTools is desktop-only). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8363eb13e6b43cfe8e06be614df195ae" name="a8363eb13e6b43cfe8e06be614df195ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8363eb13e6b43cfe8e06be614df195ae">&#9670;&#160;</a></span>DevTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::DevTool::DevTool </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa07a789af3d9b26a06ee2d168f58a396" name="aa07a789af3d9b26a06ee2d168f58a396"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa07a789af3d9b26a06ee2d168f58a396">&#9670;&#160;</a></span>ai()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp; eve::dev::DevTool::ai </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8cpp_source.html#l00015">eve::dev::AiPanel::instance()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="ae6b8cf9c3a53b9b68472b2c3a462d991" name="ae6b8cf9c3a53b9b68472b2c3a462d991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6b8cf9c3a53b9b68472b2c3a462d991">&#9670;&#160;</a></span>analyzeError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dev_1_1SliceResult.html">SliceResult</a> eve::dev::DevTool::analyzeError </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>errorMessage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>hintVars</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00534">534</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94adde5c8d4149c5072d2cb798706663e78">eve::dev::Def</a>, <a class="el" href="CallGraph_8hpp_source.html#l00144">eve::dev::CallGraph::EventsView::empty()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00154">eve::dev::CallGraph::events()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4">eve::dev::Line</a>, <a class="el" href="CallGraph_8cpp_source.html#l00315">eve::dev::CallGraph::sliceBackward()</a>, <a class="el" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94aad8783089f828b927473fb61d51940ec">eve::dev::Use</a> , 以及 <a class="el" href="CallGraph_8hpp_source.html#l00059">eve::dev::SliceCriterion::variables</a>.</p>
+
+</div>
+</div>
+<a id="a4fab6410513bd1463ba36af3da3c9f3b" name="a4fab6410513bd1463ba36af3da3c9f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fab6410513bd1463ba36af3da3c9f3b">&#9670;&#160;</a></span>attach() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::attach </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sampleLocals</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConsolePanel_8cpp_source.html#l00154">eve::dev::ConsolePanel::addLog()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00199">eve::dev::ConsolePanel::attach()</a>, <a class="el" href="Debugger_8cpp_source.html#l00351">eve::dev::Debugger::attach()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00031">eve::dev::CallGraph::clear()</a>, <a class="el" href="DevTool_8cpp_source.html#l00167">detach()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00123">eve::dev::ConsolePanel::instance()</a>, <a class="el" href="Debugger_8cpp_source.html#l00304">eve::dev::Debugger::instance()</a>, <a class="el" href="DevTool_8hpp_source.html#l00075">sampleLocals()</a>, <a class="el" href="Debugger_8hpp_source.html#l00179">eve::dev::Debugger::setPump()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a41d438c61ca5e6f7ec3db7beb54927bc" name="a41d438c61ca5e6f7ec3db7beb54927bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41d438c61ca5e6f7ec3db7beb54927bc">&#9670;&#160;</a></span>attach() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::attach </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sampleLocals</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach script tracer to VM and enable render tracing. </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DevTool_8cpp_source.html#l00123">attach()</a>, <a class="el" href="DevTool_8hpp_source.html#l00075">sampleLocals()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00123">attach()</a>.</p>
+
+</div>
+</div>
+<a id="a98a4335133f787dc1f8d47ae4dfb87be" name="a98a4335133f787dc1f8d47ae4dfb87be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98a4335133f787dc1f8d47ae4dfb87be">&#9670;&#160;</a></span>console()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1ConsolePanel.html">ConsolePanel</a> &amp; eve::dev::DevTool::console </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConsolePanel_8cpp_source.html#l00123">eve::dev::ConsolePanel::instance()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="aed24df2047ddb831a0a8876718bdf48b" name="aed24df2047ddb831a0a8876718bdf48b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed24df2047ddb831a0a8876718bdf48b">&#9670;&#160;</a></span>dap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1DebugAdapter.html">DebugAdapter</a> &amp; eve::dev::DevTool::dap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>, <a class="el" href="DevTool_8cpp_source.html#l00404">handleDebugEvent()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00628">notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a40da0272e0a6a9697a2938ded98aac5b" name="a40da0272e0a6a9697a2938ded98aac5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40da0272e0a6a9697a2938ded98aac5b">&#9670;&#160;</a></span>debugger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1Debugger.html">Debugger</a> &amp; eve::dev::DevTool::debugger </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00628">notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="a75bca794b35b8bea4a74e60c6b910622" name="a75bca794b35b8bea4a74e60c6b910622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75bca794b35b8bea4a74e60c6b910622">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::detach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConsolePanel_8cpp_source.html#l00210">eve::dev::ConsolePanel::detach()</a>, <a class="el" href="Debugger_8cpp_source.html#l00360">eve::dev::Debugger::detach()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00123">eve::dev::ConsolePanel::instance()</a>, <a class="el" href="Debugger_8cpp_source.html#l00304">eve::dev::Debugger::instance()</a>, <a class="el" href="DevTool_8cpp_source.html#l00184">stopDap()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00188">stopMcp()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00143">attach()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="acc320eeec29837bbcedd183ccb5eeacc" name="acc320eeec29837bbcedd183ccb5eeacc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc320eeec29837bbcedd183ccb5eeacc">&#9670;&#160;</a></span>drawAiPanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::drawAiPanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw DevTools AI <a class="el" href="namespaceImGui.html">ImGui</a> panel when visible (call from UI/frame loop). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8cpp_source.html#l00140">eve::dev::AiPanel::drawImGui()</a> , 以及 <a class="el" href="AiPanel_8cpp_source.html#l00015">eve::dev::AiPanel::instance()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="aa54c842bf421e4a114319399a4cb331c" name="aa54c842bf421e4a114319399a4cb331c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54c842bf421e4a114319399a4cb331c">&#9670;&#160;</a></span>drawConsolePanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::drawConsolePanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw DevTools console <a class="el" href="namespaceImGui.html">ImGui</a> panel when visible (call from UI/frame loop). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConsolePanel_8cpp_source.html#l00254">eve::dev::ConsolePanel::drawImGui()</a> , 以及 <a class="el" href="ConsolePanel_8cpp_source.html#l00123">eve::dev::ConsolePanel::instance()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a323886a2e66cb9920e9be06c3bb2dda2" name="a323886a2e66cb9920e9be06c3bb2dda2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a323886a2e66cb9920e9be06c3bb2dda2">&#9670;&#160;</a></span>enableRenderTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::enableRenderTrace </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable render-flow tracing without a Squirrel VM (C++ / unit tests). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49ee31c2108a8d58f2d79a69ac153c0a" name="a49ee31c2108a8d58f2d79a69ac153c0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49ee31c2108a8d58f2d79a69ac153c0a">&#9670;&#160;</a></span>exposeScriptApi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::exposeScriptApi </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expose <code><a class="el" href="namespaceeve_1_1dev.html">eve.dev</a></code> script API (pause/breakpoint/watch/snapshot/AI). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConsolePanel_8cpp_source.html#l00168">eve::dev::ConsolePanel::addError()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00164">eve::dev::ConsolePanel::addInfo()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00154">eve::dev::ConsolePanel::addLog()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00095">eve::dev::AiPanel::addNote()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00166">eve::dev::ConsolePanel::addWarn()</a>, <a class="el" href="Debugger_8cpp_source.html#l00651">eve::dev::Debugger::addWatch()</a>, <a class="el" href="DevTool_8cpp_source.html#l00192">ai()</a>, <a class="el" href="Debugger_8hpp_source.html#l00169">eve::dev::Debugger::breakOnError()</a>, <a class="el" href="Debugger_8hpp_source.html#l00172">eve::dev::Debugger::breakpointsEnabled()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00402">eve::dev::Snapshot::capture()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00170">eve::dev::ConsolePanel::clear()</a>, <a class="el" href="Debugger_8cpp_source.html#l00619">eve::dev::Debugger::clearBreakpoint()</a>, <a class="el" href="Debugger_8cpp_source.html#l00630">eve::dev::Debugger::clearBreakpoints()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00079">eve::dev::AiPanel::clearLog()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00305">eve::dev::Snapshot::clearRoots()</a>, <a class="el" href="Debugger_8cpp_source.html#l00668">eve::dev::Debugger::clearWatches()</a>, <a class="el" href="DevTool_8cpp_source.html#l00194">console()</a>, <a class="el" href="DevTool_8hpp_source.html#l00084">dap()</a>, <a class="el" href="DevTool_8hpp_source.html#l00082">debugger()</a>, <a class="el" href="DevTool_8cpp_source.html#l00201">drawAiPanel()</a>, <a class="el" href="DevTool_8cpp_source.html#l00203">drawConsolePanel()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00217">eve::dev::ConsolePanel::eval()</a>, <a class="el" href="Debugger_8cpp_source.html#l00888">eve::dev::Debugger::evaluate()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00190">eve::dev::ConsolePanel::format()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00106">eve::dev::AiPanel::formatLog()</a>, <a class="el" href="DevTool_8cpp_source.html#l00711">formatProfileReport()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00015">eve::dev::AiPanel::instance()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00123">eve::dev::ConsolePanel::instance()</a>, <a class="el" href="ReloadSession_8cpp_source.html#l00007">eve::dev::ReloadSession::instance()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00286">eve::dev::Snapshot::instance()</a>, <a class="el" href="Debugger_8hpp_source.html#l00112">eve::dev::Debugger::isPaused()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00042">eve::dev::AiPanel::isVisible()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00147">eve::dev::ConsolePanel::isVisible()</a>, <a class="el" href="DevTool_8hpp_source.html#l00096">lastError()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a>, <a class="el" href="Snapshot_8cpp_source.html#l00495">eve::dev::Snapshot::loadFile()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00293">eve::dev::Snapshot::markRoot()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00064">eve::dev::AiPanel::mcpConnected()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00054">eve::dev::AiPanel::mcpPort()</a>, <a class="el" href="Debugger_8hpp_source.html#l00113">eve::dev::Debugger::mode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00373">eve::dev::DebugAdapter::notifyContinued()</a>, <a class="el" href="DevTool_8cpp_source.html#l00628">notifyError()</a>, <a class="el" href="Debugger_8cpp_source.html#l00453">eve::dev::Debugger::notifyFrameDone()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00351">eve::dev::DebugAdapter::notifyStopped()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Debugger_8cpp_source.html#l00368">eve::dev::Debugger::pause()</a>, <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a">eve::dev::PauseKey</a>, <a class="el" href="DevTool_8cpp_source.html#l00196">poll()</a>, <a class="el" href="DevTool_8hpp_source.html#l00105">profileClear()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00181">eve::dev::ConsolePanel::recent()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00089">eve::dev::DebugAdapter::registerSource()</a>, <a class="el" href="Debugger_8cpp_source.html#l00660">eve::dev::Debugger::removeWatch()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00469">eve::dev::Snapshot::restore()</a>, <a class="el" href="Debugger_8cpp_source.html#l00376">eve::dev::Debugger::resume()</a>, <a class="el" href="Snapshot_8hpp_source.html#l00048">eve::dev::Snapshot::rootsFor()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00483">eve::dev::Snapshot::saveFile()</a>, <a class="el" href="Debugger_8hpp_source.html#l00168">eve::dev::Debugger::setBreakOnError()</a>, <a class="el" href="Debugger_8cpp_source.html#l00597">eve::dev::Debugger::setBreakpoint()</a>, <a class="el" href="Debugger_8hpp_source.html#l00171">eve::dev::Debugger::setBreakpointsEnabled()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00037">eve::dev::AiPanel::setVisible()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00142">eve::dev::ConsolePanel::setVisible()</a>, <a class="el" href="Debugger_8cpp_source.html#l00443">eve::dev::Debugger::shouldRunUpdate()</a>, <a class="el" href="DevTool_8hpp_source.html#l00083">snapshot()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00117">eve::dev::AiPanel::statusLine()</a>, <a class="el" href="Debugger_8cpp_source.html#l00432">eve::dev::Debugger::step()</a>, <a class="el" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494">eve::dev::StepFrame</a>, <a class="el" href="Debugger_8cpp_source.html#l00385">eve::dev::Debugger::stepFrame()</a>, <a class="el" href="Debugger_8cpp_source.html#l00419">eve::dev::Debugger::stepInto()</a>, <a class="el" href="Debugger_8hpp_source.html#l00106">eve::dev::Debugger::stepLine()</a>, <a class="el" href="Debugger_8cpp_source.html#l00423">eve::dev::Debugger::stepOut()</a>, <a class="el" href="Debugger_8cpp_source.html#l00421">eve::dev::Debugger::stepOver()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00047">eve::dev::AiPanel::toggleVisible()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00152">eve::dev::ConsolePanel::toggleVisible()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00301">eve::dev::Snapshot::unmarkRoot()</a>, <a class="el" href="Debugger_8hpp_source.html#l00059">eve::dev::VariableInfo::value</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="acb3273680c491a44c13440ce23a6779f" name="acb3273680c491a44c13440ce23a6779f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb3273680c491a44c13440ce23a6779f">&#9670;&#160;</a></span>formatError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::DevTool::formatError </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>errorMessage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>hintVars</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00566">566</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="CallGraph_8hpp_source.html#l00144">eve::dev::CallGraph::EventsView::empty()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00154">eve::dev::CallGraph::events()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00396">eve::dev::CallGraph::formatErrorReport()</a> , 以及 <a class="el" href="CallGraph_8hpp_source.html#l00059">eve::dev::SliceCriterion::variables</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00682">eve::dev::mcpFormatError()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00628">notifyError()</a>.</p>
+
+</div>
+</div>
+<a id="aa74aa715802d7d70c5df410c03c4149d" name="aa74aa715802d7d70c5df410c03c4149d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa74aa715802d7d70c5df410c03c4149d">&#9670;&#160;</a></span>formatProfileReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::DevTool::formatProfileReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00711">711</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a664a81d25aede6d265cc6071ba9f953e" name="a664a81d25aede6d265cc6071ba9f953e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a664a81d25aede6d265cc6071ba9f953e">&#9670;&#160;</a></span>graph() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a> &amp; eve::dev::DevTool::graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00674">eve::dev::mcpCallgraphEvents()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00676">eve::dev::mcpCallgraphStackDepth()</a>.</p>
+
+</div>
+</div>
+<a id="aa4a933607d599fcde12506351644278c" name="aa4a933607d599fcde12506351644278c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4a933607d599fcde12506351644278c">&#9670;&#160;</a></span>graph() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a> &amp; eve::dev::DevTool::graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f628b2848d62ad137e3ac0b9e52da43" name="a3f628b2848d62ad137e3ac0b9e52da43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f628b2848d62ad137e3ac0b9e52da43">&#9670;&#160;</a></span>handleDebugEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::handleDebugEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>funcname</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CallGraph_8cpp_source.html#l00211">eve::dev::CallGraph::currentStack()</a>, <a class="el" href="DevTool_8hpp_source.html#l00084">dap()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00019">eve::dev::SourceLoc::function</a>, <a class="el" href="Debugger_8cpp_source.html#l00304">eve::dev::Debugger::instance()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00018">eve::dev::SourceLoc::line</a>, <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00351">eve::dev::DebugAdapter::notifyStopped()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00115">eve::dev::CallGraph::onCall()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00135">eve::dev::CallGraph::onLine()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00125">eve::dev::CallGraph::onReturn()</a>, <a class="el" href="Debugger_8cpp_source.html#l00679">eve::dev::Debugger::refreshWatches()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00017">eve::dev::SourceLoc::source</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>, <a class="el" href="ECS_8cpp_source.html#l00020">vm</a> , 以及 <a class="el" href="Debugger_8cpp_source.html#l00572">eve::dev::Debugger::waitWhilePaused()</a>.</p>
+
+</div>
+</div>
+<a id="ad8c6a691ea8e9f9d99b58cbd8a56ebc3" name="ad8c6a691ea8e9f9d99b58cbd8a56ebc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8c6a691ea8e9f9d99b58cbd8a56ebc3">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp; eve::dev::DevTool::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00674">eve::dev::mcpCallgraphEvents()</a>, <a class="el" href="DevTool_8cpp_source.html#l00676">eve::dev::mcpCallgraphStackDepth()</a>, <a class="el" href="DevTool_8cpp_source.html#l00672">eve::dev::mcpDevAttached()</a>, <a class="el" href="DevTool_8cpp_source.html#l00682">eve::dev::mcpFormatError()</a>, <a class="el" href="Mcp_8cpp_source.html#l00069">eve::cmd::Cmdline::McpHost()</a>, <a class="el" href="DevTool_8cpp_source.html#l00680">eve::dev::mcpLastReport()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="aad65e10bff5059442bcd9aeb1d33fb0c" name="aad65e10bff5059442bcd9aeb1d33fb0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad65e10bff5059442bcd9aeb1d33fb0c">&#9670;&#160;</a></span>isAttached()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::DevTool::isAttached </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00672">eve::dev::mcpDevAttached()</a>.</p>
+
+</div>
+</div>
+<a id="a4fefbf0e20f248e104a9838f4d2e0d17" name="a4fefbf0e20f248e104a9838f4d2e0d17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fefbf0e20f248e104a9838f4d2e0d17">&#9670;&#160;</a></span>lastError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::DevTool::lastError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a1bcc50793b250056dfbeb090e783ebe7" name="a1bcc50793b250056dfbeb090e783ebe7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bcc50793b250056dfbeb090e783ebe7">&#9670;&#160;</a></span>lastReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::DevTool::lastReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00680">eve::dev::mcpLastReport()</a>.</p>
+
+</div>
+</div>
+<a id="a41bc4451cc1d92d63d2b90f357769a99" name="a41bc4451cc1d92d63d2b90f357769a99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41bc4451cc1d92d63d2b90f357769a99">&#9670;&#160;</a></span>mcp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp; eve::dev::DevTool::mcp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpServer_8cpp_source.html#l01512">eve::dev::McpServer::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a8afed80153b50dbba927de73cc345e98" name="a8afed80153b50dbba927de73cc345e98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8afed80153b50dbba927de73cc345e98">&#9670;&#160;</a></span>notifyError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::DevTool::notifyError </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>errorMessage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>hintVars</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record an error; includes script slice and render-pipeline slice when enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00628">628</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DevTool_8hpp_source.html#l00084">dap()</a>, <a class="el" href="DevTool_8hpp_source.html#l00082">debugger()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00144">eve::dev::CallGraph::EventsView::empty()</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00105">eve::dev::RenderFlow::EventsView::empty()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00151">eve::dev::RenderFlow::error()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00154">eve::dev::CallGraph::events()</a>, <a class="el" href="RenderFlow_8hpp_source.html#l00115">eve::dev::RenderFlow::events()</a>, <a class="el" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">eve::dev::Exception</a>, <a class="el" href="DevTool_8cpp_source.html#l00566">formatError()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00231">eve::dev::RenderFlow::formatErrorReport()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00019">eve::dev::SourceLoc::function</a>, <a class="el" href="RenderVision_8cpp_source.html#l00068">eve::dev::RenderVision::instance()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00018">eve::dev::SourceLoc::line</a>, <a class="el" href="RenderVision_8cpp_source.html#l00146">eve::dev::RenderVision::notifyPending()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00351">eve::dev::DebugAdapter::notifyStopped()</a>, <a class="el" href="Debugger_8cpp_source.html#l00368">eve::dev::Debugger::pause()</a>, <a class="el" href="CallGraph_8hpp_source.html#l00017">eve::dev::SourceLoc::source</a> , 以及 <a class="el" href="Debugger_8cpp_source.html#l00572">eve::dev::Debugger::waitWhilePaused()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="ae7eaf15cc1a1d174dc7aa00f45b4170c" name="ae7eaf15cc1a1d174dc7aa00f45b4170c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7eaf15cc1a1d174dc7aa00f45b4170c">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp; eve::dev::DevTool::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1DevTool.html">DevTool</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab43d0edd5d149b884a22c86b0fe4c60d" name="ab43d0edd5d149b884a22c86b0fe4c60d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab43d0edd5d149b884a22c86b0fe4c60d">&#9670;&#160;</a></span>poll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::poll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DebugAdapter_8cpp_source.html#l00071">eve::dev::DebugAdapter::instance()</a>, <a class="el" href="McpServer_8cpp_source.html#l01512">eve::dev::McpServer::instance()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00815">eve::dev::DebugAdapter::poll()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l01663">eve::dev::McpServer::poll()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a43883bf3d426335569a6e54d628fac41" name="a43883bf3d426335569a6e54d628fac41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43883bf3d426335569a6e54d628fac41">&#9670;&#160;</a></span>profile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1dev_1_1DevTool_1_1ProfileEntry.html">ProfileEntry</a> &gt; &amp; eve::dev::DevTool::profile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f2927eb2bb421c4aaa291c62f8a780b" name="a2f2927eb2bb421c4aaa291c62f8a780b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f2927eb2bb421c4aaa291c62f8a780b">&#9670;&#160;</a></span>profileClear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::profileClear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a42918902229d007ef97c92277ec2c5c2" name="a42918902229d007ef97c92277ec2c5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42918902229d007ef97c92277ec2c5c2">&#9670;&#160;</a></span>renderFlow() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a> &amp; eve::dev::DevTool::renderFlow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af0c08e8e866b412bad7c846cc216f993" name="af0c08e8e866b412bad7c846cc216f993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0c08e8e866b412bad7c846cc216f993">&#9670;&#160;</a></span>renderFlow() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a> &amp; eve::dev::DevTool::renderFlow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ac4ee93cf7a138ead1005414a030fb5" name="a3ac4ee93cf7a138ead1005414a030fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac4ee93cf7a138ead1005414a030fb5">&#9670;&#160;</a></span>renderTraceEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::DevTool::renderTraceEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78d1dc7d7f0eb831425206012d9e3616" name="a78d1dc7d7f0eb831425206012d9e3616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d1dc7d7f0eb831425206012d9e3616">&#9670;&#160;</a></span>sampleLocals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::DevTool::sampleLocals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00143">attach()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00123">attach()</a>.</p>
+
+</div>
+</div>
+<a id="a8a4c51e3e70c690d5cb9e86508080ac2" name="a8a4c51e3e70c690d5cb9e86508080ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a4c51e3e70c690d5cb9e86508080ac2">&#9670;&#160;</a></span>setSampleLocals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::setSampleLocals </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a50c9cb31b9991252dc33214ed49651a8" name="a50c9cb31b9991252dc33214ed49651a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50c9cb31b9991252dc33214ed49651a8">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp; eve::dev::DevTool::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a> 第 <a class="el" href="DevTool_8hpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a331b4447543f2322eab4d6db992eda5e" name="a331b4447543f2322eab4d6db992eda5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a331b4447543f2322eab4d6db992eda5e">&#9670;&#160;</a></span>startDap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::DevTool::startDap </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start DAP server; returns bound port (0 on failure). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DebugAdapter_8cpp_source.html#l00071">eve::dev::DebugAdapter::instance()</a> , 以及 <a class="el" href="DebugAdapter_8cpp_source.html#l00224">eve::dev::DebugAdapter::listen()</a>.</p>
+
+</div>
+</div>
+<a id="a815b5717e41590bd2cee3638760efe04" name="a815b5717e41590bd2cee3638760efe04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815b5717e41590bd2cee3638760efe04">&#9670;&#160;</a></span>startMcp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::DevTool::startMcp </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start MCP server for AI tooling; returns bound port (0 on failure). </p>
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpServer_8cpp_source.html#l01512">eve::dev::McpServer::instance()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l01554">eve::dev::McpServer::listen()</a>.</p>
+
+</div>
+</div>
+<a id="a3a7a5fe7a19e6fd066809e08b046a18a" name="a3a7a5fe7a19e6fd066809e08b046a18a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a7a5fe7a19e6fd066809e08b046a18a">&#9670;&#160;</a></span>stopDap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::stopDap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DebugAdapter_8cpp_source.html#l00071">eve::dev::DebugAdapter::instance()</a> , 以及 <a class="el" href="DebugAdapter_8cpp_source.html#l00252">eve::dev::DebugAdapter::stop()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00167">detach()</a>.</p>
+
+</div>
+</div>
+<a id="a5b4b0422ed30e06d1e2848b06f76bd32" name="a5b4b0422ed30e06d1e2848b06f76bd32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b4b0422ed30e06d1e2848b06f76bd32">&#9670;&#160;</a></span>stopMcp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::DevTool::stopMcp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a> 第 <a class="el" href="DevTool_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpServer_8cpp_source.html#l01512">eve::dev::McpServer::instance()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l01626">eve::dev::McpServer::stop()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00167">detach()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="DevTool_8hpp_source.html">DevTool.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="DevTool_8cpp_source.html">DevTool.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1069 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map::Pathfinder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1map_1_1Pathfinder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map::Pathfinder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Pathfinding facade. Single-agent: A*. Group (same goal): Flow Field + follow. Grid/topology internals stay out of the public ABI (Windows export limit).  
+ <a href="classeve_1_1map_1_1Pathfinder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Pathfinder_8h_source.html">Pathfinder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Pathfinder_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa8f9e23f0228276b1de99bbcb6ca2a95" id="r_aa8f9e23f0228276b1de99bbcb6ca2a95"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#aa8f9e23f0228276b1de99bbcb6ca2a95">Pathfinder</a> ()</td></tr>
+<tr class="separator:aa8f9e23f0228276b1de99bbcb6ca2a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac11b1e7d87c958a297877eeb3416b542" id="r_ac11b1e7d87c958a297877eeb3416b542"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#ac11b1e7d87c958a297877eeb3416b542">Pathfinder</a> (<a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:ac11b1e7d87c958a297877eeb3416b542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428e2a0898da788ed2fbe14cb4d6190f" id="r_a428e2a0898da788ed2fbe14cb4d6190f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a428e2a0898da788ed2fbe14cb4d6190f">Pathfinder</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:a428e2a0898da788ed2fbe14cb4d6190f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3ebe43c2f6bb9cd8d5623eb23337911" id="r_ad3ebe43c2f6bb9cd8d5623eb23337911"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#ad3ebe43c2f6bb9cd8d5623eb23337911">~Pathfinder</a> ()</td></tr>
+<tr class="separator:ad3ebe43c2f6bb9cd8d5623eb23337911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae650c9ba7f700adbc8cfb6110e1d083b" id="r_ae650c9ba7f700adbc8cfb6110e1d083b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#ae650c9ba7f700adbc8cfb6110e1d083b">Pathfinder</a> (<a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:ae650c9ba7f700adbc8cfb6110e1d083b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb970d5b9dfc772752ef9bdb4ab20000" id="r_adb970d5b9dfc772752ef9bdb4ab20000"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#adb970d5b9dfc772752ef9bdb4ab20000">operator=</a> (<a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:adb970d5b9dfc772752ef9bdb4ab20000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed7baffd554e03590c8ad5f6e345f61b" id="r_aed7baffd554e03590c8ad5f6e345f61b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#aed7baffd554e03590c8ad5f6e345f61b">Pathfinder</a> (const <a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;)=delete</td></tr>
+<tr class="separator:aed7baffd554e03590c8ad5f6e345f61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b7ee6b38fcc0a463cc18d12fa1afee" id="r_a58b7ee6b38fcc0a463cc18d12fa1afee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a58b7ee6b38fcc0a463cc18d12fa1afee">operator=</a> (const <a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;)=delete</td></tr>
+<tr class="separator:a58b7ee6b38fcc0a463cc18d12fa1afee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8f91253001d602fcae564c3b0ebf17" id="r_a6c8f91253001d602fcae564c3b0ebf17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a6c8f91253001d602fcae564c3b0ebf17">bindLayer</a> (<a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:a6c8f91253001d602fcae564c3b0ebf17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae68b568f0e665c113bd19b9b58ecc8dd" id="r_ae68b568f0e665c113bd19b9b58ecc8dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#ae68b568f0e665c113bd19b9b58ecc8dd">setSize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:ae68b568f0e665c113bd19b9b58ecc8dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8684d8a4c0fb5f446b9a0bfa0d2ed7c7" id="r_a8684d8a4c0fb5f446b9a0bfa0d2ed7c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a8684d8a4c0fb5f446b9a0bfa0d2ed7c7">setTopology</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a8684d8a4c0fb5f446b9a0bfa0d2ed7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d4ef356aa8b3f8242cbcfa00ee0a3ed" id="r_a2d4ef356aa8b3f8242cbcfa00ee0a3ed"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a2d4ef356aa8b3f8242cbcfa00ee0a3ed">getTopology</a> () const</td></tr>
+<tr class="separator:a2d4ef356aa8b3f8242cbcfa00ee0a3ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe85e0c35fbd539512b7f715667a74e5" id="r_afe85e0c35fbd539512b7f715667a74e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#afe85e0c35fbd539512b7f715667a74e5">setDiagonal</a> (bool enable)</td></tr>
+<tr class="separator:afe85e0c35fbd539512b7f715667a74e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aba086d95ab9b18662218235f895c7a" id="r_a9aba086d95ab9b18662218235f895c7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a9aba086d95ab9b18662218235f895c7a">getDiagonal</a> () const</td></tr>
+<tr class="separator:a9aba086d95ab9b18662218235f895c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ea6122aa30cddc037d1a69876f87b3" id="r_ac5ea6122aa30cddc037d1a69876f87b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#ac5ea6122aa30cddc037d1a69876f87b3">blockGid</a> (int gid)</td></tr>
+<tr class="separator:ac5ea6122aa30cddc037d1a69876f87b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af73b5874b6f5dabf468d99de1188d205" id="r_af73b5874b6f5dabf468d99de1188d205"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#af73b5874b6f5dabf468d99de1188d205">unblockGid</a> (int gid)</td></tr>
+<tr class="separator:af73b5874b6f5dabf468d99de1188d205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee25f244c554ad643be7c79ea7021958" id="r_aee25f244c554ad643be7c79ea7021958"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#aee25f244c554ad643be7c79ea7021958">clearBlockedGids</a> ()</td></tr>
+<tr class="separator:aee25f244c554ad643be7c79ea7021958"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a0ba6e250c698a0f3a5c8ac3193982" id="r_a39a0ba6e250c698a0f3a5c8ac3193982"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a39a0ba6e250c698a0f3a5c8ac3193982">setBlockEmpty</a> (bool enable)</td></tr>
+<tr class="separator:a39a0ba6e250c698a0f3a5c8ac3193982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89bdcbeb6371cea2ef4069240d6ce50d" id="r_a89bdcbeb6371cea2ef4069240d6ce50d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a89bdcbeb6371cea2ef4069240d6ce50d">getBlockEmpty</a> () const</td></tr>
+<tr class="separator:a89bdcbeb6371cea2ef4069240d6ce50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac69f7b4c0372036ac3ec44255fbb327b" id="r_ac69f7b4c0372036ac3ec44255fbb327b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#ac69f7b4c0372036ac3ec44255fbb327b">setBlocked</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, bool blocked)</td></tr>
+<tr class="separator:ac69f7b4c0372036ac3ec44255fbb327b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91335b20cd93840a87246a6ec2bd900b" id="r_a91335b20cd93840a87246a6ec2bd900b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a91335b20cd93840a87246a6ec2bd900b">isWalkable</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a91335b20cd93840a87246a6ec2bd900b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a822690cf761cba66f791912abe8dbbc9" id="r_a822690cf761cba66f791912abe8dbbc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a822690cf761cba66f791912abe8dbbc9">setCellCost</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Pathfinder_8cpp.html#add5c8e1c7b34ff4723adf919dd629b6a">cost</a>)</td></tr>
+<tr class="separator:a822690cf761cba66f791912abe8dbbc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac52fee99da0980c10651e4634ad8dc" id="r_a4ac52fee99da0980c10651e4634ad8dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a4ac52fee99da0980c10651e4634ad8dc">getCellCost</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a4ac52fee99da0980c10651e4634ad8dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f562b995014b4734ff537c1c174123" id="r_a46f562b995014b4734ff537c1c174123"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a46f562b995014b4734ff537c1c174123">syncFromLayer</a> ()</td></tr>
+<tr class="separator:a46f562b995014b4734ff537c1c174123"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa96186d5ca57ebeff5cbd5637da188bc" id="r_aa96186d5ca57ebeff5cbd5637da188bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Path.html">Path</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#aa96186d5ca57ebeff5cbd5637da188bc">findPath</a> (int sx, int sy, int gx, int gy)</td></tr>
+<tr class="memdesc:aa96186d5ca57ebeff5cbd5637da188bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">A* from (sx,sy) to (gx,gy). Returns owned Path* (may be empty if unreachable). Never returns nullptr — always a <a class="el" href="classeve_1_1map_1_1Path.html" title="Ordered tile-index waypoints from start to goal (inclusive).">Path</a> object for simpler script null checks via length.  <br /></td></tr>
+<tr class="separator:aa96186d5ca57ebeff5cbd5637da188bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a732b72afbb54db8c110fe9ec771bd494" id="r_a732b72afbb54db8c110fe9ec771bd494"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1FlowField.html">FlowField</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a732b72afbb54db8c110fe9ec771bd494">buildFlowField</a> (int gx, int gy)</td></tr>
+<tr class="memdesc:a732b72afbb54db8c110fe9ec771bd494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build / reuse cached flow field toward goal. Owned by caller.  <br /></td></tr>
+<tr class="separator:a732b72afbb54db8c110fe9ec771bd494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f0cc7906c6d1581901bbf2f031b34b6" id="r_a5f0cc7906c6d1581901bbf2f031b34b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Path.html">Path</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a5f0cc7906c6d1581901bbf2f031b34b6">followFlow</a> (<a class="el" href="classeve_1_1map_1_1FlowField.html">FlowField</a> *field, int sx, int sy)</td></tr>
+<tr class="separator:a5f0cc7906c6d1581901bbf2f031b34b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14798272163cab2563a344c1373011b" id="r_af14798272163cab2563a344c1373011b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Path.html">Path</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#af14798272163cab2563a344c1373011b">findGroupPath</a> (int sx, int sy, int gx, int gy)</td></tr>
+<tr class="memdesc:af14798272163cab2563a344c1373011b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group helper: ensure field for goal, then follow from start. Equivalent to buildFlowField + followFlow but reuses internal cache when possible.  <br /></td></tr>
+<tr class="separator:af14798272163cab2563a344c1373011b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3363726e9d3a404143f1875197f9a327" id="r_a3363726e9d3a404143f1875197f9a327"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Pathfinder.html#a3363726e9d3a404143f1875197f9a327">invalidateCache</a> ()</td></tr>
+<tr class="memdesc:a3363726e9d3a404143f1875197f9a327"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalidate cached flow field (also called when grid dirties).  <br /></td></tr>
+<tr class="separator:a3363726e9d3a404143f1875197f9a327"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Pathfinding facade. Single-agent: A*. Group (same goal): Flow Field + follow. Grid/topology internals stay out of the public ABI (Windows export limit). </p>
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8h_source.html">Pathfinder.h</a> 第 <a class="el" href="Pathfinder_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa8f9e23f0228276b1de99bbcb6ca2a95" name="aa8f9e23f0228276b1de99bbcb6ca2a95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8f9e23f0228276b1de99bbcb6ca2a95">&#9670;&#160;</a></span>Pathfinder() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Pathfinder::Pathfinder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac11b1e7d87c958a297877eeb3416b542" name="ac11b1e7d87c958a297877eeb3416b542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac11b1e7d87c958a297877eeb3416b542">&#9670;&#160;</a></span>Pathfinder() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Pathfinder::Pathfinder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00314">bindLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a428e2a0898da788ed2fbe14cb4d6190f" name="a428e2a0898da788ed2fbe14cb4d6190f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428e2a0898da788ed2fbe14cb4d6190f">&#9670;&#160;</a></span>Pathfinder() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Pathfinder::Pathfinder </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00319">setSize()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="ad3ebe43c2f6bb9cd8d5623eb23337911" name="ad3ebe43c2f6bb9cd8d5623eb23337911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3ebe43c2f6bb9cd8d5623eb23337911">&#9670;&#160;</a></span>~Pathfinder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Pathfinder::~Pathfinder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae650c9ba7f700adbc8cfb6110e1d083b" name="ae650c9ba7f700adbc8cfb6110e1d083b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae650c9ba7f700adbc8cfb6110e1d083b">&#9670;&#160;</a></span>Pathfinder() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Pathfinder::Pathfinder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed7baffd554e03590c8ad5f6e345f61b" name="aed7baffd554e03590c8ad5f6e345f61b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed7baffd554e03590c8ad5f6e345f61b">&#9670;&#160;</a></span>Pathfinder() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Pathfinder::Pathfinder </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6c8f91253001d602fcae564c3b0ebf17" name="a6c8f91253001d602fcae564c3b0ebf17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c8f91253001d602fcae564c3b0ebf17">&#9670;&#160;</a></span>bindLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::bindLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00314">bindLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pathfinder_8cpp_source.html#l00314">bindLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00306">Pathfinder()</a>.</p>
+
+</div>
+</div>
+<a id="ac5ea6122aa30cddc037d1a69876f87b3" name="ac5ea6122aa30cddc037d1a69876f87b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ea6122aa30cddc037d1a69876f87b3">&#9670;&#160;</a></span>blockGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::blockGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>.</p>
+
+</div>
+</div>
+<a id="a732b72afbb54db8c110fe9ec771bd494" name="a732b72afbb54db8c110fe9ec771bd494"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a732b72afbb54db8c110fe9ec771bd494">&#9670;&#160;</a></span>buildFlowField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1FlowField.html">FlowField</a> * eve::map::Pathfinder::buildFlowField </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build / reuse cached flow field toward goal. Owned by caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee25f244c554ad643be7c79ea7021958" name="aee25f244c554ad643be7c79ea7021958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee25f244c554ad643be7c79ea7021958">&#9670;&#160;</a></span>clearBlockedGids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::clearBlockedGids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>.</p>
+
+</div>
+</div>
+<a id="af14798272163cab2563a344c1373011b" name="af14798272163cab2563a344c1373011b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af14798272163cab2563a344c1373011b">&#9670;&#160;</a></span>findGroupPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Path.html">Path</a> * eve::map::Pathfinder::findGroupPath </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Group helper: ensure field for goal, then follow from start. Equivalent to buildFlowField + followFlow but reuses internal cache when possible. </p>
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00567">567</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa96186d5ca57ebeff5cbd5637da188bc" name="aa96186d5ca57ebeff5cbd5637da188bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa96186d5ca57ebeff5cbd5637da188bc">&#9670;&#160;</a></span>findPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Path.html">Path</a> * eve::map::Pathfinder::findPath </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A* from (sx,sy) to (gx,gy). Returns owned Path* (may be empty if unreachable). Never returns nullptr — always a <a class="el" href="classeve_1_1map_1_1Path.html" title="Ordered tile-index waypoints from start to goal (inclusive).">Path</a> object for simpler script null checks via length. </p>
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00175">parent</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a5f0cc7906c6d1581901bbf2f031b34b6" name="a5f0cc7906c6d1581901bbf2f031b34b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f0cc7906c6d1581901bbf2f031b34b6">&#9670;&#160;</a></span>followFlow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Path.html">Path</a> * eve::map::Pathfinder::followFlow </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1FlowField.html">FlowField</a> *&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Trace path along a flow field from start. Owned Path*. </p>
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00533">533</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00646">eve::map::FlowField::costAt()</a>, <a class="el" href="FlowField_8h_source.html#l00022">eve::map::FlowField::getGoalX()</a>, <a class="el" href="FlowField_8h_source.html#l00023">eve::map::FlowField::getGoalY()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00673">eve::map::FlowField::isReachable()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00656">eve::map::FlowField::nextX()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00661">eve::map::FlowField::nextY()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a89bdcbeb6371cea2ef4069240d6ce50d" name="a89bdcbeb6371cea2ef4069240d6ce50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89bdcbeb6371cea2ef4069240d6ce50d">&#9670;&#160;</a></span>getBlockEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Pathfinder::getBlockEmpty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00359">359</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ac52fee99da0980c10651e4634ad8dc" name="a4ac52fee99da0980c10651e4634ad8dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac52fee99da0980c10651e4634ad8dc">&#9670;&#160;</a></span>getCellCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Pathfinder::getCellCost </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a9aba086d95ab9b18662218235f895c7a" name="a9aba086d95ab9b18662218235f895c7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aba086d95ab9b18662218235f895c7a">&#9670;&#160;</a></span>getDiagonal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Pathfinder::getDiagonal </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d4ef356aa8b3f8242cbcfa00ee0a3ed" name="a2d4ef356aa8b3f8242cbcfa00ee0a3ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d4ef356aa8b3f8242cbcfa00ee0a3ed">&#9670;&#160;</a></span>getTopology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Pathfinder::getTopology </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3363726e9d3a404143f1875197f9a327" name="a3363726e9d3a404143f1875197f9a327"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3363726e9d3a404143f1875197f9a327">&#9670;&#160;</a></span>invalidateCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::invalidateCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invalidate cached flow field (also called when grid dirties). </p>
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pathfinder_8cpp_source.html#l00339">blockGid()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00349">clearBlockedGids()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00361">setBlocked()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00354">setBlockEmpty()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00368">setCellCost()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00332">setDiagonal()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00319">setSize()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00325">setTopology()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00375">syncFromLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00344">unblockGid()</a>.</p>
+
+</div>
+</div>
+<a id="a91335b20cd93840a87246a6ec2bd900b" name="a91335b20cd93840a87246a6ec2bd900b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91335b20cd93840a87246a6ec2bd900b">&#9670;&#160;</a></span>isWalkable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Pathfinder::isWalkable </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a58b7ee6b38fcc0a463cc18d12fa1afee" name="a58b7ee6b38fcc0a463cc18d12fa1afee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58b7ee6b38fcc0a463cc18d12fa1afee">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp; eve::map::Pathfinder::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adb970d5b9dfc772752ef9bdb4ab20000" name="adb970d5b9dfc772752ef9bdb4ab20000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb970d5b9dfc772752ef9bdb4ab20000">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp; eve::map::Pathfinder::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac69f7b4c0372036ac3ec44255fbb327b" name="ac69f7b4c0372036ac3ec44255fbb327b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac69f7b4c0372036ac3ec44255fbb327b">&#9670;&#160;</a></span>setBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::setBlocked </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>blocked</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a39a0ba6e250c698a0f3a5c8ac3193982" name="a39a0ba6e250c698a0f3a5c8ac3193982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39a0ba6e250c698a0f3a5c8ac3193982">&#9670;&#160;</a></span>setBlockEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::setBlockEmpty </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00354">354</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>.</p>
+
+</div>
+</div>
+<a id="a822690cf761cba66f791912abe8dbbc9" name="a822690cf761cba66f791912abe8dbbc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a822690cf761cba66f791912abe8dbbc9">&#9670;&#160;</a></span>setCellCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::setCellCost </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cost</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00368">368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00154">cost</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="afe85e0c35fbd539512b7f715667a74e5" name="afe85e0c35fbd539512b7f715667a74e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe85e0c35fbd539512b7f715667a74e5">&#9670;&#160;</a></span>setDiagonal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::setDiagonal </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>.</p>
+
+</div>
+</div>
+<a id="ae68b568f0e665c113bd19b9b58ecc8dd" name="ae68b568f0e665c113bd19b9b58ecc8dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae68b568f0e665c113bd19b9b58ecc8dd">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::setSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Pathfinder_8cpp_source.html#l00308">Pathfinder()</a>.</p>
+
+</div>
+</div>
+<a id="a8684d8a4c0fb5f446b9a0bfa0d2ed7c7" name="a8684d8a4c0fb5f446b9a0bfa0d2ed7c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8684d8a4c0fb5f446b9a0bfa0d2ed7c7">&#9670;&#160;</a></span>setTopology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::setTopology </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a46f562b995014b4734ff537c1c174123" name="a46f562b995014b4734ff537c1c174123"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46f562b995014b4734ff537c1c174123">&#9670;&#160;</a></span>syncFromLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::syncFromLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>.</p>
+
+</div>
+</div>
+<a id="af73b5874b6f5dabf468d99de1188d205" name="af73b5874b6f5dabf468d99de1188d205"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af73b5874b6f5dabf468d99de1188d205">&#9670;&#160;</a></span>unblockGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Pathfinder::unblockGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a> 第 <a class="el" href="Pathfinder_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00380">invalidateCache()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/map/<a class="el" href="Pathfinder_8h_source.html">Pathfinder.h</a></li>
+<li>src/modules/map/<a class="el" href="Pathfinder_8cpp_source.html">Pathfinder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

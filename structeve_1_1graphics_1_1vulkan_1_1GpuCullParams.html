@@ -1,0 +1,316 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::vulkan::GpuCullParams结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">vulkan</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html">GpuCullParams</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::vulkan::GpuCullParams结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Cull-params UBO (std140). Mirrors GLSL CullParams in <code>shaders/gpu_driven_cull_common.glsl</code> (240 bytes).  
+ <a href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a4c8f2a1dbd9d5721fe346ee4fa95af6a" id="r_a4c8f2a1dbd9d5721fe346ee4fa95af6a"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#a4c8f2a1dbd9d5721fe346ee4fa95af6a">viewProj</a></td></tr>
+<tr class="separator:a4c8f2a1dbd9d5721fe346ee4fa95af6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e0c07d80b9e078049df2f76ee27196" id="r_a29e0c07d80b9e078049df2f76ee27196"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#a29e0c07d80b9e078049df2f76ee27196">frustumPlanes</a> [6]</td></tr>
+<tr class="separator:a29e0c07d80b9e078049df2f76ee27196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8ca4257f5d62a2c6376336af62363a5" id="r_ae8ca4257f5d62a2c6376336af62363a5"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#ae8ca4257f5d62a2c6376336af62363a5">cameraPos</a></td></tr>
+<tr class="separator:ae8ca4257f5d62a2c6376336af62363a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2396de0b4d1e69670a19ac935f4d9ad2" id="r_a2396de0b4d1e69670a19ac935f4d9ad2"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#a2396de0b4d1e69670a19ac935f4d9ad2">screen</a></td></tr>
+<tr class="separator:a2396de0b4d1e69670a19ac935f4d9ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedebc7b450794383bb18fdee623453d0" id="r_aedebc7b450794383bb18fdee623453d0"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#aedebc7b450794383bb18fdee623453d0">clipNearFar</a></td></tr>
+<tr class="separator:aedebc7b450794383bb18fdee623453d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7cb9e108e796e640ddc87c3b22c648b" id="r_ad7cb9e108e796e640ddc87c3b22c648b"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#ad7cb9e108e796e640ddc87c3b22c648b">hzbInfo</a></td></tr>
+<tr class="separator:ad7cb9e108e796e640ddc87c3b22c648b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ab7ec7e0281b8836dd4da8af81c60a" id="r_a58ab7ec7e0281b8836dd4da8af81c60a"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuCullParams.html#a58ab7ec7e0281b8836dd4da8af81c60a">counts</a></td></tr>
+<tr class="separator:a58ab7ec7e0281b8836dd4da8af81c60a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Cull-params UBO (std140). Mirrors GLSL CullParams in <code>shaders/gpu_driven_cull_common.glsl</code> (240 bytes). </p>
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00061">61</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ae8ca4257f5d62a2c6376336af62363a5" name="ae8ca4257f5d62a2c6376336af62363a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8ca4257f5d62a2c6376336af62363a5">&#9670;&#160;</a></span>cameraPos</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::vulkan::GpuCullParams::cameraPos</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aedebc7b450794383bb18fdee623453d0" name="aedebc7b450794383bb18fdee623453d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedebc7b450794383bb18fdee623453d0">&#9670;&#160;</a></span>clipNearFar</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::vulkan::GpuCullParams::clipNearFar</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58ab7ec7e0281b8836dd4da8af81c60a" name="a58ab7ec7e0281b8836dd4da8af81c60a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ab7ec7e0281b8836dd4da8af81c60a">&#9670;&#160;</a></span>counts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::vulkan::GpuCullParams::counts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29e0c07d80b9e078049df2f76ee27196" name="a29e0c07d80b9e078049df2f76ee27196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e0c07d80b9e078049df2f76ee27196">&#9670;&#160;</a></span>frustumPlanes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::vulkan::GpuCullParams::frustumPlanes[6]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7cb9e108e796e640ddc87c3b22c648b" name="ad7cb9e108e796e640ddc87c3b22c648b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7cb9e108e796e640ddc87c3b22c648b">&#9670;&#160;</a></span>hzbInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::vulkan::GpuCullParams::hzbInfo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2396de0b4d1e69670a19ac935f4d9ad2" name="a2396de0b4d1e69670a19ac935f4d9ad2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2396de0b4d1e69670a19ac935f4d9ad2">&#9670;&#160;</a></span>screen</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::vulkan::GpuCullParams::screen</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c8f2a1dbd9d5721fe346ee4fa95af6a" name="a4c8f2a1dbd9d5721fe346ee4fa95af6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c8f2a1dbd9d5721fe346ee4fa95af6a">&#9670;&#160;</a></span>viewProj</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::vulkan::GpuCullParams::viewProj</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a> 第 <a class="el" href="GpuDriven_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/vulkan/<a class="el" href="GpuDriven_8h_source.html">GpuDriven.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

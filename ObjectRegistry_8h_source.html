@@ -1,0 +1,230 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/ObjectRegistry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ObjectRegistry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ObjectRegistry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ObjectEntry.html">   15</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ObjectEntry.html#a448ca381289e2e0ee86bce7e5726135c">   16</a></span>    uint64_t <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">   17</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">className</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">   18</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">label</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">   19</a></span>    ssq::Object <a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">object</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html">   30</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a42535049aa02db13dd8f20b060d0e78f">   32</a></span>    <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a42535049aa02db13dd8f20b060d0e78f">ObjectRegistry</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a9604e5bd21a59a7aa2bad54d648b20d5">   33</a></span>    <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>&amp; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a9604e5bd21a59a7aa2bad54d648b20d5">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>&amp; instance();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    uint64_t create(<span class="keyword">const</span> std::string&amp; className);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    uint64_t registerObject(<span class="keyword">const</span> std::string&amp; className, <span class="keyword">const</span> ssq::Object&amp; <span class="keywordtype">object</span>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                            <span class="keyword">const</span> std::string&amp; label = {});</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">bool</span> unregister(uint64_t <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> clear(<span class="keyword">const</span> std::string&amp; className);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> clearAll();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::vector&lt;std::string&gt; classNames() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::vector&lt;ObjectEntry&gt; entries(<span class="keyword">const</span> std::string&amp; className) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a>* entry(uint64_t <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">size_t</span> count(<span class="keyword">const</span> std::string&amp; className) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    uint64_t nextId_ = 1;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::map&lt;std::string, std::vector&lt;ObjectEntry&gt;&gt; byClass_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html">eve::ui::ObjectRegistry</a></div><div class="ttdoc">Reflectable script-object registry backing the database panel.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00030">ObjectRegistry.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a42535049aa02db13dd8f20b060d0e78f"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a42535049aa02db13dd8f20b060d0e78f">eve::ui::ObjectRegistry::ObjectRegistry</a></div><div class="ttdeci">ObjectRegistry(const ObjectRegistry &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a9604e5bd21a59a7aa2bad54d648b20d5"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a9604e5bd21a59a7aa2bad54d648b20d5">eve::ui::ObjectRegistry::operator=</a></div><div class="ttdeci">ObjectRegistry &amp; operator=(const ObjectRegistry &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html">eve::ui::ObjectEntry</a></div><div class="ttdoc">One registered live script instance.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00015">ObjectRegistry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a0602f7a53d5d58d573558bf0b9861f26"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">eve::ui::ObjectEntry::object</a></div><div class="ttdeci">ssq::Object object</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00019">ObjectRegistry.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a14921272ecc5808ed6ec1fe6d0d22645"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">eve::ui::ObjectEntry::className</a></div><div class="ttdeci">std::string className</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00017">ObjectRegistry.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_adaf5a5e8bfaab49334ecd06738a63550"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">eve::ui::ObjectEntry::label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00018">ObjectRegistry.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

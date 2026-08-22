@@ -1,0 +1,235 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 类成员 - 变量</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
+<li>i&#160;:&#160;<a class="el" href="structeve_1_1dialogue_1_1DataValue.html#a19b39cb0ad7d18a66a1b427f16442175">eve::dialogue::DataValue</a>, <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#adef2971429ded1295962336ffe5064cc">eve::dialogue::Dialogue::VarValue</a>, <a class="el" href="structeve_1_1event_1_1Variant.html#a76c3f0d07f8a504f8af8f6e78080793a">eve::event::Variant</a>, <a class="el" href="classeve_1_1rx_1_1Value.html#aecfc2b2eac0120a397f9cf1948a4108b">eve::rx::Value</a></li>
+<li>i0&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a667493580e9108fff7307d08bd4386d3">eve::tensor::FusedGroup</a>, <a class="el" href="structeve_1_1tensor_1_1GraphNode.html#a5f32561a53d48f71fc991b436f84cc6b">eve::tensor::GraphNode</a></li>
+<li>i1&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ad4a8ec23b02d5fbfd2c539d75e57199f">eve::tensor::FusedGroup</a>, <a class="el" href="structeve_1_1tensor_1_1GraphNode.html#a5ab46c789a92b232f19281bf34f1d92c">eve::tensor::GraphNode</a></li>
+<li>i2&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a790270cbcc9969e908dc402936c049c8">eve::tensor::FusedGroup</a>, <a class="el" href="structeve_1_1tensor_1_1GraphNode.html#a124cf3ed7ee7f8b87685c4c451b12097">eve::tensor::GraphNode</a></li>
+<li>i3&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a5975d75dc723d207517674160d2f411c">eve::tensor::FusedGroup</a>, <a class="el" href="structeve_1_1tensor_1_1GraphNode.html#ad83d139571e1d34c459f310609b6e0a4">eve::tensor::GraphNode</a></li>
+<li>id&#160;:&#160;<a class="el" href="structeve_1_1building_1_1BuildingDefinition.html#acb619acc35e6708fb4d14d7a56605bc6">eve::building::BuildingDefinition</a>, <a class="el" href="structeve_1_1card_1_1CardData_1_1Identity.html#a549a6916966e4ca58bd305a48c519cc0">eve::card::CardData::Identity</a>, <a class="el" href="structeve_1_1card_1_1CardDefinition.html#a976d5d33b947ecc514d002404e6109df">eve::card::CardDefinition</a>, <a class="el" href="structeve_1_1card_1_1Zone_1_1Rect.html#abff0a11924af4d2a20f8abd7aa7f42f0">eve::card::Zone::Rect</a>, <a class="el" href="structeve_1_1dev_1_1Breakpoint.html#a799788caa142798cbe9b4902d22bc7c6">eve::dev::Breakpoint</a>, <a class="el" href="structeve_1_1dev_1_1RenderEvent.html#abcefade5c16ae87e02b683f0fff13924">eve::dev::RenderEvent</a>, <a class="el" href="structeve_1_1dev_1_1StackFrameInfo.html#a3e4bbe8cba522cb4ad018986333628cf">eve::dev::StackFrameInfo</a>, <a class="el" href="structeve_1_1dev_1_1TraceEvent.html#ae089ccdb87208318fa7f096fdb8b8fd1">eve::dev::TraceEvent</a>, <a class="el" href="structeve_1_1graphics_1_1grass_1_1Point.html#acfcf2b636b69e6b9937e4b8558f18c92">eve::graphics::grass::Point</a>, <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html#a47a8e88c20c0516f4e073db76cd87abf">eve::housegen::HouseComponent</a>, <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html#af7cc372f11dd952dc044727977bbe108">eve::inventory::ItemDefinition</a>, <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl_1_1Revealer.html#a624731256e0c55264bdf304fea83409a">eve::map::Fov::Impl::Revealer</a>, <a class="el" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">eve::procgen::TextureRecipeDef</a>, <a class="el" href="structeve_1_1rpg_1_1AttributeModifier.html#a0b8f909d198ffa5ff6532f3282d0fb08">eve::rpg::AttributeModifier</a>, <a class="el" href="structeve_1_1rpg_1_1EffectDefinition.html#a271361a13b86ba4f635db271e7a4f4e1">eve::rpg::EffectDefinition</a>, <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html#a3ae2a444f6c38767ffee16830dc506ba">eve::rpg::SkillDefinition</a>, <a class="el" href="structeve_1_1scene_1_1NodeDesc.html#a0f2765e75805274e5e85c47ac5f2ac96">eve::scene::NodeDesc</a>, <a class="el" href="structeve_1_1scene_1_1SceneNode.html#a762a92dab1375eed6f5d32b2f731ffb1">eve::scene::SceneNode</a>, <a class="el" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#aeff3a0258bb5ef4cb7581cf72addb782">eve::sceneloader::SceneDiffEntry</a>, <a class="el" href="structeve_1_1SceneNodeInfo.html#a9069f2d7726824f0f723e673677ef53e">eve::SceneNodeInfo</a>, <a class="el" href="structeve_1_1ScriptInfo.html#a903d9691feaeb5e653f57d5515970a45">eve::ScriptInfo</a>, <a class="el" href="structeve_1_1touch_1_1Touch_1_1TouchInfo.html#a3d253632860a1bbd80f803f0999a8612">eve::touch::Touch::TouchInfo</a>, <a class="el" href="structeve_1_1ui_1_1ObjectEntry.html#a448ca381289e2e0ee86bce7e5726135c">eve::ui::ObjectEntry</a>, <a class="el" href="structeve_1_1ui_1_1UINode.html#a907458ffe59716bcb3032dbd24614b3c">eve::ui::UINode</a>, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ab36a1cd6d8f8094315a608754222aa83">eve::ui::WidgetDesc</a>, <a class="el" href="structeve_1_1voxel_1_1CubeType.html#a5a0265a31c3f2356f27b9383eba52fd6">eve::voxel::CubeType</a></li>
+<li>idColor&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1Graphics_1_1EntityIdDraw.html#aeeadcf3f1688485dec980f441b272242">eve::graphics::Graphics::EntityIdDraw</a></li>
+<li>idIndex&#160;:&#160;<a class="el" href="structeve_1_1scene_1_1SceneHost_1_1Tree.html#adbf0c3bb3ac6741693f21324c3ce7ec2">eve::scene::SceneHost::Tree</a></li>
+<li>idJsonPath&#160;:&#160;<a class="el" href="structeve_1_1dev_1_1InspectCapture.html#a2c0d01b7d0f9390589768225931a9fc9">eve::dev::InspectCapture</a></li>
+<li>idleCv&#160;:&#160;<a class="el" href="structeve_1_1thread_1_1ThreadPool_1_1State.html#ad3d1875b5d2b8a57818354c1ac475508">eve::thread::ThreadPool::State</a></li>
+<li>idPngPath&#160;:&#160;<a class="el" href="structeve_1_1dev_1_1InspectCapture.html#a165074ed352ec0a0d5c6cd1d0dbfb40b">eve::dev::InspectCapture</a></li>
+<li>ik2d&#160;:&#160;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#aa20a560fa03303a8d81a0ced54792435">eve::particles::ParticleEmitter::Attach</a></li>
+<li>ik3d&#160;:&#160;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#ae135c708aadb0f196c82188b63b78fb2">eve::particles::ParticleEmitter::Attach</a></li>
+<li>image&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a3a67dd208a7bd8ab617c0d9889c34c08">eve::graphics::vulkan::GpuTexture</a></li>
+<li>imageH&#160;:&#160;<a class="el" href="structeve_1_1spritestack_1_1SliceOptions.html#a15968274466bf79696add4591c7ba012">eve::spritestack::SliceOptions</a></li>
+<li>imageW&#160;:&#160;<a class="el" href="structeve_1_1spritestack_1_1SliceOptions.html#a0a79d3ba4b5cf57e0cc4534025885243">eve::spritestack::SliceOptions</a></li>
+<li>importAlbedo&#160;:&#160;<a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html#a159cc05a5180e7e874a14fcd704f9d39">eve::model3d::ModelRenderOptions</a></li>
+<li>importAnimations&#160;:&#160;<a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">eve::sceneloader::LoadOptions</a></li>
+<li>importCameras&#160;:&#160;<a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">eve::sceneloader::LoadOptions</a></li>
+<li>importHeightMaps&#160;:&#160;<a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html#aa3104ac36c200f26c84a016d6ee467b9">eve::model3d::ModelRenderOptions</a></li>
+<li>importLights&#160;:&#160;<a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">eve::sceneloader::LoadOptions</a></li>
+<li>importNormalMaps&#160;:&#160;<a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html#a4281bf00ec21a2b79569701c21c6cafd">eve::model3d::ModelRenderOptions</a></li>
+<li>improveCacheLocality&#160;:&#160;<a class="el" href="structeve_1_1model3d_1_1ModelLoadOptions.html#a06c066b8e1781bae7ffab460c6069e8f">eve::model3d::ModelLoadOptions</a>, <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">eve::sceneloader::LoadOptions</a></li>
+<li>in0&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1GraphNode.html#a3715435e2ec533e176c6879126c15918">eve::tensor::GraphNode</a></li>
+<li>in1&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1GraphNode.html#a1794c1bf46a6da8e6a8c44c2fea3b204">eve::tensor::GraphNode</a></li>
+<li>in2&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1GraphNode.html#aebb796cdbb318a22df0d2667d74ec84b">eve::tensor::GraphNode</a></li>
+<li>in3&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1GraphNode.html#adc458f4f9002eba5ef9413ba4333bd68">eve::tensor::GraphNode</a></li>
+<li>in4&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1GraphNode.html#a2099eda7f403dabe96b9b1c18658a907">eve::tensor::GraphNode</a></li>
+<li>indentSpacing&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1Theme.html#a131d1810605f5ca56ccb6db64e951301">eve::ui::Theme</a></li>
+<li>indexBuffer&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuMesh.html#a693fa234f683784cc370fb4abcf67208">eve::graphics::webgpu::GpuMesh</a></li>
+<li>indexCount&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa5b3d26311b4fd4cf24fe6557503e10e">eve::graphics::GpuIndirectCommand</a>, <a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#afe15e3091d5f90007d62151fc4110cbc">eve::graphics::GpuMeshRecord</a>, <a class="el" href="classeve_1_1graphics_1_1Mesh.html#a475a556c75decb9b4c3fcaea4877d58c">eve::graphics::Mesh</a>, <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuMesh.html#ae2ac48a9117f221487f3c348dff4c113">eve::graphics::vulkan::GpuMesh</a>, <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuMesh.html#abd693f2075d2cefae3da2b74c628abdb">eve::graphics::webgpu::GpuMesh</a>, <a class="el" href="structeve_1_1spritestack_1_1SliceInput.html#ab604e30287f92fb4c30621426e41d4f8">eve::spritestack::SliceInput</a>, <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryBuilder_1_1MeshInput.html#a153f075dbf68a34a79f6c672ea890083">eve::virtualgeometry::VirtualGeometryBuilder::MeshInput</a></li>
+<li>indexFormat&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuMesh.html#a52b2eaae3c77da8e4466edb3cd918242">eve::graphics::webgpu::GpuMesh</a></li>
+<li>indexOffset&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a79c9cf1807015b6d3aa1fb56076429db">eve::graphics::GpuMeshRecord</a></li>
+<li>indexType&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a397f5d1089e76b887a3e0a721f66bca7">eve::graphics::GpuMeshRecord</a>, <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuMesh.html#a32d228bc8bf22ade80e395657db12573">eve::graphics::vulkan::GpuMesh</a></li>
+<li>indexValid&#160;:&#160;<a class="el" href="structeve_1_1scene_1_1SceneHost_1_1Tree.html#ad144100653f55785adf97b13912ced55">eve::scene::SceneHost::Tree</a></li>
+<li>indices&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1grass_1_1BillboardMesh.html#a6346f7289e82ddb1159bf5d87b02bba0">eve::graphics::grass::BillboardMesh</a>, <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuMesh.html#ae9871c61776ce442f4208e9ab7544706">eve::graphics::vulkan::GpuMesh</a>, <a class="el" href="structeve_1_1spritestack_1_1SliceInput.html#a67ad2269cb323f7b1e0ca07ed9da8c17">eve::spritestack::SliceInput</a>, <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryBuilder_1_1MeshInput.html#a12395768891ca5e8aa923f233742a874">eve::virtualgeometry::VirtualGeometryBuilder::MeshInput</a></li>
+<li>influence&#160;:&#160;<a class="el" href="structeve_1_1ik_1_1detail_1_1ChainOptions.html#a98d0d5432d77deb1ddc55b88a1aa3cdf">eve::ik::detail::ChainOptions&lt; D &gt;</a></li>
+<li>info&#160;:&#160;<a class="el" href="structeve_1_1Runtime_1_1ScriptRecord.html#a0d97aa2840f470fdaed06845efa985f9">eve::Runtime::ScriptRecord</a></li>
+<li>inFrame&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1EditorHost_1_1Impl.html#aebff4ee74574e26dfe8e85c1e2363fd4">eve::ui::EditorHost::Impl</a></li>
+<li>inheritVelocity&#160;:&#160;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab9ed0bcf95ba4021f6562fb439152370">eve::particles::ParticleEmitter::Config</a>, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1SubEmitter.html#a7fabb65d61f429c3e9cc98c689ea2bf0">eve::particles::ParticleEmitter::Config::SubEmitter</a></li>
+<li>initialized&#160;:&#160;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1GpuSim.html#a4bd0427dce14c8fddd8061b7661ce3d6">eve::particles::ParticleEmitter::GpuSim</a></li>
+<li>inputCount&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1KernelSpec.html#ae5a77f9bdf0dd3ac4b69994421bd0b10">eve::tensor::KernelSpec</a></li>
+<li>inputs&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ab9cdbdafa91eefae728d8eaec3cdf8de">eve::tensor::FusedGroup</a>, <a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html#adf105336b40b4becc1f2969c36044cda">eve::tensor::GpuProgram::Impl::GroupRuntime</a></li>
+<li>inputsReadPass1&#160;:&#160;<a class="el" href="structeve_1_1tensor_1_1KernelSpec.html#afb3ae2c2fbfa3a8c040ff99d6ff96702">eve::tensor::KernelSpec</a></li>
+<li>instance&#160;:&#160;<a class="el" href="structeve_1_1ModuleManager_1_1ModuleInfo.html#a11144b22dfe1f69d8ae59e3309179179">eve::ModuleManager::ModuleInfo</a></li>
+<li>instanceCount&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa70a41e6dc93a51e34cda130468c90b4">eve::graphics::GpuIndirectCommand</a></li>
+<li>instanceId&#160;:&#160;<a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html#a89a72ee9411897d422ebd77840bca5fc">eve::building::BuildingChangeEvent</a>, <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a0047fc55d94529be9f799dbe570e002d">eve::building::PlacedBuilding</a>, <a class="el" href="structeve_1_1inventory_1_1ItemStack.html#a1786e91b03562068cee3c4a6b05bd0cf">eve::inventory::ItemStack</a>, <a class="el" href="structeve_1_1rpg_1_1StatusChangeEvent.html#a68c32bc4a611c76f13723aae57ea507d">eve::rpg::StatusChangeEvent</a>, <a class="el" href="structeve_1_1rpg_1_1StatusInstance.html#a913a9a77b8f5916808ebf413b4791073">eve::rpg::StatusInstance</a>, <a class="el" href="structeve_1_1rpg_1_1StatusTickEvent.html#afafe0fcd6753f7240ae433451d059d6f">eve::rpg::StatusTickEvent</a></li>
+<li>instances&#160;:&#160;<a class="el" href="classeve_1_1housegen_1_1HouseLayout.html#ac5a35cf3f6c2820cc9174678b528b100">eve::housegen::HouseLayout</a>, <a class="el" href="structeve_1_1scene_1_1SceneObject_1_1ScriptBindings.html#a664bc1e3c08c5b0a81e67ad444ddd281">eve::scene::SceneObject::ScriptBindings</a></li>
+<li>integer&#160;:&#160;<a class="el" href="structeve_1_1ReflectedValue.html#a1a48f1fbde51c00eeab2d0b75ef73399">eve::ReflectedValue</a></li>
+<li>integral&#160;:&#160;<a class="el" href="structeve_1_1json_1_1Node.html#a425ec28ff8545fd0b9e7abf885ec617e">eve::json::Node</a></li>
+<li>intensity&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1Light2D_1_1Data.html#a956b0e19966c14c8e155200af7a006f4">eve::graphics::Light2D::Data</a>, <a class="el" href="structeve_1_1graphics_1_1Light3D_1_1Data.html#a520dc0eed681ca0af5811366ad1c0683">eve::graphics::Light3D::Data</a>, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1LightCfg.html#ab1e13f082ae12cf577348bcc58cd649b">eve::particles::ParticleEmitter::Config::LightCfg</a>, <a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ac3576e62ccd750651a7307489fb081d5">eve::weather::Weather::Impl</a></li>
+<li>intensityCur&#160;:&#160;<a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a0535e5072624281bb9f50ceb3b095519">eve::weather::Weather::Impl</a></li>
+<li>interactive&#160;:&#160;<a class="el" href="structeve_1_1card_1_1Hand_1_1Meta.html#a0fc6c50ea33917741a52ee7840a0d34a">eve::card::Hand::Meta</a></li>
+<li>intVal&#160;:&#160;<a class="el" href="structeve_1_1json_1_1Node.html#aa3c9c0eab723b8cb0f5ac68b89182284">eve::json::Node</a></li>
+<li>isCube&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a9fd90d87d7712659f52625878984ef2a">eve::graphics::vulkan::GpuTexture</a>, <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuTexture.html#af832679c16b8ab788dc5b79d324c3ad9">eve::graphics::webgpu::GpuTexture</a></li>
+<li>isGbuffer&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#ac7cf6116c1e934b8e5311ee8755e7889">eve::graphics::webgpu::GpuShader</a></li>
+<li>isHair&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html#ab71ea37428da5a385607434f004f9d46">eve::graphics::Renderable3D::MeshRenderer</a></li>
+<li>isHair3D&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a0c511a36fe391fcf6db6588865e7c497">eve::graphics::vulkan::GpuShader</a>, <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#aa06ad9ebf1e6bc33b7fa830f1a57893e">eve::graphics::webgpu::GpuShader</a></li>
+<li>isMesh3D&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2df35b6fbcdd2e48c4312c293af26c1e">eve::graphics::vulkan::GpuShader</a>, <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a1fd3127b1237d54f320b0315d8967aad">eve::graphics::webgpu::GpuShader</a></li>
+<li>isShadow&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#ae0822e25bab846a36601a296b387ed39">eve::graphics::webgpu::GpuShader</a></li>
+<li>isSpacer&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1FlexItemSpec.html#affcead5b48b00909acf122bf05155fd5">eve::ui::FlexItemSpec</a></li>
+<li>itemHeight&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1UINode.html#a8b35293f96976fe66c8202b17d805de5">eve::ui::UINode</a>, <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#aa592ac8d697cd4ad6c08f6a5ffc6cdbc">eve::ui::WidgetDesc</a></li>
+<li>itemId&#160;:&#160;<a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html#a1f659e0aa93f90fcac43e1e9b3921e53">eve::inventory::InventoryChangeEvent</a>, <a class="el" href="structeve_1_1inventory_1_1ItemStack.html#a79bb05e5cc8ede686984a269337b069a">eve::inventory::ItemStack</a></li>
+<li>itemInnerSpacingX&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1Theme.html#a805322f636305f60ecc99a06f8fab482">eve::ui::Theme</a></li>
+<li>itemInnerSpacingY&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1Theme.html#ab145cc96b8f68dbaddfde4aac488ee6a">eve::ui::Theme</a></li>
+<li>items&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1FlexResult.html#a2eafaa39dc54ea88f1ec95b5d170dc74">eve::ui::FlexResult</a></li>
+<li>itemSpacingX&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1Theme.html#a1227d900a74efce54746021c4a37d406">eve::ui::Theme</a></li>
+<li>itemSpacingY&#160;:&#160;<a class="el" href="structeve_1_1ui_1_1Theme.html#a292a9cfc2f3808c567a47175556b55f9">eve::ui::Theme</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

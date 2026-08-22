@@ -1,0 +1,922 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Light3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">Light3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Light3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Light3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Declarative 3D light. Collected by <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> (max 8 per frame). type: "point" | "dir" (≤15 chars).  
+ <a href="classeve_1_1graphics_1_1Light3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Light_8h_source.html">Light.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Light3D 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Light3D.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Light3D_1_1Data.html">Data</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5ada25abbd26c882664e0fa1cf29f872" id="r_a5ada25abbd26c882664e0fa1cf29f872"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a5ada25abbd26c882664e0fa1cf29f872">release</a> () override</td></tr>
+<tr class="separator:a5ada25abbd26c882664e0fa1cf29f872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4fe56b863c01d5a0df1e598620d1a14" id="r_aa4fe56b863c01d5a0df1e598620d1a14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aa4fe56b863c01d5a0df1e598620d1a14">setType</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>)</td></tr>
+<tr class="separator:aa4fe56b863c01d5a0df1e598620d1a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af954e0e3493b227ad244475c8c13ddaf" id="r_af954e0e3493b227ad244475c8c13ddaf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#af954e0e3493b227ad244475c8c13ddaf">getType</a> ()</td></tr>
+<tr class="separator:af954e0e3493b227ad244475c8c13ddaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4098e6b794e2c761bf9faa02c89972" id="r_a8b4098e6b794e2c761bf9faa02c89972"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a8b4098e6b794e2c761bf9faa02c89972">setPosition</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:a8b4098e6b794e2c761bf9faa02c89972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeccfd999ffaccc8713943fe1a5e11c5e" id="r_aeccfd999ffaccc8713943fe1a5e11c5e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aeccfd999ffaccc8713943fe1a5e11c5e">getX</a> ()</td></tr>
+<tr class="separator:aeccfd999ffaccc8713943fe1a5e11c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a791a763a15903b47d1e30cf4122cb61d" id="r_a791a763a15903b47d1e30cf4122cb61d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a791a763a15903b47d1e30cf4122cb61d">getY</a> ()</td></tr>
+<tr class="separator:a791a763a15903b47d1e30cf4122cb61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef1ec04805b0d17a91b0d57882666dc1" id="r_aef1ec04805b0d17a91b0d57882666dc1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aef1ec04805b0d17a91b0d57882666dc1">getZ</a> ()</td></tr>
+<tr class="separator:aef1ec04805b0d17a91b0d57882666dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a459afe3900c9a78b1fd9fe819184894e" id="r_a459afe3900c9a78b1fd9fe819184894e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a459afe3900c9a78b1fd9fe819184894e">setDirection</a> (float dx, float dy, float dz)</td></tr>
+<tr class="separator:a459afe3900c9a78b1fd9fe819184894e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace6daa4c01141c22f329ea090f40632b" id="r_ace6daa4c01141c22f329ea090f40632b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ace6daa4c01141c22f329ea090f40632b">getDirX</a> ()</td></tr>
+<tr class="separator:ace6daa4c01141c22f329ea090f40632b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad68090391443a0490cd4577e3b03f76f" id="r_ad68090391443a0490cd4577e3b03f76f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ad68090391443a0490cd4577e3b03f76f">getDirY</a> ()</td></tr>
+<tr class="separator:ad68090391443a0490cd4577e3b03f76f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1ffe8bb30933f1b6718a7b492c952d" id="r_a3a1ffe8bb30933f1b6718a7b492c952d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a3a1ffe8bb30933f1b6718a7b492c952d">getDirZ</a> ()</td></tr>
+<tr class="separator:a3a1ffe8bb30933f1b6718a7b492c952d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8d8acaf19b4a0f6698e343ebe4cf7c6" id="r_ac8d8acaf19b4a0f6698e343ebe4cf7c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ac8d8acaf19b4a0f6698e343ebe4cf7c6">setColor</a> (float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float intensity=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ac8d8acaf19b4a0f6698e343ebe4cf7c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa7b2bde31de8671b26c93cb2db37e44" id="r_aaa7b2bde31de8671b26c93cb2db37e44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aaa7b2bde31de8671b26c93cb2db37e44">setRadius</a> (float radius)</td></tr>
+<tr class="separator:aaa7b2bde31de8671b26c93cb2db37e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b0e57705b6cdd00555ed87aa4e840b" id="r_a24b0e57705b6cdd00555ed87aa4e840b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a24b0e57705b6cdd00555ed87aa4e840b">getRadius</a> ()</td></tr>
+<tr class="separator:a24b0e57705b6cdd00555ed87aa4e840b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2038fade3fae36a857dc8554cf2c1edf" id="r_a2038fade3fae36a857dc8554cf2c1edf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a2038fade3fae36a857dc8554cf2c1edf">setEnabled</a> (bool <a class="el" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:a2038fade3fae36a857dc8554cf2c1edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac79eaa0b760027505a0e220885830b5f" id="r_ac79eaa0b760027505a0e220885830b5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ac79eaa0b760027505a0e220885830b5f">isEnabled</a> ()</td></tr>
+<tr class="separator:ac79eaa0b760027505a0e220885830b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac69c6db6637be103c891b7bdf1ac35" id="r_a3ac69c6db6637be103c891b7bdf1ac35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a3ac69c6db6637be103c891b7bdf1ac35">setCastShadow</a> (bool cast)</td></tr>
+<tr class="separator:a3ac69c6db6637be103c891b7bdf1ac35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4931e29697f798bbcdbe08c44315be72" id="r_a4931e29697f798bbcdbe08c44315be72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a4931e29697f798bbcdbe08c44315be72">getCastShadow</a> ()</td></tr>
+<tr class="separator:a4931e29697f798bbcdbe08c44315be72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd8017d10c3ac7c0a21ad33f413cb79" id="r_a4fd8017d10c3ac7c0a21ad33f413cb79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a4fd8017d10c3ac7c0a21ad33f413cb79">setShadowBias</a> (float bias)</td></tr>
+<tr class="separator:a4fd8017d10c3ac7c0a21ad33f413cb79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8afe0698d84ce2f072e7c3b0908453ee" id="r_a8afe0698d84ce2f072e7c3b0908453ee"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a8afe0698d84ce2f072e7c3b0908453ee">getShadowBias</a> ()</td></tr>
+<tr class="separator:a8afe0698d84ce2f072e7c3b0908453ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72157d78ef2c8cb0f0b9be1f64a3477f" id="r_a72157d78ef2c8cb0f0b9be1f64a3477f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a72157d78ef2c8cb0f0b9be1f64a3477f">setShadowStrength</a> (float strength)</td></tr>
+<tr class="separator:a72157d78ef2c8cb0f0b9be1f64a3477f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a656e5ea64459ba3720d8498ba92fd7a6" id="r_a656e5ea64459ba3720d8498ba92fd7a6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a656e5ea64459ba3720d8498ba92fd7a6">getShadowStrength</a> ()</td></tr>
+<tr class="separator:a656e5ea64459ba3720d8498ba92fd7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc940bf672f19df720cce588b383254" id="r_aecc940bf672f19df720cce588b383254"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aecc940bf672f19df720cce588b383254">setVolumetric</a> (bool <a class="el" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:aecc940bf672f19df720cce588b383254"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51691a1847478435b9ca53b89d28268" id="r_ae51691a1847478435b9ca53b89d28268"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ae51691a1847478435b9ca53b89d28268">getVolumetric</a> ()</td></tr>
+<tr class="separator:ae51691a1847478435b9ca53b89d28268"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8166896d6f631999bbe2999a0a44b31" id="r_aa8166896d6f631999bbe2999a0a44b31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aa8166896d6f631999bbe2999a0a44b31">setVolumetricIntensity</a> (float intensity)</td></tr>
+<tr class="separator:aa8166896d6f631999bbe2999a0a44b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e552263f3e4efee046e3d51cf14d4b" id="r_a51e552263f3e4efee046e3d51cf14d4b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a51e552263f3e4efee046e3d51cf14d4b">getVolumetricIntensity</a> ()</td></tr>
+<tr class="separator:a51e552263f3e4efee046e3d51cf14d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a9779175f51764a73a4f9dc3e5f614d65" id="r_a9779175f51764a73a4f9dc3e5f614d65"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1graphics_1_1Light3D.html">Light3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a9779175f51764a73a4f9dc3e5f614d65">createLight</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>=&quot;point&quot;)</td></tr>
+<tr class="separator:a9779175f51764a73a4f9dc3e5f614d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Declarative 3D light. Collected by <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> (max 8 per frame). type: "point" | "dir" (≤15 chars). </p>
+
+<p class="definition">在文件 <a class="el" href="Light_8h_source.html">Light.h</a> 第 <a class="el" href="Light_8h_source.html#l00101">101</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a9779175f51764a73a4f9dc3e5f614d65" name="a9779175f51764a73a4f9dc3e5f614d65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9779175f51764a73a4f9dc3e5f614d65">&#9670;&#160;</a></span>createLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">Light3D</a> * eve::graphics::Light3D::createLight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em> = <code>&quot;point&quot;</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Light_8cpp_source.html#l00071">setType()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00260">eve::daynight::DayNight::addFirefly()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00285">eve::daynight::DayNight::init()</a>.</p>
+
+</div>
+</div>
+<a id="a4931e29697f798bbcdbe08c44315be72" name="a4931e29697f798bbcdbe08c44315be72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4931e29697f798bbcdbe08c44315be72">&#9670;&#160;</a></span>getCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Light3D::getCastShadow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="ace6daa4c01141c22f329ea090f40632b" name="ace6daa4c01141c22f329ea090f40632b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace6daa4c01141c22f329ea090f40632b">&#9670;&#160;</a></span>getDirX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getDirX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="ad68090391443a0490cd4577e3b03f76f" name="ad68090391443a0490cd4577e3b03f76f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad68090391443a0490cd4577e3b03f76f">&#9670;&#160;</a></span>getDirY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getDirY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a3a1ffe8bb30933f1b6718a7b492c952d" name="a3a1ffe8bb30933f1b6718a7b492c952d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a1ffe8bb30933f1b6718a7b492c952d">&#9670;&#160;</a></span>getDirZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getDirZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a24b0e57705b6cdd00555ed87aa4e840b" name="a24b0e57705b6cdd00555ed87aa4e840b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b0e57705b6cdd00555ed87aa4e840b">&#9670;&#160;</a></span>getRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a8afe0698d84ce2f072e7c3b0908453ee" name="a8afe0698d84ce2f072e7c3b0908453ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8afe0698d84ce2f072e7c3b0908453ee">&#9670;&#160;</a></span>getShadowBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getShadowBias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a656e5ea64459ba3720d8498ba92fd7a6" name="a656e5ea64459ba3720d8498ba92fd7a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a656e5ea64459ba3720d8498ba92fd7a6">&#9670;&#160;</a></span>getShadowStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getShadowStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="af954e0e3493b227ad244475c8c13ddaf" name="af954e0e3493b227ad244475c8c13ddaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af954e0e3493b227ad244475c8c13ddaf">&#9670;&#160;</a></span>getType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Light3D::getType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="ae51691a1847478435b9ca53b89d28268" name="ae51691a1847478435b9ca53b89d28268"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51691a1847478435b9ca53b89d28268">&#9670;&#160;</a></span>getVolumetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Light3D::getVolumetric </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a51e552263f3e4efee046e3d51cf14d4b" name="a51e552263f3e4efee046e3d51cf14d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51e552263f3e4efee046e3d51cf14d4b">&#9670;&#160;</a></span>getVolumetricIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getVolumetricIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="aeccfd999ffaccc8713943fe1a5e11c5e" name="aeccfd999ffaccc8713943fe1a5e11c5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeccfd999ffaccc8713943fe1a5e11c5e">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a791a763a15903b47d1e30cf4122cb61d" name="a791a763a15903b47d1e30cf4122cb61d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a791a763a15903b47d1e30cf4122cb61d">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="aef1ec04805b0d17a91b0d57882666dc1" name="aef1ec04805b0d17a91b0d57882666dc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef1ec04805b0d17a91b0d57882666dc1">&#9670;&#160;</a></span>getZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Light3D::getZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="ac79eaa0b760027505a0e220885830b5f" name="ac79eaa0b760027505a0e220885830b5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac79eaa0b760027505a0e220885830b5f">&#9670;&#160;</a></span>isEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Light3D::isEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a5ada25abbd26c882664e0fa1cf29f872" name="a5ada25abbd26c882664e0fa1cf29f872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ada25abbd26c882664e0fa1cf29f872">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8h_source.html">Light.h</a> 第 <a class="el" href="Light_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ac69c6db6637be103c891b7bdf1ac35" name="a3ac69c6db6637be103c891b7bdf1ac35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac69c6db6637be103c891b7bdf1ac35">&#9670;&#160;</a></span>setCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setCastShadow </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="ac8d8acaf19b4a0f6698e343ebe4cf7c6" name="ac8d8acaf19b4a0f6698e343ebe4cf7c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8d8acaf19b4a0f6698e343ebe4cf7c6">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00260">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00285">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00251">eve::daynight::DayNight::setFirePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a459afe3900c9a78b1fd9fe819184894e" name="a459afe3900c9a78b1fd9fe819184894e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a459afe3900c9a78b1fd9fe819184894e">&#9670;&#160;</a></span>setDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setDirection </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00285">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a2038fade3fae36a857dc8554cf2c1edf" name="a2038fade3fae36a857dc8554cf2c1edf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2038fade3fae36a857dc8554cf2c1edf">&#9670;&#160;</a></span>setEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00260">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00285">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="a8b4098e6b794e2c761bf9faa02c89972" name="a8b4098e6b794e2c761bf9faa02c89972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b4098e6b794e2c761bf9faa02c89972">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00260">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00285">eve::daynight::DayNight::init()</a>, <a class="el" href="DayNight_8cpp_source.html#l00251">eve::daynight::DayNight::setFirePosition()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::update()</a>.</p>
+
+</div>
+</div>
+<a id="aaa7b2bde31de8671b26c93cb2db37e44" name="aaa7b2bde31de8671b26c93cb2db37e44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa7b2bde31de8671b26c93cb2db37e44">&#9670;&#160;</a></span>setRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00260">eve::daynight::DayNight::addFirefly()</a>, <a class="el" href="DayNight_8cpp_source.html#l00285">eve::daynight::DayNight::init()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00251">eve::daynight::DayNight::setFirePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a4fd8017d10c3ac7c0a21ad33f413cb79" name="a4fd8017d10c3ac7c0a21ad33f413cb79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fd8017d10c3ac7c0a21ad33f413cb79">&#9670;&#160;</a></span>setShadowBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setShadowBias </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bias</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a72157d78ef2c8cb0f0b9be1f64a3477f" name="a72157d78ef2c8cb0f0b9be1f64a3477f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72157d78ef2c8cb0f0b9be1f64a3477f">&#9670;&#160;</a></span>setShadowStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setShadowStrength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="aa4fe56b863c01d5a0df1e598620d1a14" name="aa4fe56b863c01d5a0df1e598620d1a14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4fe56b863c01d5a0df1e598620d1a14">&#9670;&#160;</a></span>setType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Light_8cpp_source.html#l00063">createLight()</a>.</p>
+
+</div>
+</div>
+<a id="aecc940bf672f19df720cce588b383254" name="aecc940bf672f19df720cce588b383254"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc940bf672f19df720cce588b383254">&#9670;&#160;</a></span>setVolumetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setVolumetric </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="aa8166896d6f631999bbe2999a0a44b31" name="aa8166896d6f631999bbe2999a0a44b31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8166896d6f631999bbe2999a0a44b31">&#9670;&#160;</a></span>setVolumetricIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Light3D::setVolumetricIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Light_8cpp_source.html">Light.cpp</a> 第 <a class="el" href="Light_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Light_8h_source.html">Light.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Light_8cpp_source.html">Light.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

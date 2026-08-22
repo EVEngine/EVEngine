@@ -1,0 +1,963 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Fixture类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1Fixture-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Fixture类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>2D fixture: a shape attached to a <a class="el" href="classeve_1_1physics_1_1Body.html" title="2D rigid body (Box2D) in pixel-space coordinates. Owned by a World; create shapes with newRectangleFi...">Body</a> with material + filter settings. Also carries a string tag used by contact events.  
+ <a href="classeve_1_1physics_1_1Fixture.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Fixture_8h_source.html">Fixture.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a506ea57b8fb11eba4da5f202ea867853" id="r_a506ea57b8fb11eba4da5f202ea867853"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a506ea57b8fb11eba4da5f202ea867853">Fixture</a> (<a class="el" href="classeve_1_1physics_1_1World.html">World</a> *world, <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *<a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, b2Fixture *fixture)</td></tr>
+<tr class="memdesc:a506ea57b8fb11eba4da5f202ea867853"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: wraps a Box2D fixture (use Body::new*Fixture).  <br /></td></tr>
+<tr class="separator:a506ea57b8fb11eba4da5f202ea867853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e50e56682f3791f0d560ff6ea96eeb8" id="r_a1e50e56682f3791f0d560ff6ea96eeb8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a1e50e56682f3791f0d560ff6ea96eeb8">~Fixture</a> ()</td></tr>
+<tr class="separator:a1e50e56682f3791f0d560ff6ea96eeb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada541abcb0f8ea73728297afd2deb5c4" id="r_ada541abcb0f8ea73728297afd2deb5c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#ada541abcb0f8ea73728297afd2deb5c4">Fixture</a> (const <a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;)=delete</td></tr>
+<tr class="separator:ada541abcb0f8ea73728297afd2deb5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309b83f9d13277c56155e5233621d1b5" id="r_a309b83f9d13277c56155e5233621d1b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a309b83f9d13277c56155e5233621d1b5">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;)=delete</td></tr>
+<tr class="separator:a309b83f9d13277c56155e5233621d1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f7be22ac0d6494913a646c8831f6ffe" id="r_a0f7be22ac0d6494913a646c8831f6ffe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a0f7be22ac0d6494913a646c8831f6ffe">setSensor</a> (bool sensor)</td></tr>
+<tr class="memdesc:a0f7be22ac0d6494913a646c8831f6ffe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sensor fixtures report contacts but never collide.  <br /></td></tr>
+<tr class="separator:a0f7be22ac0d6494913a646c8831f6ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b48b793133a90af9cb54410747e7a4" id="r_a98b48b793133a90af9cb54410747e7a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a98b48b793133a90af9cb54410747e7a4">isSensor</a> () const</td></tr>
+<tr class="separator:a98b48b793133a90af9cb54410747e7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf2a85b2717c9c0e9025ed171e231a7" id="r_a9cf2a85b2717c9c0e9025ed171e231a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a9cf2a85b2717c9c0e9025ed171e231a7">setFriction</a> (float friction)</td></tr>
+<tr class="memdesc:a9cf2a85b2717c9c0e9025ed171e231a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Material properties.  <br /></td></tr>
+<tr class="separator:a9cf2a85b2717c9c0e9025ed171e231a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f25df41b588531afdb7ed73ee8a012" id="r_a73f25df41b588531afdb7ed73ee8a012"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a73f25df41b588531afdb7ed73ee8a012">getFriction</a> () const</td></tr>
+<tr class="separator:a73f25df41b588531afdb7ed73ee8a012"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afae3feddc01198eb7a2007ed61a0d457" id="r_afae3feddc01198eb7a2007ed61a0d457"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#afae3feddc01198eb7a2007ed61a0d457">setRestitution</a> (float restitution)</td></tr>
+<tr class="separator:afae3feddc01198eb7a2007ed61a0d457"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcf30d92482a66e1918e4157d3453f3e" id="r_afcf30d92482a66e1918e4157d3453f3e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#afcf30d92482a66e1918e4157d3453f3e">getRestitution</a> () const</td></tr>
+<tr class="separator:afcf30d92482a66e1918e4157d3453f3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77e40917a16d4a4e8af2ae0d32ca064c" id="r_a77e40917a16d4a4e8af2ae0d32ca064c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a77e40917a16d4a4e8af2ae0d32ca064c">setDensity</a> (float density)</td></tr>
+<tr class="separator:a77e40917a16d4a4e8af2ae0d32ca064c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae94b7e59a9e0c5ebc7a3b7e61b9b1511" id="r_ae94b7e59a9e0c5ebc7a3b7e61b9b1511"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#ae94b7e59a9e0c5ebc7a3b7e61b9b1511">getDensity</a> () const</td></tr>
+<tr class="separator:ae94b7e59a9e0c5ebc7a3b7e61b9b1511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaf827fd890809a1d2d0cb21d91357b1" id="r_afaf827fd890809a1d2d0cb21d91357b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#afaf827fd890809a1d2d0cb21d91357b1">setTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="memdesc:afaf827fd890809a1d2d0cb21d91357b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arbitrary string tag surfaced in begin/end contact events.  <br /></td></tr>
+<tr class="separator:afaf827fd890809a1d2d0cb21d91357b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb77badc9760099f7ee0dfc56b493c92" id="r_abb77badc9760099f7ee0dfc56b493c92"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#abb77badc9760099f7ee0dfc56b493c92">getTag</a> () const</td></tr>
+<tr class="separator:abb77badc9760099f7ee0dfc56b493c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba61f440ee48a84e12ef8d529b7fc230" id="r_aba61f440ee48a84e12ef8d529b7fc230"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#aba61f440ee48a84e12ef8d529b7fc230">setCategoryBits</a> (int bits)</td></tr>
+<tr class="memdesc:aba61f440ee48a84e12ef8d529b7fc230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collision filtering (Box2D category/mask bits, group index).  <br /></td></tr>
+<tr class="separator:aba61f440ee48a84e12ef8d529b7fc230"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4313163fbc1a94fade5495582d659a07" id="r_a4313163fbc1a94fade5495582d659a07"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a4313163fbc1a94fade5495582d659a07">getCategoryBits</a> () const</td></tr>
+<tr class="separator:a4313163fbc1a94fade5495582d659a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64fba31a0ee807af35b2ff045488ddd3" id="r_a64fba31a0ee807af35b2ff045488ddd3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a64fba31a0ee807af35b2ff045488ddd3">setMaskBits</a> (int bits)</td></tr>
+<tr class="separator:a64fba31a0ee807af35b2ff045488ddd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c89bb37a22095c031e15fffd8e34218" id="r_a2c89bb37a22095c031e15fffd8e34218"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a2c89bb37a22095c031e15fffd8e34218">getMaskBits</a> () const</td></tr>
+<tr class="separator:a2c89bb37a22095c031e15fffd8e34218"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaeff32d02ce5d474b8aa1a3d0badf87" id="r_abaeff32d02ce5d474b8aa1a3d0badf87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#abaeff32d02ce5d474b8aa1a3d0badf87">setGroupIndex</a> (int index)</td></tr>
+<tr class="separator:abaeff32d02ce5d474b8aa1a3d0badf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab581c5b29207a478fd59022fdccaa904" id="r_ab581c5b29207a478fd59022fdccaa904"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#ab581c5b29207a478fd59022fdccaa904">getGroupIndex</a> () const</td></tr>
+<tr class="separator:ab581c5b29207a478fd59022fdccaa904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab99d84f79982911a616d61a9cb6bfe8a" id="r_ab99d84f79982911a616d61a9cb6bfe8a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#ab99d84f79982911a616d61a9cb6bfe8a">getBodyId</a> () const</td></tr>
+<tr class="memdesc:ab99d84f79982911a616d61a9cb6bfe8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Id of the owning body.  <br /></td></tr>
+<tr class="separator:ab99d84f79982911a616d61a9cb6bfe8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a089cd0fd9d769f7f4e93c8a9255fac28" id="r_a089cd0fd9d769f7f4e93c8a9255fac28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a089cd0fd9d769f7f4e93c8a9255fac28">getBody</a> ()</td></tr>
+<tr class="memdesc:a089cd0fd9d769f7f4e93c8a9255fac28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning body.  <br /></td></tr>
+<tr class="separator:a089cd0fd9d769f7f4e93c8a9255fac28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e66b204b4ad53bd2491d95b2b815423" id="r_a1e66b204b4ad53bd2491d95b2b815423"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a1e66b204b4ad53bd2491d95b2b815423">testPoint</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="memdesc:a1e66b204b4ad53bd2491d95b2b815423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pixel-space point-in-fixture test (uses <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> meter).  <br /></td></tr>
+<tr class="separator:a1e66b204b4ad53bd2491d95b2b815423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0402ab95efe76d34810c3a5d82c2d1cf" id="r_a0402ab95efe76d34810c3a5d82c2d1cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a0402ab95efe76d34810c3a5d82c2d1cf">destroy</a> ()</td></tr>
+<tr class="memdesc:a0402ab95efe76d34810c3a5d82c2d1cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the fixture inside its world.  <br /></td></tr>
+<tr class="separator:a0402ab95efe76d34810c3a5d82c2d1cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c93d67685ed96a76d0e17d308e9c70b" id="r_a1c93d67685ed96a76d0e17d308e9c70b"><td class="memItemLeft" align="right" valign="top">b2Fixture *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a1c93d67685ed96a76d0e17d308e9c70b">raw</a> ()</td></tr>
+<tr class="memdesc:a1c93d67685ed96a76d0e17d308e9c70b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw Box2D fixture.  <br /></td></tr>
+<tr class="separator:a1c93d67685ed96a76d0e17d308e9c70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a758a47497bf6a5283e0a0735691ae2e3" id="r_a758a47497bf6a5283e0a0735691ae2e3"><td class="memItemLeft" align="right" valign="top">const b2Fixture *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a758a47497bf6a5283e0a0735691ae2e3">raw</a> () const</td></tr>
+<tr class="separator:a758a47497bf6a5283e0a0735691ae2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a720acd459e640688910eeb4ab75ec7b5" id="r_a720acd459e640688910eeb4ab75ec7b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a720acd459e640688910eeb4ab75ec7b5">invalidate</a> ()</td></tr>
+<tr class="memdesc:a720acd459e640688910eeb4ab75ec7b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: marks the wrapper invalid after destruction.  <br /></td></tr>
+<tr class="separator:a720acd459e640688910eeb4ab75ec7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a7b4bcdf992c21ae83363f25df05b1d25" id="r_a7b4bcdf992c21ae83363f25df05b1d25"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a7b4bcdf992c21ae83363f25df05b1d25">World</a></td></tr>
+<tr class="separator:a7b4bcdf992c21ae83363f25df05b1d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8858f397a273114ddc1443880bb5540e" id="r_a8858f397a273114ddc1443880bb5540e"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html#a8858f397a273114ddc1443880bb5540e">Body</a></td></tr>
+<tr class="separator:a8858f397a273114ddc1443880bb5540e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>2D fixture: a shape attached to a <a class="el" href="classeve_1_1physics_1_1Body.html" title="2D rigid body (Box2D) in pixel-space coordinates. Owned by a World; create shapes with newRectangleFi...">Body</a> with material + filter settings. Also carries a string tag used by contact events. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a506ea57b8fb11eba4da5f202ea867853" name="a506ea57b8fb11eba4da5f202ea867853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a506ea57b8fb11eba4da5f202ea867853">&#9670;&#160;</a></span>Fixture() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Fixture::Fixture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">b2Fixture *&#160;</td>
+          <td class="paramname"><em>fixture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: wraps a Box2D fixture (use Body::new*Fixture). </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e50e56682f3791f0d560ff6ea96eeb8" name="a1e50e56682f3791f0d560ff6ea96eeb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e50e56682f3791f0d560ff6ea96eeb8">&#9670;&#160;</a></span>~Fixture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Fixture::~Fixture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a> , 以及 <a class="el" href="Body_8h_source.html#l00097">eve::physics::Body::raw()</a>.</p>
+
+</div>
+</div>
+<a id="ada541abcb0f8ea73728297afd2deb5c4" name="ada541abcb0f8ea73728297afd2deb5c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada541abcb0f8ea73728297afd2deb5c4">&#9670;&#160;</a></span>Fixture() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Fixture::Fixture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0402ab95efe76d34810c3a5d82c2d1cf" name="a0402ab95efe76d34810c3a5d82c2d1cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0402ab95efe76d34810c3a5d82c2d1cf">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys the fixture inside its world. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a>, <a class="el" href="Fixture_8cpp_source.html#l00023">invalidate()</a> , 以及 <a class="el" href="Body_8h_source.html#l00097">eve::physics::Body::raw()</a>.</p>
+
+</div>
+</div>
+<a id="a089cd0fd9d769f7f4e93c8a9255fac28" name="a089cd0fd9d769f7f4e93c8a9255fac28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a089cd0fd9d769f7f4e93c8a9255fac28">&#9670;&#160;</a></span>getBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> * eve::physics::Fixture::getBody </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owning body. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab99d84f79982911a616d61a9cb6bfe8a" name="ab99d84f79982911a616d61a9cb6bfe8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab99d84f79982911a616d61a9cb6bfe8a">&#9670;&#160;</a></span>getBodyId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fixture::getBodyId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Id of the owning body. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body_8h_source.html#l00026">eve::physics::Body::getId()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a>.</p>
+
+</div>
+</div>
+<a id="a4313163fbc1a94fade5495582d659a07" name="a4313163fbc1a94fade5495582d659a07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4313163fbc1a94fade5495582d659a07">&#9670;&#160;</a></span>getCategoryBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fixture::getCategoryBits </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae94b7e59a9e0c5ebc7a3b7e61b9b1511" name="ae94b7e59a9e0c5ebc7a3b7e61b9b1511"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae94b7e59a9e0c5ebc7a3b7e61b9b1511">&#9670;&#160;</a></span>getDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fixture::getDensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73f25df41b588531afdb7ed73ee8a012" name="a73f25df41b588531afdb7ed73ee8a012"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f25df41b588531afdb7ed73ee8a012">&#9670;&#160;</a></span>getFriction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fixture::getFriction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab581c5b29207a478fd59022fdccaa904" name="ab581c5b29207a478fd59022fdccaa904"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab581c5b29207a478fd59022fdccaa904">&#9670;&#160;</a></span>getGroupIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fixture::getGroupIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c89bb37a22095c031e15fffd8e34218" name="a2c89bb37a22095c031e15fffd8e34218"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c89bb37a22095c031e15fffd8e34218">&#9670;&#160;</a></span>getMaskBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Fixture::getMaskBits </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afcf30d92482a66e1918e4157d3453f3e" name="afcf30d92482a66e1918e4157d3453f3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcf30d92482a66e1918e4157d3453f3e">&#9670;&#160;</a></span>getRestitution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Fixture::getRestitution </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb77badc9760099f7ee0dfc56b493c92" name="abb77badc9760099f7ee0dfc56b493c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb77badc9760099f7ee0dfc56b493c92">&#9670;&#160;</a></span>getTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::physics::Fixture::getTag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a>.</p>
+
+</div>
+</div>
+<a id="a720acd459e640688910eeb4ab75ec7b5" name="a720acd459e640688910eeb4ab75ec7b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a720acd459e640688910eeb4ab75ec7b5">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::invalidate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: marks the wrapper invalid after destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fixture_8cpp_source.html#l00030">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a98b48b793133a90af9cb54410747e7a4" name="a98b48b793133a90af9cb54410747e7a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b48b793133a90af9cb54410747e7a4">&#9670;&#160;</a></span>isSensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Fixture::isSensor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a309b83f9d13277c56155e5233621d1b5" name="a309b83f9d13277c56155e5233621d1b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a309b83f9d13277c56155e5233621d1b5">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp; eve::physics::Fixture::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c93d67685ed96a76d0e17d308e9c70b" name="a1c93d67685ed96a76d0e17d308e9c70b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c93d67685ed96a76d0e17d308e9c70b">&#9670;&#160;</a></span>raw() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">b2Fixture * eve::physics::Fixture::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Raw Box2D fixture. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a>.</p>
+
+</div>
+</div>
+<a id="a758a47497bf6a5283e0a0735691ae2e3" name="a758a47497bf6a5283e0a0735691ae2e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a758a47497bf6a5283e0a0735691ae2e3">&#9670;&#160;</a></span>raw() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const b2Fixture * eve::physics::Fixture::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba61f440ee48a84e12ef8d529b7fc230" name="aba61f440ee48a84e12ef8d529b7fc230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba61f440ee48a84e12ef8d529b7fc230">&#9670;&#160;</a></span>setCategoryBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setCategoryBits </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bits</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collision filtering (Box2D category/mask bits, group index). </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00130">filter</a>.</p>
+
+</div>
+</div>
+<a id="a77e40917a16d4a4e8af2ae0d32ca064c" name="a77e40917a16d4a4e8af2ae0d32ca064c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77e40917a16d4a4e8af2ae0d32ca064c">&#9670;&#160;</a></span>setDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setDensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body_8h_source.html#l00097">eve::physics::Body::raw()</a>.</p>
+
+</div>
+</div>
+<a id="a9cf2a85b2717c9c0e9025ed171e231a7" name="a9cf2a85b2717c9c0e9025ed171e231a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf2a85b2717c9c0e9025ed171e231a7">&#9670;&#160;</a></span>setFriction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setFriction </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>friction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Material properties. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abaeff32d02ce5d474b8aa1a3d0badf87" name="abaeff32d02ce5d474b8aa1a3d0badf87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaeff32d02ce5d474b8aa1a3d0badf87">&#9670;&#160;</a></span>setGroupIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setGroupIndex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00130">filter</a>.</p>
+
+</div>
+</div>
+<a id="a64fba31a0ee807af35b2ff045488ddd3" name="a64fba31a0ee807af35b2ff045488ddd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64fba31a0ee807af35b2ff045488ddd3">&#9670;&#160;</a></span>setMaskBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setMaskBits </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bits</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00130">filter</a>.</p>
+
+</div>
+</div>
+<a id="afae3feddc01198eb7a2007ed61a0d457" name="afae3feddc01198eb7a2007ed61a0d457"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afae3feddc01198eb7a2007ed61a0d457">&#9670;&#160;</a></span>setRestitution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setRestitution </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>restitution</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f7be22ac0d6494913a646c8831f6ffe" name="a0f7be22ac0d6494913a646c8831f6ffe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f7be22ac0d6494913a646c8831f6ffe">&#9670;&#160;</a></span>setSensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setSensor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sensor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sensor fixtures report contacts but never collide. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afaf827fd890809a1d2d0cb21d91357b1" name="afaf827fd890809a1d2d0cb21d91357b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaf827fd890809a1d2d0cb21d91357b1">&#9670;&#160;</a></span>setTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Fixture::setTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Arbitrary string tag surfaced in begin/end contact events. </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e66b204b4ad53bd2491d95b2b815423" name="a1e66b204b4ad53bd2491d95b2b815423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e66b204b4ad53bd2491d95b2b815423">&#9670;&#160;</a></span>testPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Fixture::testPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pixel-space point-in-fixture test (uses <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> meter). </p>
+
+<p class="definition">在文件 <a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a> 第 <a class="el" href="Fixture_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a8858f397a273114ddc1443880bb5540e" name="a8858f397a273114ddc1443880bb5540e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8858f397a273114ddc1443880bb5540e">&#9670;&#160;</a></span>Body</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b4bcdf992c21ae83363f25df05b1d25" name="a7b4bcdf992c21ae83363f25df05b1d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4bcdf992c21ae83363f25df05b1d25">&#9670;&#160;</a></span>World</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1World.html">World</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fixture_8h_source.html">Fixture.h</a> 第 <a class="el" href="Fixture_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Fixture_8h_source.html">Fixture.h</a></li>
+<li>src/modules/physics/<a class="el" href="Fixture_8cpp_source.html">Fixture.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

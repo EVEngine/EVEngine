@@ -1,0 +1,896 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpgpu::ShaderSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpgpu.html">gpgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1gpgpu_1_1ShaderSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpgpu::ShaderSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2a9f16c32250bf63a33e6f14d24ee6da" id="r_a2a9f16c32250bf63a33e6f14d24ee6da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a2a9f16c32250bf63a33e6f14d24ee6da">ShaderSystem</a> ()=default</td></tr>
+<tr class="separator:a2a9f16c32250bf63a33e6f14d24ee6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58a1280560fe13bbf1895e13d2167b65" id="r_a58a1280560fe13bbf1895e13d2167b65"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a58a1280560fe13bbf1895e13d2167b65">~ShaderSystem</a> ()</td></tr>
+<tr class="separator:a58a1280560fe13bbf1895e13d2167b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba218b759ecb089eb9d68c6dd96d3db4" id="r_aba218b759ecb089eb9d68c6dd96d3db4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#aba218b759ecb089eb9d68c6dd96d3db4">ShaderSystem</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;)=delete</td></tr>
+<tr class="separator:aba218b759ecb089eb9d68c6dd96d3db4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a872f17e0fb38ef110176ba341db71fa9" id="r_a872f17e0fb38ef110176ba341db71fa9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a872f17e0fb38ef110176ba341db71fa9">operator=</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;)=delete</td></tr>
+<tr class="separator:a872f17e0fb38ef110176ba341db71fa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7d3387727415b424fe5a0898935f79e" id="r_ab7d3387727415b424fe5a0898935f79e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#ab7d3387727415b424fe5a0898935f79e">setGpgpu</a> (<a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a> *gpu)</td></tr>
+<tr class="separator:ab7d3387727415b424fe5a0898935f79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a209931392eab2f3972d35134dd88bc51" id="r_a209931392eab2f3972d35134dd88bc51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a209931392eab2f3972d35134dd88bc51">getGpgpu</a> () const</td></tr>
+<tr class="separator:a209931392eab2f3972d35134dd88bc51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f8c0c7f52e34f4e0cc287855ff35243" id="r_a9f8c0c7f52e34f4e0cc287855ff35243"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a9f8c0c7f52e34f4e0cc287855ff35243">setShaderSource</a> (const std::string &amp;glsl)</td></tr>
+<tr class="separator:a9f8c0c7f52e34f4e0cc287855ff35243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad73d560e1208986f6c40c1dda6817777" id="r_ad73d560e1208986f6c40c1dda6817777"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#ad73d560e1208986f6c40c1dda6817777">setShader</a> (<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, bool takeOwnership=false)</td></tr>
+<tr class="separator:ad73d560e1208986f6c40c1dda6817777"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67ab5d6ae3c15a07307cbea88d087f2" id="r_ac67ab5d6ae3c15a07307cbea88d087f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#ac67ab5d6ae3c15a07307cbea88d087f2">getShader</a> () const</td></tr>
+<tr class="separator:ac67ab5d6ae3c15a07307cbea88d087f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab68ec9b118646661a81a960a4f86711e" id="r_ab68ec9b118646661a81a960a4f86711e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#ab68ec9b118646661a81a960a4f86711e">setLocalSize</a> (int localSize)</td></tr>
+<tr class="separator:ab68ec9b118646661a81a960a4f86711e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7421498299ecb53f7385918c6a2ae6ea" id="r_a7421498299ecb53f7385918c6a2ae6ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a7421498299ecb53f7385918c6a2ae6ea">getLocalSize</a> () const</td></tr>
+<tr class="separator:a7421498299ecb53f7385918c6a2ae6ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44e840eb1165f49191902cc7c0348967" id="r_a44e840eb1165f49191902cc7c0348967"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a44e840eb1165f49191902cc7c0348967">ensureBuffer</a> (int binding, int floatCount)</td></tr>
+<tr class="separator:a44e840eb1165f49191902cc7c0348967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412721b5dc688dc888ec4bbb5907686e" id="r_a412721b5dc688dc888ec4bbb5907686e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a412721b5dc688dc888ec4bbb5907686e">getBuffer</a> (int binding) const</td></tr>
+<tr class="separator:a412721b5dc688dc888ec4bbb5907686e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4204a8b9981ddbf2c0fa4768b41e066a" id="r_a4204a8b9981ddbf2c0fa4768b41e066a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a4204a8b9981ddbf2c0fa4768b41e066a">upload</a> (int binding, const float *data, int floatCount)</td></tr>
+<tr class="separator:a4204a8b9981ddbf2c0fa4768b41e066a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a787c3e4fa809a76f84571fc50aa6a299" id="r_a787c3e4fa809a76f84571fc50aa6a299"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a787c3e4fa809a76f84571fc50aa6a299">download</a> (int binding, float *out, int floatCount) const</td></tr>
+<tr class="separator:a787c3e4fa809a76f84571fc50aa6a299"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8aca1482e1dfdfd0098b4945a1909a1" id="r_ac8aca1482e1dfdfd0098b4945a1909a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#ac8aca1482e1dfdfd0098b4945a1909a1">upload</a> (int binding, const std::vector&lt; float &gt; &amp;data)</td></tr>
+<tr class="separator:ac8aca1482e1dfdfd0098b4945a1909a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78dc9c51177ad52ce05d01a9987fb70b" id="r_a78dc9c51177ad52ce05d01a9987fb70b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a78dc9c51177ad52ce05d01a9987fb70b">download</a> (int binding, int floatCount) const</td></tr>
+<tr class="separator:a78dc9c51177ad52ce05d01a9987fb70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f2ae38f60697f811e4ebbf87a0f8add" id="r_a7f2ae38f60697f811e4ebbf87a0f8add"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a7f2ae38f60697f811e4ebbf87a0f8add">setFloat</a> (int index, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:a7f2ae38f60697f811e4ebbf87a0f8add"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a816a840d3a19769d47240ccc686414be" id="r_a816a840d3a19769d47240ccc686414be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a816a840d3a19769d47240ccc686414be">getFloat</a> (int index) const</td></tr>
+<tr class="separator:a816a840d3a19769d47240ccc686414be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65d69873eb771a55663572601faaf673" id="r_a65d69873eb771a55663572601faaf673"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a65d69873eb771a55663572601faaf673">dispatch</a> (int entityCount, float dt=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a65d69873eb771a55663572601faaf673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a778a02a2070ced6fca85815a3afac064" id="r_a778a02a2070ced6fca85815a3afac064"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a778a02a2070ced6fca85815a3afac064">clearBuffers</a> ()</td></tr>
+<tr class="separator:a778a02a2070ced6fca85815a3afac064"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a6be0e0aace4193375734e66242941966" id="r_a6be0e0aace4193375734e66242941966"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a6be0e0aace4193375734e66242941966">kMaxBindings</a> = ComputeShader::kMaxBindings</td></tr>
+<tr class="separator:a6be0e0aace4193375734e66242941966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e8346ce3e54225196255afd016e4009" id="r_a6e8346ce3e54225196255afd016e4009"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html#a6e8346ce3e54225196255afd016e4009">kDefaultLocalSize</a> = 64</td></tr>
+<tr class="separator:a6e8346ce3e54225196255afd016e4009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>ECS ↔ GPGPU bridge: run a compute shader as an ECS System over N entities.</p>
+<p>Layout convention (matches <a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html#acf0c575551c055a8b0fbec32b6208c23" title="Record + submit a compute dispatch and wait for completion (sync). groups*: workgroup counts (not thr...">Gpgpu::dispatch</a>):</p><ul>
+<li>set=0 binding i = SSBO of tightly-packed floats for that field group</li>
+<li>push constants: data[0]=dt, data[1]=entityCount (float), data[2..]=user</li>
+</ul>
+<p>Typical flow:</p><ol type="1">
+<li>setGpgpu + setShaderSource (or setShader)</li>
+<li>pack / upload float SoA-or-AoS streams per binding</li>
+<li>dispatch(entityCount)</li>
+<li>download / unpack back into components</li>
+</ol>
+<p>Script: <code>eve.ShaderSystem</code> (extends <code>eve.System</code>) wraps this class. C++ ECS: use <code>packViewComponent</code> / <code>unpackViewComponent</code> in <a class="el" href="EcsGpu_8h.html">EcsGpu.h</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a> 第 <a class="el" href="ShaderSystem_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2a9f16c32250bf63a33e6f14d24ee6da" name="a2a9f16c32250bf63a33e6f14d24ee6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a9f16c32250bf63a33e6f14d24ee6da">&#9670;&#160;</a></span>ShaderSystem() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::ShaderSystem::ShaderSystem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a58a1280560fe13bbf1895e13d2167b65" name="a58a1280560fe13bbf1895e13d2167b65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58a1280560fe13bbf1895e13d2167b65">&#9670;&#160;</a></span>~ShaderSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::ShaderSystem::~ShaderSystem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8cpp_source.html#l00115">clearBuffers()</a>.</p>
+
+</div>
+</div>
+<a id="aba218b759ecb089eb9d68c6dd96d3db4" name="aba218b759ecb089eb9d68c6dd96d3db4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba218b759ecb089eb9d68c6dd96d3db4">&#9670;&#160;</a></span>ShaderSystem() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::ShaderSystem::ShaderSystem </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a778a02a2070ced6fca85815a3afac064" name="a778a02a2070ced6fca85815a3afac064"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a778a02a2070ced6fca85815a3afac064">&#9670;&#160;</a></span>clearBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::clearBuffers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8h_source.html#l00032">kMaxBindings</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00012">~ShaderSystem()</a>.</p>
+
+</div>
+</div>
+<a id="a65d69873eb771a55663572601faaf673" name="a65d69873eb771a55663572601faaf673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65d69873eb771a55663572601faaf673">&#9670;&#160;</a></span>dispatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::dispatch </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Bind buffers, set push[0]=dt and push[1]=entityCount, dispatch workgroups. No-op when shader/gpu missing or entityCount &lt;= 0. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#afaf8369ad9145505f5dd5e966b737cf5">eve::gpgpu::ComputeShader::bindBuffer()</a>, <a class="el" href="Gpgpu_8cpp_source.html#l00116">eve::gpgpu::Gpgpu::dispatch()</a>, <a class="el" href="ShaderSystem_8h_source.html#l00033">kDefaultLocalSize</a>, <a class="el" href="ShaderSystem_8h_source.html#l00032">kMaxBindings</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a44b71449ed92daf0e6c9dad0a052e135">eve::gpgpu::ComputeShader::setFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EcsGpu_8h_source.html#l00089">eve::gpgpu::runViewComponentSystem()</a>.</p>
+
+</div>
+</div>
+<a id="a787c3e4fa809a76f84571fc50aa6a299" name="a787c3e4fa809a76f84571fc50aa6a299"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a787c3e4fa809a76f84571fc50aa6a299">&#9670;&#160;</a></span>download() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::download </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>floatCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8cpp_source.html#l00061">getBuffer()</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a2f638db95c6f9361bb82f1cd095de635">eve::gpgpu::GpuBuffer::readFloat32s()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00084">download()</a> , 以及 <a class="el" href="EcsGpu_8h_source.html#l00069">eve::gpgpu::unpackViewComponent()</a>.</p>
+
+</div>
+</div>
+<a id="a78dc9c51177ad52ce05d01a9987fb70b" name="a78dc9c51177ad52ce05d01a9987fb70b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78dc9c51177ad52ce05d01a9987fb70b">&#9670;&#160;</a></span>download() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::gpgpu::ShaderSystem::download </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>floatCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8cpp_source.html#l00072">download()</a>.</p>
+
+</div>
+</div>
+<a id="a44e840eb1165f49191902cc7c0348967" name="a44e840eb1165f49191902cc7c0348967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44e840eb1165f49191902cc7c0348967">&#9670;&#160;</a></span>ensureBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> * eve::gpgpu::ShaderSystem::ensureBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>floatCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Ensure binding has a storage buffer with at least floatCount floats. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a23011e9767e60339b37175d2dccaec05">eve::gpgpu::GpuBuffer::getSize()</a>, <a class="el" href="ShaderSystem_8h_source.html#l00032">kMaxBindings</a> , 以及 <a class="el" href="Gpgpu_8cpp_source.html#l00092">eve::gpgpu::Gpgpu::newBuffer()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00066">upload()</a>.</p>
+
+</div>
+</div>
+<a id="a412721b5dc688dc888ec4bbb5907686e" name="a412721b5dc688dc888ec4bbb5907686e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412721b5dc688dc888ec4bbb5907686e">&#9670;&#160;</a></span>getBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> * eve::gpgpu::ShaderSystem::getBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8h_source.html#l00032">kMaxBindings</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00072">download()</a>.</p>
+
+</div>
+</div>
+<a id="a816a840d3a19769d47240ccc686414be" name="a816a840d3a19769d47240ccc686414be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a816a840d3a19769d47240ccc686414be">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpgpu::ShaderSystem::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#af4b5b0454125c65d53f1edc3773d922e">eve::gpgpu::ComputeShader::getFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a209931392eab2f3972d35134dd88bc51" name="a209931392eab2f3972d35134dd88bc51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a209931392eab2f3972d35134dd88bc51">&#9670;&#160;</a></span>getGpgpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a> * eve::gpgpu::ShaderSystem::getGpgpu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a> 第 <a class="el" href="ShaderSystem_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7421498299ecb53f7385918c6a2ae6ea" name="a7421498299ecb53f7385918c6a2ae6ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7421498299ecb53f7385918c6a2ae6ea">&#9670;&#160;</a></span>getLocalSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::ShaderSystem::getLocalSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a> 第 <a class="el" href="ShaderSystem_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac67ab5d6ae3c15a07307cbea88d087f2" name="ac67ab5d6ae3c15a07307cbea88d087f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac67ab5d6ae3c15a07307cbea88d087f2">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> * eve::gpgpu::ShaderSystem::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a> 第 <a class="el" href="ShaderSystem_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a872f17e0fb38ef110176ba341db71fa9" name="a872f17e0fb38ef110176ba341db71fa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a872f17e0fb38ef110176ba341db71fa9">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp; eve::gpgpu::ShaderSystem::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f2ae38f60697f811e4ebbf87a0f8add" name="a7f2ae38f60697f811e4ebbf87a0f8add"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f2ae38f60697f811e4ebbf87a0f8add">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a44b71449ed92daf0e6c9dad0a052e135">eve::gpgpu::ComputeShader::setFloat()</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="ab7d3387727415b424fe5a0898935f79e" name="ab7d3387727415b424fe5a0898935f79e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7d3387727415b424fe5a0898935f79e">&#9670;&#160;</a></span>setGpgpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::setGpgpu </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a> *&#160;</td>
+          <td class="paramname"><em>gpu</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab68ec9b118646661a81a960a4f86711e" name="ab68ec9b118646661a81a960a4f86711e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab68ec9b118646661a81a960a4f86711e">&#9670;&#160;</a></span>setLocalSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::setLocalSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>localSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8h_source.html#l00033">kDefaultLocalSize</a>.</p>
+
+</div>
+</div>
+<a id="ad73d560e1208986f6c40c1dda6817777" name="ad73d560e1208986f6c40c1dda6817777"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad73d560e1208986f6c40c1dda6817777">&#9670;&#160;</a></span>setShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::setShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>takeOwnership</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Use an existing <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html" title="Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch....">ComputeShader</a>. Does not take ownership unless takeOwnership is true. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00529">shader</a>.</p>
+
+</div>
+</div>
+<a id="a9f8c0c7f52e34f4e0cc287855ff35243" name="a9f8c0c7f52e34f4e0cc287855ff35243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f8c0c7f52e34f4e0cc287855ff35243">&#9670;&#160;</a></span>setShaderSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::setShaderSource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>glsl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compile GLSL compute and take ownership of the resulting <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html" title="Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch....">ComputeShader</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Gpgpu_8cpp_source.html#l00048">eve::gpgpu::Gpgpu::newShader()</a>.</p>
+
+</div>
+</div>
+<a id="a4204a8b9981ddbf2c0fa4768b41e066a" name="a4204a8b9981ddbf2c0fa4768b41e066a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4204a8b9981ddbf2c0fa4768b41e066a">&#9670;&#160;</a></span>upload() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::upload </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>floatCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00044">ensureBuffer()</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a18eca506cb20e5f3106091de0b46318e">eve::gpgpu::GpuBuffer::writeFloat32s()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EcsGpu_8h_source.html#l00041">eve::gpgpu::packViewComponent()</a> , 以及 <a class="el" href="ShaderSystem_8cpp_source.html#l00079">upload()</a>.</p>
+
+</div>
+</div>
+<a id="ac8aca1482e1dfdfd0098b4945a1909a1" name="ac8aca1482e1dfdfd0098b4945a1909a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8aca1482e1dfdfd0098b4945a1909a1">&#9670;&#160;</a></span>upload() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::ShaderSystem::upload </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convenience: upload from / download to a vector. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a> 第 <a class="el" href="ShaderSystem_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="ShaderSystem_8cpp_source.html#l00066">upload()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a6e8346ce3e54225196255afd016e4009" name="a6e8346ce3e54225196255afd016e4009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e8346ce3e54225196255afd016e4009">&#9670;&#160;</a></span>kDefaultLocalSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::gpgpu::ShaderSystem::kDefaultLocalSize = 64</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a> 第 <a class="el" href="ShaderSystem_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00100">dispatch()</a> , 以及 <a class="el" href="ShaderSystem_8cpp_source.html#l00040">setLocalSize()</a>.</p>
+
+</div>
+</div>
+<a id="a6be0e0aace4193375734e66242941966" name="a6be0e0aace4193375734e66242941966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6be0e0aace4193375734e66242941966">&#9670;&#160;</a></span>kMaxBindings</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::gpgpu::ShaderSystem::kMaxBindings = ComputeShader::kMaxBindings</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a> 第 <a class="el" href="ShaderSystem_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderSystem_8cpp_source.html#l00115">clearBuffers()</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00100">dispatch()</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00044">ensureBuffer()</a> , 以及 <a class="el" href="ShaderSystem_8cpp_source.html#l00061">getBuffer()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/gpgpu/<a class="el" href="ShaderSystem_8h_source.html">ShaderSystem.h</a></li>
+<li>src/modules/gpgpu/<a class="el" href="ShaderSystem_8cpp_source.html">ShaderSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

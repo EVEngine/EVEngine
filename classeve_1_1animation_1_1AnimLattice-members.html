@@ -1,0 +1,224 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">AnimLattice</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::AnimLattice 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ac89587730e9cb9221a215d302747efed">AnimLattice</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a82402ba3bda4c3e0870ac646fb732875">AnimLattice</a>(int divX, int divY, int divZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a2c490b93f741af571051b204f67f2b20">AnimLattice</a>(const AnimLattice &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a8377729034943edefd9269c797c04370">bindModel</a>(const model3d::ModelData *model, int meshIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aff29d2b5cf287ed84b14604817afef06">bindPositions</a>(const float *posXYZ, int count)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab47b17e6770097cf127d323f76055324">clearBind</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a69d06c989e408411e2925c26d1840996">deformNormals</a>(const float *posXYZ, const float *inNrmXYZ, float *outNrmXYZ, int count) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aa29b9cc149dc35a7fdf2a8038c1cff63">deformPositions</a>(const float *inPosXYZ, float *outPosXYZ, int count) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee2c94b75bd4c1556bd8ac19a1347a1a">deformPositionsTo</a>(const std::vector&lt; float &gt; &amp;inPosXYZ, std::vector&lt; float &gt; &amp;outPosXYZ) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ae8d8d874e1ec6e5f1a8a70d53cc62d6a">fromModel</a>(const model3d::ModelData *model, int meshIndex, int divX, int divY, int divZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af2a044f7ad6e539d0904681bb7ef81ad">getBindPositionX</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aff6d7eb051a815a290eeef257089ad09">getBindPositionY</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a7bfaced56d3ebb724a94cbfd7886b05d">getBindPositionZ</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a3d1936b778d9846712a483bfadc43cc0">getClamp</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a0a4c5f95943ed45f5edef85c8b6b9b51">getDeformedNormals</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a0dd02fc3d3851dca1ceadea8f83b6e28">getDeformedPositions</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a0214340499205c1ec8e244a770897d5d">getDeformedPositionX</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aa6bc7aee60fb90aa333abd16feb451ad">getDeformedPositionY</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#abb69852d328731d54fdddc03235d5b07">getDeformedPositionZ</a>(int vertexIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a998eb4ebaad1855ab9393bc0902833f3">getDivisionsX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a63ff5e357e16e45a2f1919597a9bb171">getDivisionsY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#adf19b4d0c67e0fabbdb4ef7d2a5fb21c">getDivisionsZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ac17086d2133d64240bed2c87a28ae437">getOriginX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a69742e7a1d56da530c2fc71f76665f59">getOriginY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a4cf6313e22a040d5fbd84c748772f8de">getOriginZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aaf90a542a66d03cff6d4706bfac3f052">getPointCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a155c4ff91e97dfa70065c94c6e1040f9">getPointOffsetX</a>(int ix, int iy, int iz) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aa31b0a274bbfa07af17662d803429ed3">getPointOffsetY</a>(int ix, int iy, int iz) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af606ec4b7b6b607331349bbc481c11bf">getPointOffsetZ</a>(int ix, int iy, int iz) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a914be7b460db6dd8b3ef4d037abc93e6">getPointScaleX</a>(int ix, int iy, int iz) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#acd7c0e6b8cab578ba178fba3276ffec2">getPointScaleY</a>(int ix, int iy, int iz) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af890d766ec09bbaf9e7c773fda501732">getPointScaleZ</a>(int ix, int iy, int iz) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af5c2daacd20bbd91cd54f60c9fefd938">getSizeX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab765d47992df2c43f6c14186d7b920b0">getSizeY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a1f3d745bfdc33c9bf297d37e37e8ae1b">getSizeZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#aee17c8af8bbcfad9afe9c5d55e361105">getVertexCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af6cfd114b4204af8f3eff55da1e6076c">hasDeformedNormals</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ac9910eb3e2d111f74bb346afc7c088f0">hasDeformedPositions</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ad2ffbae11a7b126d72eaddd47cfd16a0">kMinDivisions</a></td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a82f8c7f5ebca25aa3a7a03a30ca03089">operator=</a>(const AnimLattice &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#af651dfc18b4cc909813d77ba2b652c00">reset</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a80a901b7273a556c24b3977784cc5537">setClamp</a>(bool clamp)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a00fc656b771e58819f524f01144a2530">setDivisions</a>(int divX, int divY, int divZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a7fa2c184cf52d7a928f0faf423bdfdc2">setOrigin</a>(float ox, float oy, float oz)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#abf2ffeac03ae6a895062868930cfa212">setPointOffset</a>(int ix, int iy, int iz, float dx, float dy, float dz)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a1333b22b042b10f24863581f5d0a8072">setPointScale</a>(int ix, int iy, int iz, float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ace39b136a38b7fb5ecdca0756d5f0663">setScale</a>(float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab99a891a59f725265153cb23f23269c9">setSize</a>(float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a8f63d667c2813a915fe373fc67ff5182">updateDeformedNormals</a>(const std::vector&lt; float &gt; &amp;posXYZ, const std::vector&lt; float &gt; &amp;inNrmXYZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#ab1023333f3d50a41052d1dd7a2bdded6">updateDeformedPositions</a>(const std::vector&lt; float &gt; &amp;inPosXYZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html#a533425725e4dfb6a47347356a0170312">updateDeformedPositions</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimLattice.html">eve::animation::AnimLattice</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

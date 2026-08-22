@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 编辑器构件模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">编辑器构件模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>编辑器构件模块</h1>
+<p><b>脚本入口：</b> <code>eve.Editor()</code></p>
+<p>引擎**不附带**完整 3D 场景编辑器或 2D 地图编辑器，而是提供组装自定义编辑器所需的构件：3D 变换操作框、地图笔刷、以及 Toolbar / Inspector / Dock / History 等 UI 状态辅助。</p>
+<p>设计参考了 Three.js <code>TransformControls</code>、Babylon.js <code>GizmoManager</code>、ImGuizmo、Unity <code>GridBrushBase</code> 与 Godot 编辑器插件的常见 API 形态；详见编辑器模块设计。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local editor = eve.Editor();</div>
+<div class="line"> </div>
+<div class="line">// 3D 操作框</div>
+<div class="line">local gizmo = editor.newGizmo();</div>
+<div class="line">gizmo.setMode(&quot;translate&quot;);   // translate | rotate | scale | bound</div>
+<div class="line">gizmo.setSpace(&quot;world&quot;);      // local | world</div>
+<div class="line">gizmo.setPosition(0, 1, 0);</div>
+<div class="line">gizmo.setSize(1.0);</div>
+<div class="line"> </div>
+<div class="line">// 每帧：用相机射线拾取并拖拽</div>
+<div class="line">local axis = gizmo.pick(rayOx, rayOy, rayOz, rayDx, rayDy, rayDz);</div>
+<div class="line">if (axis != &quot;&quot; &amp;&amp; mouseDown) {</div>
+<div class="line">    gizmo.beginDrag(axis, rayOx, rayOy, rayOz, rayDx, rayDy, rayDz);</div>
+<div class="line">}</div>
+<div class="line">if (gizmo.isDragging()) {</div>
+<div class="line">    gizmo.updateDrag(rayOx, rayOy, rayOz, rayDx, rayDy, rayDz);</div>
+<div class="line">    // 把 gizmo.getPosition* / getRotation* / getScale* 写回场景节点</div>
+<div class="line">}</div>
+<div class="line">if (mouseUp) gizmo.endDrag();</div>
+<div class="line"> </div>
+<div class="line">// 绘制：遍历 getPart* 用调试线 / 网格画出轴、环、平面</div>
+<div class="line">for (local i = 0; i &lt; gizmo.getPartCount(); i++) {</div>
+<div class="line">    local kind = gizmo.getPartKind(i); // axis | plane | ring | box | center | handle</div>
+<div class="line">    // ...</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>地图笔刷</h2>
+<div class="fragment"><div class="line">local buf = editor.newTileBuffer(64, 64);</div>
+<div class="line">local brush = editor.newBrush();</div>
+<div class="line">brush.setTool(&quot;paint&quot;);  // paint | erase | fill | line | rect | stamp</div>
+<div class="line">brush.setTile(3);</div>
+<div class="line">brush.setSize(3);</div>
+<div class="line">brush.setShape(&quot;circle&quot;);</div>
+<div class="line">brush.paintAt(buf, tx, ty);</div>
+<div class="line"> </div>
+<div class="line">// 同步到 map.TileLayer（示例）</div>
+<div class="line">for (local y = 0; y &lt; buf.getHeight(); y++)</div>
+<div class="line">    for (local x = 0; x &lt; buf.getWidth(); x++)</div>
+<div class="line">        layer.setTile(x, y, buf.getGid(x, y));</div>
+</div><!-- fragment --><h2>编辑器壳</h2>
+<div class="fragment"><div class="line">local dock = editor.newDock();</div>
+<div class="line">dock.setRegionSize(&quot;left&quot;, 200);</div>
+<div class="line">dock.layout(config.width, config.height);</div>
+<div class="line">// 用 dock.getRegionX/Y/W/H(&quot;center&quot;|&quot;left&quot;|...) 放置 ui 窗口</div>
+<div class="line"> </div>
+<div class="line">local toolbar = editor.newToolbar();</div>
+<div class="line">toolbar.addTool(&quot;move&quot;, &quot;Move&quot;);</div>
+<div class="line">toolbar.addTool(&quot;paint&quot;, &quot;Paint&quot;);</div>
+<div class="line">toolbar.setShortcut(&quot;move&quot;, &quot;W&quot;);</div>
+<div class="line"> </div>
+<div class="line">local insp = editor.newInspector();</div>
+<div class="line">insp.addChoice(&quot;mode&quot;, &quot;Mode&quot;, &quot;translate,rotate,scale&quot;, &quot;translate&quot;);</div>
+<div class="line">insp.addFloat3(&quot;pos&quot;, &quot;Position&quot;, 0, 0, 0);</div>
+</div><!-- fragment --><h2>对象关系</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">类型   </th><th class="markdownTableHeadNone">职责    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>TransformGizmo</code>   </td><td class="markdownTableBodyNone">单对象 TRS/包围盒手柄、射线交互、绘制部件    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>GizmoManager</code>   </td><td class="markdownTableBodyNone">多 mode 开关 + attach，转发 pick/drag（Babylon 风格）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>TileBuffer</code>   </td><td class="markdownTableBodyNone">与 <code>map</code> 解耦的 GID 网格    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>Brush</code>   </td><td class="markdownTableBodyNone">笔刷工具；产出 preview / change 列表    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>EditorHistory</code>   </td><td class="markdownTableBodyNone">撤销栈；瓦片分组可 <code>applyLastToBuffer</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Toolbar / Inspector / Dock   </td><td class="markdownTableBodyNone">仅状态与矩形，由 <code>ui</code> 渲染   </td></tr>
+</table>
+<h2>目标导向指南</h2>
+<h3>给场景节点加平移旋转缩放</h3>
+<p>创建 <code>GizmoManager</code>，<code>attach()</code> 后按需 <code>setPositionEnabled</code> / <code>setRotationEnabled</code> / <code>setScaleEnabled</code>；把相机 <code>screenToRay</code> 交给 <code>pick</code> / <code>updateDrag</code>，再写回 <code>scene</code> 节点 local TRS。</p>
+<h3>做简易 tile 地图编辑器</h3>
+<p><code>TileBuffer</code> + <code>Brush</code> + <code>EditorHistory</code>：每次 <code>paintAt</code> 后把 <code>getChange*</code> 记入 <code>beginGroup</code>/<code>recordTile</code>/<code>endGroup</code>；Undo 时 <code>applyLastToBuffer</code>。用 <code>EditorDock</code> 划分调色板与视口，用 <code>EditorToolbar</code> 切换 paint/erase/fill。</p>
+<h2>常见问题</h2>
+<ul>
+<li>期望引擎弹出完整编辑器窗口——本模块只提供构件，需自行用 <code>ui</code> / <code>graphics</code> 组装。</li>
+<li>笔刷直接改 <code>TileLayer</code>——请先画在 <code>TileBuffer</code>，再同步，避免模块硬耦合。</li>
+<li><code>getPart*</code> 在 mode/TRS 变化后过期——调用 <code>rebuildParts()</code> 或任意 set*（多数 set 已自动重建）。</li>
+</ul>
+<h2>API 快查</h2>
+<ul>
+<li>模块：<code>newGizmo</code> / <code>newGizmoManager</code> / <code>newTileBuffer</code> / <code>newBrush</code> / <code>newToolbar</code> / <code>newInspector</code> / <code>newDock</code> / <code>newHistory</code></li>
+<li>Gizmo：<code>setMode</code> / <code>setSpace</code> / <code>setPosition</code> / <code>setRotationEuler</code> / <code>setScale</code> / <code>setBounds</code> / <code>setSnap*</code> / <code>pick</code> / <code>beginDrag</code> / <code>updateDrag</code> / <code>endDrag</code> / <code>getPart*</code></li>
+<li>Manager：<code>set*Enabled</code> / <code>attach</code> / <code>detach</code> / <code>getGizmo</code> / <code>pick</code> / <code>beginDrag</code> / <code>updateDrag</code></li>
+<li>Brush：<code>setTool</code> / <code>setSize</code> / <code>setShape</code> / <code>setTile</code> / <code>paintAt</code> / <code>eraseAt</code> / <code>floodFill</code> / <code>paintLine</code> / <code>paintRect</code> / <code>preview*</code> / <code>getChange*</code></li>
+<li>History：<code>push</code> / <code>beginGroup</code> / <code>recordTile</code> / <code>endGroup</code> / <code>undo</code> / <code>redo</code> / <code>applyLastToBuffer</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块与辅助对象应长期持有；不要每帧 <code>newGizmo()</code>。</li>
+<li>枚举一律 string，非法值抛异常。</li>
+<li>绘制与输入由宿主完成；本模块不做 GPU 提交。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/editor/"><code>src/modules/editor/</code></a> <br  />
+ <b>设计文档：</b> `docs/dev/编辑器模块设计.md` <br  />
+ <b>相关测试：</b> <a href="../../../test/editor.cpp"><code>test/editor.cpp</code></a> </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

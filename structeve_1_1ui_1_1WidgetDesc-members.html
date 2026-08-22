@@ -1,0 +1,264 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::ui::WidgetDesc 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#adffa3a78eff8767e6ab4091c90cf5f14">absolute</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ad40e3c6aa6b756c5eb951368e28dd750">alignItems</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#acce47cf81782436c2c7d51236f3f44b2">anchorX</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a8fdf88b06fd7bfeb38aa19e229a248a0">anchorY</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9ee76cdf8b62a65be092034cde2f93bb">borderB</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a0cf237b2d9bac641689da00b50336273">borderL</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#abe20776cee558ddb8c95eec8730a972b">borderR</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a831349b6b61f8ffa69ddbe7b16db4b3e">borderT</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#af2e62eb4e9c786035feaa1be67957227">checked</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a5a223d767f3f380c4660661b34037925">child</a>(WidgetDesc c)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a01109efe3841cc4d7aeaf44266a75046">children</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a432a375fc77074e86fb123ff7408455e">cornerRadius</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9c40f2479c1cf1e3843e59c78165b231">flexDirection</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a167812b015938b7841703e252eac92f4">flexGrow</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a943072674d047df47524ac991720ebad">gap</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ab36a1cd6d8f8094315a608754222aa83">id</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#aa592ac8d697cd4ad6c08f6a5ffc6cdbc">itemHeight</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9d4f6c6ab010e4372c6fd2b262bcd263">justifyContent</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a0d90d787417adc7774c7aa8377b2eacd">key</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a96eee37851ff0722531f1469b27b5d36">marginB</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a87c5b8dc41d3d50aff3d19f87f5ae5d0">marginL</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a5a3ce6695540cd885e20294c4084e25c">marginR</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ab270b33972ff86456a7279dd5d34598c">marginT</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a1472aa492d266edff5acb9ea572badb8">maxSizeX</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a584bfc3a686dea371f5623c86f18171c">maxSizeY</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a50f411bac2b59bd96336c5e2ab138878">maxValue</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ad32e9f520c6760e32b09f2ea7be2e79c">minSizeX</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a0a4b45ceb7c6292d419835ba1fd4257a">minSizeY</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a19f53239c4099fa116aa1248c61ed571">minValue</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a77145a6d7c32ac71f2cd4f3ebec8c8c5">onClick</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a7fd04b2f57710841e23410ce8186e104">onTextChange</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a907238f84e883e2e7c9a4c769c205c48">onToggle</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#addf49533223af749f1fdd0c2a33d4889">onValue</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a7980f06deb42fcc9bdb353a1ccf4ef3e">open</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ad09ad6d2177631ab5050734e39b77078">paddingB</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a1b04a4f29f5bf79a62028d87853a43a9">paddingL</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a6a9919fa96de46fd8a0c10ec834caa44">paddingR</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a507de87fc5cd6fe60d5892c5d0260062">paddingT</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a4398de85884ebdcfa85efa5c87c39f11">percentH</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9ae6c7adadbcc9db8fc2f9a90ef65da9">percentW</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a4ad9aaefd028a3fabc58d7fa53350a07">posX</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#abaabf7c03caadfc42e1d31a9418014aa">posY</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ad4d0e4fd4a8522d750c98befeb2d4e3e">reconcileKey</a>() const</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a23fbde1a5cd883be3f515694fd1eb34d">sizeX</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9ec98d13a8998c2a06c7f9cc8c2acc63">sizeY</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a79077f1cc2c2eec25335c2f95c965a07">text</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a01ae71aee5e86b1176570886c7299f8b">textureId</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#aba2bfb03f1991406dcdf8ba69815366b">tintA</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a05402519e613e15bc886ea581137f120">tintB</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a413cef410c6330dc4c8874d5558ed42e">tintG</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#acd7aa233fd31477a720d5e15ee7a3d38">tintR</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a09296ade714faa1ac1832642f6645b44">type</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a08cff7c9c1783250a98a17cadb2f7490">uv0x</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a792363b1579762e42ca54427aa2f9726">uv0y</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a81723a94cc950db8cc2e2f7e93278f03">uv1x</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a86850e2cd94b2d41c25c296b34e3e48c">uv1y</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a361062c463fd7f7c66dac6b4a095a931">value</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a1c952b618ce1cc435a357e6e89b74093">valueText</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#aba54df1b4577d4acb994b3c6228ac983">visible</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a2d4186e8f2e55ddd43e9156ccf14718d">withAbsolute</a>(float ax, float ay, float x=0.f, float y=0.f)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a8835db3657bf700f1eab9b6b73ea5549">withAlign</a>(FlexAlign a)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a34109a66f6ea05977580dd4445149f9a">withChecked</a>(bool v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9b21e90ca3ffb1d4a31e7443aa54c5c4">withClick</a>(std::function&lt; void()&gt; fn)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a48e9ca6d2bdadfefdfd85e0bf5a34378">withCornerRadius</a>(float radius)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a7a530d6117149a8bbf98dac1c23202cf">withFlexDirection</a>(FlexDirection d)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a0ca8ea08598a415710ef8ad6dfc756e3">withFlexGrow</a>(float g)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a980f81a29dc6cd23c7e52194fd2b4c5b">withGap</a>(float g)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#aa83c04f9df4bd777e069d28fc9e34853">withId</a>(std::string v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a2333e8a7cbd4c5f45ab07dd9235c8b22">withItemHeight</a>(float height)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a3212298a13e6ef7d4b5c2e4d7d34c4d6">withJustify</a>(FlexJustify j)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9478c0bd9b3332a5f696198fa6bb6249">withKey</a>(std::string v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a74ebea7d115499025599f4e0194603e3">withMargin</a>(float l, float t, float r, float b)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a4ceab340cfd002e17575339e6317d959">withMaxSize</a>(float w, float h)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a7624f04c05a5ba97f4d68e75327a03ed">withMinSize</a>(float w, float h)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a0878a66feca87e70a35d4378aadb50de">withNinePatch</a>(float l, float t, float r, float b)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a28ae66ebc8ee89be5c41c2d9c97a15f0">withOpen</a>(bool v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a4c2426d450f85bbc4fc306c7f7af18c3">withPadding</a>(float l, float t, float r, float b)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a2ac45b6c728af4e59ad1aa66b4bc3b23">withPercent</a>(float w, float h)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a43546a55853c326794f3fb52eb22db3b">withRange</a>(float lo, float hi)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a7854e2deb907742b706147ec3c0c7e24">withSize</a>(float w, float h)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a254390347b419775cf3bc0491bc4e039">withText</a>(std::string v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a3eaee05fa67cc139948de2501b2f8010">withTextChange</a>(std::function&lt; void(const std::string &amp;)&gt; fn)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a53a00e418b304833a6ef44c061bd5e60">withTint</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a97eafe22e040d02f0a9c1fff7b75585c">withToggle</a>(std::function&lt; void(bool)&gt; fn)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a93ff404b1ec73bbb36a0fcc26e4c5b1e">withUv</a>(float u0, float v0, float u1, float v1)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9a9736479bcc45f2b38236d9f6f1cade">withValue</a>(float v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#ab879df6376f5fb1498d2f356ab688929">withValueFn</a>(std::function&lt; void(float)&gt; fn)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9a22846431c94e33d2f706ed064a4bf8">withValueText</a>(std::string v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a1c82e8690fc92231acd77ffb53b8dc72">withVisible</a>(bool v)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a9ec55894411737075639e611a9002fb4">withWrap</a>(float width)</td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html#a98eb28a324ee8eebb306f674f4c06c1d">wrapWidth</a></td><td class="entry"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

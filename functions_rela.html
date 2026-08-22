@@ -1,0 +1,247 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 类成员 - 相关函数</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_a" name="index_a"></a>- a -</h3><ul>
+<li>Animation&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">eve::animation::SpineAnim</a>, <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#af47625f50036c466946f960db7320bcf">eve::animation::SpriteAnim</a>, <a class="el" href="classeve_1_1animation_1_1Tween.html#af47625f50036c466946f960db7320bcf">eve::animation::Tween</a></li>
+<li>Audio&#160;:&#160;<a class="el" href="classeve_1_1audio_1_1Source.html#a211f008bd6a46efe478fe81d31e28933">eve::audio::Source</a></li>
+<li>AvatarInstance&#160;:&#160;<a class="el" href="classeve_1_1avatar_1_1Avatar.html#aded5e12dedd340f3c674b253d1cdc7ec">eve::avatar::Avatar</a></li>
+</ul>
+
+
+<h3><a id="index_b" name="index_b"></a>- b -</h3><ul>
+<li>Body&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Fixture.html#a8858f397a273114ddc1443880bb5540e">eve::physics::Fixture</a>, <a class="el" href="classeve_1_1physics_1_1World.html#a8858f397a273114ddc1443880bb5540e">eve::physics::World</a></li>
+<li>Body3D&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Shape3D.html#a75a7b4360539d56559cea72b031c19b0">eve::physics::Shape3D</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html#a75a7b4360539d56559cea72b031c19b0">eve::physics::World3D</a></li>
+</ul>
+
+
+<h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
+<li>CompiledFunction&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#a34d8cf84c1ac765a655425ab1429fa96">eve::tensor::Tensor</a></li>
+</ul>
+
+
+<h3><a id="index_d" name="index_d"></a>- d -</h3><ul>
+<li>Document&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Value.html#a883538034e58fc5c0de7d4e4cab3cef7">eve::json::Value</a></li>
+</ul>
+
+
+<h3><a id="index_e" name="index_e"></a>- e -</h3><ul>
+<li>EventsView&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1CallGraph.html#a9a160477d7f33ea3b95c658b3eed7bc9">eve::dev::CallGraph</a>, <a class="el" href="classeve_1_1dev_1_1CallGraph_1_1EventsView_1_1const__iterator.html#a9a160477d7f33ea3b95c658b3eed7bc9">eve::dev::CallGraph::EventsView::const_iterator</a>, <a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a9a160477d7f33ea3b95c658b3eed7bc9">eve::dev::RenderFlow</a>, <a class="el" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a9a160477d7f33ea3b95c658b3eed7bc9">eve::dev::RenderFlow::EventsView::const_iterator</a></li>
+<li>EventsView::const_iterator&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1CallGraph.html#a03bc5eaf6adb6fb5e49100a11eaa5345">eve::dev::CallGraph</a>, <a class="el" href="classeve_1_1dev_1_1RenderFlow.html#a03bc5eaf6adb6fb5e49100a11eaa5345">eve::dev::RenderFlow</a></li>
+</ul>
+
+
+<h3><a id="index_f" name="index_f"></a>- f -</h3><ul>
+<li>Fixture&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body.html#a7cc19ccd29f90e77e5332f42ab062038">eve::physics::Body</a>, <a class="el" href="classeve_1_1physics_1_1World.html#a7cc19ccd29f90e77e5332f42ab062038">eve::physics::World</a></li>
+<li>Func&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#a87c6c86ed0896880400f89c8c88c3927">eve::tensor::Tensor</a></li>
+</ul>
+
+
+<h3><a id="index_g" name="index_g"></a>- g -</h3><ul>
+<li>Graph&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#afab89afd724f1b07b1aaad6bdc61c47a">eve::tensor::Tensor</a></li>
+<li>Graphics&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1webgpu_1_1OffscreenCanvas.html#ae5cfe0c0e0b06d536d5814bd1ff4818f">eve::graphics::webgpu::OffscreenCanvas</a></li>
+</ul>
+
+
+<h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
+<li>Immortal&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1AiPanel.html#a92fdba2769d69e2b01328eaf13fe7c1c">eve::dev::AiPanel</a>, <a class="el" href="classeve_1_1dev_1_1ConsolePanel.html#a92fdba2769d69e2b01328eaf13fe7c1c">eve::dev::ConsolePanel</a>, <a class="el" href="classeve_1_1dev_1_1McpServer.html#a92fdba2769d69e2b01328eaf13fe7c1c">eve::dev::McpServer</a>, <a class="el" href="classeve_1_1dev_1_1RenderVision.html#a92fdba2769d69e2b01328eaf13fe7c1c">eve::dev::RenderVision</a></li>
+<li>InventorySystem&#160;:&#160;<a class="el" href="classeve_1_1inventory_1_1Bag.html#a2a9378e40379e793ec6458397a534bb1">eve::inventory::Bag</a>, <a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html#a2a9378e40379e793ec6458397a534bb1">eve::inventory::EquipmentSet</a></li>
+</ul>
+
+
+<h3><a id="index_o" name="index_o"></a>- o -</h3><ul>
+<li>OffscreenCanvas&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a62305555492f8a24deb079a0d0842253">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a62305555492f8a24deb079a0d0842253">eve::graphics::webgpu::Graphics</a></li>
+</ul>
+
+
+<h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
+<li>PlacementSystem&#160;:&#160;<a class="el" href="classeve_1_1building_1_1Ghost.html#ad01afd1d3e16fd66cd73fdb2fd7d58db">eve::building::Ghost</a>, <a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ad01afd1d3e16fd66cd73fdb2fd7d58db">eve::building::PlacementWorld</a></li>
+</ul>
+
+
+<h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
+<li>ref&#160;:&#160;<a class="el" href="classeve_1_1Object.html#aa59ad12cfd6911a82a11e5afc61c3a5a">eve::Object</a></li>
+<li>ResourceManager&#160;:&#160;<a class="el" href="classeve_1_1Resource.html#a54c1252abc87a78a301e6b6984470408">eve::Resource</a></li>
+</ul>
+
+
+<h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
+<li>Shape3D&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body3D.html#af7eeeccfebb7c89989403596fb771afd">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html#af7eeeccfebb7c89989403596fb771afd">eve::physics::World3D</a></li>
+<li>SpineAnim&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Animation.html#a65650fe629c120c11f16b31b189e656b">eve::animation::Animation</a>, <a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html#a65650fe629c120c11f16b31b189e656b">eve::animation::SpineSkeleton</a></li>
+<li>SpriteAnim&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Animation.html#ab665cc64648b5160e1875fd92b4f8a64">eve::animation::Animation</a></li>
+<li>SpriteStackBatch&#160;:&#160;<a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a2a4815a1028ad165a7a54f9520a0ab23">eve::spritestack::SpriteStack3D</a></li>
+</ul>
+
+
+<h3><a id="index_t" name="index_t"></a>- t -</h3><ul>
+<li>TF&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#a667aac9bd0ef4b4dd0041d0aeb7a32ad">eve::tensor::Tensor</a></li>
+<li>ThreadPool&#160;:&#160;<a class="el" href="classeve_1_1thread_1_1Channel.html#a5d97748be7d69dcc44ef551ea35ef20f">eve::thread::Channel</a>, <a class="el" href="classeve_1_1thread_1_1Task.html#a5d97748be7d69dcc44ef551ea35ef20f">eve::thread::Task</a></li>
+<li>Tween&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Animation.html#a5fdead15b2fb649732e6010da12df65a">eve::animation::Animation</a></li>
+</ul>
+
+
+<h3><a id="index_w" name="index_w"></a>- w -</h3><ul>
+<li>World&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body.html#a7b4bcdf992c21ae83363f25df05b1d25">eve::physics::Body</a>, <a class="el" href="classeve_1_1physics_1_1Fixture.html#a7b4bcdf992c21ae83363f25df05b1d25">eve::physics::Fixture</a></li>
+<li>World3D&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body3D.html#a8e149544dc4d48fbdfe8b8a6efc1fb9b">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Shape3D.html#a8e149544dc4d48fbdfe8b8a6efc1fb9b">eve::physics::Shape3D</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

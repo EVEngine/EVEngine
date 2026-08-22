@@ -1,0 +1,1717 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::Func类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="classeve_1_1tensor_1_1Func.html">Func</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1tensor_1_1Func-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::Func类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Trace builder — TF2 <code>tf.function</code> analogue (<code>tf.func</code> in scripts). While active, <a class="el" href="classeve_1_1tensor_1_1TF.html" title="TF2-like namespace module. Script: tf &lt;- eve.TF(); Default eager; tf.func() traces a graph for compil...">TF</a> ops record into this graph.  
+ <a href="classeve_1_1tensor_1_1Func.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Graph_8h_source.html">Graph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a68865d817d1cbd0eccea82feccf871f9" id="r_a68865d817d1cbd0eccea82feccf871f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a68865d817d1cbd0eccea82feccf871f9">Func</a> (<a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a> *<a class="el" href="classeve_1_1tensor_1_1Func.html#a58620756d5bcf765affab60bb0b81f8b">owner</a>)</td></tr>
+<tr class="separator:a68865d817d1cbd0eccea82feccf871f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83e665ce660e6fd58bacb945dc76848c" id="r_a83e665ce660e6fd58bacb945dc76848c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a83e665ce660e6fd58bacb945dc76848c">~Func</a> ()</td></tr>
+<tr class="separator:a83e665ce660e6fd58bacb945dc76848c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46ab47324d7a11f2ce46862bc72c2eb4" id="r_a46ab47324d7a11f2ce46862bc72c2eb4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a46ab47324d7a11f2ce46862bc72c2eb4">input1</a> (int d0)</td></tr>
+<tr class="separator:a46ab47324d7a11f2ce46862bc72c2eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3cb442f7a7fe541b398d7470f96994" id="r_a9b3cb442f7a7fe541b398d7470f96994"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a9b3cb442f7a7fe541b398d7470f96994">input2</a> (int d0, int d1)</td></tr>
+<tr class="separator:a9b3cb442f7a7fe541b398d7470f96994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5527114f249d2de49932cc39c0c45b6" id="r_ad5527114f249d2de49932cc39c0c45b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#ad5527114f249d2de49932cc39c0c45b6">input3</a> (int d0, int d1, int d2)</td></tr>
+<tr class="separator:ad5527114f249d2de49932cc39c0c45b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e951d7939beaed0295d4c28719cef83" id="r_a3e951d7939beaed0295d4c28719cef83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a3e951d7939beaed0295d4c28719cef83">input4</a> (int d0, int d1, int d2, int d3)</td></tr>
+<tr class="separator:a3e951d7939beaed0295d4c28719cef83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58742de6b73622303fa698e09a10f172" id="r_a58742de6b73622303fa698e09a10f172"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a58742de6b73622303fa698e09a10f172">input5</a> (int d0, int d1, int d2, int d3, int d4)</td></tr>
+<tr class="separator:a58742de6b73622303fa698e09a10f172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373b625696f9cd02c8a1da2904d12b2d" id="r_a373b625696f9cd02c8a1da2904d12b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a373b625696f9cd02c8a1da2904d12b2d">input6</a> (int d0, int d1, int d2, int d3, int d4, int d5)</td></tr>
+<tr class="separator:a373b625696f9cd02c8a1da2904d12b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68f1a4cc975efcbe03766e156c71f1e6" id="r_a68f1a4cc975efcbe03766e156c71f1e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a68f1a4cc975efcbe03766e156c71f1e6">setOutput</a> (<a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *t)</td></tr>
+<tr class="separator:a68f1a4cc975efcbe03766e156c71f1e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a357003dfdcc89dbebeb25febe97083e4" id="r_a357003dfdcc89dbebeb25febe97083e4"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classeve_1_1tensor_1_1CompiledFunction.html">CompiledFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a357003dfdcc89dbebeb25febe97083e4">compile</a> ()</td></tr>
+<tr class="separator:a357003dfdcc89dbebeb25febe97083e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7409b71367d39dc93934cf5203579d21" id="r_a7409b71367d39dc93934cf5203579d21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a7409b71367d39dc93934cf5203579d21">graph</a> ()</td></tr>
+<tr class="separator:a7409b71367d39dc93934cf5203579d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0232fafe64e3a47fd5480f8fdd036763" id="r_a0232fafe64e3a47fd5480f8fdd036763"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a0232fafe64e3a47fd5480f8fdd036763">graph</a> () const</td></tr>
+<tr class="separator:a0232fafe64e3a47fd5480f8fdd036763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58620756d5bcf765affab60bb0b81f8b" id="r_a58620756d5bcf765affab60bb0b81f8b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a58620756d5bcf765affab60bb0b81f8b">owner</a> () const</td></tr>
+<tr class="separator:a58620756d5bcf765affab60bb0b81f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3355feaa2dea289a760884629812a87" id="r_ad3355feaa2dea289a760884629812a87"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#ad3355feaa2dea289a760884629812a87">isTracing</a> () const</td></tr>
+<tr class="separator:ad3355feaa2dea289a760884629812a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5790d9203ef9fc8a86992c6e2cd5541b" id="r_a5790d9203ef9fc8a86992c6e2cd5541b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a5790d9203ef9fc8a86992c6e2cd5541b">outputNode</a> () const</td></tr>
+<tr class="separator:a5790d9203ef9fc8a86992c6e2cd5541b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad0e28722c68d0704b747fe0f3ad49f8" id="r_aad0e28722c68d0704b747fe0f3ad49f8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#aad0e28722c68d0704b747fe0f3ad49f8">placeholderCount</a> () const</td></tr>
+<tr class="separator:aad0e28722c68d0704b747fe0f3ad49f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae45f1a7a937fe008205bc9f7755a2db9" id="r_ae45f1a7a937fe008205bc9f7755a2db9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#ae45f1a7a937fe008205bc9f7755a2db9">ensureNode</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *t)</td></tr>
+<tr class="memdesc:ae45f1a7a937fe008205bc9f7755a2db9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure tensor is a node in this graph (Const-capture if eager).  <br /></td></tr>
+<tr class="separator:ae45f1a7a937fe008205bc9f7755a2db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac232816d844311d8d5f808b857a15385" id="r_ac232816d844311d8d5f808b857a15385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#ac232816d844311d8d5f808b857a15385">emitUnary</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:ac232816d844311d8d5f808b857a15385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99009574425093114659ac87bd72235a" id="r_a99009574425093114659ac87bd72235a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a99009574425093114659ac87bd72235a">emitUnaryScalar</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float s0, float s1=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a99009574425093114659ac87bd72235a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b8f6c0b90683fab316da1b7eac245e9" id="r_a5b8f6c0b90683fab316da1b7eac245e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a5b8f6c0b90683fab316da1b7eac245e9">emitBinary</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a5b8f6c0b90683fab316da1b7eac245e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63c916510c0d6eb5f5edf1f9230ef6bf" id="r_a63c916510c0d6eb5f5edf1f9230ef6bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a63c916510c0d6eb5f5edf1f9230ef6bf">emitTernary</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)</td></tr>
+<tr class="separator:a63c916510c0d6eb5f5edf1f9230ef6bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91145bd329f21ead26fcae6137282074" id="r_a91145bd329f21ead26fcae6137282074"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a91145bd329f21ead26fcae6137282074">emitMatMul</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a91145bd329f21ead26fcae6137282074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca64696ed29dc295943a5d3a0b340d05" id="r_aca64696ed29dc295943a5d3a0b340d05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#aca64696ed29dc295943a5d3a0b340d05">emitTranspose</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:aca64696ed29dc295943a5d3a0b340d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b3e1706c666e5ddbd0fba1c547c2545" id="r_a2b3e1706c666e5ddbd0fba1c547c2545"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a2b3e1706c666e5ddbd0fba1c547c2545">emitPermute</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int *order, int rank)</td></tr>
+<tr class="separator:a2b3e1706c666e5ddbd0fba1c547c2545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eba2e82cdf42c08891bca2b1df2517e" id="r_a9eba2e82cdf42c08891bca2b1df2517e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a9eba2e82cdf42c08891bca2b1df2517e">emitReshape</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int *dims, int rank)</td></tr>
+<tr class="separator:a9eba2e82cdf42c08891bca2b1df2517e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63cbb2504d8e491bf9acb280b7ee6ade" id="r_a63cbb2504d8e491bf9acb280b7ee6ade"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a63cbb2504d8e491bf9acb280b7ee6ade">emitFill</a> (const int *dims, int rank, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:a63cbb2504d8e491bf9acb280b7ee6ade"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd9fba2527ef8e5c1236ca1d2d9d254" id="r_a5fd9fba2527ef8e5c1236ca1d2d9d254"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a5fd9fba2527ef8e5c1236ca1d2d9d254">emitSoftmax</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int axis, bool logMode)</td></tr>
+<tr class="separator:a5fd9fba2527ef8e5c1236ca1d2d9d254"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d45fbd7afe6417bd2bfa185d93f385" id="r_af4d45fbd7afe6417bd2bfa185d93f385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#af4d45fbd7afe6417bd2bfa185d93f385">emitLayerNorm</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *bias, float eps)</td></tr>
+<tr class="separator:af4d45fbd7afe6417bd2bfa185d93f385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa5af0d371c075b1b126060712573bd9" id="r_afa5af0d371c075b1b126060712573bd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#afa5af0d371c075b1b126060712573bd9">emitRMSNorm</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>, float eps)</td></tr>
+<tr class="separator:afa5af0d371c075b1b126060712573bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62ac94c97783109ba193eaa65a363a19" id="r_a62ac94c97783109ba193eaa65a363a19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a62ac94c97783109ba193eaa65a363a19">emitConv1d</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *bias, int stride, int pad)</td></tr>
+<tr class="separator:a62ac94c97783109ba193eaa65a363a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bb3a6a8ab8112ca1acdbca0a5911128" id="r_a7bb3a6a8ab8112ca1acdbca0a5911128"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a7bb3a6a8ab8112ca1acdbca0a5911128">emitConv2d</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *bias, int stride, int pad)</td></tr>
+<tr class="separator:a7bb3a6a8ab8112ca1acdbca0a5911128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a118545478eebe80240d1f68d77ff1e" id="r_a5a118545478eebe80240d1f68d77ff1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a5a118545478eebe80240d1f68d77ff1e">emitPool</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int ksize, int stride, int pad)</td></tr>
+<tr class="separator:a5a118545478eebe80240d1f68d77ff1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a779e08fcfca164e5a1a96e53df4df9fe" id="r_a779e08fcfca164e5a1a96e53df4df9fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a779e08fcfca164e5a1a96e53df4df9fe">emitEmbedding</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *table, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *indices)</td></tr>
+<tr class="separator:a779e08fcfca164e5a1a96e53df4df9fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4463459cab01b5b4cd5010f65caeda30" id="r_a4463459cab01b5b4cd5010f65caeda30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a4463459cab01b5b4cd5010f65caeda30">emitConcat</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *const *ins, int <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, int axis)</td></tr>
+<tr class="separator:a4463459cab01b5b4cd5010f65caeda30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa86ca00c86577556145d4f2283b65b87" id="r_aa86ca00c86577556145d4f2283b65b87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#aa86ca00c86577556145d4f2283b65b87">emitSlice</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int axis, int begin, int end)</td></tr>
+<tr class="separator:aa86ca00c86577556145d4f2283b65b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02cc6f530443a8fc71f8935ac8413944" id="r_a02cc6f530443a8fc71f8935ac8413944"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a02cc6f530443a8fc71f8935ac8413944">emitReduce</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int axis, bool keepDims)</td></tr>
+<tr class="separator:a02cc6f530443a8fc71f8935ac8413944"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81347e6997542aa8cd686dacbe31fe80" id="r_a81347e6997542aa8cd686dacbe31fe80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a81347e6997542aa8cd686dacbe31fe80">emitArgMax</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int axis, bool keepDims)</td></tr>
+<tr class="separator:a81347e6997542aa8cd686dacbe31fe80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a077fce75ea31caac8206c5224a88678e" id="r_a077fce75ea31caac8206c5224a88678e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a077fce75ea31caac8206c5224a88678e">emitCast</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dtype)</td></tr>
+<tr class="separator:a077fce75ea31caac8206c5224a88678e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad06258259b0731ea559a35f5d633e6" id="r_a5ad06258259b0731ea559a35f5d633e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a5ad06258259b0731ea559a35f5d633e6">emitSdpa</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *q, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *k, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *mask, float <a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>)</td></tr>
+<tr class="separator:a5ad06258259b0731ea559a35f5d633e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a376641087a653d1e6d7204fa63c4c432" id="r_a376641087a653d1e6d7204fa63c4c432"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html#a376641087a653d1e6d7204fa63c4c432">emitResize2d</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int outH, int outW, int mode)</td></tr>
+<tr class="separator:a376641087a653d1e6d7204fa63c4c432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Trace builder — TF2 <code>tf.function</code> analogue (<code>tf.func</code> in scripts). While active, <a class="el" href="classeve_1_1tensor_1_1TF.html" title="TF2-like namespace module. Script: tf &lt;- eve.TF(); Default eager; tf.func() traces a graph for compil...">TF</a> ops record into this graph. </p>
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00125">125</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a68865d817d1cbd0eccea82feccf871f9" name="a68865d817d1cbd0eccea82feccf871f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68865d817d1cbd0eccea82feccf871f9">&#9670;&#160;</a></span>Func()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Func::Func </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a> *&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TF_8cpp_source.html#l00073">eve::tensor::TF::pushTrace()</a>.</p>
+
+</div>
+</div>
+<a id="a83e665ce660e6fd58bacb945dc76848c" name="a83e665ce660e6fd58bacb945dc76848c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83e665ce660e6fd58bacb945dc76848c">&#9670;&#160;</a></span>~Func()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Func::~Func </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TF_8cpp_source.html#l00077">eve::tensor::TF::popTrace()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a357003dfdcc89dbebeb25febe97083e4" name="a357003dfdcc89dbebeb25febe97083e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a357003dfdcc89dbebeb25febe97083e4">&#9670;&#160;</a></span>compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1CompiledFunction.html">CompiledFunction</a> * eve::tensor::Func::compile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00583">583</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00590">eve::tensor::CompiledFunction::fromFunc()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00077">eve::tensor::TF::popTrace()</a>.</p>
+
+</div>
+</div>
+<a id="a81347e6997542aa8cd686dacbe31fe80" name="a81347e6997542aa8cd686dacbe31fe80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81347e6997542aa8cd686dacbe31fe80">&#9670;&#160;</a></span>emitArgMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitArgMax </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keepDims</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00496">496</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4766ad7b5b229c7c9a713faa05a2ef67">eve::tensor::ArgMax</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbac06129f6e6e15c09328365e553f1dc31">eve::tensor::Int32</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a5b8f6c0b90683fab316da1b7eac245e9" name="a5b8f6c0b90683fab316da1b7eac245e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b8f6c0b90683fab316da1b7eac245e9">&#9670;&#160;</a></span>emitBinary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitBinary </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00120">eve::tensor::kernels::broadcastShape()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="a077fce75ea31caac8206c5224a88678e" name="a077fce75ea31caac8206c5224a88678e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a077fce75ea31caac8206c5224a88678e">&#9670;&#160;</a></span>emitCast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitCast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dtype</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00523">523</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4cd9f3996d60790cd11c04f842ebc43c">eve::tensor::Cast</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a4463459cab01b5b4cd5010f65caeda30" name="a4463459cab01b5b4cd5010f65caeda30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4463459cab01b5b4cd5010f65caeda30">&#9670;&#160;</a></span>emitConcat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitConcat </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *const *&#160;</td>
+          <td class="paramname"><em>ins</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ae20f0f2826a6549809f050b86274567f">eve::tensor::Concat</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a> , 以及 <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>.</p>
+
+</div>
+</div>
+<a id="a62ac94c97783109ba193eaa65a363a19" name="a62ac94c97783109ba193eaa65a363a19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62ac94c97783109ba193eaa65a363a19">&#9670;&#160;</a></span>emitConv1d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitConv1d </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>bias</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pad</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67af067d5cabede124eb2d45faaa3caf7b1">eve::tensor::Conv1d</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a7bb3a6a8ab8112ca1acdbca0a5911128" name="a7bb3a6a8ab8112ca1acdbca0a5911128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bb3a6a8ab8112ca1acdbca0a5911128">&#9670;&#160;</a></span>emitConv2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitConv2d </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>bias</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pad</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a1d0d9b6ecc678228701326b1be56312b">eve::tensor::Conv2d</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a779e08fcfca164e5a1a96e53df4df9fe" name="a779e08fcfca164e5a1a96e53df4df9fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779e08fcfca164e5a1a96e53df4df9fe">&#9670;&#160;</a></span>emitEmbedding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitEmbedding </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>table</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>indices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a9eda48a461ef93b34731b28fdd82a890">eve::tensor::Embedding</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>.</p>
+
+</div>
+</div>
+<a id="a63cbb2504d8e491bf9acb280b7ee6ade" name="a63cbb2504d8e491bf9acb280b7ee6ade"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63cbb2504d8e491bf9acb280b7ee6ade">&#9670;&#160;</a></span>emitFill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitFill </td>
+          <td>(</td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>dims</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf">eve::tensor::Const</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="af4d45fbd7afe6417bd2bfa185d93f385" name="af4d45fbd7afe6417bd2bfa185d93f385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4d45fbd7afe6417bd2bfa185d93f385">&#9670;&#160;</a></span>emitLayerNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitLayerNorm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>bias</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ac363ac7ca063bb8a75fb8a11883bcb2c">eve::tensor::LayerNorm</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a91145bd329f21ead26fcae6137282074" name="a91145bd329f21ead26fcae6137282074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91145bd329f21ead26fcae6137282074">&#9670;&#160;</a></span>emitMatMul()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitMatMul </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5debeabaece967a6732b4182ba0269ae">eve::tensor::MatMul</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>.</p>
+
+</div>
+</div>
+<a id="a2b3e1706c666e5ddbd0fba1c547c2545" name="a2b3e1706c666e5ddbd0fba1c547c2545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b3e1706c666e5ddbd0fba1c547c2545">&#9670;&#160;</a></span>emitPermute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitPermute </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67afa662c6eb71caef475b2b981ce8eccd7">eve::tensor::Permute</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00233">emitTranspose()</a>.</p>
+
+</div>
+</div>
+<a id="a5a118545478eebe80240d1f68d77ff1e" name="a5a118545478eebe80240d1f68d77ff1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a118545478eebe80240d1f68d77ff1e">&#9670;&#160;</a></span>emitPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitPool </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ksize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pad</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a02cc6f530443a8fc71f8935ac8413944" name="a02cc6f530443a8fc71f8935ac8413944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02cc6f530443a8fc71f8935ac8413944">&#9670;&#160;</a></span>emitReduce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitReduce </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keepDims</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a9eba2e82cdf42c08891bca2b1df2517e" name="a9eba2e82cdf42c08891bca2b1df2517e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eba2e82cdf42c08891bca2b1df2517e">&#9670;&#160;</a></span>emitReshape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitReshape </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>dims</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8cpp_source.html#l00016">eve::tensor::Graph::product()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aa7c59ccedc6a3bd90c17f3b990afefad">eve::tensor::Reshape</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a376641087a653d1e6d7204fa63c4c432" name="a376641087a653d1e6d7204fa63c4c432"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a376641087a653d1e6d7204fa63c4c432">&#9670;&#160;</a></span>emitResize2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitResize2d </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>outH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>outW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00563">563</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0e703cba8cae48eee88ab0e0921ca8ff">eve::tensor::Resize2d</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="afa5af0d371c075b1b126060712573bd9" name="afa5af0d371c075b1b126060712573bd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa5af0d371c075b1b126060712573bd9">&#9670;&#160;</a></span>emitRMSNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitRMSNorm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a533a34c62723462c962ca7535ca06570">eve::tensor::RMSNorm</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a5ad06258259b0731ea559a35f5d633e6" name="a5ad06258259b0731ea559a35f5d633e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad06258259b0731ea559a35f5d633e6">&#9670;&#160;</a></span>emitSdpa()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitSdpa </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00533">533</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a308a07344f62a25cb62069e9703c9113">eve::tensor::ScaledDotProductAttention</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<a id="aa86ca00c86577556145d4f2283b65b87" name="aa86ca00c86577556145d4f2283b65b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa86ca00c86577556145d4f2283b65b87">&#9670;&#160;</a></span>emitSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitSlice </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8h_source.html#l00078">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Tensor_8h_source.html#l00045">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::rank</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ad140d37ad98c12ccd8e1c432f548bcdb">eve::tensor::Slice</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a5fd9fba2527ef8e5c1236ca1d2d9d254" name="a5fd9fba2527ef8e5c1236ca1d2d9d254"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fd9fba2527ef8e5c1236ca1d2d9d254">&#9670;&#160;</a></span>emitSoftmax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitSoftmax </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>logMode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::in0</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ac21dbda57d88c21ec9857f5d1522c488">eve::tensor::LogSoftmax</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a31d953b9d49a6b4378f45097047976d0">eve::tensor::Softmax</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a63c916510c0d6eb5f5edf1f9230ef6bf" name="a63c916510c0d6eb5f5edf1f9230ef6bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63c916510c0d6eb5f5edf1f9230ef6bf">&#9670;&#160;</a></span>emitTernary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitTernary </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="aca64696ed29dc295943a5d3a0b340d05" name="aca64696ed29dc295943a5d3a0b340d05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca64696ed29dc295943a5d3a0b340d05">&#9670;&#160;</a></span>emitTranspose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitTranspose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00241">emitPermute()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="ac232816d844311d8d5f808b857a15385" name="ac232816d844311d8d5f808b857a15385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac232816d844311d8d5f808b857a15385">&#9670;&#160;</a></span>emitUnary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitUnary </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="a99009574425093114659ac87bd72235a" name="a99009574425093114659ac87bd72235a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99009574425093114659ac87bd72235a">&#9670;&#160;</a></span>emitUnaryScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::emitUnaryScalar </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s1</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="ae45f1a7a937fe008205bc9f7755a2db9" name="ae45f1a7a937fe008205bc9f7755a2db9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae45f1a7a937fe008205bc9f7755a2db9">&#9670;&#160;</a></span>ensureNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Func::ensureNode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ensure tensor is a node in this graph (Const-capture if eager). </p>
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf">eve::tensor::Const</a>, <a class="el" href="Tensor_8cpp_source.html#l00185">eve::tensor::Tensor::data()</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">eve::tensor::Tensor::ensureEager()</a>, <a class="el" href="Tensor_8h_source.html#l00068">eve::tensor::Tensor::getSize()</a>, <a class="el" href="Tensor_8h_source.html#l00064">eve::tensor::Tensor::graph()</a>, <a class="el" href="Tensor_8h_source.html#l00082">eve::tensor::Tensor::isQuantized()</a>, <a class="el" href="Tensor_8h_source.html#l00062">eve::tensor::Tensor::isSymbolic()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Tensor_8h_source.html#l00065">eve::tensor::Tensor::nodeId()</a>, <a class="el" href="Tensor_8h_source.html#l00090">eve::tensor::Tensor::qBytes()</a>, <a class="el" href="Tensor_8h_source.html#l00089">eve::tensor::Tensor::qGroup()</a> , 以及 <a class="el" href="Tensor_8h_source.html#l00088">eve::tensor::Tensor::qScales()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00496">emitArgMax()</a>, <a class="el" href="Graph_8cpp_source.html#l00177">emitBinary()</a>, <a class="el" href="Graph_8cpp_source.html#l00523">emitCast()</a>, <a class="el" href="Graph_8cpp_source.html#l00418">emitConcat()</a>, <a class="el" href="Graph_8cpp_source.html#l00331">emitConv1d()</a>, <a class="el" href="Graph_8cpp_source.html#l00357">emitConv2d()</a>, <a class="el" href="Graph_8cpp_source.html#l00400">emitEmbedding()</a>, <a class="el" href="Graph_8cpp_source.html#l00292">emitLayerNorm()</a>, <a class="el" href="Graph_8cpp_source.html#l00206">emitMatMul()</a>, <a class="el" href="Graph_8cpp_source.html#l00241">emitPermute()</a>, <a class="el" href="Graph_8cpp_source.html#l00384">emitPool()</a>, <a class="el" href="Graph_8cpp_source.html#l00470">emitReduce()</a>, <a class="el" href="Graph_8cpp_source.html#l00259">emitReshape()</a>, <a class="el" href="Graph_8cpp_source.html#l00563">emitResize2d()</a>, <a class="el" href="Graph_8cpp_source.html#l00314">emitRMSNorm()</a>, <a class="el" href="Graph_8cpp_source.html#l00533">emitSdpa()</a>, <a class="el" href="Graph_8cpp_source.html#l00452">emitSlice()</a>, <a class="el" href="Graph_8cpp_source.html#l00271">emitSoftmax()</a>, <a class="el" href="Graph_8cpp_source.html#l00193">emitTernary()</a>, <a class="el" href="Graph_8cpp_source.html#l00233">emitTranspose()</a>, <a class="el" href="Graph_8cpp_source.html#l00155">emitUnary()</a>, <a class="el" href="Graph_8cpp_source.html#l00165">emitUnaryScalar()</a> , 以及 <a class="el" href="Graph_8cpp_source.html#l00124">setOutput()</a>.</p>
+
+</div>
+</div>
+<a id="a7409b71367d39dc93934cf5203579d21" name="a7409b71367d39dc93934cf5203579d21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7409b71367d39dc93934cf5203579d21">&#9670;&#160;</a></span>graph() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp; eve::tensor::Func::graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0232fafe64e3a47fd5480f8fdd036763" name="a0232fafe64e3a47fd5480f8fdd036763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0232fafe64e3a47fd5480f8fdd036763">&#9670;&#160;</a></span>graph() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp; eve::tensor::Func::graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00142">142</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46ab47324d7a11f2ce46862bc72c2eb4" name="a46ab47324d7a11f2ce46862bc72c2eb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46ab47324d7a11f2ce46862bc72c2eb4">&#9670;&#160;</a></span>input1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::input1 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">eve::tensor::Placeholder</a>.</p>
+
+</div>
+</div>
+<a id="a9b3cb442f7a7fe541b398d7470f96994" name="a9b3cb442f7a7fe541b398d7470f96994"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b3cb442f7a7fe541b398d7470f96994">&#9670;&#160;</a></span>input2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::input2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">eve::tensor::Placeholder</a>.</p>
+
+</div>
+</div>
+<a id="ad5527114f249d2de49932cc39c0c45b6" name="ad5527114f249d2de49932cc39c0c45b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5527114f249d2de49932cc39c0c45b6">&#9670;&#160;</a></span>input3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::input3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">eve::tensor::Placeholder</a>.</p>
+
+</div>
+</div>
+<a id="a3e951d7939beaed0295d4c28719cef83" name="a3e951d7939beaed0295d4c28719cef83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e951d7939beaed0295d4c28719cef83">&#9670;&#160;</a></span>input4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::input4 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">eve::tensor::Placeholder</a>.</p>
+
+</div>
+</div>
+<a id="a58742de6b73622303fa698e09a10f172" name="a58742de6b73622303fa698e09a10f172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58742de6b73622303fa698e09a10f172">&#9670;&#160;</a></span>input5()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::input5 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d4</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">eve::tensor::Placeholder</a>.</p>
+
+</div>
+</div>
+<a id="a373b625696f9cd02c8a1da2904d12b2d" name="a373b625696f9cd02c8a1da2904d12b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a373b625696f9cd02c8a1da2904d12b2d">&#9670;&#160;</a></span>input6()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Func::input6 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d5</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00025">eve::tensor::Graph::addNode()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">eve::tensor::Placeholder</a>.</p>
+
+</div>
+</div>
+<a id="ad3355feaa2dea289a760884629812a87" name="ad3355feaa2dea289a760884629812a87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3355feaa2dea289a760884629812a87">&#9670;&#160;</a></span>isTracing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::Func::isTracing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5790d9203ef9fc8a86992c6e2cd5541b" name="a5790d9203ef9fc8a86992c6e2cd5541b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5790d9203ef9fc8a86992c6e2cd5541b">&#9670;&#160;</a></span>outputNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Func::outputNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58620756d5bcf765affab60bb0b81f8b" name="a58620756d5bcf765affab60bb0b81f8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58620756d5bcf765affab60bb0b81f8b">&#9670;&#160;</a></span>owner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a> * eve::tensor::Func::owner </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad0e28722c68d0704b747fe0f3ad49f8" name="aad0e28722c68d0704b747fe0f3ad49f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad0e28722c68d0704b747fe0f3ad49f8">&#9670;&#160;</a></span>placeholderCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Func::placeholderCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68f1a4cc975efcbe03766e156c71f1e6" name="a68f1a4cc975efcbe03766e156c71f1e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68f1a4cc975efcbe03766e156c71f1e6">&#9670;&#160;</a></span>setOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Func::setOutput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Graph_8cpp_source.html">Graph.cpp</a> 第 <a class="el" href="Graph_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graph_8cpp_source.html#l00129">ensureNode()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/tensor/<a class="el" href="Graph_8h_source.html">Graph.h</a></li>
+<li>src/modules/tensor/<a class="el" href="Graph_8cpp_source.html">Graph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

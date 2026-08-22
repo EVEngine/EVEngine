@@ -1,0 +1,441 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: EVEngine 用户指南</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">EVEngine 用户指南</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="el" href="usr_modules.html">模块使用手册</a></p>
+<p><a class="el" href="usr_trimming.html">按需裁剪模块</a></p>
+<p><a class="el" href="usr_conventions.html">API 使用约定</a></p>
+<h1>EVEngine 用户指南</h1>
+<p>EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速制作 2D、第三人称 3D，以及 2D/3D 混合的游戏原型。本指南面向“使用引擎制作游戏”的用户；如果你要修改引擎实现，请阅读<a href="https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md">开发者文档</a>。</p>
+<blockquote class="doxtable">
+<p>&zwj;在线版文档（API + 用户手册）持续构建于 GitHub Pages： <a href="https://evengine.github.io/EVEngine/">https://evengine.github.io/EVEngine/</a>。 </p>
+</blockquote>
+<blockquote class="doxtable">
+<p>&zwj;当前版本为早期开发版本，API 仍在演进。最可靠的学习方式是运行并修改示例：下载的 SDK 自带 <code>share/eve/examples/basic/</code>，仓库中还有更多 <code>examples/</code> 可参考。 </p>
+</blockquote>
+<p>本指南从“下载引擎”讲到“打包发布”；覆盖全部脚本模块的<a class="el" href="MODULES_8md.html">模块使用手册</a>按功能逐章说明 API 与示例。先跑通一个示例，再按需查阅对应模块即可。</p>
+<h2>1. 获取引擎：从官网下载，无需编译</h2>
+<p><b>做游戏不需要编译引擎。</b> 到<a href="https://github.com/EVEngine/EVEngine/releases">官网发布页</a>下载目标平台的 SDK 压缩包即可：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">目标平台   </th><th class="markdownTableHeadNone">下载文件   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Windows   </td><td class="markdownTableBodyNone"><code>eve-sdk-win32-&lt;版本&gt;.zip</code>   </td><td class="markdownTableBodyNone">Windows 10/11 x64    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Linux   </td><td class="markdownTableBodyNone"><code>eve-sdk-linux-&lt;版本&gt;.zip</code>   </td><td class="markdownTableBodyNone">Ubuntu 20.04+ 等（需 Vulkan 驱动）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">macOS   </td><td class="markdownTableBodyNone"><code>eve-sdk-macosx-&lt;版本&gt;.zip</code>   </td><td class="markdownTableBodyNone">macOS 12+（Apple Silicon / Intel，内置 MoltenVK）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Android   </td><td class="markdownTableBodyNone"><code>eve-sdk-android-&lt;版本&gt;.zip</code>   </td><td class="markdownTableBodyNone">在开发机上组装 arm64 APK    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">iOS   </td><td class="markdownTableBodyNone"><code>eve-sdk-ios-&lt;版本&gt;.zip</code>   </td><td class="markdownTableBodyNone">在 macOS 开发机上组装 arm64 .app   </td></tr>
+</table>
+<p>解压后即为一个独立的 SDK 目录，<b>无需安装</b>。它包含：</p>
+<ul>
+<li><code>bin/eve(.exe)</code>：引擎运行时（桌面平台）；</li>
+<li><code>share/eve/examples/basic/</code>：可直接运行的参考游戏；</li>
+<li><code>platform/</code>：目标平台打包模板（Android APK 工程等）；</li>
+<li><code>share/eve/licenses/</code>：引擎与第三方许可文本；</li>
+<li><code>include/</code>、<code>lib/</code>、<code>cmake/</code>：原生插件开发文件（做纯脚本游戏用不到）。</li>
+</ul>
+<p><b>要求只有一条：桌面运行时需要 Vulkan 驱动</b>（显卡驱动通常已自带；macOS 由 SDK 内置 MoltenVK 承担；Linux 需安装 <code>mesa-vulkan-drivers</code> 或厂商驱动）。不需要安装 Git、CMake、C++ 编译器或 LunarG Vulkan SDK。</p>
+<p>验证安装：</p>
+<div class="fragment"><div class="line"># Windows</div>
+<div class="line">bin\eve.exe run share\eve\examples\basic</div>
+<div class="line"> </div>
+<div class="line"># macOS / Linux</div>
+<div class="line">bin/eve run share/eve/examples/basic</div>
+</div><!-- fragment --><p>能正常打开窗口并看到示例画面，说明引擎可用。下面命令中的 <code>eve</code> 均指你解压目录里的 <code>bin/eve</code>（Windows 为 <code>bin\eve.exe</code>）。</p>
+<p>想先直观感受引擎的渲染效果？可以浏览示例渲染画廊——其中每张截图都由引擎把交换链上实际呈现的一帧原样输出。</p>
+<h2>2. 创建并运行你的第一个游戏</h2>
+<div class="fragment"><div class="line">eve create mygame     # 在当前目录生成 mygame/</div>
+<div class="line">eve run mygame        # 运行它</div>
+</div><!-- fragment --><p>一个最小游戏只需要两个文件：</p>
+<div class="fragment"><div class="line">my-game/</div>
+<div class="line">├── config.nut    # 窗口与开发选项</div>
+<div class="line">└── main.nut      # 游戏逻辑</div>
+</div><!-- fragment --><p><code>config.nut</code>：</p>
+<div class="fragment"><div class="line">config &lt;- {</div>
+<div class="line">    width = 960</div>
+<div class="line">    height = 540</div>
+<div class="line">    title = &quot;My EVEngine Game&quot;</div>
+<div class="line">    debug = true</div>
+<div class="line">    hotReload = true</div>
+<div class="line">};</div>
+</div><!-- fragment --><p><code>main.nut</code>：</p>
+<div class="fragment"><div class="line">local x = 100.0;</div>
+<div class="line"> </div>
+<div class="line">// 游戏启动时调用一次。</div>
+<div class="line">eve_init &lt;- function() {</div>
+<div class="line">    gfx.setBackgroundColor(0.08, 0.10, 0.16, 1.0);</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">// 每帧更新；dt 是距上一帧的秒数。</div>
+<div class="line">eve_update &lt;- function(dt) {</div>
+<div class="line">    x += 80.0 * dt;</div>
+<div class="line">    if (x &gt; config.width) x = -48.0;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">// 每帧绘制。</div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    gfx.drawSolidRect(x, 220.0, 48.0, 48.0, 0.3, 0.75, 1.0, 1.0);</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>运行后修改 <code>main.nut</code> 并保存，即可看到热重载效果。也可以直接复制 <code>share/eve/examples/basic/</code>，逐步替换脚本和资源。</p>
+<h3>推荐的目录布局</h3>
+<div class="fragment"><div class="line">my-game/</div>
+<div class="line">├── config.nut</div>
+<div class="line">├── main.nut</div>
+<div class="line">├── scripts/       # 拆分后的脚本，通过 dofile(...) 加载</div>
+<div class="line">├── maps/          # Tiled JSON 或地图数据</div>
+<div class="line">├── particles/     # 粒子 JSON</div>
+<div class="line">├── textures/</div>
+<div class="line">├── fonts/</div>
+<div class="line">├── audio/</div>
+<div class="line">└── models/</div>
+</div><!-- fragment --><p>资源路径以游戏工作目录为基准。</p>
+<h2>3. 生命周期与热重载</h2>
+<p>引擎识别以下回调：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">回调   </th><th class="markdownTableHeadNone">何时调用   </th><th class="markdownTableHeadNone">适合做什么    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve_init()</code>   </td><td class="markdownTableBodyNone">游戏载入后一次   </td><td class="markdownTableBodyNone">创建世界、实体、资源和 UI    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve_update(dt)</code>   </td><td class="markdownTableBodyNone">每个运行帧   </td><td class="markdownTableBodyNone">输入、物理、AI 与状态更新    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve_render()</code>   </td><td class="markdownTableBodyNone">每个绘制帧   </td><td class="markdownTableBodyNone">清屏并提交地图、精灵、UI 等绘制    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve_reload()</code>   </td><td class="markdownTableBodyNone">脚本软重载后（可选）   </td><td class="markdownTableBodyNone">调整已存在的运行时状态    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve_asset_reload(path)</code>   </td><td class="markdownTableBodyNone">非脚本资源变化后（可选）   </td><td class="markdownTableBodyNone">响应纹理、地图等资源变化    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve_quit()</code>   </td><td class="markdownTableBodyNone">退出时（可选）   </td><td class="markdownTableBodyNone">保存数据或执行清理   </td></tr>
+</table>
+<p>启用 <code>config.hotReload</code> 后，引擎会监视脚本和资源。热重载会再次执行脚本，因此应避免无条件重置全局状态。推荐模式：</p>
+<div class="fragment"><div class="line">if (!(&quot;player&quot; in getroottable())) player &lt;- null;</div>
+<div class="line"> </div>
+<div class="line">function eve_init() {</div>
+<div class="line">    if (player == null) {</div>
+<div class="line">        // 只创建一次；重载时保留对象引用。</div>
+<div class="line">        player = createPlayer();</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>把一次性初始化放进 <code>eve_init</code>，把可重复执行的声明保留在顶层，并参考 <code>share/eve/examples/basic/main.nut</code> 中的完整写法。</p>
+<h2>4. 你能用引擎做哪些事</h2>
+<p>引擎默认包含全部模块，脚本侧统一放在全局 <code>eve</code> 表中；常用模块也会直接提供 <code>gfx</code>、<code>keyboard</code>、<code>map</code>、<code>particles</code>、<code>physics</code>、<code>ui</code> 等全局实例。模块通常由 <code>eve</code> 表中的构造器创建，请以示例实际使用的接口为准。</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">需求   </th><th class="markdownTableHeadNone">入口或模块   </th><th class="markdownTableHeadNone">示例    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">2D/3D 绘制、纹理、字体   </td><td class="markdownTableBodyNone"><code>gfx</code> / <code>eve.Graphics</code>   </td><td class="markdownTableBodyNone"><code>share/eve/examples/basic</code>、渲染测试    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">键盘、鼠标、触摸、手柄   </td><td class="markdownTableBodyNone"><code>keyboard</code>、<code>mouse</code>、<code>touch</code>、<code>joystick</code>   </td><td class="markdownTableBodyNone">仓库 <code>examples/procgen</code>、<code>test/*_cpp.cpp</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">物理   </td><td class="markdownTableBodyNone"><code>physics</code> / <code>eve.Physics</code>   </td><td class="markdownTableBodyNone"><code>share/eve/examples/basic</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Tilemap   </td><td class="markdownTableBodyNone"><code>map</code> / <code>eve.Map</code>   </td><td class="markdownTableBodyNone"><code>share/eve/examples/basic/maps</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">粒子   </td><td class="markdownTableBodyNone"><code>particles</code> / <code>eve.Particles</code>   </td><td class="markdownTableBodyNone"><code>share/eve/examples/basic/particles</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">声明式 UI   </td><td class="markdownTableBodyNone"><code>ui</code> / <code>eve.UI</code>   </td><td class="markdownTableBodyNone"><code>share/eve/examples/basic/ui_demo.nut</code>、<code>ui_component.nut</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">ECS   </td><td class="markdownTableBodyNone"><code>eve.Component</code>、<code>eve.Entity</code>、<code>eve.System</code>   </td><td class="markdownTableBodyNone">仓库 <code>examples/ecs</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">RPG   </td><td class="markdownTableBodyNone"><code>eve.RPG</code>   </td><td class="markdownTableBodyNone">仓库 <code>examples/rpg</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">程序化生成   </td><td class="markdownTableBodyNone"><code>procgen</code> / <code>eve.Procgen</code>   </td><td class="markdownTableBodyNone">仓库 <code>examples/procgen</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">文件、数据、事件   </td><td class="markdownTableBodyNone"><code>eve.Filesystem</code>、<code>eve.DataModule</code>、<code>eve.Event</code>   </td><td class="markdownTableBodyNone">仓库 <code>test/filesystem.nut</code> 等    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">音频、动画、IK   </td><td class="markdownTableBodyNone"><code>eve.Audio</code>、<code>eve.Animation</code>、<code>eve.IK</code>   </td><td class="markdownTableBodyNone">仓库对应 <code>test/</code> 示例    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">GPU 计算、张量   </td><td class="markdownTableBodyNone"><code>eve.Gpgpu</code>、<code>eve.TF</code>   </td><td class="markdownTableBodyNone">仓库 <code>examples/basic/compute</code>、对应测试    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">原生扩展   </td><td class="markdownTableBodyNone"><code>eve.Plugins</code>   </td><td class="markdownTableBodyNone">仓库 <code>examples/native-plugin</code>   </td></tr>
+</table>
+<p>每个模块的详细 API、最小示例与目标导向任务见<a class="el" href="MODULES_8md.html">模块使用手册</a>。</p>
+<h3>UI 最小示例</h3>
+<div class="fragment"><div class="line">eve_init &lt;- function() {</div>
+<div class="line">    ui.beginBuild();</div>
+<div class="line">    ui.beginWindow(&quot;Status&quot;, &quot;root&quot;);</div>
+<div class="line">    ui.text(&quot;Ready&quot;, &quot;message&quot;);</div>
+<div class="line">    ui.button(&quot;Start&quot;, &quot;start&quot;);</div>
+<div class="line">    ui.end();</div>
+<div class="line">    ui.mountBuildAs(&quot;hud&quot;);</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">eve_update &lt;- function(dt) {</div>
+<div class="line">    local id = ui.consumeClick();</div>
+<div class="line">    while (id != &quot;&quot;) {</div>
+<div class="line">        if (id == &quot;hud/start&quot;) ui.setText(&quot;message&quot;, &quot;Running&quot;);</div>
+<div class="line">        id = ui.consumeClick();</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    ui.beginFrameAndRender();</div>
+<div class="line">};</div>
+</div><!-- fragment --><h3>ECS 最小思路</h3>
+<p>通过继承 <code>eve.Component</code> 声明数据，继承 <code>eve.Entity</code> 组合组件，再用 <code>eve.System</code> 查询并更新实体。可直接从仓库 <code>examples/ecs/main.nut</code> 复制完整的可运行模板。</p>
+<h3>命令行速查</h3>
+<p>SDK 中的 <code>eve</code> 可执行文件本身就是命令行工具：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">命令   </th><th class="markdownTableHeadNone">作用    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve create &lt;名字&gt;</code>   </td><td class="markdownTableBodyNone">从模板创建新游戏    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve run [目录]</code>   </td><td class="markdownTableBodyNone">运行游戏（不带参数运行当前目录；无游戏时进入内置演示）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve run --debug</code>   </td><td class="markdownTableBodyNone">调试模式：暂停、断点、监视、快照    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve run --dap-port=4711</code>   </td><td class="markdownTableBodyNone">启动 VS Code 调试适配器服务    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve run --mcp-port=7529</code>   </td><td class="markdownTableBodyNone">启动 MCP 服务，供 AI 代理接入    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve dev [--port 8765]</code>   </td><td class="markdownTableBodyNone">启动热重载开发服务器（移动端真机热更新用）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve zip &lt;目录&gt;</code>   </td><td class="markdownTableBodyNone">把游戏压缩为 <code>.eve</code> 归档    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve package &lt;目录&gt; -o &lt;输出&gt; --sdk &lt;SDK目录&gt;</code>   </td><td class="markdownTableBodyNone">打包为含运行时的可分发游戏目录    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve test</code>   </td><td class="markdownTableBodyNone">运行游戏目录中的测试配置    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve doc &lt;名字&gt;</code>   </td><td class="markdownTableBodyNone">查询在线文档    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve build</code>   </td><td class="markdownTableBodyNone">从源码构建（需要源码与工具链，见<a href="https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md">开发者文档</a>）   </td></tr>
+</table>
+<h2>5. 调试</h2>
+<p>调试模式支持暂停、断点、监视、快照，以及面向 AI Agent 的 MCP：</p>
+<div class="fragment"><div class="line">eve run --debug /绝对路径/my-game</div>
+<div class="line">eve run --debug --dap-port=4711 /绝对路径/my-game</div>
+<div class="line">eve run --debug --mcp-port=7529 /绝对路径/my-game</div>
+</div><!-- fragment --><p>脚本中可在调试模式下使用：</p>
+<div class="fragment"><div class="line">eve.dev.togglePause();</div>
+<div class="line">eve.dev.setBreakpoint(&quot;main.nut&quot;, 42);</div>
+<div class="line">eve.dev.addWatch(&quot;score&quot;);</div>
+<div class="line">eve.dev.markStateRoot(&quot;gameState&quot;);</div>
+<div class="line">eve.dev.saveSnapshot(&quot;boss.json&quot;);</div>
+<div class="line">eve.dev.loadSnapshot(&quot;boss.json&quot;);</div>
+<div class="line">eve.dev.ai.note(&quot;boss phase&quot;);  // DevTools AI 会话日志；F9 切换面板</div>
+</div><!-- fragment --><blockquote class="doxtable">
+<p>&zwj;想 5 分钟上手上面这些能力？源码仓库里的 <code>examples/devlab</code> 是配套的开发者体验示例： 在仓库根目录执行 <code>make devlab</code>（自动带 <code>--debug</code>），依次按 F4（控制台/REPL）、 F6/F7（快照）、F9（AI 面板）、Pause（暂停）即可体验「运行时即编辑器」的开发循环。 </p>
+</blockquote>
+<p>VS Code 调试适配器位于仓库 <code>tools/vscode-eve-debug/</code>；Cursor 等 Agent 可通过 <code>tools/eve-mcp/</code> 连接 <code>--mcp-port</code>（见<a href="https://github.com/EVEngine/EVEngine/blob/main/docs/dev/AI与MCP支持.md">开发者文档：AI 与 MCP</a>）。如果只需快速定位问题，先确认：</p>
+<ol type="1">
+<li><code>config.nut</code> 和 <code>main.nut</code> 位于传给 <code>run</code> 的同一游戏目录；</li>
+<li>每帧绘制前调用了 <code>gfx.clear()</code>；</li>
+<li>创建物理、地图或粒子模块后，在 <code>eve_update</code> 中调用相应的 <code>update(dt)</code>；</li>
+<li>资源路径相对于游戏目录，而不是 SDK 根目录；</li>
+<li>Vulkan 驱动和运行时环境有效。</li>
+</ol>
+<h2>6. 打包发布</h2>
+<h3>桌面平台</h3>
+<div class="fragment"><div class="line"># 1. 压缩游戏为 .eve 归档（可选，便于分发单个文件）</div>
+<div class="line">eve zip mygame</div>
+<div class="line"> </div>
+<div class="line"># 2. 生成包含运行时 + 游戏的可分发目录</div>
+<div class="line">eve package mygame -o mygame-package --sdk &lt;SDK目录&gt;</div>
+<div class="line"># Windows 产物含 eve.exe 与运行时 DLL；macOS / Linux 为 eve 与相关动态库</div>
+</div><!-- fragment --><p><code>eve package</code> 需要指定与你当前 SDK 同版本、同平台的 SDK 目录（不传时自动从 <code>bin/eve</code> 所在位置推断）。把生成的目录整体发给玩家即可运行，玩家无需安装引擎。</p>
+<h3>移动端真机热更新（<code>eve dev</code>）</h3>
+<p>应用包内资源只读，无法直接改设备文件。在<b>开发机</b>上编辑，由设备拉取：</p>
+<div class="fragment"><div class="line"># 1. 开发机上启动开发服务器（服务当前游戏目录）</div>
+<div class="line">eve dev --port 8765</div>
+<div class="line"> </div>
+<div class="line"># 2. 设备端 config.nut 配置开发机地址（或命令行注入）</div>
+<div class="line">config.devServer = &quot;http://192.168.1.5:8765&quot;   # 开发机局域网 IP</div>
+</div><!-- fragment --><p>设备端会按清单轮询 <code>eve dev</code>，把变更文件下载到可写覆盖目录并复用本地热更新管线（脚本 <code>dofile</code>、资源 <code>tryReload</code>），无需重装应用。命令行也可用 <code>eve run --dev-server <a href="http://192.168.1.5:8765">http://192.168.1.5:8765</a></code>。</p>
+<h3>Android / iOS</h3>
+<p>下载对应平台的 SDK，用其自带模板在开发机上组装安装包：</p>
+<div class="fragment"><div class="line"># Android：把游戏脚本放进 SDK 的 platform/apk/app/src/main/assets/game/，</div>
+<div class="line"># 然后执行 SDK 内的 Gradle 工程生成 APK（需要 Android SDK/NDK）</div>
+<div class="line"># iOS：用 SDK 的 platform/ios 模板在 Xcode 中生成 .app（需要 macOS、Xcode 与签名）</div>
+</div><!-- fragment --><p>移动端的 SDK、NDK、签名和真机要求较严格，请在打包前阅读根目录 <a href="https://github.com/EVEngine/EVEngine/blob/main/Readme.md#androidarm64-v8a-debug-apk">Readme.md 的 Android 章节</a>。</p>
+<h2>7. 需要注意的事项</h2>
+<ol type="1">
+<li><b>无需编译，但需要 Vulkan 驱动</b>：运行时基于 Vulkan。Windows 显卡驱动通常自带 Vulkan 运行时；macOS 由 SDK 内置 MoltenVK；Linux 需要安装 Vulkan 驱动（<code>mesa-vulkan-drivers</code> 或厂商驱动）。如果游戏启动后窗口黑屏或报 Vulkan 初始化失败，优先检查驱动。</li>
+<li><b>SDK 按平台独立、版本必须匹配</b>：每个 SDK 只面向一个目标平台；<code>eve package</code>、原生插件必须与 SDK 的平台、版本一致，不同平台的 SDK 不能混用。</li>
+<li><b>脚本 API 以“模块手册 + 示例”为准</b>：C++ 头文件中的 public 方法不一定是脚本 API；调用约定见<a class="el" href="API-CONVENTIONS_8md.html">API 使用约定</a>。</li>
+<li><b>热重载会重新执行脚本</b>：用 <code>if (!("x" in getroottable()))</code> 保护需要跨重载保留的全局引用（见第 3 节）。</li>
+<li><b>模块可以裁剪，但默认全开</b>：脚本里用 <code>has_module("slot")</code> 判断模块是否存在；构建时裁剪只对“从源码构建”的用户有效，下载的 SDK 默认包含全部模块（见<a class="el" href="TRIMMING_8md.html">按需裁剪模块</a>）。</li>
+<li><b>许可</b>：EVEngine 采用双许可，商用营收超过免费门槛后需商业授权，详见根目录 <a href="https://github.com/EVEngine/EVEngine/blob/main/Readme.md#许可证">许可证</a>。</li>
+<li><b>版本与分支</b>：Release 与 <code>main</code> 分支对应正式版；早期开发版 API 可能变化，升级 SDK 后请先运行内置示例回归。</li>
+</ol>
+<h2>8. 从源码构建 / 修改引擎（可选）</h2>
+<p>只有需要修改引擎源码、参与开发或自行打包时才需要从源码构建：环境要求、编译步骤见根目录 <a href="https://github.com/EVEngine/EVEngine/blob/main/Readme.md#从源码构建引擎开发者--贡献者">Readme.md 的“从源码构建”章节</a>；架构与设计文档见<a href="https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md">开发者文档</a>。</p>
+<h2>9. 下一步</h2>
+<p>建议按以下顺序学习：</p>
+<ol type="1">
+<li>运行 <code>share/eve/examples/basic/</code>，修改背景色、重力和粒子配置；</li>
+<li>用 <code>eve create</code> 建新游戏，熟悉 <code>eve_init</code> / <code>eve_update</code> / <code>eve_render</code> 与热重载；</li>
+<li>按需求查阅<a class="el" href="MODULES_8md.html">模块使用手册</a>（UI、ECS、RPG、程序化生成等）；</li>
+<li>需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 <code>examples/native-plugin</code>）；</li>
+<li>发布前阅读第 6 节打包步骤与许可条款。</li>
+</ol>
+<p>本指南讲解稳定的使用流程，内部架构、设计取舍和实现进度统一维护在 <a href="https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md"><code>docs/dev/</code></a>，避免把尚未实现的设计稿误当作用户 API。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

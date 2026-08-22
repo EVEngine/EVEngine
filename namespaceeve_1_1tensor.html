@@ -1,0 +1,824 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1tensor_1_1kernels" id="r_namespaceeve_1_1tensor_1_1kernels"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html">kernels</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor_1_1q" id="r_namespaceeve_1_1tensor_1_1q"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1q.html">q</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1CompiledFunction.html">CompiledFunction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimized / scheduled graph ready to run with feeds.  <a href="classeve_1_1tensor_1_1CompiledFunction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Func.html">Func</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trace builder — TF2 <code>tf.function</code> analogue (<code>tf.func</code> in scripts). While active, <a class="el" href="classeve_1_1tensor_1_1TF.html" title="TF2-like namespace module. Script: tf &lt;- eve.TF(); Default eager; tf.func() traces a graph for compil...">TF</a> ops record into this graph.  <a href="classeve_1_1tensor_1_1Func.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1GpuProgram.html">GpuProgram</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU execution of a compiled tensor <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> via generated compute shaders.  <a href="classeve_1_1tensor_1_1GpuProgram.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1OptimizedGraph.html">OptimizedGraph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">float32 / int32 tensor (rank 1–6), row-major. Eager: owns a buffer. Symbolic: node in a <a class="el" href="classeve_1_1tensor_1_1Func.html" title="Trace builder — TF2 tf.function analogue (tf.func in scripts). While active, TF ops record into this ...">Func</a> graph (no buffer until run).  <a href="classeve_1_1tensor_1_1Tensor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TF2-like namespace module. Script: <code>tf &lt;- eve.TF();</code> Default eager; <code>tf.func()</code> traces a graph for compile/run.  <a href="classeve_1_1tensor_1_1TF.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a574a0393a2b1101ee0a32257300c0f67" id="r_a574a0393a2b1101ee0a32257300c0f67"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">Placeholder</a> = 0
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf">Const</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aec211f7c20af43e742bf2570c3cb84f9">Add</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ae80155eceb940c89e2de63ad05868db2">Sub</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ae257376d913f3b53cbb4a9b19d770648">Multiply</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0b914e196182d02615487e9793ecff3d">Divide</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ace6129b1e2d848abb4e45baf22a998c9">AddScalar</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aa6aa7f5bc2dc2a8b501e416226911756">SubScalar</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a6883db414539f56dbc1407b2228e6059">MulScalar</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67abc3d852af704778d37f0b9e116ec138b">DivScalar</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67afb278fa5defd7e699fcbc930c3e76ccd">Neg</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a1e34af023adeb7d5f484f8eb4b9826b6">Abs</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aae77f3ad25595e35b327334d89410054">Sqrt</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67acad39a154bffb61175f674d6eefaf6d0">Exp</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ace0be71e33226e4c1db2bcea5959f16b">Log</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0986d137604183312e6d3599578bc6cd">Sin</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67affca562be079b9e4e41ea9d6a86c582b">Cos</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67acc132a41cab5676334f353a22a0aa5c5">Tanh</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a7bfde445daa113a9903d4eaa43b41e2b">Relu</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a21eebb164e4b8b9bcf64fdb4d8d5dff4">Sigmoid</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67af48cca1c6deaa6a1c34e4ee46954cf0b">Gelu</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a17aeea3715b4cdfdf861f237f4011edf">Silu</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4bd340e52e2630d3645e89d045b5bc9e">PowScalar</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a08825280e3f8137556325061ba67ff8c">Clamp</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aadb57a2676130aaa1f163dfc1cf28b03">MaximumScalar</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a283d54c1e359e3b4bfb24276d43e56a5">MinimumScalar</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ab3c5b21d2cb47cc950fd4667edaf404c">Where</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5debeabaece967a6732b4182ba0269ae">MatMul</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aaf70b1ac863830a4e1ce6268c8399f54">Transpose</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67afa662c6eb71caef475b2b981ce8eccd7">Permute</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aa7c59ccedc6a3bd90c17f3b990afefad">Reshape</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4adae1c15e93fd1abd85fcdd8b948e10">Flatten</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a31d953b9d49a6b4378f45097047976d0">Softmax</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ac21dbda57d88c21ec9857f5d1522c488">LogSoftmax</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ac363ac7ca063bb8a75fb8a11883bcb2c">LayerNorm</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a533a34c62723462c962ca7535ca06570">RMSNorm</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67af067d5cabede124eb2d45faaa3caf7b1">Conv1d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a1d0d9b6ecc678228701326b1be56312b">Conv2d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a8aaa1c2de2d50cbd4e3bcd76a62a9fbd">MaxPool2d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a6ca0f55e27a8ea863514daefe08a9329">AvgPool2d</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a9eda48a461ef93b34731b28fdd82a890">Embedding</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ae20f0f2826a6549809f050b86274567f">Concat</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ad140d37ad98c12ccd8e1c432f548bcdb">Slice</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a">ReduceSum</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206">ReduceMean</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e">ReduceMin</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd">ReduceMax</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4766ad7b5b229c7c9a713faa05a2ef67">ArgMax</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4cd9f3996d60790cd11c04f842ebc43c">Cast</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a308a07344f62a25cb62069e9703c9113">ScaledDotProductAttention</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0e703cba8cae48eee88ab0e0921ca8ff">Resize2d</a>
+<br />
+ }</td></tr>
+<tr class="separator:a574a0393a2b1101ee0a32257300c0f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac39248a2a6efb5ed5bde9d902742e599" id="r_ac39248a2a6efb5ed5bde9d902742e599"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599">GroupKind</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec">Elementwise</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a5debeabaece967a6732b4182ba0269ae">MatMul</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599af067d5cabede124eb2d45faaa3caf7b1">Conv1d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a1d0d9b6ecc678228701326b1be56312b">Conv2d</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a8aaa1c2de2d50cbd4e3bcd76a62a9fbd">MaxPool2d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a6ca0f55e27a8ea863514daefe08a9329">AvgPool2d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a31d953b9d49a6b4378f45097047976d0">Softmax</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599ac363ac7ca063bb8a75fb8a11883bcb2c">LayerNorm</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a533a34c62723462c962ca7535ca06570">RMSNorm</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aec4875f03ff0bb0b26cf76ac7f41e3c8">Reduce</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a4766ad7b5b229c7c9a713faa05a2ef67">ArgMax</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a9eda48a461ef93b34731b28fdd82a890">Embedding</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599ae20f0f2826a6549809f050b86274567f">Concat</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599ad140d37ad98c12ccd8e1c432f548bcdb">Slice</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599afa662c6eb71caef475b2b981ce8eccd7">Permute</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a6a00e7e079a00600da48e152c2c6911b">Sdpa</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a0e703cba8cae48eee88ab0e0921ca8ff">Resize2d</a>
+, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aeffdb9ce6c5d44df31b89d7069c8e0fb">Alias</a>
+<br />
+ }</td></tr>
+<tr class="separator:ac39248a2a6efb5ed5bde9d902742e599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43869f5ea043bebf459b08b562e25fdb" id="r_a43869f5ea043bebf459b08b562e25fdb"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">Float32</a> = 0
+, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbac06129f6e6e15c09328365e553f1dc31">Int32</a> = 1
+, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">Fp16</a> = 2
+, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">Fp8E4M3</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">Fp4E2M1</a> = 4
+, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">Int8</a> = 5
+, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">Int4</a> = 6
+<br />
+ }</td></tr>
+<tr class="memdesc:a43869f5ea043bebf459b08b562e25fdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tensor element types.  <a href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">更多...</a><br /></td></tr>
+<tr class="separator:a43869f5ea043bebf459b08b562e25fdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a9610b9dc204743dce97f6c2ad011ba2d" id="r_a9610b9dc204743dce97f6c2ad011ba2d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a9610b9dc204743dce97f6c2ad011ba2d">gpuReduce</a> (const float *data, int size, int op, float &amp;outResult)</td></tr>
+<tr class="memdesc:a9610b9dc204743dce97f6c2ad011ba2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-accelerated reduction for large eager tensors. op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU) when Vulkan/gpgpu isn't available.  <br /></td></tr>
+<tr class="separator:a9610b9dc204743dce97f6c2ad011ba2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f5ec8c71dbe7e7fc99f780ae9ddf843" id="r_a1f5ec8c71dbe7e7fc99f780ae9ddf843"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a1f5ec8c71dbe7e7fc99f780ae9ddf843">generateKernel</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="KernelGen_8cpp.html#aca557bd266760b1ebf13a20aba6eec2a">graph</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;<a class="el" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a1f5ec8c71dbe7e7fc99f780ae9ddf843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca2f126a7e6533b6ad012498be1ea207" id="r_aca2f126a7e6533b6ad012498be1ea207"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#aca2f126a7e6533b6ad012498be1ea207">generateMatMulVariant</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="KernelGen_8cpp.html#aca557bd266760b1ebf13a20aba6eec2a">graph</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;<a class="el" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>, bool tiled, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:aca2f126a7e6533b6ad012498be1ea207"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ce00d90b94cb8e233e9658e258649b" id="r_ae6ce00d90b94cb8e233e9658e258649b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tensor_1_1OptimizedGraph.html">OptimizedGraph</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#ae6ce00d90b94cb8e233e9658e258649b">optimizeGraph</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="KernelGen_8cpp.html#aca557bd266760b1ebf13a20aba6eec2a">graph</a>, int outputNode)</td></tr>
+<tr class="separator:ae6ce00d90b94cb8e233e9658e258649b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e91e0b31b081182f64e5844bd8af587" id="r_a3e91e0b31b081182f64e5844bd8af587"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a3e91e0b31b081182f64e5844bd8af587">groupKernelCount</a> (const <a class="el" href="structeve_1_1tensor_1_1OptimizedGraph.html">OptimizedGraph</a> &amp;opt)</td></tr>
+<tr class="separator:a3e91e0b31b081182f64e5844bd8af587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74642dd529199fa79998ed8726836d8" id="r_ab74642dd529199fa79998ed8726836d8"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#ab74642dd529199fa79998ed8726836d8">dtypeName</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dtype)</td></tr>
+<tr class="separator:ab74642dd529199fa79998ed8726836d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a353058aa9998aeaada562e63cedacab7" id="r_a353058aa9998aeaada562e63cedacab7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a353058aa9998aeaada562e63cedacab7">parseDType</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> &amp;out)</td></tr>
+<tr class="separator:a353058aa9998aeaada562e63cedacab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7ddfa2adf758a785868013098bbe568" id="r_ad7ddfa2adf758a785868013098bbe568"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#ad7ddfa2adf758a785868013098bbe568">Module_IMPL</a> (<a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a>, new <a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a>())</td></tr>
+<tr class="separator:ad7ddfa2adf758a785868013098bbe568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:ac1236bddbabba3f4b9115cc5d94eb048" id="r_ac1236bddbabba3f4b9115cc5d94eb048"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#ac1236bddbabba3f4b9115cc5d94eb048">kMaxKernelBindings</a> = 8</td></tr>
+<tr class="separator:ac1236bddbabba3f4b9115cc5d94eb048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a43869f5ea043bebf459b08b562e25fdb" name="a43869f5ea043bebf459b08b562e25fdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43869f5ea043bebf459b08b562e25fdb">&#9670;&#160;</a></span>DType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">eve::tensor::DType</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1tensor_1_1Tensor.html" title="float32 / int32 tensor (rank 1–6), row-major. Eager: owns a buffer. Symbolic: node in a Func graph (n...">Tensor</a> element types. </p>
+<p>Script-visible tensors are float32; int32 tensors are used for index data (argmax outputs, embedding lookups, cast("int32")). Int32 values are stored losslessly as floats for |v| &lt; 2^24, which comfortably covers model vocabularies / sequence lengths / simulation ids used in games. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204" name="a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204"></a>Float32&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdbac06129f6e6e15c09328365e553f1dc31" name="a43869f5ea043bebf459b08b562e25fdbac06129f6e6e15c09328365e553f1dc31"></a>Int32&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa" name="a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa"></a>Fp16&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95" name="a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95"></a>Fp8E4M3&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea" name="a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea"></a>Fp4E2M1&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539" name="a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539"></a>Int8&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d" name="a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d"></a>Int4&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac39248a2a6efb5ed5bde9d902742e599" name="ac39248a2a6efb5ed5bde9d902742e599"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac39248a2a6efb5ed5bde9d902742e599">&#9670;&#160;</a></span>GroupKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599">eve::tensor::GroupKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Kernel group produced by the optimizer (AITemplate-style fusion).</p>
+<p>A group is either:</p><ul>
+<li>an Elementwise chain: multiple graph nodes fused into ONE generated kernel; nodes inside the chain never materialize a buffer;</li>
+<li>a MatMul / Conv group with an optional bias + elementwise epilogue fused into the same kernel;</li>
+<li>a single specialized op kernel (softmax, layernorm, attention, ...);</li>
+<li>an Alias (reshape / flatten / cast): no kernel, output aliases input. </li>
+</ul>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec" name="ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec"></a>Elementwise&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a5debeabaece967a6732b4182ba0269ae" name="ac39248a2a6efb5ed5bde9d902742e599a5debeabaece967a6732b4182ba0269ae"></a>MatMul&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599af067d5cabede124eb2d45faaa3caf7b1" name="ac39248a2a6efb5ed5bde9d902742e599af067d5cabede124eb2d45faaa3caf7b1"></a>Conv1d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a1d0d9b6ecc678228701326b1be56312b" name="ac39248a2a6efb5ed5bde9d902742e599a1d0d9b6ecc678228701326b1be56312b"></a>Conv2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a8aaa1c2de2d50cbd4e3bcd76a62a9fbd" name="ac39248a2a6efb5ed5bde9d902742e599a8aaa1c2de2d50cbd4e3bcd76a62a9fbd"></a>MaxPool2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a6ca0f55e27a8ea863514daefe08a9329" name="ac39248a2a6efb5ed5bde9d902742e599a6ca0f55e27a8ea863514daefe08a9329"></a>AvgPool2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a31d953b9d49a6b4378f45097047976d0" name="ac39248a2a6efb5ed5bde9d902742e599a31d953b9d49a6b4378f45097047976d0"></a>Softmax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599ac363ac7ca063bb8a75fb8a11883bcb2c" name="ac39248a2a6efb5ed5bde9d902742e599ac363ac7ca063bb8a75fb8a11883bcb2c"></a>LayerNorm&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a533a34c62723462c962ca7535ca06570" name="ac39248a2a6efb5ed5bde9d902742e599a533a34c62723462c962ca7535ca06570"></a>RMSNorm&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599aec4875f03ff0bb0b26cf76ac7f41e3c8" name="ac39248a2a6efb5ed5bde9d902742e599aec4875f03ff0bb0b26cf76ac7f41e3c8"></a>Reduce&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a4766ad7b5b229c7c9a713faa05a2ef67" name="ac39248a2a6efb5ed5bde9d902742e599a4766ad7b5b229c7c9a713faa05a2ef67"></a>ArgMax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a9eda48a461ef93b34731b28fdd82a890" name="ac39248a2a6efb5ed5bde9d902742e599a9eda48a461ef93b34731b28fdd82a890"></a>Embedding&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599ae20f0f2826a6549809f050b86274567f" name="ac39248a2a6efb5ed5bde9d902742e599ae20f0f2826a6549809f050b86274567f"></a>Concat&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599ad140d37ad98c12ccd8e1c432f548bcdb" name="ac39248a2a6efb5ed5bde9d902742e599ad140d37ad98c12ccd8e1c432f548bcdb"></a>Slice&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599afa662c6eb71caef475b2b981ce8eccd7" name="ac39248a2a6efb5ed5bde9d902742e599afa662c6eb71caef475b2b981ce8eccd7"></a>Permute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a6a00e7e079a00600da48e152c2c6911b" name="ac39248a2a6efb5ed5bde9d902742e599a6a00e7e079a00600da48e152c2c6911b"></a>Sdpa&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599a0e703cba8cae48eee88ab0e0921ca8ff" name="ac39248a2a6efb5ed5bde9d902742e599a0e703cba8cae48eee88ab0e0921ca8ff"></a>Resize2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac39248a2a6efb5ed5bde9d902742e599aeffdb9ce6c5d44df31b89d7069c8e0fb" name="ac39248a2a6efb5ed5bde9d902742e599aeffdb9ce6c5d44df31b89d7069c8e0fb"></a>Alias&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a574a0393a2b1101ee0a32257300c0f67" name="a574a0393a2b1101ee0a32257300c0f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a574a0393a2b1101ee0a32257300c0f67">&#9670;&#160;</a></span>OpType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">eve::tensor::OpType</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1" name="a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1"></a>Placeholder&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf" name="a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf"></a>Const&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67aec211f7c20af43e742bf2570c3cb84f9" name="a574a0393a2b1101ee0a32257300c0f67aec211f7c20af43e742bf2570c3cb84f9"></a>Add&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ae80155eceb940c89e2de63ad05868db2" name="a574a0393a2b1101ee0a32257300c0f67ae80155eceb940c89e2de63ad05868db2"></a>Sub&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ae257376d913f3b53cbb4a9b19d770648" name="a574a0393a2b1101ee0a32257300c0f67ae257376d913f3b53cbb4a9b19d770648"></a>Multiply&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a0b914e196182d02615487e9793ecff3d" name="a574a0393a2b1101ee0a32257300c0f67a0b914e196182d02615487e9793ecff3d"></a>Divide&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ace6129b1e2d848abb4e45baf22a998c9" name="a574a0393a2b1101ee0a32257300c0f67ace6129b1e2d848abb4e45baf22a998c9"></a>AddScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67aa6aa7f5bc2dc2a8b501e416226911756" name="a574a0393a2b1101ee0a32257300c0f67aa6aa7f5bc2dc2a8b501e416226911756"></a>SubScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a6883db414539f56dbc1407b2228e6059" name="a574a0393a2b1101ee0a32257300c0f67a6883db414539f56dbc1407b2228e6059"></a>MulScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67abc3d852af704778d37f0b9e116ec138b" name="a574a0393a2b1101ee0a32257300c0f67abc3d852af704778d37f0b9e116ec138b"></a>DivScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67afb278fa5defd7e699fcbc930c3e76ccd" name="a574a0393a2b1101ee0a32257300c0f67afb278fa5defd7e699fcbc930c3e76ccd"></a>Neg&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a1e34af023adeb7d5f484f8eb4b9826b6" name="a574a0393a2b1101ee0a32257300c0f67a1e34af023adeb7d5f484f8eb4b9826b6"></a>Abs&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67aae77f3ad25595e35b327334d89410054" name="a574a0393a2b1101ee0a32257300c0f67aae77f3ad25595e35b327334d89410054"></a>Sqrt&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67acad39a154bffb61175f674d6eefaf6d0" name="a574a0393a2b1101ee0a32257300c0f67acad39a154bffb61175f674d6eefaf6d0"></a>Exp&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ace0be71e33226e4c1db2bcea5959f16b" name="a574a0393a2b1101ee0a32257300c0f67ace0be71e33226e4c1db2bcea5959f16b"></a>Log&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a0986d137604183312e6d3599578bc6cd" name="a574a0393a2b1101ee0a32257300c0f67a0986d137604183312e6d3599578bc6cd"></a>Sin&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67affca562be079b9e4e41ea9d6a86c582b" name="a574a0393a2b1101ee0a32257300c0f67affca562be079b9e4e41ea9d6a86c582b"></a>Cos&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67acc132a41cab5676334f353a22a0aa5c5" name="a574a0393a2b1101ee0a32257300c0f67acc132a41cab5676334f353a22a0aa5c5"></a>Tanh&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a7bfde445daa113a9903d4eaa43b41e2b" name="a574a0393a2b1101ee0a32257300c0f67a7bfde445daa113a9903d4eaa43b41e2b"></a>Relu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a21eebb164e4b8b9bcf64fdb4d8d5dff4" name="a574a0393a2b1101ee0a32257300c0f67a21eebb164e4b8b9bcf64fdb4d8d5dff4"></a>Sigmoid&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67af48cca1c6deaa6a1c34e4ee46954cf0b" name="a574a0393a2b1101ee0a32257300c0f67af48cca1c6deaa6a1c34e4ee46954cf0b"></a>Gelu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a17aeea3715b4cdfdf861f237f4011edf" name="a574a0393a2b1101ee0a32257300c0f67a17aeea3715b4cdfdf861f237f4011edf"></a>Silu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a4bd340e52e2630d3645e89d045b5bc9e" name="a574a0393a2b1101ee0a32257300c0f67a4bd340e52e2630d3645e89d045b5bc9e"></a>PowScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a08825280e3f8137556325061ba67ff8c" name="a574a0393a2b1101ee0a32257300c0f67a08825280e3f8137556325061ba67ff8c"></a>Clamp&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67aadb57a2676130aaa1f163dfc1cf28b03" name="a574a0393a2b1101ee0a32257300c0f67aadb57a2676130aaa1f163dfc1cf28b03"></a>MaximumScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a283d54c1e359e3b4bfb24276d43e56a5" name="a574a0393a2b1101ee0a32257300c0f67a283d54c1e359e3b4bfb24276d43e56a5"></a>MinimumScalar&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ab3c5b21d2cb47cc950fd4667edaf404c" name="a574a0393a2b1101ee0a32257300c0f67ab3c5b21d2cb47cc950fd4667edaf404c"></a>Where&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a5debeabaece967a6732b4182ba0269ae" name="a574a0393a2b1101ee0a32257300c0f67a5debeabaece967a6732b4182ba0269ae"></a>MatMul&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67aaf70b1ac863830a4e1ce6268c8399f54" name="a574a0393a2b1101ee0a32257300c0f67aaf70b1ac863830a4e1ce6268c8399f54"></a>Transpose&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67afa662c6eb71caef475b2b981ce8eccd7" name="a574a0393a2b1101ee0a32257300c0f67afa662c6eb71caef475b2b981ce8eccd7"></a>Permute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67aa7c59ccedc6a3bd90c17f3b990afefad" name="a574a0393a2b1101ee0a32257300c0f67aa7c59ccedc6a3bd90c17f3b990afefad"></a>Reshape&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a4adae1c15e93fd1abd85fcdd8b948e10" name="a574a0393a2b1101ee0a32257300c0f67a4adae1c15e93fd1abd85fcdd8b948e10"></a>Flatten&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a31d953b9d49a6b4378f45097047976d0" name="a574a0393a2b1101ee0a32257300c0f67a31d953b9d49a6b4378f45097047976d0"></a>Softmax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ac21dbda57d88c21ec9857f5d1522c488" name="a574a0393a2b1101ee0a32257300c0f67ac21dbda57d88c21ec9857f5d1522c488"></a>LogSoftmax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ac363ac7ca063bb8a75fb8a11883bcb2c" name="a574a0393a2b1101ee0a32257300c0f67ac363ac7ca063bb8a75fb8a11883bcb2c"></a>LayerNorm&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a533a34c62723462c962ca7535ca06570" name="a574a0393a2b1101ee0a32257300c0f67a533a34c62723462c962ca7535ca06570"></a>RMSNorm&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67af067d5cabede124eb2d45faaa3caf7b1" name="a574a0393a2b1101ee0a32257300c0f67af067d5cabede124eb2d45faaa3caf7b1"></a>Conv1d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a1d0d9b6ecc678228701326b1be56312b" name="a574a0393a2b1101ee0a32257300c0f67a1d0d9b6ecc678228701326b1be56312b"></a>Conv2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a8aaa1c2de2d50cbd4e3bcd76a62a9fbd" name="a574a0393a2b1101ee0a32257300c0f67a8aaa1c2de2d50cbd4e3bcd76a62a9fbd"></a>MaxPool2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a6ca0f55e27a8ea863514daefe08a9329" name="a574a0393a2b1101ee0a32257300c0f67a6ca0f55e27a8ea863514daefe08a9329"></a>AvgPool2d&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a9eda48a461ef93b34731b28fdd82a890" name="a574a0393a2b1101ee0a32257300c0f67a9eda48a461ef93b34731b28fdd82a890"></a>Embedding&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ae20f0f2826a6549809f050b86274567f" name="a574a0393a2b1101ee0a32257300c0f67ae20f0f2826a6549809f050b86274567f"></a>Concat&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67ad140d37ad98c12ccd8e1c432f548bcdb" name="a574a0393a2b1101ee0a32257300c0f67ad140d37ad98c12ccd8e1c432f548bcdb"></a>Slice&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a" name="a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a"></a>ReduceSum&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206" name="a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206"></a>ReduceMean&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e" name="a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e"></a>ReduceMin&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd" name="a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd"></a>ReduceMax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a4766ad7b5b229c7c9a713faa05a2ef67" name="a574a0393a2b1101ee0a32257300c0f67a4766ad7b5b229c7c9a713faa05a2ef67"></a>ArgMax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a4cd9f3996d60790cd11c04f842ebc43c" name="a574a0393a2b1101ee0a32257300c0f67a4cd9f3996d60790cd11c04f842ebc43c"></a>Cast&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a308a07344f62a25cb62069e9703c9113" name="a574a0393a2b1101ee0a32257300c0f67a308a07344f62a25cb62069e9703c9113"></a>ScaledDotProductAttention&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a574a0393a2b1101ee0a32257300c0f67a0e703cba8cae48eee88ab0e0921ca8ff" name="a574a0393a2b1101ee0a32257300c0f67a0e703cba8cae48eee88ab0e0921ca8ff"></a>Resize2d&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Graph_8h_source.html">Graph.h</a> 第 <a class="el" href="Graph_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ab74642dd529199fa79998ed8726836d8" name="ab74642dd529199fa79998ed8726836d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab74642dd529199fa79998ed8726836d8">&#9670;&#160;</a></span>dtypeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::tensor::dtypeName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dtype</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">Float32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">Fp4E2M1</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">Fp8E4M3</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbac06129f6e6e15c09328365e553f1dc31">Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">Int4</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">Int8</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8h_source.html#l00077">eve::tensor::Tensor::getDtype()</a>.</p>
+
+</div>
+</div>
+<a id="a1f5ec8c71dbe7e7fc99f780ae9ddf843" name="a1f5ec8c71dbe7e7fc99f780ae9ddf843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f5ec8c71dbe7e7fc99f780ae9ddf843">&#9670;&#160;</a></span>generateKernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::generateKernel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Generate the specialized GLSL kernel(s) for a fused group. Returns false when the group cannot be lowered (e.g. too many inputs for the fixed 8-binding descriptor layout) — callers fall back to the CPU interpreter. </p>
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00970">970</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aeffdb9ce6c5d44df31b89d7069c8e0fb">Alias</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a4766ad7b5b229c7c9a713faa05a2ef67">ArgMax</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a6ca0f55e27a8ea863514daefe08a9329">AvgPool2d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599ae20f0f2826a6549809f050b86274567f">Concat</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599af067d5cabede124eb2d45faaa3caf7b1">Conv1d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a1d0d9b6ecc678228701326b1be56312b">Conv2d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec">Elementwise</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a9eda48a461ef93b34731b28fdd82a890">Embedding</a>, <a class="el" href="KernelGen_8cpp_source.html#l00121">graph</a>, <a class="el" href="KernelGen_8cpp_source.html#l00122">group</a>, <a class="el" href="Optimizer_8h_source.html#l00043">eve::tensor::FusedGroup::kind</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599ac363ac7ca063bb8a75fb8a11883bcb2c">LayerNorm</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a5debeabaece967a6732b4182ba0269ae">MatMul</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a8aaa1c2de2d50cbd4e3bcd76a62a9fbd">MaxPool2d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599afa662c6eb71caef475b2b981ce8eccd7">Permute</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aec4875f03ff0bb0b26cf76ac7f41e3c8">Reduce</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a0e703cba8cae48eee88ab0e0921ca8ff">Resize2d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a533a34c62723462c962ca7535ca06570">RMSNorm</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a6a00e7e079a00600da48e152c2c6911b">Sdpa</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599ad140d37ad98c12ccd8e1c432f548bcdb">Slice</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a31d953b9d49a6b4378f45097047976d0">Softmax</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00168">eve::tensor::GpuProgram::tryBuild()</a>.</p>
+
+</div>
+</div>
+<a id="aca2f126a7e6533b6ad012498be1ea207" name="aca2f126a7e6533b6ad012498be1ea207"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca2f126a7e6533b6ad012498be1ea207">&#9670;&#160;</a></span>generateMatMulVariant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::generateMatMulVariant </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>tiled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Generate a specific matmul variant for autotuning (tiled=false: thread-per- output naive; tiled=true: shared-memory 16x16 tiles). Only rank-2 matmuls support the tiled variant. </p>
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00998">998</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00121">graph</a>, <a class="el" href="KernelGen_8cpp_source.html#l00122">group</a>, <a class="el" href="Optimizer_8h_source.html#l00043">eve::tensor::FusedGroup::kind</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a5debeabaece967a6732b4182ba0269ae">MatMul</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00168">eve::tensor::GpuProgram::tryBuild()</a>.</p>
+
+</div>
+</div>
+<a id="a9610b9dc204743dce97f6c2ad011ba2d" name="a9610b9dc204743dce97f6c2ad011ba2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9610b9dc204743dce97f6c2ad011ba2d">&#9670;&#160;</a></span>gpuReduce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::gpuReduce </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>outResult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>GPU-accelerated reduction for large eager tensors. op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU) when Vulkan/gpgpu isn't available. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00820">eve::tensor::TF::reduceMax()</a>, <a class="el" href="TF_8cpp_source.html#l00811">eve::tensor::TF::reduceMin()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00795">eve::tensor::TF::reduceSum()</a>.</p>
+
+</div>
+</div>
+<a id="a3e91e0b31b081182f64e5844bd8af587" name="a3e91e0b31b081182f64e5844bd8af587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e91e0b31b081182f64e5844bd8af587">&#9670;&#160;</a></span>groupKernelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::groupKernelCount </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1OptimizedGraph.html">OptimizedGraph</a> &amp;&#160;</td>
+          <td class="paramname"><em>opt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of groups that need GPU kernels (i.e. not Alias). </p>
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8cpp_source.html">Optimizer.cpp</a> 第 <a class="el" href="Optimizer_8cpp_source.html#l00498">498</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aeffdb9ce6c5d44df31b89d7069c8e0fb">Alias</a> , 以及 <a class="el" href="Optimizer_8h_source.html#l00076">eve::tensor::OptimizedGraph::groups</a>.</p>
+
+</div>
+</div>
+<a id="ad7ddfa2adf758a785868013098bbe568" name="ad7ddfa2adf758a785868013098bbe568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7ddfa2adf758a785868013098bbe568">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>TF</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6ce00d90b94cb8e233e9658e258649b" name="ae6ce00d90b94cb8e233e9658e258649b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ce00d90b94cb8e233e9658e258649b">&#9670;&#160;</a></span>optimizeGraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tensor_1_1OptimizedGraph.html">OptimizedGraph</a> eve::tensor::optimizeGraph </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>outputNode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Optimize a traced graph:</p><ol type="1">
+<li>dead-code elimination + topological sort;</li>
+<li>constant folding of elementwise chains over Const nodes;</li>
+<li>elementwise chain fusion into FusedGroups;</li>
+<li>matmul/conv bias + activation epilogue fusion;</li>
+<li>static memory planning with buffer reuse. </li>
+</ol>
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8cpp_source.html">Optimizer.cpp</a> 第 <a class="el" href="Optimizer_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aeffdb9ce6c5d44df31b89d7069c8e0fb">Alias</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="Optimizer_8h_source.html#l00060">eve::tensor::FusedGroup::biasNode</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4cd9f3996d60790cd11c04f842ebc43c">Cast</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf">Const</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599af067d5cabede124eb2d45faaa3caf7b1">Conv1d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a1d0d9b6ecc678228701326b1be56312b">Conv2d</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec">Elementwise</a>, <a class="el" href="Optimizer_8h_source.html#l00061">eve::tensor::FusedGroup::epilogue</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4adae1c15e93fd1abd85fcdd8b948e10">Flatten</a>, <a class="el" href="KernelGen_8cpp_source.html#l00121">graph</a>, <a class="el" href="Optimizer_8h_source.html#l00078">eve::tensor::OptimizedGraph::groupOrder</a>, <a class="el" href="Optimizer_8h_source.html#l00076">eve::tensor::OptimizedGraph::groups</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::in0</a>, <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::in1</a>, <a class="el" href="Optimizer_8h_source.html#l00049">eve::tensor::FusedGroup::inputs</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00087">eve::tensor::kernels::isElementwiseOp()</a>, <a class="el" href="Optimizer_8h_source.html#l00043">eve::tensor::FusedGroup::kind</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a5debeabaece967a6732b4182ba0269ae">MatMul</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00111">eve::tensor::Graph::nodeCount()</a>, <a class="el" href="Optimizer_8h_source.html#l00047">eve::tensor::FusedGroup::nodes</a>, <a class="el" href="Optimizer_8h_source.html#l00080">eve::tensor::OptimizedGraph::nodeSlot</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Optimizer_8h_source.html#l00074">eve::tensor::OptimizedGraph::order</a>, <a class="el" href="Optimizer_8h_source.html#l00050">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="Optimizer_8h_source.html#l00085">eve::tensor::OptimizedGraph::outputNode</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="Optimizer_8h_source.html#l00084">eve::tensor::OptimizedGraph::persistentSlots</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a68753d36ec0c4d7768b20993268d68d1">Placeholder</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aa7c59ccedc6a3bd90c17f3b990afefad">Reshape</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::size</a>, <a class="el" href="Optimizer_8h_source.html#l00082">eve::tensor::OptimizedGraph::slotSize</a>, <a class="el" href="Graph_8h_source.html#l00077">eve::tensor::GraphNode::type</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00234">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00590">eve::tensor::CompiledFunction::fromFunc()</a>.</p>
+
+</div>
+</div>
+<a id="a353058aa9998aeaada562e63cedacab7" name="a353058aa9998aeaada562e63cedacab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a353058aa9998aeaada562e63cedacab7">&#9670;&#160;</a></span>parseDType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::parseDType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">Float32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">Fp4E2M1</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">Fp8E4M3</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbac06129f6e6e15c09328365e553f1dc31">Int32</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">Int4</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">Int8</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00748">eve::tensor::TF::cast()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00616">eve::tensor::TF::quantizeWeight()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="ac1236bddbabba3f4b9115cc5d94eb048" name="ac1236bddbabba3f4b9115cc5d94eb048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1236bddbabba3f4b9115cc5d94eb048">&#9670;&#160;</a></span>kMaxKernelBindings</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::tensor::kMaxKernelBindings = 8</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Max storage bindings available per generated kernel. </p>
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8h_source.html">KernelGen.h</a> 第 <a class="el" href="KernelGen_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

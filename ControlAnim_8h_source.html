@@ -1,0 +1,278 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/ControlAnim.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ControlAnim.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ControlAnim_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimControlMath_8h.html">animation/AnimControlMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_class" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a>(<span class="keywordtype">float</span> frequencyHz = 3.f, <span class="keywordtype">float</span> dampingZeta = 1.f, <span class="keywordtype">float</span> response = 1.f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#a22df937553fd2928d9a98562cab68164">   26</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a22df937553fd2928d9a98562cab68164">~ControlAnim</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#a536e21005032bd135641b44fcd3baae3">   28</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a536e21005032bd135641b44fcd3baae3">ControlAnim</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#aff145533abde69ab160e82457c79a1c4">   29</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;<a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#aff145533abde69ab160e82457c79a1c4">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a79df8f8bf6bf0c6ca0faf9c60b403c91">setFrequency</a>(<span class="keywordtype">float</span> frequencyHz);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#aa1f788f0d58634e15804d9797895791b">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#aa1f788f0d58634e15804d9797895791b">getFrequency</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> frequencyHz_; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a779edd0b0c04b042db24a658c77e8088">setDamping</a>(<span class="keywordtype">float</span> dampingZeta);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#aaade19afdf141efc33c32649acde06dd">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#aaade19afdf141efc33c32649acde06dd">getDamping</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> dampingZeta_; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#ac24deca216cb34441c1e0df53363d9e2">setResponse</a>(<span class="keywordtype">float</span> response);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#a4e8c399764e1b925e0b750b79e6a4330">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a4e8c399764e1b925e0b750b79e6a4330">getResponse</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> response_; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span>        <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#aeb9df71ae190d704c091093580d952d4">setIntegrator</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#accfbe63914372c01e6149f9b5a2415dd">getIntegrator</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a3a6fa44bbd0a2edfcc076147a2edd027">set</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a55c75aba29a2f241565f5ece7a33cca1">setTarget</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#af7d6ab864f171d728f4faab6ac4e6ba8">setTargetVelocity</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">float</span> velocity);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#afb188e4d820ab08d7fa08fb3d116aceb">impulse</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">float</span> deltaVelocity);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">bool</span>  <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#ab2c41faa88d7ee3b95bb2712f5d96801">has</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a72017b9882b9feee0e531c11f04ed872">get</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a012be271721e5b515accec7d041a0fe2">getVelocity</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#aba0399e31a76cb435bf5daa601ea52af">getTarget</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a857e9b2cc991bb4d0dc0d6210cf135b9">clear</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a1c83eb299697b92b82e0ed27b49ba9ec">remove</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlAnim.html#a8b9eecad7d19bfb4c24b1f1c8cfe068a">   58</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#a8b9eecad7d19bfb4c24b1f1c8cfe068a">getPropertyCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(order_.size()); }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#ae982808c12d9703c02a63f039334fc02">getPropertyName</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1ControlAnim.html#af051020a13228bda537579101558251d">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">enum class</span> Integrator { SecondOrder, Spring, Pd };</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">struct </span>Channel {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>          = 0.f;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordtype">float</span> yd         = 0.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>          = 0.f;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordtype">float</span> xp         = 0.f;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordtype">float</span> xdExplicit = 0.f;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordtype">bool</span>  hasXd      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordtype">bool</span>  hasPrevX   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    };</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> refreshCoeffs();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    Channel &amp;ensure(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">float</span> frequencyHz_  = 3.f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">float</span> dampingZeta_  = 1.f;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">float</span> response_     = 1.f;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    Integrator integrator_ = Integrator::SecondOrder;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    SecondOrderCoeffs coeffs_{};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">float</span> kp_ = 0.f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">float</span> kd_ = 0.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::unordered_map&lt;std::string, Channel&gt; channels_;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::vector&lt;std::string&gt; order_;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>};</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimControlMath_8h_html"><div class="ttname"><a href="AnimControlMath_8h.html">AnimControlMath.h</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5744cedb1550b25c28b21ecb540428ca"><div class="ttname"><a href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a></div><div class="ttdeci">Tok kind</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00017">DnutParser.cpp:17</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html">eve::animation::ControlAnim</a></div><div class="ttdoc">Control-theory procedural animation for named scalar properties.</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8h_source.html#l00023">ControlAnim.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a012be271721e5b515accec7d041a0fe2"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a012be271721e5b515accec7d041a0fe2">eve::animation::ControlAnim::getVelocity</a></div><div class="ttdeci">float getVelocity(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00107">ControlAnim.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a1c83eb299697b92b82e0ed27b49ba9ec"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a1c83eb299697b92b82e0ed27b49ba9ec">eve::animation::ControlAnim::remove</a></div><div class="ttdeci">void remove(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00122">ControlAnim.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a22df937553fd2928d9a98562cab68164"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a22df937553fd2928d9a98562cab68164">eve::animation::ControlAnim::~ControlAnim</a></div><div class="ttdeci">~ControlAnim()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a3a6fa44bbd0a2edfcc076147a2edd027"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a3a6fa44bbd0a2edfcc076147a2edd027">eve::animation::ControlAnim::set</a></div><div class="ttdeci">void set(const std::string &amp;name, float value)</div><div class="ttdoc">Create/update a channel: current value snaps to value, velocity cleared.</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00065">ControlAnim.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a4e8c399764e1b925e0b750b79e6a4330"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a4e8c399764e1b925e0b750b79e6a4330">eve::animation::ControlAnim::getResponse</a></div><div class="ttdeci">float getResponse() const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8h_source.html#l00036">ControlAnim.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a536e21005032bd135641b44fcd3baae3"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a536e21005032bd135641b44fcd3baae3">eve::animation::ControlAnim::ControlAnim</a></div><div class="ttdeci">ControlAnim(const ControlAnim &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a55c75aba29a2f241565f5ece7a33cca1"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a55c75aba29a2f241565f5ece7a33cca1">eve::animation::ControlAnim::setTarget</a></div><div class="ttdeci">void setTarget(const std::string &amp;name, float value)</div><div class="ttdoc">Move the tracking target (does not snap state). Creates channel if missing.</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00076">ControlAnim.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a72017b9882b9feee0e531c11f04ed872"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a72017b9882b9feee0e531c11f04ed872">eve::animation::ControlAnim::get</a></div><div class="ttdeci">float get(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00102">ControlAnim.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a779edd0b0c04b042db24a658c77e8088"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a779edd0b0c04b042db24a658c77e8088">eve::animation::ControlAnim::setDamping</a></div><div class="ttdeci">void setDamping(float dampingZeta)</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00019">ControlAnim.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a79df8f8bf6bf0c6ca0faf9c60b403c91"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a79df8f8bf6bf0c6ca0faf9c60b403c91">eve::animation::ControlAnim::setFrequency</a></div><div class="ttdeci">void setFrequency(float frequencyHz)</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00014">ControlAnim.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a857e9b2cc991bb4d0dc0d6210cf135b9"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a857e9b2cc991bb4d0dc0d6210cf135b9">eve::animation::ControlAnim::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00117">ControlAnim.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_a8b9eecad7d19bfb4c24b1f1c8cfe068a"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#a8b9eecad7d19bfb4c24b1f1c8cfe068a">eve::animation::ControlAnim::getPropertyCount</a></div><div class="ttdeci">int getPropertyCount() const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8h_source.html#l00058">ControlAnim.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_aa1f788f0d58634e15804d9797895791b"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#aa1f788f0d58634e15804d9797895791b">eve::animation::ControlAnim::getFrequency</a></div><div class="ttdeci">float getFrequency() const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8h_source.html#l00032">ControlAnim.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_aaade19afdf141efc33c32649acde06dd"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#aaade19afdf141efc33c32649acde06dd">eve::animation::ControlAnim::getDamping</a></div><div class="ttdeci">float getDamping() const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8h_source.html#l00034">ControlAnim.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_ab2c41faa88d7ee3b95bb2712f5d96801"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#ab2c41faa88d7ee3b95bb2712f5d96801">eve::animation::ControlAnim::has</a></div><div class="ttdeci">bool has(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00098">ControlAnim.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_aba0399e31a76cb435bf5daa601ea52af"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#aba0399e31a76cb435bf5daa601ea52af">eve::animation::ControlAnim::getTarget</a></div><div class="ttdeci">float getTarget(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00112">ControlAnim.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_ac24deca216cb34441c1e0df53363d9e2"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#ac24deca216cb34441c1e0df53363d9e2">eve::animation::ControlAnim::setResponse</a></div><div class="ttdeci">void setResponse(float response)</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00024">ControlAnim.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_accfbe63914372c01e6149f9b5a2415dd"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#accfbe63914372c01e6149f9b5a2415dd">eve::animation::ControlAnim::getIntegrator</a></div><div class="ttdeci">std::string getIntegrator() const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00042">ControlAnim.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_ae982808c12d9703c02a63f039334fc02"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#ae982808c12d9703c02a63f039334fc02">eve::animation::ControlAnim::getPropertyName</a></div><div class="ttdeci">std::string getPropertyName(int index) const</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00127">ControlAnim.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_aeb9df71ae190d704c091093580d952d4"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#aeb9df71ae190d704c091093580d952d4">eve::animation::ControlAnim::setIntegrator</a></div><div class="ttdeci">void setIntegrator(const std::string &amp;kind)</div><div class="ttdoc">Integrator: &quot;secondOrder&quot; | &quot;spring&quot; | &quot;pd&quot;. Invalid → exception.</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00029">ControlAnim.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_af051020a13228bda537579101558251d"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#af051020a13228bda537579101558251d">eve::animation::ControlAnim::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Advance all channels by dt seconds.</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00132">ControlAnim.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_af7d6ab864f171d728f4faab6ac4e6ba8"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#af7d6ab864f171d728f4faab6ac4e6ba8">eve::animation::ControlAnim::setTargetVelocity</a></div><div class="ttdeci">void setTargetVelocity(const std::string &amp;name, float velocity)</div><div class="ttdoc">Optional explicit target velocity (used by secondOrder / pd).</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00087">ControlAnim.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_afb188e4d820ab08d7fa08fb3d116aceb"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#afb188e4d820ab08d7fa08fb3d116aceb">eve::animation::ControlAnim::impulse</a></div><div class="ttdeci">void impulse(const std::string &amp;name, float deltaVelocity)</div><div class="ttdoc">Inject an instantaneous velocity impulse (procedural “hit”).</div><div class="ttdef"><b>Definition</b> <a href="ControlAnim_8cpp_source.html#l00093">ControlAnim.cpp:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlAnim_html_aff145533abde69ab160e82457c79a1c4"><div class="ttname"><a href="classeve_1_1animation_1_1ControlAnim.html#aff145533abde69ab160e82457c79a1c4">eve::animation::ControlAnim::operator=</a></div><div class="ttdeci">ControlAnim &amp; operator=(const ControlAnim &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

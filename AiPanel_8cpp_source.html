@@ -1,0 +1,385 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/AiPanel.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AiPanel.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AiPanel_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AiPanel_8hpp.html">devtools/AiPanel.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Immortal_8hpp.html">devtools/Immortal.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;ctime&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html">    8</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><a class="code hl_typedef" href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">AiPanel::ImGuiDrawer</a> g_imguiDrawer = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#aa003e9bdb1a0a8ed9319e648ce3911d2">   15</a></span><a class="code hl_class" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#aa003e9bdb1a0a8ed9319e648ce3911d2">AiPanel::instance</a>() {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="comment">// Process-immortal singleton: McpServer&#39;s detached stdio reader and the</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="comment">// other DevTools singletons may still touch AiPanel during teardown, so</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="comment">// destroying it would let them lock a destroyed mutex (libc++ aborts).</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="comment">// See devtools/Immortal.hpp for the shared contract.</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="structeve_1_1dev_1_1Immortal.html#a8618600b6912db868f666a0f9b11551a">Immortal&lt;AiPanel&gt;::get</a>();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>std::string AiPanel::nowStamp() {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">using </span>clock = std::chrono::system_clock;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keyword">auto</span> t = clock::to_time_t(clock::now());</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::tm tm{};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#if defined(_WIN32)</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    localtime_s(&amp;tm, &amp;t);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    localtime_r(&amp;t, &amp;tm);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">char</span> buf[32];</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::strftime(buf, <span class="keyword">sizeof</span>(buf), <span class="stringliteral">&quot;%H:%M:%S&quot;</span>, &amp;tm);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> buf;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a17d7fcc6adfeb3d727930c4aab6bc9c7">   37</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a17d7fcc6adfeb3d727930c4aab6bc9c7">AiPanel::setVisible</a>(<span class="keywordtype">bool</span> on) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    visible_ = on;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">   42</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">AiPanel::isVisible</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> visible_;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a9cb09dfc45e53ce06b67b1e45ddaec6a">   47</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a9cb09dfc45e53ce06b67b1e45ddaec6a">AiPanel::toggleVisible</a>() { <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a17d7fcc6adfeb3d727930c4aab6bc9c7">setVisible</a>(!<a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">isVisible</a>()); }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a607fd68317c5537366d68d08fd2976a3">   49</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a607fd68317c5537366d68d08fd2976a3">AiPanel::setMcpPort</a>(<span class="keywordtype">int</span> port) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    mcpPort_ = port;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#abdfa21d2c9a84adf9faaa2c5676b8193">   54</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#abdfa21d2c9a84adf9faaa2c5676b8193">AiPanel::mcpPort</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> mcpPort_;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#aab15693acc507d46fa27896a845d693a">   59</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#aab15693acc507d46fa27896a845d693a">AiPanel::setMcpConnected</a>(<span class="keywordtype">bool</span> on) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    mcpConnected_ = on;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a9b29a1de53a3b6d4dc2eb7629471beab">   64</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a9b29a1de53a3b6d4dc2eb7629471beab">AiPanel::mcpConnected</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> mcpConnected_;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#ae10d96e5f0bc2691c18ebe16f46ccc48">   69</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#ae10d96e5f0bc2691c18ebe16f46ccc48">AiPanel::setClientName</a>(std::string <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    clientName_ = std::move(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a53243f2bcf7bcf701237aa296c4afff8">   74</a></span>std::string <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a53243f2bcf7bcf701237aa296c4afff8">AiPanel::clientName</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> clientName_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a438fde9360952c04bd448d2f36382920">   79</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a438fde9360952c04bd448d2f36382920">AiPanel::clearLog</a>() {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    log_.clear();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a6257830f27afb5c81b6a11b192884526">   84</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a6257830f27afb5c81b6a11b192884526">AiPanel::addLog</a>(std::string <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, std::string <a class="code hl_variable" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, std::string detail) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1AiLogEntry.html">AiLogEntry</a> e;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    e.<a class="code hl_variable" href="structeve_1_1dev_1_1AiLogEntry.html#a344daf9f53a8e393e6f7cff73ebf79e8">timestamp</a> = nowStamp();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    e.<a class="code hl_variable" href="structeve_1_1dev_1_1AiLogEntry.html#aa1afe5de99c63cc305d93c2cef9b5c68">kind</a>      = std::move(<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    e.<a class="code hl_variable" href="structeve_1_1dev_1_1AiLogEntry.html#aaff25e54ff30e4fc7180974ba38dbab3">title</a>     = std::move(<a class="code hl_variable" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    e.<a class="code hl_variable" href="structeve_1_1dev_1_1AiLogEntry.html#a2013c7373146a5803558c12ff33f33d2">detail</a>    = std::move(detail);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    log_.push_back(std::move(e));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">while</span> (log_.size() &gt; maxEntries_) log_.pop_front();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a00fbdebea6437eab878a8d7fd39473e2">   95</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a00fbdebea6437eab878a8d7fd39473e2">AiPanel::addNote</a>(std::string text) { <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a6257830f27afb5c81b6a11b192884526">addLog</a>(<span class="stringliteral">&quot;note&quot;</span>, <span class="stringliteral">&quot;note&quot;</span>, std::move(text)); }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a58a5968a0259d78b8d22dd508b166993">   97</a></span>std::vector&lt;AiLogEntry&gt; <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a58a5968a0259d78b8d22dd508b166993">AiPanel::recentLog</a>(<span class="keywordtype">size_t</span> max)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    std::vector&lt;AiLogEntry&gt; out;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">if</span> (log_.empty() || max == 0) <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> start = log_.size() &gt; max ? log_.size() - max : 0;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    out.assign(log_.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(start), log_.end());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a47cce5be54f52c2ea1fef39ebf7c55a3">  106</a></span>std::string <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a47cce5be54f52c2ea1fef39ebf7c55a3">AiPanel::formatLog</a>(<span class="keywordtype">size_t</span> max)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">auto</span> entries = <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a58a5968a0259d78b8d22dd508b166993">recentLog</a>(max);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::ostringstream oss;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; e : entries) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        oss &lt;&lt; <span class="charliteral">&#39;[&#39;</span> &lt;&lt; e.timestamp &lt;&lt; <span class="stringliteral">&quot;] &quot;</span> &lt;&lt; e.kind &lt;&lt; <span class="stringliteral">&quot; | &quot;</span> &lt;&lt; e.title;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">if</span> (!e.detail.empty()) oss &lt;&lt; <span class="stringliteral">&quot; — &quot;</span> &lt;&lt; e.detail;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        oss &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> oss.str();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#a3673630aa1ad385a214b3359081a0a50">  117</a></span>std::string <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#a3673630aa1ad385a214b3359081a0a50">AiPanel::statusLine</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::ostringstream oss;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    oss &lt;&lt; <span class="stringliteral">&quot;MCP &quot;</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (mcpPort_ &gt; 0) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        oss &lt;&lt; <span class="stringliteral">&quot;127.0.0.1:&quot;</span> &lt;&lt; mcpPort_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        oss &lt;&lt; (mcpConnected_ ? <span class="stringliteral">&quot; connected&quot;</span> : <span class="stringliteral">&quot; listening&quot;</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">if</span> (!clientName_.empty()) oss &lt;&lt; <span class="stringliteral">&quot; (&quot;</span> &lt;&lt; clientName_ &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        oss &lt;&lt; <span class="stringliteral">&quot;off&quot;</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    oss &lt;&lt; <span class="stringliteral">&quot; | log &quot;</span> &lt;&lt; log_.size();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">return</span> oss.str();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#ab13f648274c2682773242585f217dae7">  132</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#ab13f648274c2682773242585f217dae7">AiPanel::setMaxEntries</a>(<span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    maxEntries_ = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> == 0 ? 1 : <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">while</span> (log_.size() &gt; maxEntries_) log_.pop_front();</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#ad998a2a783dbbb7ba462d47bb09c65e2">  138</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#ad998a2a783dbbb7ba462d47bb09c65e2">AiPanel::setImGuiDrawer</a>(<a class="code hl_typedef" href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">ImGuiDrawer</a> <a class="code hl_variable" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>) { g_imguiDrawer = <a class="code hl_variable" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>; }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="}">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1AiPanel.html#ada7ea3eea2930065026169bcf4164ed5">  140</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1AiPanel.html#ada7ea3eea2930065026169bcf4164ed5">AiPanel::drawImGui</a>() {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="comment">// ImGui UI lives in eve_imgui (ImGuiBackend) so EVDevTools does not</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="comment">// instantiate imgui.h inlines — that blew the MSVC 65535 export limit.</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">if</span> (g_imguiDrawer) g_imguiDrawer(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>}  <span class="comment">// namespace eve::dev</span></div>
+</div>
+<div class="ttc" id="aAiPanel_8hpp_html"><div class="ttname"><a href="AiPanel_8hpp.html">AiPanel.hpp</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5744cedb1550b25c28b21ecb540428ca"><div class="ttname"><a href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a></div><div class="ttdeci">Tok kind</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00017">DnutParser.cpp:17</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_ac30fed21fe991cc8475ce543929f8b72"><div class="ttname"><a href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00451">EditorHost.cpp:451</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aImmortal_8hpp_html"><div class="ttname"><a href="Immortal_8hpp.html">Immortal.hpp</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aSettlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html">eve::dev::AiPanel</a></div><div class="ttdoc">In-engine AI / MCP session surface for DevTools.</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00027">AiPanel.hpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a00fbdebea6437eab878a8d7fd39473e2"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a00fbdebea6437eab878a8d7fd39473e2">eve::dev::AiPanel::addNote</a></div><div class="ttdeci">void addNote(std::string text)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00095">AiPanel.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a17d7fcc6adfeb3d727930c4aab6bc9c7"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a17d7fcc6adfeb3d727930c4aab6bc9c7">eve::dev::AiPanel::setVisible</a></div><div class="ttdeci">void setVisible(bool on)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00037">AiPanel.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a3673630aa1ad385a214b3359081a0a50"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a3673630aa1ad385a214b3359081a0a50">eve::dev::AiPanel::statusLine</a></div><div class="ttdeci">std::string statusLine() const</div><div class="ttdoc">Compact status line for overlays / MCP resources.</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00117">AiPanel.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a438fde9360952c04bd448d2f36382920"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a438fde9360952c04bd448d2f36382920">eve::dev::AiPanel::clearLog</a></div><div class="ttdeci">void clearLog()</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00079">AiPanel.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a47cce5be54f52c2ea1fef39ebf7c55a3"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a47cce5be54f52c2ea1fef39ebf7c55a3">eve::dev::AiPanel::formatLog</a></div><div class="ttdeci">std::string formatLog(size_t max=64) const</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00106">AiPanel.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a53243f2bcf7bcf701237aa296c4afff8"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a53243f2bcf7bcf701237aa296c4afff8">eve::dev::AiPanel::clientName</a></div><div class="ttdeci">std::string clientName() const</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00074">AiPanel.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a58a5968a0259d78b8d22dd508b166993"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a58a5968a0259d78b8d22dd508b166993">eve::dev::AiPanel::recentLog</a></div><div class="ttdeci">std::vector&lt; AiLogEntry &gt; recentLog(size_t max=64) const</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00097">AiPanel.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a607fd68317c5537366d68d08fd2976a3"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a607fd68317c5537366d68d08fd2976a3">eve::dev::AiPanel::setMcpPort</a></div><div class="ttdeci">void setMcpPort(int port)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00049">AiPanel.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a6257830f27afb5c81b6a11b192884526"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a6257830f27afb5c81b6a11b192884526">eve::dev::AiPanel::addLog</a></div><div class="ttdeci">void addLog(std::string kind, std::string title, std::string detail={})</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00084">AiPanel.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a9b29a1de53a3b6d4dc2eb7629471beab"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a9b29a1de53a3b6d4dc2eb7629471beab">eve::dev::AiPanel::mcpConnected</a></div><div class="ttdeci">bool mcpConnected() const</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00064">AiPanel.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_a9cb09dfc45e53ce06b67b1e45ddaec6a"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#a9cb09dfc45e53ce06b67b1e45ddaec6a">eve::dev::AiPanel::toggleVisible</a></div><div class="ttdeci">void toggleVisible()</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00047">AiPanel.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_aa003e9bdb1a0a8ed9319e648ce3911d2"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#aa003e9bdb1a0a8ed9319e648ce3911d2">eve::dev::AiPanel::instance</a></div><div class="ttdeci">static AiPanel &amp; instance()</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00015">AiPanel.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_aab15693acc507d46fa27896a845d693a"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#aab15693acc507d46fa27896a845d693a">eve::dev::AiPanel::setMcpConnected</a></div><div class="ttdeci">void setMcpConnected(bool on)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00059">AiPanel.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_ab13f648274c2682773242585f217dae7"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#ab13f648274c2682773242585f217dae7">eve::dev::AiPanel::setMaxEntries</a></div><div class="ttdeci">void setMaxEntries(size_t n)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00132">AiPanel.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_abdfa21d2c9a84adf9faaa2c5676b8193"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#abdfa21d2c9a84adf9faaa2c5676b8193">eve::dev::AiPanel::mcpPort</a></div><div class="ttdeci">int mcpPort() const</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00054">AiPanel.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_accf082e0f6bb10bbde021177aacc4699"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">eve::dev::AiPanel::ImGuiDrawer</a></div><div class="ttdeci">void(*)(AiPanel &amp;panel) ImGuiDrawer</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00061">AiPanel.hpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_ad998a2a783dbbb7ba462d47bb09c65e2"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#ad998a2a783dbbb7ba462d47bb09c65e2">eve::dev::AiPanel::setImGuiDrawer</a></div><div class="ttdeci">static void setImGuiDrawer(ImGuiDrawer fn)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00138">AiPanel.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_ada7ea3eea2930065026169bcf4164ed5"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#ada7ea3eea2930065026169bcf4164ed5">eve::dev::AiPanel::drawImGui</a></div><div class="ttdeci">void drawImGui()</div><div class="ttdoc">Optional ImGui draw hook. Default no-op: in-engine AI status is exposed via MCP / eve....</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00140">AiPanel.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_ae10d96e5f0bc2691c18ebe16f46ccc48"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#ae10d96e5f0bc2691c18ebe16f46ccc48">eve::dev::AiPanel::setClientName</a></div><div class="ttdeci">void setClientName(std::string name)</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00069">AiPanel.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1AiPanel_html_ae9cc36e2c724e0f78cbd3fdcdb5e6c65"><div class="ttname"><a href="classeve_1_1dev_1_1AiPanel.html#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">eve::dev::AiPanel::isVisible</a></div><div class="ttdeci">bool isVisible() const</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00042">AiPanel.cpp:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00008">AiPanel.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1AiLogEntry_html"><div class="ttname"><a href="structeve_1_1dev_1_1AiLogEntry.html">eve::dev::AiLogEntry</a></div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00013">AiPanel.hpp:13</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1AiLogEntry_html_a2013c7373146a5803558c12ff33f33d2"><div class="ttname"><a href="structeve_1_1dev_1_1AiLogEntry.html#a2013c7373146a5803558c12ff33f33d2">eve::dev::AiLogEntry::detail</a></div><div class="ttdeci">std::string detail</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00017">AiPanel.hpp:17</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1AiLogEntry_html_a344daf9f53a8e393e6f7cff73ebf79e8"><div class="ttname"><a href="structeve_1_1dev_1_1AiLogEntry.html#a344daf9f53a8e393e6f7cff73ebf79e8">eve::dev::AiLogEntry::timestamp</a></div><div class="ttdeci">std::string timestamp</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00014">AiPanel.hpp:14</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1AiLogEntry_html_aa1afe5de99c63cc305d93c2cef9b5c68"><div class="ttname"><a href="structeve_1_1dev_1_1AiLogEntry.html#aa1afe5de99c63cc305d93c2cef9b5c68">eve::dev::AiLogEntry::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00015">AiPanel.hpp:15</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1AiLogEntry_html_aaff25e54ff30e4fc7180974ba38dbab3"><div class="ttname"><a href="structeve_1_1dev_1_1AiLogEntry.html#aaff25e54ff30e4fc7180974ba38dbab3">eve::dev::AiLogEntry::title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8hpp_source.html#l00016">AiPanel.hpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1Immortal_html_a8618600b6912db868f666a0f9b11551a"><div class="ttname"><a href="structeve_1_1dev_1_1Immortal.html#a8618600b6912db868f666a0f9b11551a">eve::dev::Immortal::get</a></div><div class="ttdeci">static T &amp; get()</div><div class="ttdoc">Returns the process-lifetime instance.</div><div class="ttdef"><b>Definition</b> <a href="Immortal_8hpp_source.html#l00021">Immortal.hpp:21</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/spatial/BSPTree3D.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_13b5d118cdf9e2fac2bbe79fb4fa947a.html">spatial</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BSPTree3D.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BSPTree3D_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Bounds_8h.html">spatial/Bounds.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="QueryIds_8h.html">spatial/QueryIds.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1spatial.html">eve::spatial</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1spatial_1_1BSPTree3D.html">BSPTree3D</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_class" href="classeve_1_1spatial_1_1BSPTree3D.html">BSPTree3D</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>              <span class="keywordtype">int</span> maxDepth = 12, <span class="keywordtype">int</span> maxPerNode = 8);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a5e9830b164f574e849ca583bce503a5b">   20</a></span>    <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a5e9830b164f574e849ca583bce503a5b">~BSPTree3D</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a49969e096fbae1ab29afb0f5d816e80f">   22</a></span>    <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a49969e096fbae1ab29afb0f5d816e80f">BSPTree3D</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1spatial_1_1BSPTree3D.html">BSPTree3D</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a1409a9306881355a1a883969d5b529d2">   23</a></span>    <a class="code hl_class" href="classeve_1_1spatial_1_1BSPTree3D.html">BSPTree3D</a> &amp;<a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a1409a9306881355a1a883969d5b529d2">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1spatial_1_1BSPTree3D.html">BSPTree3D</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a40319281ebd164c2cb220b965a258289">clear</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#aa4ce91b140cd215ae612aa8595996144">insert</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a37041c7d9eff7bd3a541119cfdd18944">remove</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#aa11095f780bc8dadf530ccf34a29cd61">update</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a18ef14bbb5f385549f338d07992c5bd1">contains</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a7d4cb46e979e33be266252bad82d505d">   30</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a7d4cb46e979e33be266252bad82d505d">getCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(items_.size()); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a7462163b6878d2fab9d7e7cd477c3e53">queryPoint</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a4656f28175287256e51a989e27e0d334">queryAABB</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a5e7ce9f8c804deacb4a335fb0ede7267">querySphere</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> cz, <span class="keywordtype">float</span> radius);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a5e3993538fb2860f476a3464bd42d45f">   36</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a5e3993538fb2860f476a3464bd42d45f">getResultCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> results_.<a class="code hl_function" href="classeve_1_1spatial_1_1QueryIds.html#a9c5d49f346f98fd3664d84e9aa7ea44a">getCount</a>(); }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a7dd668f1c3d0ef285c8b6356b3b52670">   37</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a7dd668f1c3d0ef285c8b6356b3b52670">getResultId</a>(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> results_.<a class="code hl_function" href="classeve_1_1spatial_1_1QueryIds.html#a5e7177abb388718c0372890f44752c00">getId</a>(index); }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a1c9c135ce011c36e06074265a746ae44">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a1c9c135ce011c36e06074265a746ae44">getMinX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">minX</a>; }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a03c9a30e6d8a3af7dade962566475c42">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a03c9a30e6d8a3af7dade962566475c42">getMinY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">minY</a>; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a40ea3024cbb93553ac296662a63ad487">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a40ea3024cbb93553ac296662a63ad487">getMinZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">minZ</a>; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#abd0457d9fb712c414b7d6e63007a9712">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#abd0457d9fb712c414b7d6e63007a9712">getMaxX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">maxX</a>; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a535370ad2bcd8f1097fae7887be7446a">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a535370ad2bcd8f1097fae7887be7446a">getMaxY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">maxY</a>; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a4e655e6afd06e3da4668b19d84b2f2e2">   44</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a4e655e6afd06e3da4668b19d84b2f2e2">getMaxZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rootBounds_.<a class="code hl_variable" href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">maxZ</a>; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#ad2495e63271f626f0022af25451eacd2">   45</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#ad2495e63271f626f0022af25451eacd2">getMaxDepth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxDepth_; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1spatial_1_1BSPTree3D.html#a8ad161ca5c61d53ba57b63f539462532">   46</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1spatial_1_1BSPTree3D.html#a8ad161ca5c61d53ba57b63f539462532">getMaxPerNode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxPerNode_; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">struct </span>Node {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_struct" href="structeve_1_1spatial_1_1AABB3.html">AABB3</a>                 bounds;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordtype">int</span>                   <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordtype">int</span>                   axis  = 0;  <span class="comment">// 0=X, 1=Y, 2=Z</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">float</span>                 split = 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        std::vector&lt;int&gt;      itemIds;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::unique_ptr&lt;Node&gt; left;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        std::unique_ptr&lt;Node&gt; right;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordtype">bool</span>                  isLeaf()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> left == <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span>  rebuild();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span>  insertInto(Node &amp;node, <span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> AABB3 &amp;bounds);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span>  split(Node &amp;node);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span>  collect(Node &amp;node, <span class="keyword">const</span> AABB3 *box, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> cz, <span class="keywordtype">float</span> radius,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                  <span class="keywordtype">bool</span> useSphere);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    Node *ensureRoot();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    AABB3                          rootBounds_;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">int</span>                            maxDepth_   = 12;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span>                            maxPerNode_ = 8;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::unique_ptr&lt;Node&gt;          root_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::unordered_map&lt;int, AABB3&gt; items_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    QueryIds                       results_;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}  <span class="comment">// namespace eve::spatial</span></div>
+<div class="ttc" id="aBounds_8h_html"><div class="ttname"><a href="Bounds_8h.html">Bounds.h</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00031">CardTypes.cpp:31</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00032">CardTypes.cpp:32</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aQueryIds_8h_html"><div class="ttname"><a href="QueryIds_8h.html">QueryIds.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html">eve::spatial::BSPTree3D</a></div><div class="ttdoc">Binary space partition tree (kd-style AABB splits) for 3D culling. Alternating X/Y/Z splits at node m...</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00016">BSPTree3D.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a03c9a30e6d8a3af7dade962566475c42"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a03c9a30e6d8a3af7dade962566475c42">eve::spatial::BSPTree3D::getMinY</a></div><div class="ttdeci">float getMinY() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00040">BSPTree3D.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a1409a9306881355a1a883969d5b529d2"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a1409a9306881355a1a883969d5b529d2">eve::spatial::BSPTree3D::operator=</a></div><div class="ttdeci">BSPTree3D &amp; operator=(const BSPTree3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a18ef14bbb5f385549f338d07992c5bd1"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a18ef14bbb5f385549f338d07992c5bd1">eve::spatial::BSPTree3D::contains</a></div><div class="ttdeci">bool contains(int id) const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00036">BSPTree3D.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a1c9c135ce011c36e06074265a746ae44"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a1c9c135ce011c36e06074265a746ae44">eve::spatial::BSPTree3D::getMinX</a></div><div class="ttdeci">float getMinX() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00039">BSPTree3D.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a37041c7d9eff7bd3a541119cfdd18944"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a37041c7d9eff7bd3a541119cfdd18944">eve::spatial::BSPTree3D::remove</a></div><div class="ttdeci">bool remove(int id)</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00050">BSPTree3D.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a40319281ebd164c2cb220b965a258289"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a40319281ebd164c2cb220b965a258289">eve::spatial::BSPTree3D::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00029">BSPTree3D.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a40ea3024cbb93553ac296662a63ad487"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a40ea3024cbb93553ac296662a63ad487">eve::spatial::BSPTree3D::getMinZ</a></div><div class="ttdeci">float getMinZ() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00041">BSPTree3D.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a4656f28175287256e51a989e27e0d334"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a4656f28175287256e51a989e27e0d334">eve::spatial::BSPTree3D::queryAABB</a></div><div class="ttdeci">int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00200">BSPTree3D.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a49969e096fbae1ab29afb0f5d816e80f"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a49969e096fbae1ab29afb0f5d816e80f">eve::spatial::BSPTree3D::BSPTree3D</a></div><div class="ttdeci">BSPTree3D(const BSPTree3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a4e655e6afd06e3da4668b19d84b2f2e2"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a4e655e6afd06e3da4668b19d84b2f2e2">eve::spatial::BSPTree3D::getMaxZ</a></div><div class="ttdeci">float getMaxZ() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00044">BSPTree3D.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a535370ad2bcd8f1097fae7887be7446a"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a535370ad2bcd8f1097fae7887be7446a">eve::spatial::BSPTree3D::getMaxY</a></div><div class="ttdeci">float getMaxY() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00043">BSPTree3D.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a5e3993538fb2860f476a3464bd42d45f"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a5e3993538fb2860f476a3464bd42d45f">eve::spatial::BSPTree3D::getResultCount</a></div><div class="ttdeci">int getResultCount() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00036">BSPTree3D.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a5e7ce9f8c804deacb4a335fb0ede7267"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a5e7ce9f8c804deacb4a335fb0ede7267">eve::spatial::BSPTree3D::querySphere</a></div><div class="ttdeci">int querySphere(float cx, float cy, float cz, float radius)</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00207">BSPTree3D.cpp:207</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a5e9830b164f574e849ca583bce503a5b"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a5e9830b164f574e849ca583bce503a5b">eve::spatial::BSPTree3D::~BSPTree3D</a></div><div class="ttdeci">~BSPTree3D()=default</div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a7462163b6878d2fab9d7e7cd477c3e53"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a7462163b6878d2fab9d7e7cd477c3e53">eve::spatial::BSPTree3D::queryPoint</a></div><div class="ttdeci">int queryPoint(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00194">BSPTree3D.cpp:194</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a7d4cb46e979e33be266252bad82d505d"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a7d4cb46e979e33be266252bad82d505d">eve::spatial::BSPTree3D::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00030">BSPTree3D.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a7dd668f1c3d0ef285c8b6356b3b52670"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a7dd668f1c3d0ef285c8b6356b3b52670">eve::spatial::BSPTree3D::getResultId</a></div><div class="ttdeci">int getResultId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00037">BSPTree3D.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_a8ad161ca5c61d53ba57b63f539462532"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#a8ad161ca5c61d53ba57b63f539462532">eve::spatial::BSPTree3D::getMaxPerNode</a></div><div class="ttdeci">int getMaxPerNode() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00046">BSPTree3D.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_aa11095f780bc8dadf530ccf34a29cd61"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#aa11095f780bc8dadf530ccf34a29cd61">eve::spatial::BSPTree3D::update</a></div><div class="ttdeci">bool update(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00057">BSPTree3D.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_aa4ce91b140cd215ae612aa8595996144"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#aa4ce91b140cd215ae612aa8595996144">eve::spatial::BSPTree3D::insert</a></div><div class="ttdeci">bool insert(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8cpp_source.html#l00038">BSPTree3D.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_abd0457d9fb712c414b7d6e63007a9712"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#abd0457d9fb712c414b7d6e63007a9712">eve::spatial::BSPTree3D::getMaxX</a></div><div class="ttdeci">float getMaxX() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00042">BSPTree3D.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1BSPTree3D_html_ad2495e63271f626f0022af25451eacd2"><div class="ttname"><a href="classeve_1_1spatial_1_1BSPTree3D.html#ad2495e63271f626f0022af25451eacd2">eve::spatial::BSPTree3D::getMaxDepth</a></div><div class="ttdeci">int getMaxDepth() const</div><div class="ttdef"><b>Definition</b> <a href="BSPTree3D_8h_source.html#l00045">BSPTree3D.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1QueryIds_html_a5e7177abb388718c0372890f44752c00"><div class="ttname"><a href="classeve_1_1spatial_1_1QueryIds.html#a5e7177abb388718c0372890f44752c00">eve::spatial::QueryIds::getId</a></div><div class="ttdeci">int getId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="QueryIds_8h_source.html#l00026">QueryIds.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1spatial_1_1QueryIds_html_a9c5d49f346f98fd3664d84e9aa7ea44a"><div class="ttname"><a href="classeve_1_1spatial_1_1QueryIds.html#a9c5d49f346f98fd3664d84e9aa7ea44a">eve::spatial::QueryIds::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdef"><b>Definition</b> <a href="QueryIds_8h_source.html#l00024">QueryIds.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spatial_html"><div class="ttname"><a href="namespaceeve_1_1spatial.html">eve::spatial</a></div><div class="ttdef"><b>Definition</b> <a href="Scene_8h_source.html#l00033">Scene.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html">eve::spatial::AABB3</a></div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00043">Bounds.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a21eef7c1729c52ce6e74b47881db776c"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a21eef7c1729c52ce6e74b47881db776c">eve::spatial::AABB3::minY</a></div><div class="ttdeci">float minY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00045">Bounds.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a80c74214171a3b7db1e7cd5d76f955ab"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a80c74214171a3b7db1e7cd5d76f955ab">eve::spatial::AABB3::minZ</a></div><div class="ttdeci">float minZ</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00046">Bounds.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a88d9382c015265338385b9a90cdb7986"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a88d9382c015265338385b9a90cdb7986">eve::spatial::AABB3::maxY</a></div><div class="ttdeci">float maxY</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00048">Bounds.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_a93e178b8da81983797d7db776069a148"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#a93e178b8da81983797d7db776069a148">eve::spatial::AABB3::maxZ</a></div><div class="ttdeci">float maxZ</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00049">Bounds.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aa7300240fc2c08194393a6fd374fa364"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aa7300240fc2c08194393a6fd374fa364">eve::spatial::AABB3::maxX</a></div><div class="ttdeci">float maxX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00047">Bounds.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1spatial_1_1AABB3_html_aacbce7e0812fb4fb71e5178af350c210"><div class="ttname"><a href="structeve_1_1spatial_1_1AABB3.html#aacbce7e0812fb4fb71e5178af350c210">eve::spatial::AABB3::minX</a></div><div class="ttdeci">float minX</div><div class="ttdef"><b>Definition</b> <a href="Bounds_8h_source.html#l00044">Bounds.h:44</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

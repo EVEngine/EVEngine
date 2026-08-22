@@ -1,0 +1,574 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/gpgpu/webgpu/WebGpuGpgpu.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5202d7c976d63b5a703bfe0e65224392.html">gpgpu</a></li><li class="navelem"><a class="el" href="dir_a48d659908f6bfd27cb3c3bb83910ae8.html">webgpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WebGpuGpgpu.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WebGpuGpgpu_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="WebGpuGpgpu_8h.html">gpgpu/webgpu/WebGpuGpgpu.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ByteData_8h.html">data/ByteData.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="webgpu_2Graphics_8h.html">graphics/webgpu/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#if defined(__EMSCRIPTEN__)</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;emscripten/emscripten.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>graphics::webgpu::Graphics *requireWebGpuGraphics() {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">auto</span> *gfx = eve::ModuleManager::getInstance&lt;eve::graphics::Graphics&gt;(<span class="stringliteral">&quot;Graphics&quot;</span>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (!gfx) gfx = eve::graphics::Graphics::create();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> *wgg = <span class="keyword">dynamic_cast&lt;</span>graphics::webgpu::Graphics *<span class="keyword">&gt;</span>(gfx);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!wgg) <span class="keywordflow">throw</span> <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">Exception</a>(<span class="stringliteral">&quot;Gpgpu: requires WebGPU Graphics backend&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (!wgg-&gt;getDevice())</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">throw</span> <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">Exception</a>(<span class="stringliteral">&quot;Gpgpu: Graphics device not initialized (create a window first)&quot;</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> wgg;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>wgpu::Device &amp;gpuDevice() { <span class="keywordflow">return</span> requireWebGpuGraphics()-&gt;getDevice(); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>wgpu::Queue &amp;gpuQueue() { <span class="keywordflow">return</span> requireWebGpuGraphics()-&gt;getQueue(); }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>wgpu::Instance &amp;gpuInstance() { <span class="keywordflow">return</span> requireWebGpuGraphics()-&gt;getInstance(); }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>WGPUStringView sv(<span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) { <span class="keywordflow">return</span> WGPUStringView{<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> ? std::strlen(<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) : 0}; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpgpu.html#a2fed65def15b16fd27e26bd98c994f1b">   39</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a2fed65def15b16fd27e26bd98c994f1b">webgpuGpgpuReady</a>() {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">auto</span> *gfx = eve::ModuleManager::getInstance&lt;eve::graphics::Graphics&gt;(<span class="stringliteral">&quot;Graphics&quot;</span>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (!gfx) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">auto</span> *wgg = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html">graphics::webgpu::Graphics</a> *<span class="keyword">&gt;</span>(gfx);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> (!wgg) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> bool(wgg-&gt;getDevice());</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#af52ba832ceb61f30296cd6e7d51a8d0c">WebGpuComputeShader::~WebGpuComputeShader</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">   53</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">WebGpuComputeShader::bindBuffer</a>(<span class="keywordtype">int</span> binding, <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buffer) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">if</span> (binding &lt; 0 || binding &gt;= <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    bindings_[size_t(binding)] = buffer;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">   58</a></span><a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *<a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">WebGpuComputeShader::getBoundBuffer</a>(<span class="keywordtype">int</span> binding)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (binding &lt; 0 || binding &gt;= <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a>) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> bindings_[size_t(binding)];</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">   63</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">WebGpuComputeShader::setFloat</a>(<span class="keywordtype">int</span> index, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a31895118df3a71bf1aa310884546516e">push_</a>[size_t(index)] = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="}">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">   68</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">WebGpuComputeShader::getFloat</a>(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a>) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a31895118df3a71bf1aa310884546516e">push_</a>[size_t(index)];</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">   73</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">WebGpuComputeShader::clearBindings</a>() {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    bindings_.fill(<span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpgpu.html#abbdec5324b498f8b40dd2fb04059e3c4">   77</a></span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *<a class="code hl_function" href="namespaceeve_1_1gpgpu.html#abbdec5324b498f8b40dd2fb04059e3c4">webgpuNewShaderFromWgsl</a>(<span class="keyword">const</span> std::string &amp;wgsl) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a> = gpuDevice();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">auto</span> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> = <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a>();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="comment">// Bind group layout: 8 storage buffers (bindings 0..7) + push UBO (binding 8).</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    WGPUBindGroupLayoutEntry entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a> + 1]{};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>; ++i) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        entries[size_t(i)].binding = uint32_t(i);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        entries[size_t(i)].visibility = WGPUShaderStage_Compute;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        entries[size_t(i)].buffer.type = WGPUBufferBindingType_Storage;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        entries[size_t(i)].buffer.hasDynamicOffset = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        entries[size_t(i)].buffer.minBindingSize = 0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].binding = uint32_t(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].visibility = WGPUShaderStage_Compute;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].buffer.type = WGPUBufferBindingType_Uniform;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].buffer.hasDynamicOffset = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].buffer.minBindingSize = <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">ComputeShader::kPushConstantBytes</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    WGPUBindGroupLayoutDescriptor bglDesc{};</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    bglDesc.label = sv(<span class="stringliteral">&quot;eve_compute&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    bglDesc.entryCount = <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a> + 1;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    bglDesc.entries = entries;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;setLayout = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateBindGroupLayout(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::BindGroupLayoutDescriptor*<span class="keyword">&gt;</span>(&amp;bglDesc));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    WGPUBindGroupLayout bgl = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;setLayout.Get();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    WGPUPipelineLayoutDescriptor plDesc{};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    plDesc.label = sv(<span class="stringliteral">&quot;eve_compute_layout&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    plDesc.bindGroupLayoutCount = 1;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    plDesc.bindGroupLayouts = &amp;bgl;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;pipelineLayout = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreatePipelineLayout(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::PipelineLayoutDescriptor*<span class="keyword">&gt;</span>(&amp;plDesc));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    WGPUShaderSourceWGSL wd{};</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    wd.chain.sType = WGPUSType_ShaderSourceWGSL;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    wd.code = sv(wgsl.c_str());</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    WGPUShaderModuleDescriptor md{};</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    md.label = sv(<span class="stringliteral">&quot;eve_compute_module&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    md.nextInChain = &amp;wd.chain;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    wgpu::ShaderModule <span class="keyword">module</span> = device.CreateShaderModule(reinterpret_cast&lt;const wgpu::ShaderModuleDescriptor*&gt;(&amp;md));</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    WGPUComputePipelineDescriptor pd{};</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    pd.label = sv(<span class="stringliteral">&quot;eve_compute_pipeline&quot;</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    pd.layout = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;pipelineLayout.Get();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    pd.compute.module = <span class="keyword">module</span>.Get();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    pd.compute.entryPoint = sv(<span class="stringliteral">&quot;main&quot;</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;pipeline = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateComputePipeline(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::ComputePipelineDescriptor*<span class="keyword">&gt;</span>(&amp;pd));</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="comment">// Push-constant UBO (128 bytes, 256-aligned for dynamic offsets).</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    WGPUBufferDescriptor bd{};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    bd.label = sv(<span class="stringliteral">&quot;eve_compute_push&quot;</span>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    bd.size = <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">ComputeShader::kPushConstantBytes</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    bd.mappedAtCreation = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;pushUbo = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateBuffer(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::BufferDescriptor*<span class="keyword">&gt;</span>(&amp;bd));</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;ready = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>}</div>
+</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="foldopen" id="foldopen00135" data-start="{" data-end="}">
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpgpu.html#aabec05c308a71d2824c27b27c61dfa09">  135</a></span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *<a class="code hl_function" href="namespaceeve_1_1gpgpu.html#aabec05c308a71d2824c27b27c61dfa09">webgpuNewShaderFromSpirv</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;spv) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    (void)spv;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Gpgpu.newShaderFromSpirv: SPIR-V compute shaders are not supported on the &quot;</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                    <span class="stringliteral">&quot;WebGPU backend; use WGSL source instead.&quot;</span>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="}">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">  141</a></span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> *<a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">webgpuNewBuffer</a>(<span class="keywordtype">int</span> byteSize, <span class="keyword">const</span> std::string &amp;usage) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">if</span> (byteSize &lt;= 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Gpgpu.newBuffer: byteSize must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a> = gpuDevice();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">bool</span> staging = usage == <span class="stringliteral">&quot;staging&quot;</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    WGPUBufferUsage bufUsage = staging ? (WGPUBufferUsage_CopySrc | WGPUBufferUsage_MapRead)</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                                       : (WGPUBufferUsage_Storage | WGPUBufferUsage_CopyDst |</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                                          WGPUBufferUsage_CopySrc | WGPUBufferUsage_Vertex);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    WGPUBufferDescriptor bd{};</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    bd.label = sv(<span class="stringliteral">&quot;eve_compute_buffer&quot;</span>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    bd.size = uint64_t(byteSize);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    bd.usage = bufUsage;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    bd.mappedAtCreation = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">auto</span> *<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a>();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>-&gt;buffer = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateBuffer(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::BufferDescriptor*<span class="keyword">&gt;</span>(&amp;bd));</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>-&gt;size_ = uint64_t(byteSize);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>-&gt;usage_ = usage;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>}</div>
+</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="keywordtype">bool</span> readBufferToCpu(wgpu::Buffer src, uint64_t srcOffset, <span class="keywordtype">void</span> *dst, uint64_t nbytes) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a> = gpuDevice();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">auto</span> &amp;queue = gpuQueue();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">if</span> (!src || nbytes == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    WGPUBufferDescriptor bd{};</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    bd.label = sv(<span class="stringliteral">&quot;eve_compute_readback&quot;</span>);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    bd.size = nbytes;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    bd.mappedAtCreation = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    wgpu::Buffer staging = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateBuffer(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::BufferDescriptor*<span class="keyword">&gt;</span>(&amp;bd));</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    wgpu::CommandEncoder enc = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateCommandEncoder();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    enc.CopyBufferToBuffer(src, srcOffset, staging, 0, nbytes);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    wgpu::CommandBuffer cmd = enc.Finish();</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    queue.Submit(1, &amp;cmd);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordtype">bool</span> mapped = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    WGPUBufferMapCallbackInfo cbInfo{};</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    cbInfo.callback = [](WGPUMapAsyncStatus <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a7f6a03c6c8e79a334b53f883363aec3a">status</a>, WGPUStringView <span class="comment">/*message*/</span>, <span class="keywordtype">void</span> *userdata1,</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                         <span class="keywordtype">void</span> * <span class="comment">/*userdata2*/</span>) {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordtype">bool</span> *<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span> *<span class="keyword">&gt;</span>(userdata1);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        *<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a7f6a03c6c8e79a334b53f883363aec3a">status</a> == WGPUMapAsyncStatus_Success);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    };</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    cbInfo.userdata1 = &amp;mapped;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    wgpuBufferMapAsync(staging.Get(), WGPUMapMode_Read, 0, nbytes, cbInfo);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordtype">int</span> guard = 0;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">while</span> (!mapped &amp;&amp; guard &lt; 2000) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="preprocessor">#if defined(__EMSCRIPTEN__)</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        emscripten_sleep(0);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        wgpuInstanceProcessEvents(gpuInstance().Get());</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        ++guard;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordflow">if</span> (!mapped) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">const</span> uint8_t *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>uint8_t *<span class="keyword">&gt;</span>(staging.GetConstMappedRange(0, nbytes));</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">if</span> (!data) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    std::memcpy(dst, data, <span class="keywordtype">size_t</span>(nbytes));</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    staging.Unmap();</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>}</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="foldopen" id="foldopen00208" data-start="{" data-end="}">
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpgpu.html#a3a407eec24dd9fcb0a38b16067f799c0">  208</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a3a407eec24dd9fcb0a38b16067f799c0">webgpuDispatch</a>(<a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keywordtype">int</span> groupsX, <span class="keywordtype">int</span> groupsY, <span class="keywordtype">int</span> groupsZ) {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">auto</span> *ws = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">if</span> (!ws || !ws-&gt;ready || !ws-&gt;pipeline) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">if</span> (groupsX &lt;= 0) groupsX = 1;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">if</span> (groupsY &lt;= 0) groupsY = 1;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">if</span> (groupsZ &lt;= 0) groupsZ = 1;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a> = gpuDevice();</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keyword">auto</span> &amp;queue = gpuQueue();</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">// Push constants -&gt; uniform buffer (dynamic offset 0).</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    queue.WriteBuffer(ws-&gt;pushUbo, 0, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;pushConstantData(), <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">ComputeShader::kPushConstantBytes</a>);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="comment">// Build a bind group for the current storage-buffer bindings.</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    WGPUBindGroupEntry entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a> + 1]{};</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> *dummy = <a class="code hl_function" href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">webgpuNewBuffer</a>(4, <span class="stringliteral">&quot;storage&quot;</span>);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>; ++i) {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keyword">auto</span> *vb = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> *<span class="keyword">&gt;</span>(ws-&gt;getBoundBuffer(i));</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        entries[size_t(i)].binding = uint32_t(i);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        entries[size_t(i)].buffer = (vb &amp;&amp; vb-&gt;buffer) ? vb-&gt;buffer.Get() : dummy-&gt;<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">buffer</a>.Get();</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        entries[size_t(i)].size = (vb &amp;&amp; vb-&gt;buffer) ? vb-&gt;size_ : 4;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].binding = uint32_t(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].buffer = ws-&gt;pushUbo.Get();</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    entries[<a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a>].size = <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">ComputeShader::kPushConstantBytes</a>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    WGPUBindGroupDescriptor bgDesc{};</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    bgDesc.layout = ws-&gt;setLayout.Get();</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    bgDesc.entryCount = <a class="code hl_variable" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">ComputeShader::kMaxBindings</a> + 1;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    bgDesc.entries = entries;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    wgpu::BindGroup bg = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateBindGroup(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::BindGroupDescriptor*<span class="keyword">&gt;</span>(&amp;bgDesc));</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keyword">delete</span> dummy;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    wgpu::CommandEncoder enc = <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>.CreateCommandEncoder();</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    WGPUComputePassDescriptor cpDesc{};</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    wgpu::ComputePassEncoder pass = enc.BeginComputePass(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>wgpu::ComputePassDescriptor*<span class="keyword">&gt;</span>(&amp;cpDesc));</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    pass.SetPipeline(ws-&gt;pipeline);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    uint32_t offsets[1] = {0};</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    pass.SetBindGroup(0, bg, 1, offsets);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    pass.DispatchWorkgroups(uint32_t(groupsX), uint32_t(groupsY), uint32_t(groupsZ));</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    pass.End();</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    wgpu::CommandBuffer cmd = enc.Finish();</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    queue.Submit(1, &amp;cmd);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>}</div>
+</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span><span class="comment">// WebGpuGpuBuffer</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a693d2e3a3f4676de0051d7254e982528">WebGpuGpuBuffer::~WebGpuGpuBuffer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="foldopen" id="foldopen00258" data-start="{" data-end="}">
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">  258</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">WebGpuGpuBuffer::uploadBytes</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *src, uint64_t nbytes, uint64_t dstOffset) {</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">buffer</a> || !src || nbytes == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="keywordflow">if</span> (dstOffset + nbytes &gt; <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a>)</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;GpuBuffer.write: out of range&quot;</span>);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    gpuQueue().WriteBuffer(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">buffer</a>, dstOffset, src, nbytes);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>}</div>
+</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="foldopen" id="foldopen00265" data-start="{" data-end="}">
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">  265</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">WebGpuGpuBuffer::downloadBytes</a>(<span class="keywordtype">void</span> *dst, uint64_t nbytes, uint64_t srcOffset)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">buffer</a> || !dst || nbytes == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordflow">if</span> (srcOffset + nbytes &gt; <a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a>)</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;GpuBuffer.read: out of range&quot;</span>);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    readBufferToCpu(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">buffer</a>, srcOffset, dst, nbytes);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>}</div>
+</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="foldopen" id="foldopen00272" data-start="{" data-end="}">
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ac3e5936c6989914da694af7f846de337">  272</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ac3e5936c6989914da694af7f846de337">WebGpuGpuBuffer::writeData</a>(<a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *data, <span class="keywordtype">int</span> dstOffset) {</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">uploadBytes</a>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData(), <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getSize(), uint64_t(dstOffset &lt; 0 ? 0 : dstOffset));</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>}</div>
+</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="foldopen" id="foldopen00277" data-start="{" data-end="}">
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a2fbe0bb99ba4b7690677d06da45dee5c">  277</a></span><a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *<a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a2fbe0bb99ba4b7690677d06da45dee5c">WebGpuGpuBuffer::readData</a>(<span class="keywordtype">int</span> srcOffset, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> off = srcOffset &lt; 0 ? 0 : srcOffset;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordtype">int</span> nbytes = size;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keywordflow">if</span> (nbytes &lt; 0) nbytes = int(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a>) - off;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keywordflow">if</span> (nbytes &lt;= 0) <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a>(<span class="keywordtype">size_t</span>(0));</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keyword">auto</span> *out = <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a>(<span class="keywordtype">size_t</span>(nbytes));</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">downloadBytes</a>(out-&gt;getData(), uint64_t(nbytes), uint64_t(off));</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>}</div>
+</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="foldopen" id="foldopen00287" data-start="{" data-end="}">
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a836b3e22b768dc6031af784e2e8d58e8">  287</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a836b3e22b768dc6031af784e2e8d58e8">WebGpuGpuBuffer::writeFloat32</a>(<span class="keywordtype">int</span> floatIndex, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">if</span> (floatIndex &lt; 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">uploadBytes</a>(&amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>), uint64_t(floatIndex) * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>}</div>
+</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
+<div class="foldopen" id="foldopen00292" data-start="{" data-end="}">
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a0a650b3cc60a476f6a7d8fded5f5c9be">  292</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a0a650b3cc60a476f6a7d8fded5f5c9be">WebGpuGpuBuffer::readFloat32</a>(<span class="keywordtype">int</span> floatIndex) {</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    <span class="keywordflow">if</span> (floatIndex &lt; 0) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = 0.f;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">downloadBytes</a>(&amp;<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>), uint64_t(floatIndex) * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>}</div>
+</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="foldopen" id="foldopen00299" data-start="{" data-end="}">
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa62c02394fa8f5b620bf47262857eec6">  299</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa62c02394fa8f5b620bf47262857eec6">WebGpuGpuBuffer::writeFloat32s</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *data, <span class="keywordtype">int</span> count, <span class="keywordtype">int</span> startIndex) {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> || count &lt;= 0 || startIndex &lt; 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">uploadBytes</a>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, uint64_t(count) * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>), uint64_t(startIndex) * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}</div>
+</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="foldopen" id="foldopen00304" data-start="{" data-end="}">
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a90aab58b87d8e25933ed92c61564a722">  304</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a90aab58b87d8e25933ed92c61564a722">WebGpuGpuBuffer::readFloat32s</a>(<span class="keywordtype">float</span> *out, <span class="keywordtype">int</span> count, <span class="keywordtype">int</span> startIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordflow">if</span> (!out || count &lt;= 0 || startIndex &lt; 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">downloadBytes</a>(out, uint64_t(count) * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>), uint64_t(startIndex) * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>}</div>
+</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
+<div class="foldopen" id="foldopen00309" data-start="{" data-end="}">
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno"><a class="line" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae409ee578f290c56736c8a17ec4b63d4">  309</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae409ee578f290c56736c8a17ec4b63d4">WebGpuGpuBuffer::fillFloat32</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a> &lt; <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> count = size_t(<a class="code hl_variable" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">size_</a> / <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>));</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    std::vector&lt;float&gt; tmp(count, <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <a class="code hl_function" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">uploadBytes</a>(tmp.data(), count * <span class="keyword">sizeof</span>(<span class="keywordtype">float</span>), 0);</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>}</div>
+</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>}  <span class="comment">// namespace eve::gpgpu</span></div>
+<div class="ttc" id="aByteData_8h_html"><div class="ttname"><a href="ByteData_8h.html">ByteData.h</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a06dd41ecb2d0928d25f7c8180156197f"><div class="ttname"><a href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a></div><div class="ttdeci">vkb::Device &amp; device</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00269">GraphicsInternal.h:269</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a7f6a03c6c8e79a334b53f883363aec3a"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a7f6a03c6c8e79a334b53f883363aec3a">status</a></div><div class="ttdeci">JobStatus status</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00164">JobSystemThreadPool.cpp:164</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00529">RenderSystem3D.cpp:529</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aWebGpuGpgpu_8h_html"><div class="ttname"><a href="WebGpuGpgpu_8h.html">WebGpuGpgpu.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a></div><div class="ttdoc">In-memory byte buffer implementing eve::Data (ref-counted).</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8h_source.html#l00011">ByteData.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></div><div class="ttdoc">Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch....</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00015">ComputeShader.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html_a04a7141434a2ed6e3c62a4816e3686e2"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">eve::gpgpu::ComputeShader::kMaxBindings</a></div><div class="ttdeci">static constexpr int kMaxBindings</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00017">ComputeShader.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html_a2b1a2502dfd9daec795b6d942976c3c4"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">eve::gpgpu::ComputeShader::kMaxFloats</a></div><div class="ttdeci">static constexpr int kMaxFloats</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00018">ComputeShader.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html_a31895118df3a71bf1aa310884546516e"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html#a31895118df3a71bf1aa310884546516e">eve::gpgpu::ComputeShader::push_</a></div><div class="ttdeci">std::array&lt; float, kMaxFloats &gt; push_</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00039">ComputeShader.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html_a83368c146e8652192f87b4c6623aa7b5"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">eve::gpgpu::ComputeShader::kPushConstantBytes</a></div><div class="ttdeci">static constexpr uint32_t kPushConstantBytes</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00019">ComputeShader.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1GpuBuffer_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a></div><div class="ttdoc">Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...</div><div class="ttdef"><b>Definition</b> <a href="GpuBuffer_8h_source.html#l00016">GpuBuffer.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">eve::gpgpu::WebGpuComputeShader</a></div><div class="ttdoc">Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V input is rejected (browsers ...</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00020">WebGpuGpgpu.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a45c48349f8904716ef4c49d4548a94fc"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">eve::gpgpu::WebGpuComputeShader::getFloat</a></div><div class="ttdeci">float getFloat(int index) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00068">WebGpuGpgpu.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a4d97409fec97b270cffdea30797f69d2"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">eve::gpgpu::WebGpuComputeShader::bindBuffer</a></div><div class="ttdeci">void bindBuffer(int binding, GpuBuffer *buffer) override</div><div class="ttdoc">Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings).</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00053">WebGpuGpgpu.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a65b7383a88c421b197f8a273619a48cb"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">eve::gpgpu::WebGpuComputeShader::setFloat</a></div><div class="ttdeci">void setFloat(int index, float value) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00063">WebGpuGpgpu.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a7f367374e3a8ecb60bba804f87f32d46"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">eve::gpgpu::WebGpuComputeShader::clearBindings</a></div><div class="ttdeci">void clearBindings() override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00073">WebGpuGpgpu.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_a8d4d7ba2eadaae4a504ca51898758ea6"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">eve::gpgpu::WebGpuComputeShader::getBoundBuffer</a></div><div class="ttdeci">GpuBuffer * getBoundBuffer(int binding) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00058">WebGpuGpgpu.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuComputeShader_html_af52ba832ceb61f30296cd6e7d51a8d0c"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#af52ba832ceb61f30296cd6e7d51a8d0c">eve::gpgpu::WebGpuComputeShader::~WebGpuComputeShader</a></div><div class="ttdeci">~WebGpuComputeShader() override</div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">eve::gpgpu::WebGpuGpuBuffer</a></div><div class="ttdoc">Storage / staging buffer for the WebGPU backend.</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00044">WebGpuGpgpu.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a0a650b3cc60a476f6a7d8fded5f5c9be"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a0a650b3cc60a476f6a7d8fded5f5c9be">eve::gpgpu::WebGpuGpuBuffer::readFloat32</a></div><div class="ttdeci">float readFloat32(int floatIndex) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00292">WebGpuGpgpu.cpp:292</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a208fcf4b0932109f36522610417476d4"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a208fcf4b0932109f36522610417476d4">eve::gpgpu::WebGpuGpuBuffer::downloadBytes</a></div><div class="ttdeci">void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset=0) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00265">WebGpuGpgpu.cpp:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a2fbe0bb99ba4b7690677d06da45dee5c"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a2fbe0bb99ba4b7690677d06da45dee5c">eve::gpgpu::WebGpuGpuBuffer::readData</a></div><div class="ttdeci">data::ByteData * readData(int srcOffset=0, int size=-1) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00277">WebGpuGpgpu.cpp:277</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a693d2e3a3f4676de0051d7254e982528"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a693d2e3a3f4676de0051d7254e982528">eve::gpgpu::WebGpuGpuBuffer::~WebGpuGpuBuffer</a></div><div class="ttdeci">~WebGpuGpuBuffer() override</div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a7c3cd47c45ce1f66e04b7ee55bd4a80a"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a7c3cd47c45ce1f66e04b7ee55bd4a80a">eve::gpgpu::WebGpuGpuBuffer::buffer</a></div><div class="ttdeci">wgpu::Buffer buffer</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00065">WebGpuGpgpu.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a836b3e22b768dc6031af784e2e8d58e8"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a836b3e22b768dc6031af784e2e8d58e8">eve::gpgpu::WebGpuGpuBuffer::writeFloat32</a></div><div class="ttdeci">void writeFloat32(int floatIndex, float value) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00287">WebGpuGpgpu.cpp:287</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a90aab58b87d8e25933ed92c61564a722"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a90aab58b87d8e25933ed92c61564a722">eve::gpgpu::WebGpuGpuBuffer::readFloat32s</a></div><div class="ttdeci">void readFloat32s(float *out, int count, int startIndex=0) const override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00304">WebGpuGpgpu.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_a913ecda89a3183831aa1e7e7dfb5fcdb"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#a913ecda89a3183831aa1e7e7dfb5fcdb">eve::gpgpu::WebGpuGpuBuffer::uploadBytes</a></div><div class="ttdeci">void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset=0) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00258">WebGpuGpgpu.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_aa62c02394fa8f5b620bf47262857eec6"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#aa62c02394fa8f5b620bf47262857eec6">eve::gpgpu::WebGpuGpuBuffer::writeFloat32s</a></div><div class="ttdeci">void writeFloat32s(const float *data, int count, int startIndex=0) override</div><div class="ttdoc">Bulk float upload/download (one transfer). startIndex is in floats.</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00299">WebGpuGpgpu.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_ac3e5936c6989914da694af7f846de337"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ac3e5936c6989914da694af7f846de337">eve::gpgpu::WebGpuGpuBuffer::writeData</a></div><div class="ttdeci">void writeData(data::ByteData *data, int dstOffset=0) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00272">WebGpuGpgpu.cpp:272</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_ae37446603258b0973f15bb964843abb9"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae37446603258b0973f15bb964843abb9">eve::gpgpu::WebGpuGpuBuffer::size_</a></div><div class="ttdeci">uint64_t size_</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8h_source.html#l00066">WebGpuGpgpu.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1WebGpuGpuBuffer_html_ae409ee578f290c56736c8a17ec4b63d4"><div class="ttname"><a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#ae409ee578f290c56736c8a17ec4b63d4">eve::gpgpu::WebGpuGpuBuffer::fillFloat32</a></div><div class="ttdeci">void fillFloat32(float value) override</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00309">WebGpuGpgpu.cpp:309</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1webgpu_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html">eve::graphics::webgpu::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="webgpu_2Graphics_8h_source.html#l00123">Graphics.h:123</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">eve::dev::PauseReason::Exception</a></div><div class="ttdeci">@ Exception</div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a></div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8cpp_source.html#l00003">ComputeShader.cpp:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_a2fed65def15b16fd27e26bd98c994f1b"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#a2fed65def15b16fd27e26bd98c994f1b">eve::gpgpu::webgpuGpgpuReady</a></div><div class="ttdeci">bool webgpuGpgpuReady()</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00039">WebGpuGpgpu.cpp:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_a3a407eec24dd9fcb0a38b16067f799c0"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#a3a407eec24dd9fcb0a38b16067f799c0">eve::gpgpu::webgpuDispatch</a></div><div class="ttdeci">void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00208">WebGpuGpgpu.cpp:208</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_a5a434c9d4817f0e14f552ac67be4a655"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">eve::gpgpu::webgpuNewBuffer</a></div><div class="ttdeci">WebGpuGpuBuffer * webgpuNewBuffer(int byteSize, const std::string &amp;usage)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00141">WebGpuGpgpu.cpp:141</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_aabec05c308a71d2824c27b27c61dfa09"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#aabec05c308a71d2824c27b27c61dfa09">eve::gpgpu::webgpuNewShaderFromSpirv</a></div><div class="ttdeci">WebGpuComputeShader * webgpuNewShaderFromSpirv(const std::vector&lt; uint32_t &gt; &amp;spv)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00135">WebGpuGpgpu.cpp:135</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html_abbdec5324b498f8b40dd2fb04059e3c4"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html#abbdec5324b498f8b40dd2fb04059e3c4">eve::gpgpu::webgpuNewShaderFromWgsl</a></div><div class="ttdeci">WebGpuComputeShader * webgpuNewShaderFromWgsl(const std::string &amp;wgsl)</div><div class="ttdef"><b>Definition</b> <a href="WebGpuGpgpu_8cpp_source.html#l00077">WebGpuGpgpu.cpp:77</a></div></div>
+<div class="ttc" id="awebgpu_2Graphics_8h_html"><div class="ttname"><a href="webgpu_2Graphics_8h.html">Graphics.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

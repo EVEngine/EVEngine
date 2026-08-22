@@ -1,0 +1,265 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::building::PlacementWorld 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#acc1ddbbcb93c07078776c4586b2d2a2a">allChannels</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#adc52fdf3bd6f411eb5643756c4b4611c">allChannels</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ac5d755289d7e52b71626ef27d964ca35">bindTileLayer</a>(map::TileLayer *layer)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a5d31988e8f4a1494c5ea8943c1d19e09">buildingHasTag</a>(int instanceId, const std::string &amp;tag) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a571a293df6d19614c1d2e1ab03358621">buildings</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a9b3954f9ae3994da867a23db538d5a7e">buildings</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a9c94c98f3693b5fd9069627df1447c23">canPlace</a>(const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a053005546c71b9dfd88030b814b8a016">canPlaceReason</a>(const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#af95ba56fe7098f4de48658dcdc62133f">cellToWorld3D</a>(int cellX, int cellY, float elevation, float &amp;worldX, float &amp;worldY, float &amp;worldZ) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a59bf48a9365b48713fd0c96aa51efeb8">cellToWorld3DX</a>(int cellX, int cellY, float elevation) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ad8bc253c9745f925a18a7bb7a4b21db4">cellToWorld3DY</a>(int cellX, int cellY, float elevation) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#af43e0aba8ccb89fb0949d75521f43fe3">cellToWorld3DZ</a>(int cellX, int cellY, float elevation) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ab33d45571c44c7bac649da91863e6fdf">cellToWorldPlane</a>(int cellX, int cellY, float &amp;px, float &amp;py) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a96c4c72b704560a5a2d62ec1efe5e6a8">cellToWorldX</a>(int cellX) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#aa634cfc4037b90afdb9c1126371c1522">cellToWorldY</a>(int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#af51a59c35178b7dd5f3e8937891ff5f0">channelOccupancy</a>(const std::string &amp;channel)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a2434d250b33fd24e007f0d35926ffb5b">clearBuildings</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#af76134b2d60465f520cba5aafef8bc29">clearTerrainGidMap</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a8f9daa592da7526015b5fd66099be7a0">clearTileLayer</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a14cce4b503de6b30611738fad312a19a">destroy</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#af5f759a2bc3da176814f60a70a32dce3">fillTerrain</a>(int semantic)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ad18c377c844ebf1562e31b1dca70391b">getAnyOccupant</a>(int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a596fd935fe51dd71bfeba0d23468031e">getBuildingCellX</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a251098848cbfdeb3092c49b4b3a2a435">getBuildingCellY</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ae537f2773303655166ea468aebe9d209">getBuildingChannel</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a8642e05185b87c1fc28292bed71e67af">getBuildingCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a4063f712a4f6683b72c5c69f78e55c00">getBuildingElevation</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#abc9b429e5414c3c8c1c4b738c5999092">getBuildingId</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a581767e3d6d398dad48fd5b47bf6a32a">getBuildingInstanceAt</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a1683f87a770cc6c4c2894923ac05af82">getBuildingProp</a>(int instanceId, const std::string &amp;key, const std::string &amp;fallback={}) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a8ed7cdbce646dc69e5ee9d80e0c64e76">getBuildingRotation</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a2d3299160d528dee9eafde1e717172fc">getBuildingWorldX</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a1aca69d5ac9e10504e13d9c4c18b2a1b">getBuildingWorldY</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ae98889e4b35e5b2c7dca88d11c549609">getBuildingWorldZ</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#acdac88eeb2c7486cda46de8a89cd23b6">getCellSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ac6e6603a79aaf92f443c1d54acf20fff">getExtra</a>(const std::string &amp;key, const std::string &amp;fallback={}) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a578ea863e784c27f0c625a00e5b9511f">getGrid</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#abea6155b1ffe5cb7823a2ff8d3c0d8f7">getGrid</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a37c7b510120abe53b5942a49dc351843">getGridLayoutName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a9b10480a9fe03ac5b54d4f8027b0caef">getGridPlaneName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#adbb01d447a9144861783a8083bf42bbe">getHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a682fd2c84444c78da2a67a205c56d1f0">getId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a438f8ccb86bad0a0655ae7c6114b50e9">getOccupant</a>(int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#aecbf70d8b6a5e7db7b8739f24123630a">getOccupantInChannel</a>(const std::string &amp;channel, int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a14351d10e76826590474c682dc80c6f6">getOriginX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a264629a0d8329d5090a8926f48705123">getOriginY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a637f1d935c1d4660d58b81f6320631ed">getSnapMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a15b37c40e6b361ed31e1e7104772aadc">getTerrain</a>(int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a88b62bb5e9f3519b6bc7c67d43e381c4">getTileLayer</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a6b22f4bc8d37af4967687cac4da4eeae">getValidateRule</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a1a8f14feae92dfe5123edb6d6cd11f72">getWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a4d970f7d47d1e92966a1b7c1677413cf">hasBuilding</a>(int instanceId) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a7c2b74b7a94352acfc3a826a07d1f04f">hasGridFromLayer</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a0dc0bd88c0f1d725493b8334e70cd077">inBounds</a>(int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a87013db666525ccac4bbc370eb087790">isCellEmpty</a>(int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a4912a793800865d4e43a21f8e39b848d">isCellEmptyInChannel</a>(const std::string &amp;channel, int cellX, int cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a2f84071297231d98b204de8ce93129cb">moveBuilding</a>(int instanceId, int cellX, int cellY, float rotationDeg=-1.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a637a84170ca4e7e9223f77b3ef0c8147">occupancy</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#abd409694007ec50ba228a3a2f6940428">occupancy</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#afe6253d7b9ed13b470e034959c19b63d">operator=</a>(const PlacementWorld &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a64b419a528abd17d416e36c836af8f30">placeAt</a>(const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#acd130c7e486be1f07d6b287ecc11d0c1">placeAtWorld</a>(const std::string &amp;buildingId, float worldX, float worldY, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a980a1fc67ff332464c29aea37559da7f">placeAtWorld3D</a>(const std::string &amp;buildingId, float worldX, float worldY, float worldZ, float rotationDeg=0.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#aae19ec25810e7ede39a4f4c01cfb3339">placeGhost</a>(Ghost *ghost)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ad01afd1d3e16fd66cd73fdb2fd7d58db">PlacementSystem</a></td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a09f6a63d46ff0caf0f7796f28a5015d2">PlacementWorld</a>(int width, int height, float cellSize=32.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a421000a97b14e3e7343f93ecbc81e446">PlacementWorld</a>(const PlacementWorld &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a8b04fbf989110b03097b2eb69f33d525">removeBuilding</a>(int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#abbfb06246b6f82fbbfaf71fbd5fc4ee2">setBuildingProp</a>(int instanceId, const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a82fae94373edd21da57e7bc9c2296cf1">setCellGap</a>(float gapX, float gapY)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a197d2e3ccca9ddaa93a4b29f15c73cb9">setCellSize</a>(float s)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a72dea4b0c76244de651d320c0d1191e3">setExtra</a>(const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a2820efa5fe1e1bbf97b5387fed3151af">setGridFromLayer</a>(map::TileLayer *layer)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a6ab66ad395ab2c39bc826a8414051df3">setGridLayout</a>(const std::string &amp;layout)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#abf2a4a3c8f922fd7af53594c2b36c6d3">setGridPlane</a>(const std::string &amp;plane)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a2a6e94f44e73d37568430a26485cf3fa">setHexSideLength</a>(float s)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#aaa358a6c871bcca7d488689f50fd7a98">setId</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a554974662ee5289d21e0d99d79721a64">setOrigin</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ac520c8e511b32b1816d48a2ad7b39a86">setSnapMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#acc7fa38ab3ff6fc841a5b91c0e56041f">setStagger</a>(const std::string &amp;axis, const std::string &amp;index)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a8989df69b5f3be2c600bd46f60e85010">setTerrain</a>(int cellX, int cellY, int semantic)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a8ac29e6c450f14641665c530b63c0406">setTerrainGid</a>(int gid, int semantic)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ae7626d5ba4e1e18011fcbef14c13a889">setTerrainGidMapJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a377634862b4da27eb5d0747863d6e9c9">setValidateRule</a>(const std::string &amp;rule)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a59dcbbdace2ad7fd2d9f634e7bc3d205">terrain</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#afbd1a02228f3b83579d1dccbfe073d67">terrain</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ad2b227ddd094d854b72f3a14f93ed7b0">worldToCell3D</a>(float worldX, float worldY, float worldZ, int &amp;cellX, int &amp;cellY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a926dfc9412e52cf7de57fdca387d2605">worldToCell3DX</a>(float worldX, float worldY, float worldZ) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ac7f2b0ceb5f2975f7c46d595dc33c2bd">worldToCell3DY</a>(float worldX, float worldY, float worldZ) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a0ee1f35cfa74d8def24289ccdcc1529d">worldToCellX</a>(float worldX) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#ab2675ecae1e9bc5cf3386274de4ba6b9">worldToCellY</a>(float worldY) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a6d6b18385270ade9de626082f11c7861">~PlacementWorld</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

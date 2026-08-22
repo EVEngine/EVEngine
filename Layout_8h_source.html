@@ -1,0 +1,275 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/Layout.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Layout.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Layout_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="UIHost_8h.html">ui/UIHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1FlexItemSpec.html">FlexItemSpec</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a66e3168b18288240ecf49143e7010d03">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a66e3168b18288240ecf49143e7010d03">basisMain</a> = 0.f;        <span class="comment">// measured content size on main axis</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a78fb83d2cb8fd630b5ac833795c5f19a">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a78fb83d2cb8fd630b5ac833795c5f19a">basisCross</a> = 0.f;       <span class="comment">// measured content size on cross axis</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a4fccd0bd2e819757b62030ce317ea437">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a4fccd0bd2e819757b62030ce317ea437">marginBefore</a> = 0.f;     <span class="comment">// leading main-axis margin</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a20334fe0f3a60a091c9859386a0b77f5">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a20334fe0f3a60a091c9859386a0b77f5">marginAfter</a> = 0.f;      <span class="comment">// trailing main-axis margin</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a3ab3e5688d1112c1486dbff4725e1b96">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a3ab3e5688d1112c1486dbff4725e1b96">marginCrossBefore</a> = 0.f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#ab9cb8251227b164af2e7b6f1dc1e1878">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#ab9cb8251227b164af2e7b6f1dc1e1878">marginCrossAfter</a> = 0.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a9bfa701c193061a24f93c896d21f57cd">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a9bfa701c193061a24f93c896d21f57cd">flexGrow</a> = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#affcead5b48b00909acf122bf05155fd5">   30</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#affcead5b48b00909acf122bf05155fd5">isSpacer</a> = <span class="keyword">false</span>;        <span class="comment">// default grow = 1</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#ae5c380d039dff5d3eaaa87b77643b0b0">   31</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#ae5c380d039dff5d3eaaa87b77643b0b0">absolute</a> = <span class="keyword">false</span>;        <span class="comment">// excluded from flex flow</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a44e8916759602eb59c612274417a8e7e">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a44e8916759602eb59c612274417a8e7e">anchorMain</a> = 0.f;       <span class="comment">// 0..1 anchor point inside content box</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#ad85f3a7316481981717577a94481e490">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#ad85f3a7316481981717577a94481e490">anchorCross</a> = 0.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a526ccface785e21a791e73bd7ca15f17">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a526ccface785e21a791e73bd7ca15f17">posMain</a> = 0.f;          <span class="comment">// offset from the anchored edge</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a2258a948e3074ee1c166ac021f195277">   35</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a2258a948e3074ee1c166ac021f195277">posCross</a> = 0.f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a5b7368ba19e5713dc6d22e5dbdeadfa6">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a5b7368ba19e5713dc6d22e5dbdeadfa6">percentMain</a> = 0.f;      <span class="comment">// 0..1 of available main size; overrides basis</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a8f512d6af254375900eb9e7999285587">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a8f512d6af254375900eb9e7999285587">percentCross</a> = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a8f9442fde025bec87e272671837ee4eb">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a8f9442fde025bec87e272671837ee4eb">minMain</a> = 0.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a12717e2345d349ae68071c937a6df666">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a12717e2345d349ae68071c937a6df666">maxMain</a> = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a3c5696136d9513004b2bfce8fa90ec5b">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a3c5696136d9513004b2bfce8fa90ec5b">minCross</a> = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a97385d4b0dd0e1faad8d3db481ac4cfb">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a97385d4b0dd0e1faad8d3db481ac4cfb">maxCross</a> = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#aebfad07e842b621a0337af95e6450a60">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#aebfad07e842b621a0337af95e6450a60">explicitMain</a> = 0.f;     <span class="comment">// &gt;0 overrides basisMain (fixed size)</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#a4a0d190fb7d767582cf9aa91a524ce37">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#a4a0d190fb7d767582cf9aa91a524ce37">explicitCross</a> = 0.f;    <span class="comment">// &gt;0 overrides basisCross</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexItemSpec.html#aa351a0d5a38bce9652c9480384aed335">   45</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexItemSpec.html#aa351a0d5a38bce9652c9480384aed335">alignSelf</a> = -1;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexRect.html">   49</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1FlexRect.html">FlexRect</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexRect.html#aeb2bd20ff58b7e3edc542b5a8715fe8f">   50</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexRect.html#aeb2bd20ff58b7e3edc542b5a8715fe8f">x</a> = 0.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexRect.html#a550a21dcf1ea892f88d89588880c5c8a">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexRect.html#a550a21dcf1ea892f88d89588880c5c8a">y</a> = 0.f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexRect.html#a73cfc5d65b2606da85a1b3669ded07a6">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexRect.html#a73cfc5d65b2606da85a1b3669ded07a6">w</a> = 0.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexRect.html#a5e7cbbcffa334b933cd52391ca82e95c">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexRect.html#a5e7cbbcffa334b933cd52391ca82e95c">h</a> = 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexResult.html">   56</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1FlexResult.html">FlexResult</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexResult.html#a2eafaa39dc54ea88f1ec95b5d170dc74">   57</a></span>    std::vector&lt;FlexRect&gt; <a class="code hl_variable" href="structeve_1_1ui_1_1FlexResult.html#a2eafaa39dc54ea88f1ec95b5d170dc74">items</a>;  <span class="comment">// one per non-absolute item, same order</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexResult.html#ac14e29adb99e0f3a9b5dd6fbe3eb9a8a">   58</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexResult.html#ac14e29adb99e0f3a9b5dd6fbe3eb9a8a">contentW</a> = 0.f;         <span class="comment">// total outer extent on X</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1FlexResult.html#ab5010f2df5b061024199c886e67f3536">   59</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1FlexResult.html#ab5010f2df5b061024199c886e67f3536">contentH</a> = 0.f;         <span class="comment">// total outer extent on Y</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><a class="code hl_struct" href="structeve_1_1ui_1_1FlexResult.html">FlexResult</a> <a class="code hl_function" href="namespaceeve_1_1ui.html#acea1706c110e7cd7a08878a41d574d8e">flexArrange</a>(<span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a>, <span class="keywordtype">float</span> gap, <span class="keywordtype">float</span> availMain, <span class="keywordtype">float</span> availCross,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                       <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">FlexAlign</a> containerAlign, <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">FlexJustify</a> justify,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                       <span class="keyword">const</span> std::vector&lt;FlexItemSpec&gt; &amp;items);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a8ba22c2b6ed01e55e34f7ba140b75b42">measureNode</a>(<a class="code hl_struct" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;tree, <span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a718c393a0584399febb4df7375658d9b">measureTree</a>(<a class="code hl_struct" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;tree);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#ae247c6622356b8142bc656d7e411a9f6">measureFlowChildren</a>(<a class="code hl_struct" href="structeve_1_1ui_1_1UIHost_1_1Tree.html">UIHost::Tree</a> &amp;tree, <span class="keywordtype">int</span> firstChild, <span class="keywordtype">float</span> *outW, <span class="keywordtype">float</span> *outH);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aUIHost_8h_html"><div class="ttname"><a href="UIHost_8h.html">UIHost.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a718c393a0584399febb4df7375658d9b"><div class="ttname"><a href="namespaceeve_1_1ui.html#a718c393a0584399febb4df7375658d9b">eve::ui::measureTree</a></div><div class="ttdeci">void measureTree(UIHost::Tree &amp;tree)</div><div class="ttdef"><b>Definition</b> <a href="Layout_8cpp_source.html#l00348">Layout.cpp:348</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a8233ad15a5a68dfc0ca17e60eeff0d75"><div class="ttname"><a href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">eve::ui::FlexJustify</a></div><div class="ttdeci">FlexJustify</div><div class="ttdoc">Main-axis distribution of free space in a Flex container.</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00042">UIHost.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a8ba22c2b6ed01e55e34f7ba140b75b42"><div class="ttname"><a href="namespaceeve_1_1ui.html#a8ba22c2b6ed01e55e34f7ba140b75b42">eve::ui::measureNode</a></div><div class="ttdeci">void measureNode(UIHost::Tree &amp;tree, int index)</div><div class="ttdef"><b>Definition</b> <a href="Layout_8cpp_source.html#l00208">Layout.cpp:208</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_acea1706c110e7cd7a08878a41d574d8e"><div class="ttname"><a href="namespaceeve_1_1ui.html#acea1706c110e7cd7a08878a41d574d8e">eve::ui::flexArrange</a></div><div class="ttdeci">FlexResult flexArrange(bool row, float gap, float availMain, float availCross, FlexAlign containerAlign, FlexJustify justify, const std::vector&lt; FlexItemSpec &gt; &amp;items)</div><div class="ttdef"><b>Definition</b> <a href="Layout_8cpp_source.html#l00024">Layout.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_acff0a0ccbeb97db5dfaf4a76b7243ce9"><div class="ttname"><a href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">eve::ui::FlexAlign</a></div><div class="ttdeci">FlexAlign</div><div class="ttdoc">Cross-axis alignment of Flex children.</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00039">UIHost.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_ae247c6622356b8142bc656d7e411a9f6"><div class="ttname"><a href="namespaceeve_1_1ui.html#ae247c6622356b8142bc656d7e411a9f6">eve::ui::measureFlowChildren</a></div><div class="ttdeci">void measureFlowChildren(UIHost::Tree &amp;tree, int firstChild, float *outW, float *outH)</div><div class="ttdef"><b>Definition</b> <a href="Layout_8cpp_source.html#l00170">Layout.cpp:170</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_afbec5b50c99f45d58f40e7fb45c9a1a0"><div class="ttname"><a href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">eve::ui::row</a></div><div class="ttdeci">WidgetDesc row(std::vector&lt; WidgetDesc &gt; children, std::string id)</div><div class="ttdoc">Horizontal elastic layout row.</div><div class="ttdef"><b>Definition</b> <a href="Widget_8cpp_source.html#l00431">Widget.cpp:431</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html">eve::ui::FlexItemSpec</a></div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00022">Layout.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a12717e2345d349ae68071c937a6df666"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a12717e2345d349ae68071c937a6df666">eve::ui::FlexItemSpec::maxMain</a></div><div class="ttdeci">float maxMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00039">Layout.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a20334fe0f3a60a091c9859386a0b77f5"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a20334fe0f3a60a091c9859386a0b77f5">eve::ui::FlexItemSpec::marginAfter</a></div><div class="ttdeci">float marginAfter</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00026">Layout.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a2258a948e3074ee1c166ac021f195277"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a2258a948e3074ee1c166ac021f195277">eve::ui::FlexItemSpec::posCross</a></div><div class="ttdeci">float posCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00035">Layout.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a3ab3e5688d1112c1486dbff4725e1b96"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a3ab3e5688d1112c1486dbff4725e1b96">eve::ui::FlexItemSpec::marginCrossBefore</a></div><div class="ttdeci">float marginCrossBefore</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00027">Layout.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a3c5696136d9513004b2bfce8fa90ec5b"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a3c5696136d9513004b2bfce8fa90ec5b">eve::ui::FlexItemSpec::minCross</a></div><div class="ttdeci">float minCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00040">Layout.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a44e8916759602eb59c612274417a8e7e"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a44e8916759602eb59c612274417a8e7e">eve::ui::FlexItemSpec::anchorMain</a></div><div class="ttdeci">float anchorMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00032">Layout.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a4a0d190fb7d767582cf9aa91a524ce37"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a4a0d190fb7d767582cf9aa91a524ce37">eve::ui::FlexItemSpec::explicitCross</a></div><div class="ttdeci">float explicitCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00043">Layout.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a4fccd0bd2e819757b62030ce317ea437"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a4fccd0bd2e819757b62030ce317ea437">eve::ui::FlexItemSpec::marginBefore</a></div><div class="ttdeci">float marginBefore</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00025">Layout.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a526ccface785e21a791e73bd7ca15f17"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a526ccface785e21a791e73bd7ca15f17">eve::ui::FlexItemSpec::posMain</a></div><div class="ttdeci">float posMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00034">Layout.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a5b7368ba19e5713dc6d22e5dbdeadfa6"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a5b7368ba19e5713dc6d22e5dbdeadfa6">eve::ui::FlexItemSpec::percentMain</a></div><div class="ttdeci">float percentMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00036">Layout.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a66e3168b18288240ecf49143e7010d03"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a66e3168b18288240ecf49143e7010d03">eve::ui::FlexItemSpec::basisMain</a></div><div class="ttdeci">float basisMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00023">Layout.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a78fb83d2cb8fd630b5ac833795c5f19a"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a78fb83d2cb8fd630b5ac833795c5f19a">eve::ui::FlexItemSpec::basisCross</a></div><div class="ttdeci">float basisCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00024">Layout.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a8f512d6af254375900eb9e7999285587"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a8f512d6af254375900eb9e7999285587">eve::ui::FlexItemSpec::percentCross</a></div><div class="ttdeci">float percentCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00037">Layout.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a8f9442fde025bec87e272671837ee4eb"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a8f9442fde025bec87e272671837ee4eb">eve::ui::FlexItemSpec::minMain</a></div><div class="ttdeci">float minMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00038">Layout.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a97385d4b0dd0e1faad8d3db481ac4cfb"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a97385d4b0dd0e1faad8d3db481ac4cfb">eve::ui::FlexItemSpec::maxCross</a></div><div class="ttdeci">float maxCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00041">Layout.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_a9bfa701c193061a24f93c896d21f57cd"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#a9bfa701c193061a24f93c896d21f57cd">eve::ui::FlexItemSpec::flexGrow</a></div><div class="ttdeci">float flexGrow</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00029">Layout.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_aa351a0d5a38bce9652c9480384aed335"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#aa351a0d5a38bce9652c9480384aed335">eve::ui::FlexItemSpec::alignSelf</a></div><div class="ttdeci">int alignSelf</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00045">Layout.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_ab9cb8251227b164af2e7b6f1dc1e1878"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#ab9cb8251227b164af2e7b6f1dc1e1878">eve::ui::FlexItemSpec::marginCrossAfter</a></div><div class="ttdeci">float marginCrossAfter</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00028">Layout.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_ad85f3a7316481981717577a94481e490"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#ad85f3a7316481981717577a94481e490">eve::ui::FlexItemSpec::anchorCross</a></div><div class="ttdeci">float anchorCross</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00033">Layout.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_ae5c380d039dff5d3eaaa87b77643b0b0"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#ae5c380d039dff5d3eaaa87b77643b0b0">eve::ui::FlexItemSpec::absolute</a></div><div class="ttdeci">bool absolute</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00031">Layout.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_aebfad07e842b621a0337af95e6450a60"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#aebfad07e842b621a0337af95e6450a60">eve::ui::FlexItemSpec::explicitMain</a></div><div class="ttdeci">float explicitMain</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00042">Layout.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexItemSpec_html_affcead5b48b00909acf122bf05155fd5"><div class="ttname"><a href="structeve_1_1ui_1_1FlexItemSpec.html#affcead5b48b00909acf122bf05155fd5">eve::ui::FlexItemSpec::isSpacer</a></div><div class="ttdeci">bool isSpacer</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00030">Layout.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexRect_html"><div class="ttname"><a href="structeve_1_1ui_1_1FlexRect.html">eve::ui::FlexRect</a></div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00049">Layout.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexRect_html_a550a21dcf1ea892f88d89588880c5c8a"><div class="ttname"><a href="structeve_1_1ui_1_1FlexRect.html#a550a21dcf1ea892f88d89588880c5c8a">eve::ui::FlexRect::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00051">Layout.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexRect_html_a5e7cbbcffa334b933cd52391ca82e95c"><div class="ttname"><a href="structeve_1_1ui_1_1FlexRect.html#a5e7cbbcffa334b933cd52391ca82e95c">eve::ui::FlexRect::h</a></div><div class="ttdeci">float h</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00053">Layout.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexRect_html_a73cfc5d65b2606da85a1b3669ded07a6"><div class="ttname"><a href="structeve_1_1ui_1_1FlexRect.html#a73cfc5d65b2606da85a1b3669ded07a6">eve::ui::FlexRect::w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00052">Layout.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexRect_html_aeb2bd20ff58b7e3edc542b5a8715fe8f"><div class="ttname"><a href="structeve_1_1ui_1_1FlexRect.html#aeb2bd20ff58b7e3edc542b5a8715fe8f">eve::ui::FlexRect::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00050">Layout.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexResult_html"><div class="ttname"><a href="structeve_1_1ui_1_1FlexResult.html">eve::ui::FlexResult</a></div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00056">Layout.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexResult_html_a2eafaa39dc54ea88f1ec95b5d170dc74"><div class="ttname"><a href="structeve_1_1ui_1_1FlexResult.html#a2eafaa39dc54ea88f1ec95b5d170dc74">eve::ui::FlexResult::items</a></div><div class="ttdeci">std::vector&lt; FlexRect &gt; items</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00057">Layout.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexResult_html_ab5010f2df5b061024199c886e67f3536"><div class="ttname"><a href="structeve_1_1ui_1_1FlexResult.html#ab5010f2df5b061024199c886e67f3536">eve::ui::FlexResult::contentH</a></div><div class="ttdeci">float contentH</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00059">Layout.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1FlexResult_html_ac14e29adb99e0f3a9b5dd6fbe3eb9a8a"><div class="ttname"><a href="structeve_1_1ui_1_1FlexResult.html#ac14e29adb99e0f3a9b5dd6fbe3eb9a8a">eve::ui::FlexResult::contentW</a></div><div class="ttdeci">float contentW</div><div class="ttdef"><b>Definition</b> <a href="Layout_8h_source.html#l00058">Layout.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIHost_1_1Tree_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIHost_1_1Tree.html">eve::ui::UIHost::Tree</a></div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00158">UIHost.h:158</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

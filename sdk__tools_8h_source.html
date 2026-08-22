@@ -1,0 +1,255 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/cmdline/sdk_tools.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_e7ea0ec50726d9a6cf286f78e849ed77.html">cmdline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">sdk_tools.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="sdk__tools_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1cmd_1_1sdk.html">eve::cmd::sdk</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="};">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">    9</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405">Win32</a>,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831">Linux</a>,</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8">Macosx</a>,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d">Android</a>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169">Ios</a>,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>};</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><a class="code hl_enumeration" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#afe1c0f85798831dc57c10a36d4409a8f">parsePlatform</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#ab52e5800f014834d057cd9e12f021d6d">platformName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a1bcd3e1415cc06faebad016377a6495a">getEnv</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keyword">const</span> std::string&amp; def = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#ab24a55358379efff928f71ab6ce63e51">setEnv</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#ac51ad0ab17ac79025b5c89772ae4d9c7">sdkVersionTag</a>();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#ad8a0ba2ea5bde3c1b7adaafaf989dbeb">eveSdkInstallRoot</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a7b42226bc41bb659e1e5d5276bdc6dc7">eveSdkBaseUrl</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a02bd632cf0c825a6f15be2f70088d5c5">fileSha256</a>(<span class="keyword">const</span> std::string&amp; path);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a2fc3ad4542ec27ceedfe428ef3e0e902">findSdkRoot</a>(<span class="keyword">const</span> std::string&amp; sdkArg);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#ada26ba1493c1263301287a02a40dcf8e">sdkTargetPlatform</a>(<span class="keyword">const</span> std::string&amp; sdkRoot);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>std::string <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a0b4ffb64b48987cd2d41f6b9ced511a9">androidSdkRoot</a>();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#abbad0e7e76aaa16d1585861135997d46">applyEnvFile</a>(<span class="keyword">const</span> std::string&amp; path);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a65c0f851c215bca33569fff07b4005f2">runShell</a>(<span class="keyword">const</span> std::string&amp; cmd);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a32e518deebf78351c2c3d175aa3fd839">copyTree</a>(<span class="keyword">const</span> std::string&amp; from, <span class="keyword">const</span> std::string&amp; to,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>              <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; skipDirs = {});</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#af2a6ac8ff4d20e4d7eeae84d42d849eb">copyTreeContents</a>(<span class="keyword">const</span> std::string&amp; from, <span class="keyword">const</span> std::string&amp; to);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a512b8b127a665ce6774317b2a2a772ba">isAndroidSdkInstalled</a>(<span class="keyword">const</span> std::string&amp; root);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a262743c35947288ada85eada5e77a898">installEveSdk</a>(<a class="code hl_enumeration" href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">Platform</a> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1cmd_1_1sdk.html#a343aa78edca68a0251acb84acf787e67">installAndroidSdk</a>();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::cmd::sdk</span></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00444">RenderSystem3D.cpp:444</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html">eve::cmd::sdk</a></div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00024">sdk_tools.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a02bd632cf0c825a6f15be2f70088d5c5"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a02bd632cf0c825a6f15be2f70088d5c5">eve::cmd::sdk::fileSha256</a></div><div class="ttdeci">std::string fileSha256(const std::string &amp;path)</div><div class="ttdoc">计算文件的 SHA-256（小写十六进制）；失败返回空串。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00228">sdk_tools.cpp:228</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a0b4ffb64b48987cd2d41f6b9ced511a9"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a0b4ffb64b48987cd2d41f6b9ced511a9">eve::cmd::sdk::androidSdkRoot</a></div><div class="ttdeci">std::string androidSdkRoot()</div><div class="ttdoc">解析 Android SDK 根目录：EVENGINE_ANDROID_SDK / ANDROID_SDK_ROOT / ANDROID_HOME，最后回落到平台默认位置（Windows: LOCALA...</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00480">sdk_tools.cpp:480</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a1bcd3e1415cc06faebad016377a6495a"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a1bcd3e1415cc06faebad016377a6495a">eve::cmd::sdk::getEnv</a></div><div class="ttdeci">std::string getEnv(const std::string &amp;name, const std::string &amp;def)</div><div class="ttdoc">读取环境变量；未设置时返回 def。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00180">sdk_tools.cpp:180</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a262743c35947288ada85eada5e77a898"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a262743c35947288ada85eada5e77a898">eve::cmd::sdk::installEveSdk</a></div><div class="ttdeci">int installEveSdk(Platform p)</div><div class="ttdoc">下载并安装 EVEngine 官方 &lt;platform&gt; SDK（zip 内 eve-sdk/&lt;platform&gt;/， 从 GitHub Release 按当前 eve 版本挑选），校验 SHA256 ...</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00359">sdk_tools.cpp:359</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a2fc3ad4542ec27ceedfe428ef3e0e902"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a2fc3ad4542ec27ceedfe428ef3e0e902">eve::cmd::sdk::findSdkRoot</a></div><div class="ttdeci">std::string findSdkRoot(const std::string &amp;sdkArg)</div><div class="ttdoc">定位 EVEngine SDK 根目录：–sdk 参数 &gt; $EVENGINE_SDK &gt; 可执行文件 所在位置的 ../（&lt;sdk&gt;/bin/eve）&gt; 当前目录 &gt; eve get 安装的 SDK。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00275">sdk_tools.cpp:275</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a32e518deebf78351c2c3d175aa3fd839"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a32e518deebf78351c2c3d175aa3fd839">eve::cmd::sdk::copyTree</a></div><div class="ttdeci">bool copyTree(const std::string &amp;from, const std::string &amp;to, const std::vector&lt; std::string &gt; &amp;skipDirs)</div><div class="ttdoc">递归复制目录，跳过指定名称的子目录（如 build/.gradle）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00838">sdk_tools.cpp:838</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a343aa78edca68a0251acb84acf787e67"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a343aa78edca68a0251acb84acf787e67">eve::cmd::sdk::installAndroidSdk</a></div><div class="ttdeci">int installAndroidSdk()</div><div class="ttdoc">自动下载并安装 Android 工具链：EVEngine 官方 android SDK + cmdline-tools / platform-tools / build-tools / platform...</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00695">sdk_tools.cpp:695</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230">eve::cmd::sdk::Platform</a></div><div class="ttdeci">Platform</div><div class="ttdoc">平台集合（与仓库 Makefile 的 build/&lt;platform&gt; 目标一一对应）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8h_source.html#l00009">sdk_tools.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230a88183b946cc5f0e8c96b2e66e1c74a7e">eve::cmd::sdk::Platform::Unknown</a></div><div class="ttdeci">@ Unknown</div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa756d26ca5161ae6fcc2bde4b2bcf169">eve::cmd::sdk::Platform::Ios</a></div><div class="ttdeci">@ Ios</div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aa99913111481b4f0bcb70e08e3e99405">eve::cmd::sdk::Platform::Win32</a></div><div class="ttdeci">@ Win32</div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230adfeb07600fc2da2fd4812797edd597b8">eve::cmd::sdk::Platform::Macosx</a></div><div class="ttdeci">@ Macosx</div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230ae84e30b9390cdb64db6db2c9ab87846d">eve::cmd::sdk::Platform::Android</a></div><div class="ttdeci">@ Android</div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a505829be3cfe82ecdb1f4b140a576230aedc9f0a5a5d57797bf68e37364743831">eve::cmd::sdk::Platform::Linux</a></div><div class="ttdeci">@ Linux</div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a512b8b127a665ce6774317b2a2a772ba"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a512b8b127a665ce6774317b2a2a772ba">eve::cmd::sdk::isAndroidSdkInstalled</a></div><div class="ttdeci">bool isAndroidSdkInstalled(const std::string &amp;root)</div><div class="ttdoc">判断 Android SDK 是否已安装（cmdline-tools 的 sdkmanager 存在）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00687">sdk_tools.cpp:687</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a65c0f851c215bca33569fff07b4005f2"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a65c0f851c215bca33569fff07b4005f2">eve::cmd::sdk::runShell</a></div><div class="ttdeci">int runShell(const std::string &amp;cmd)</div><div class="ttdoc">通过系统 shell 执行命令并返回退出码（POSIX 下归一化 WEXITSTATUS）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00509">sdk_tools.cpp:509</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_a7b42226bc41bb659e1e5d5276bdc6dc7"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#a7b42226bc41bb659e1e5d5276bdc6dc7">eve::cmd::sdk::eveSdkBaseUrl</a></div><div class="ttdeci">std::string eveSdkBaseUrl()</div><div class="ttdoc">官方 SDK 下载基址（GitHub Release 对应 tag），可用 EVE_SDK_BASE_URL 覆盖（镜像 / 测试，如 file://...）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00221">sdk_tools.cpp:221</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_ab24a55358379efff928f71ab6ce63e51"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#ab24a55358379efff928f71ab6ce63e51">eve::cmd::sdk::setEnv</a></div><div class="ttdeci">void setEnv(const std::string &amp;name, const std::string &amp;value)</div><div class="ttdoc">设置当前进程的环境变量（不持久化到系统）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00185">sdk_tools.cpp:185</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_ab52e5800f014834d057cd9e12f021d6d"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#ab52e5800f014834d057cd9e12f021d6d">eve::cmd::sdk::platformName</a></div><div class="ttdeci">std::string platformName(Platform p)</div><div class="ttdoc">平台规范名（用于 Makefile 目标名）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00169">sdk_tools.cpp:169</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_abbad0e7e76aaa16d1585861135997d46"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#abbad0e7e76aaa16d1585861135997d46">eve::cmd::sdk::applyEnvFile</a></div><div class="ttdeci">void applyEnvFile(const std::string &amp;path)</div><div class="ttdoc">读取 KEY=VALUE 环境文件；只应用当前进程尚未设置的变量。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00495">sdk_tools.cpp:495</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_ac51ad0ab17ac79025b5c89772ae4d9c7"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#ac51ad0ab17ac79025b5c89772ae4d9c7">eve::cmd::sdk::sdkVersionTag</a></div><div class="ttdeci">std::string sdkVersionTag()</div><div class="ttdoc">当前 eve 版本对应的发布 tag（v0.1.0-dev → v0.1.0）。 可用 EVE_SDK_TAG 覆盖（dev 构建 / 测试）。解析失败时返回空串。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00193">sdk_tools.cpp:193</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_ad8a0ba2ea5bde3c1b7adaafaf989dbeb"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#ad8a0ba2ea5bde3c1b7adaafaf989dbeb">eve::cmd::sdk::eveSdkInstallRoot</a></div><div class="ttdeci">std::string eveSdkInstallRoot()</div><div class="ttdoc">EVEngine 官方 SDK 安装根目录（Windows: LOCALAPPDATA%/EVEngine/sdk， POSIX: $XDG_DATA_HOME/EVEngine/sdk），可用 EVE...</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00204">sdk_tools.cpp:204</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_ada26ba1493c1263301287a02a40dcf8e"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#ada26ba1493c1263301287a02a40dcf8e">eve::cmd::sdk::sdkTargetPlatform</a></div><div class="ttdeci">std::string sdkTargetPlatform(const std::string &amp;sdkRoot)</div><div class="ttdoc">读取 &lt;sdk&gt;/share/eve/TARGET_PLATFORM（该 SDK 面向的目标平台）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00473">sdk_tools.cpp:473</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_af2a6ac8ff4d20e4d7eeae84d42d849eb"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#af2a6ac8ff4d20e4d7eeae84d42d849eb">eve::cmd::sdk::copyTreeContents</a></div><div class="ttdeci">bool copyTreeContents(const std::string &amp;from, const std::string &amp;to)</div><div class="ttdoc">把 from 目录的内容（不含 from 本身）复制到 to。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00846">sdk_tools.cpp:846</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cmd_1_1sdk_html_afe1c0f85798831dc57c10a36d4409a8f"><div class="ttname"><a href="namespaceeve_1_1cmd_1_1sdk.html#afe1c0f85798831dc57c10a36d4409a8f">eve::cmd::sdk::parsePlatform</a></div><div class="ttdeci">Platform parsePlatform(const std::string &amp;name)</div><div class="ttdoc">解析平台名（大小写不敏感，含常用别名：windows/win、mac/macos/osx 等）。</div><div class="ttdef"><b>Definition</b> <a href="sdk__tools_8cpp_source.html#l00159">sdk_tools.cpp:159</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

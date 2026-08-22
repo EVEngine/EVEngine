@@ -1,0 +1,327 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/network/HttpRequest.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_01fbf463d294056048b691191265bf7f.html">network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">HttpRequest.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="HttpRequest_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="HttpRequest_8h.html">network/HttpRequest.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Network_8h.html">network/Network.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="NetWorker_8h.html">network/NetWorker.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ByteData_8h.html">data/ByteData.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;Poco/URI.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Poco/Timespan.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;Poco/Net/HTTPClientSession.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;Poco/Net/HTTPRequest.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;Poco/Net/HTTPResponse.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;Poco/StreamCopier.h&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;Poco/Exception.h&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1network.html">eve::network</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#a790141a6d6d3642b572b95dd857bc8de">   19</a></span><a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#a790141a6d6d3642b572b95dd857bc8de">HttpRequest::HttpRequest</a>(<a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>* net, std::string method, std::string url)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    : net_(net), method_(std::move(method)), url_(std::move(url)) {}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#aad0a1e4070a10f75e29ac0e41671a953">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#aad0a1e4070a10f75e29ac0e41671a953">HttpRequest::setHeader</a>(std::string k, std::string <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    headers_[std::move(k)] = std::move(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#aa3b54a3ba3c8d2a5721043e4438d6be6">   26</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#aa3b54a3ba3c8d2a5721043e4438d6be6">HttpRequest::setBody</a>(<a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a>* data) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        body_.reset();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    body_ = std::make_shared&lt;std::vector&lt;char&gt;&gt;(</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData()),</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData()) + <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getSize());</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#a024ac0fc178238caea4fc3b88966c050">   36</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#a024ac0fc178238caea4fc3b88966c050">HttpRequest::setBodyString</a>(std::string <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    body_ = std::make_shared&lt;std::vector&lt;char&gt;&gt;(<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.begin(), <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.end());</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#a6398e85ed6c02074204a198441a832c3">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#a6398e85ed6c02074204a198441a832c3">HttpRequest::setTimeout</a>(<span class="keywordtype">int</span> ms) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    timeoutMs_ = ms;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#adae80e817bf4c681b8c08f841437af82">   44</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#adae80e817bf4c681b8c08f841437af82">HttpRequest::setVerifySsl</a>(<span class="keywordtype">bool</span> verify) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    verifySsl_ = verify ? 1 : 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51">   48</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51">HttpRequest::submit</a>() {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (!net_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">auto</span>* self = <span class="keyword">this</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">auto</span> method = method_;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">auto</span> url = url_;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">auto</span> headers = headers_;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a> = body_;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">int</span> timeoutMs = timeoutMs_ &gt;= 0 ? timeoutMs_ : net_-&gt;<a class="code hl_function" href="classeve_1_1network_1_1Network.html#a9f782f6298798e28229f41adc7bf3c69">getTimeout</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="comment">// -1 = inherit Network default; request-level setVerifySsl overrides.</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> verifySsl = verifySsl_ &lt; 0 ? net_-&gt;<a class="code hl_function" href="classeve_1_1network_1_1Network.html#a30d7bbf3fe7e0c9aca9fdf974060ebfe">getVerifySsl</a>() : (verifySsl_ != 0);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="comment">// Dedicated thread: HTTP would block NetWorker and prevent accept/poll.</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::thread([self, method, url, headers, <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, timeoutMs, verifySsl]() {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_struct" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.<a class="code hl_variable" href="structeve_1_1network_1_1NetCompletion.html#a35644265f50cefed7dea085d838c9bfd">kind</a>   = <a class="code hl_enumvalue" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95">NetKind::Http</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.handle = self;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            Poco::URI uri(url);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">if</span> (uri.getScheme() == <span class="stringliteral">&quot;https&quot;</span>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="comment">// TLS stack (Poco NetSSL) is not linked yet; honor verifySsl once HTTPS is enabled.</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                (void)verifySsl;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.type   = <a class="code hl_enumvalue" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">NetEvType::Err</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.reason = <span class="stringliteral">&quot;tls&quot;</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                self-&gt;net_-&gt;post(std::move(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>));</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            Poco::Net::HTTPClientSession session(uri.getHost(), uri.getPort());</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            session.setTimeout(Poco::Timespan(timeoutMs / 1000, (timeoutMs % 1000) * 1000));</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            std::string path = uri.getPathAndQuery();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">if</span> (path.empty()) path = <span class="stringliteral">&quot;/&quot;</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            Poco::Net::HTTPRequest req(method, path, Poco::Net::HTTPMessage::HTTP_1_1);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            req.setHost(uri.getHost());</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; kv : headers) req.set(kv.first, kv.second);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a> &amp;&amp; !<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>-&gt;empty()) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                req.setContentLength(<span class="keyword">static_cast&lt;</span>std::streamsize<span class="keyword">&gt;</span>(<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>-&gt;size()));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            std::ostream&amp; <a class="code hl_variable" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a> = session.sendRequest(req);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a> &amp;&amp; !<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>-&gt;empty()) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <a class="code hl_variable" href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a>.write(<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>-&gt;data(), <span class="keyword">static_cast&lt;</span>std::streamsize<span class="keyword">&gt;</span>(<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>-&gt;size()));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            Poco::Net::HTTPResponse resp;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            std::istream&amp; rs = session.receiveResponse(resp);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            std::ostringstream oss;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            Poco::StreamCopier::copyStream(rs, oss);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::string content = oss.str();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.type   = <a class="code hl_enumvalue" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">NetEvType::HttpResp</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.status = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(resp.getStatus());</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.bytes  = std::make_shared&lt;std::vector&lt;char&gt;&gt;(content.begin(), content.end());</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            self-&gt;net_-&gt;post(std::move(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> Poco::Exception&amp; ex) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.type = <a class="code hl_enumvalue" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">NetEvType::Err</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            std::string msg = ex.displayText();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">if</span> (msg.find(<span class="stringliteral">&quot;timed&quot;</span>) != std::string::npos || msg.find(<span class="stringliteral">&quot;Timeout&quot;</span>) != std::string::npos)</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.reason = <span class="stringliteral">&quot;timeout&quot;</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (msg.find(<span class="stringliteral">&quot;host&quot;</span>) != std::string::npos || msg.find(<span class="stringliteral">&quot;DNS&quot;</span>) != std::string::npos)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.reason = <span class="stringliteral">&quot;dns&quot;</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.reason = <span class="stringliteral">&quot;refused&quot;</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            self-&gt;net_-&gt;post(std::move(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.type   = <a class="code hl_enumvalue" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">NetEvType::Err</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.reason = <span class="stringliteral">&quot;refused&quot;</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            self-&gt;net_-&gt;post(std::move(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }).detach();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}  <span class="comment">// namespace eve::network</span></div>
+<div class="ttc" id="aByteData_8h_html"><div class="ttname"><a href="ByteData_8h.html">ByteData.h</a></div></div>
+<div class="ttc" id="aHttpRequest_8h_html"><div class="ttname"><a href="HttpRequest_8h.html">HttpRequest.h</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a503889937f87ab447382207f9d5cba56"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a></div><div class="ttdeci">JobFunc body</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00159">JobSystemThreadPool.cpp:159</a></div></div>
+<div class="ttc" id="aKernelGen_8cpp_html_a3346fd35f9a7aac6f289cac2435273c6"><div class="ttname"><a href="KernelGen_8cpp.html#a3346fd35f9a7aac6f289cac2435273c6">os</a></div><div class="ttdeci">std::ostringstream &amp; os</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8cpp_source.html#l00125">KernelGen.cpp:125</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aNetWorker_8h_html"><div class="ttname"><a href="NetWorker_8h.html">NetWorker.h</a></div></div>
+<div class="ttc" id="aNetwork_8h_html"><div class="ttname"><a href="Network_8h.html">Network.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a></div><div class="ttdoc">In-memory byte buffer implementing eve::Data (ref-counted).</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8h_source.html#l00011">ByteData.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_a024ac0fc178238caea4fc3b88966c050"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#a024ac0fc178238caea4fc3b88966c050">eve::network::HttpRequest::setBodyString</a></div><div class="ttdeci">void setBodyString(std::string s)</div><div class="ttdoc">Sets the request body as a string.</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00036">HttpRequest.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_a6398e85ed6c02074204a198441a832c3"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#a6398e85ed6c02074204a198441a832c3">eve::network::HttpRequest::setTimeout</a></div><div class="ttdeci">void setTimeout(int ms)</div><div class="ttdoc">Overrides the module default timeout for this request (ms).</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00040">HttpRequest.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_a790141a6d6d3642b572b95dd857bc8de"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#a790141a6d6d3642b572b95dd857bc8de">eve::network::HttpRequest::HttpRequest</a></div><div class="ttdeci">HttpRequest(Network *net, std::string method, std::string url)</div><div class="ttdoc">Creates a request; method is e.g. &quot;GET&quot;/&quot;POST&quot;, url is absolute.</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00019">HttpRequest.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_aa3b54a3ba3c8d2a5721043e4438d6be6"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#aa3b54a3ba3c8d2a5721043e4438d6be6">eve::network::HttpRequest::setBody</a></div><div class="ttdeci">void setBody(eve::data::ByteData *data)</div><div class="ttdoc">Sets the request body bytes.</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00026">HttpRequest.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_aad0a1e4070a10f75e29ac0e41671a953"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#aad0a1e4070a10f75e29ac0e41671a953">eve::network::HttpRequest::setHeader</a></div><div class="ttdeci">void setHeader(std::string k, std::string v)</div><div class="ttdoc">Sets one request header.</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00022">HttpRequest.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_ab27f07502bd9ffceb1b9a86c07b9cc51"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51">eve::network::HttpRequest::submit</a></div><div class="ttdeci">bool submit()</div><div class="ttdoc">Queues the request on the worker; true when accepted.</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00048">HttpRequest.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html_adae80e817bf4c681b8c08f841437af82"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html#adae80e817bf4c681b8c08f841437af82">eve::network::HttpRequest::setVerifySsl</a></div><div class="ttdeci">void setVerifySsl(bool verify)</div><div class="ttdoc">Overrides TLS verification for this request.</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8cpp_source.html#l00044">HttpRequest.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html"><div class="ttname"><a href="classeve_1_1network_1_1Network.html">eve::network::Network</a></div><div class="ttdoc">Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....</div><div class="ttdef"><b>Definition</b> <a href="Network_8h_source.html#l00032">Network.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a30d7bbf3fe7e0c9aca9fdf974060ebfe"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a30d7bbf3fe7e0c9aca9fdf974060ebfe">eve::network::Network::getVerifySsl</a></div><div class="ttdeci">bool getVerifySsl() const</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00180">Network.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a9f782f6298798e28229f41adc7bf3c69"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a9f782f6298798e28229f41adc7bf3c69">eve::network::Network::getTimeout</a></div><div class="ttdeci">int getTimeout() const</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00172">Network.cpp:172</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html"><div class="ttname"><a href="namespaceeve_1_1network.html">eve::network</a></div><div class="ttdef"><b>Definition</b> <a href="network_2Channel_8cpp_source.html#l00012">Channel.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html_a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95"><div class="ttname"><a href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95">eve::network::NetKind::Http</a></div><div class="ttdeci">@ Http</div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html_a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b"><div class="ttname"><a href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::NetEvType::Err</a></div><div class="ttdeci">@ Err</div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html_a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6"><div class="ttname"><a href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">eve::network::NetEvType::HttpResp</a></div><div class="ttdeci">@ HttpResp</div></div>
+<div class="ttc" id="astructeve_1_1network_1_1NetCompletion_html"><div class="ttname"><a href="structeve_1_1network_1_1NetCompletion.html">eve::network::NetCompletion</a></div><div class="ttdoc">One asynchronous network result/event. handle points at the originating TcpSocket/UdpSocket/HttpReque...</div><div class="ttdef"><b>Definition</b> <a href="NetTypes_8h_source.html#l00033">NetTypes.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1network_1_1NetCompletion_html_a35644265f50cefed7dea085d838c9bfd"><div class="ttname"><a href="structeve_1_1network_1_1NetCompletion.html#a35644265f50cefed7dea085d838c9bfd">eve::network::NetCompletion::kind</a></div><div class="ttdeci">NetKind kind</div><div class="ttdef"><b>Definition</b> <a href="NetTypes_8h_source.html#l00035">NetTypes.h:35</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

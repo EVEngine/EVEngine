@@ -1,0 +1,404 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/filesystem/cppfs/File.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_afee26140d46546965aad89686474471.html">filesystem</a></li><li class="navelem"><a class="el" href="dir_34efd46c83bc3d40c66fb0433e7b5081.html">cppfs</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">File.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="cppfs_2File_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="cppfs_2File_8h.html">filesystem/cppfs/File.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Assume POSIX or Visual Studio.</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;sys/stat.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;sys/types.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="utf8_8h.html">common/utf8.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#ifdef EVENGINE_WINDOWS</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;wchar.h&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;unistd.h&gt;</span>  <span class="comment">// POSIX.</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1filesystem.html">   17</a></span><span class="keyword">namespace </span>filesystem {</div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1filesystem_1_1cppfs.html">   18</a></span><span class="keyword">namespace </span>cppfs {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a34ba378e96349997ec6da141201d5975">   20</a></span><a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a34ba378e96349997ec6da141201d5975">File::File</a>(std::string filename) : filename(filename), <a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>(nullptr), mode(<span class="stringliteral">&quot;c&quot;</span>), bufferMode(<span class="stringliteral">&quot;none&quot;</span>), bufferSize(0) {}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a60f6fa362b56ceecc0dce31bbe975c92">   22</a></span><a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a60f6fa362b56ceecc0dce31bbe975c92">File::~File</a>() {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (mode != <span class="stringliteral">&quot;c&quot;</span>) <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a7e8f8e1a8e5d4dfefad5d3267d084b26">close</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a64df02cc2254bb57620c285b13c092ab">   26</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a64df02cc2254bb57620c285b13c092ab">File::open</a>(std::string newmode) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (newmode == <span class="stringliteral">&quot;c&quot;</span>) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="comment">// File already open?</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (file != <span class="keyword">nullptr</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#ifdef EVENGINE_WINDOWS</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// make sure non-ASCII filenames work.</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::wstring wnewmode  = to_widestr(newmode);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::wstring wfilename = to_widestr(filename);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    file = _wfopen(wfilename.c_str(), wnewmode.c_str());</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    file = fopen(filename.c_str(), newmode.c_str());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (newmode.find(<span class="charliteral">&#39;c&#39;</span>) != std::string::npos &amp;&amp; file == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Could not open file %s. Does not exist.&quot;</span>, filename.c_str());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    mode = newmode;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (file != <span class="keyword">nullptr</span> &amp;&amp; !<a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a5a8b73216c54657dc2fe7c21e0cf3d8a">setBuffer</a>(bufferMode, bufferSize)) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="comment">// Revert to buffer defaults if we don&#39;t successfully set the buffer.</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        bufferMode = <span class="stringliteral">&quot;none&quot;</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        bufferSize = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> file != <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a7e8f8e1a8e5d4dfefad5d3267d084b26">   56</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a7e8f8e1a8e5d4dfefad5d3267d084b26">File::close</a>() {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (file == <span class="keyword">nullptr</span> || fclose(file) != 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    mode = <span class="stringliteral">&quot;c&quot;</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    file = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a714518a98907c57a14d7031547973699">   65</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a714518a98907c57a14d7031547973699">File::isOpen</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode != <span class="stringliteral">&quot;c&quot;</span> &amp;&amp; file != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a49989ab524541cad702032fdbad3b5c9">   67</a></span>int64_t <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a49989ab524541cad702032fdbad3b5c9">File::getSize</a>() {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">int</span> fd = file ? fileno(file) : -1;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#ifdef EVENGINE_WINDOWS</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">struct </span>_stat64 buf;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">if</span> (fd != -1) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">if</span> (_fstat64(fd, &amp;buf) != 0) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="comment">// make sure non-ASCII filenames work.</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        std::wstring wfilename = to_widestr(filename);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">if</span> (_wstat64(wfilename.c_str(), &amp;buf) != 0) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> (int64_t)buf.st_size;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="comment">// Assume POSIX support...</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">struct </span>stat buf;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (fd != -1) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">if</span> (fstat(fd, &amp;buf) != 0) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (stat(filename.c_str(), &amp;buf) != 0)</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> (int64_t)buf.st_size;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a383bbb9036d64a914a32b7dd05c9572d">  100</a></span>int64_t <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a383bbb9036d64a914a32b7dd05c9572d">File::read</a>(<span class="keywordtype">void</span> *dst, int64_t size) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a> || mode != <span class="stringliteral">&quot;rb&quot;</span>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;File is not opened for reading.&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (size &lt; 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Invalid read size.&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a383bbb9036d64a914a32b7dd05c9572d">read</a> = fread(dst, 1, (<span class="keywordtype">size_t</span>)size, <a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> (int64_t)<a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a383bbb9036d64a914a32b7dd05c9572d">read</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a471e3c08c91117c6a43be9727a111c79">  110</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a471e3c08c91117c6a43be9727a111c79">File::write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, int64_t size) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a> || (mode != <span class="stringliteral">&quot;wb&quot;</span> &amp;&amp; mode != <span class="stringliteral">&quot;ab&quot;</span>)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;File is not opened for writing.&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> (size &lt; 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Invalid write size.&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    int64_t written = (int64_t)fwrite(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, 1, (<span class="keywordtype">size_t</span>)size, <a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">return</span> written == size;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aa38b95fdca3f7384bcc64d92e399f59e">  120</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aa38b95fdca3f7384bcc64d92e399f59e">File::flush</a>() {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a> || (mode != <span class="stringliteral">&quot;wb&quot;</span> &amp;&amp; mode != <span class="stringliteral">&quot;ab&quot;</span>)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;File is not opened for writing.&quot;</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> fflush(<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>) == 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#abdb36ffedd6d0f12c87b11da1cb33423">  126</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#abdb36ffedd6d0f12c87b11da1cb33423">File::isEOF</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a> == <span class="keyword">nullptr</span> || <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a9a2215b8aa3a9a29f31c04a5707c8cea">tell</a>() &gt;= <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a49989ab524541cad702032fdbad3b5c9">getSize</a>(); }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="}">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a9a2215b8aa3a9a29f31c04a5707c8cea">  128</a></span>int64_t <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a9a2215b8aa3a9a29f31c04a5707c8cea">File::tell</a>() {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a> == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">#ifdef EVENGINE_WINDOWS</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">return</span> (int64_t)_ftelli64(<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">return</span> (int64_t)ftello(<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="foldopen" id="foldopen00138" data-start="{" data-end="}">
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a54540e173a8e7c1590a9b9d99e036f3f">  138</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a54540e173a8e7c1590a9b9d99e036f3f">File::seek</a>(uint64_t <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a> == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="preprocessor">#ifdef EVENGINE_WINDOWS</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">return</span> _fseeki64(<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>, (int64_t)<a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>, SEEK_SET) == 0;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span> fseeko(<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>, (off_t)<a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>, SEEK_SET) == 0;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>}</div>
+</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="foldopen" id="foldopen00148" data-start="{" data-end="}">
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a5a8b73216c54657dc2fe7c21e0cf3d8a">  148</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a5a8b73216c54657dc2fe7c21e0cf3d8a">File::setBuffer</a>(std::string bufmode, int64_t size) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (size &lt; 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (bufmode == <span class="stringliteral">&quot;none&quot;</span>) size = 0;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="comment">// If the file isn&#39;t open, we&#39;ll make sure the buffer values are set in</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="comment">// File::open.</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a714518a98907c57a14d7031547973699">isOpen</a>()) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        bufferMode = bufmode;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        bufferSize = size;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordtype">int</span> vbufmode;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    vbufmode = _IONBF;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">if</span> (bufferMode == <span class="stringliteral">&quot;newline&quot;</span>) vbufmode = _IOLBF;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">if</span> (bufferMode == <span class="stringliteral">&quot;full&quot;</span>) vbufmode = _IOFBF;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">if</span> (setvbuf(<a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>, <span class="keyword">nullptr</span>, vbufmode, (<span class="keywordtype">size_t</span>)size) != 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    bufferMode = bufmode;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    bufferSize = size;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>}</div>
+</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="foldopen" id="foldopen00174" data-start="{" data-end="}">
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aef53b243bc969661a63402a0c9f71757">  174</a></span>std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aef53b243bc969661a63402a0c9f71757">File::getBuffer</a>(int64_t &amp;size)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    size = bufferSize;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">return</span> bufferMode;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>}</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ad05ef630c6dbddc7aecf6012f753d220">  179</a></span>std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ad05ef630c6dbddc7aecf6012f753d220">File::getFilename</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> filename; }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ac562d592cf10584903961b02196d8a42">  180</a></span>std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ac562d592cf10584903961b02196d8a42">File::getMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode; }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>}  <span class="comment">// namespace cppfs</span></div>
+</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}  <span class="comment">// namespace filesystem</span></div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aEveFileSystem_8cpp_html_a034078985d3cd1ed322585d4cc1dd314"><div class="ttname"><a href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a></div><div class="ttdeci">filesystem::File * file</div><div class="ttdef"><b>Definition</b> <a href="EveFileSystem_8cpp_source.html#l00014">EveFileSystem.cpp:14</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a5438a597ee291f523ae04a9fe355924f"><div class="ttname"><a href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a></div><div class="ttdeci">size_t pos</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00058">UdpLink.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a34ba378e96349997ec6da141201d5975"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a34ba378e96349997ec6da141201d5975">eve::filesystem::cppfs::File::File</a></div><div class="ttdeci">File(std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00020">File.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a383bbb9036d64a914a32b7dd05c9572d"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a383bbb9036d64a914a32b7dd05c9572d">eve::filesystem::cppfs::File::read</a></div><div class="ttdeci">int64_t read(void *dst, int64_t size) override</div><div class="ttdoc">Reads data into the destination buffer.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00100">File.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a471e3c08c91117c6a43be9727a111c79"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a471e3c08c91117c6a43be9727a111c79">eve::filesystem::cppfs::File::write</a></div><div class="ttdeci">bool write(const void *data, int64_t size) override</div><div class="ttdoc">Writes data into the File.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00110">File.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a49989ab524541cad702032fdbad3b5c9"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a49989ab524541cad702032fdbad3b5c9">eve::filesystem::cppfs::File::getSize</a></div><div class="ttdeci">int64_t getSize() override</div><div class="ttdoc">Gets the size of the file.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00067">File.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a54540e173a8e7c1590a9b9d99e036f3f"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a54540e173a8e7c1590a9b9d99e036f3f">eve::filesystem::cppfs::File::seek</a></div><div class="ttdeci">bool seek(uint64_t pos) override</div><div class="ttdoc">Seeks to a certain position in the File.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00138">File.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a5a8b73216c54657dc2fe7c21e0cf3d8a"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a5a8b73216c54657dc2fe7c21e0cf3d8a">eve::filesystem::cppfs::File::setBuffer</a></div><div class="ttdeci">bool setBuffer(std::string bufmode, int64_t size) override</div><div class="ttdoc">Sets the buffering mode for the file. When buffering is enabled,</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00148">File.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a60f6fa362b56ceecc0dce31bbe975c92"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a60f6fa362b56ceecc0dce31bbe975c92">eve::filesystem::cppfs::File::~File</a></div><div class="ttdeci">virtual ~File()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00022">File.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a64df02cc2254bb57620c285b13c092ab"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a64df02cc2254bb57620c285b13c092ab">eve::filesystem::cppfs::File::open</a></div><div class="ttdeci">bool open(std::string newmode) override</div><div class="ttdoc">Opens the file in a certain mode.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00026">File.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a714518a98907c57a14d7031547973699"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a714518a98907c57a14d7031547973699">eve::filesystem::cppfs::File::isOpen</a></div><div class="ttdeci">bool isOpen() const override</div><div class="ttdoc">Gets whether the file is open.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00065">File.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a7e8f8e1a8e5d4dfefad5d3267d084b26"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a7e8f8e1a8e5d4dfefad5d3267d084b26">eve::filesystem::cppfs::File::close</a></div><div class="ttdeci">bool close() override</div><div class="ttdoc">Closes the file.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00056">File.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_a9a2215b8aa3a9a29f31c04a5707c8cea"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a9a2215b8aa3a9a29f31c04a5707c8cea">eve::filesystem::cppfs::File::tell</a></div><div class="ttdeci">int64_t tell() override</div><div class="ttdoc">Gets the current position in the File.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00128">File.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_aa38b95fdca3f7384bcc64d92e399f59e"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aa38b95fdca3f7384bcc64d92e399f59e">eve::filesystem::cppfs::File::flush</a></div><div class="ttdeci">bool flush() override</div><div class="ttdoc">Flushes the currently buffered file data to disk. Only applicable in write mode.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00120">File.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_abdb36ffedd6d0f12c87b11da1cb33423"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#abdb36ffedd6d0f12c87b11da1cb33423">eve::filesystem::cppfs::File::isEOF</a></div><div class="ttdeci">bool isEOF() override</div><div class="ttdoc">Checks whether we are currently at end-of-file.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00126">File.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_ac562d592cf10584903961b02196d8a42"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ac562d592cf10584903961b02196d8a42">eve::filesystem::cppfs::File::getMode</a></div><div class="ttdeci">std::string getMode() const override</div><div class="ttdoc">Gets the current mode of the File.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00180">File.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_ad05ef630c6dbddc7aecf6012f753d220"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#ad05ef630c6dbddc7aecf6012f753d220">eve::filesystem::cppfs::File::getFilename</a></div><div class="ttdeci">std::string getFilename() const override</div><div class="ttdoc">Gets the filename for this File, or empty string if none.</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00179">File.cpp:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1cppfs_1_1File_html_aef53b243bc969661a63402a0c9f71757"><div class="ttname"><a href="classeve_1_1filesystem_1_1cppfs_1_1File.html#aef53b243bc969661a63402a0c9f71757">eve::filesystem::cppfs::File::getBuffer</a></div><div class="ttdeci">std::string getBuffer(int64_t &amp;size) const override</div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00174">File.cpp:174</a></div></div>
+<div class="ttc" id="acppfs_2File_8h_html"><div class="ttname"><a href="cppfs_2File_8h.html">File.h</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="autf8_8h_html"><div class="ttname"><a href="utf8_8h.html">utf8.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

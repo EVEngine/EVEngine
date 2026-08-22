@@ -1,0 +1,195 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::ScreenSpaceReflection 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae5475fbd12ddb6efd7b5a119dcbfa3c5">applyFromScene</a>(Graphics *gfx, Texture *sceneColor, Texture *hwDepth, Texture *worldNormal)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">applyFromSceneTo</a>(Graphics *gfx, Texture *sceneColor, Texture *hwDepth, Texture *worldNormal, Canvas *dest)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a746cae7e5990906745d1d807103bfd78">getEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#acdba4b5cd8a8a7fec289eb6cc8296c13">getFloat</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8dcf122565da41dda021348ab360ec78">getReflectionCanvas</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a46b0ee721076c31a0cf30513f9eec22e">getReflectionTexture</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adefb24e908689d14140f0877107cab02">getShader</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a20f90b944e2fb9b42085b9144b9b5deb">getStrength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af45b7c584715b9ed8eba09c477506821">hasParam</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae4f45b66cd17694a9d652038034b1b83">operator=</a>(const ScreenSpaceReflection &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ac4924e49d63dbeeea55f3f44d1ae9d2d">ScreenSpaceReflection</a>(Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a5eb434e0e30432490e5309ed4036036c">ScreenSpaceReflection</a>(const ScreenSpaceReflection &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a139f52072a5c09ebaa8ed65d8462f9a5">setCamera</a>(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6b7f7212f650805eddbccbab08f137be">setEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adb3c6fbe44790c1e1d64d5ef4eca1183">setFloat</a>(const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab04c5117e5e038f7b5722625ec31df41">setInvViewProj</a>(const glm::mat4 &amp;invViewProj)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6a93b5cb1acc8321660bcbdbee33f71f">setMaxDistance</a>(float meters)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8a49ca611ab15759cc5f4f452b50e649">setMaxSteps</a>(int steps)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aa0567d796afbb7b9206bdc5f532abac8">setStepLength</a>(float meters)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#abb4f2a2c8a6d6f5cca516b18f3e8c0a6">setStrength</a>(float strength)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a779cf18929733d8b30bd313daf065453">setThickness</a>(float meters)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a1c4b1fe0b2edccb03a8b97148b4684ba">~ScreenSpaceReflection</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/texture/PbrMaterial.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_58df875c20f4dbb0276e827a5bf00a98.html">texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PbrMaterial.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PbrMaterial_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Params_8h.html">procgen/Params.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="TextureRecipe_8h.html">procgen/texture/TextureRecipe.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>ImageData;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html#ae4842221ab15c35e92f9a8703df7bfc4">   25</a></span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrTextureSet.html#ae4842221ab15c35e92f9a8703df7bfc4">albedo</a>    = <span class="keyword">nullptr</span>;  <span class="comment">// RGBA8</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html#a718a6eefa765f215933c9c2de35f2ef7">   26</a></span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrTextureSet.html#a718a6eefa765f215933c9c2de35f2ef7">normal</a>    = <span class="keyword">nullptr</span>;  <span class="comment">// RGBA8 tangent-space normal</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html#aefb54fffd7011a2340f91aeef942f523">   27</a></span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrTextureSet.html#aefb54fffd7011a2340f91aeef942f523">roughness</a> = <span class="keyword">nullptr</span>;  <span class="comment">// RGBA8, grayscale 0=glossy 1=rough</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html#af61158b32dd54f2681e913e384892f0b">   28</a></span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrTextureSet.html#af61158b32dd54f2681e913e384892f0b">metallic</a>  = <span class="keyword">nullptr</span>;  <span class="comment">// RGBA8, grayscale 0=dielectric 1=metal</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html#ab852c5a1fe1355adbee446a410083ce4">   29</a></span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrTextureSet.html#ab852c5a1fe1355adbee446a410083ce4">height</a>    = <span class="keyword">nullptr</span>;  <span class="comment">// RGBA8, grayscale displacement</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrTextureSet.html#ad4e56a2a881e498908a33fffa4ca0855">   30</a></span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrTextureSet.html#ad4e56a2a881e498908a33fffa4ca0855">ao</a>        = <span class="keyword">nullptr</span>;  <span class="comment">// RGBA8, grayscale ambient occlusion</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1procgen_1_1PbrTextureSet.html#a6c633f9ca902dc98c41912080a367b96">destroy</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a7165e2dca83b89dc347ba199ee5dd92c">   37</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1procgen.html#a7165e2dca83b89dc347ba199ee5dd92c">PbrRecipeFn</a> = std::function&lt;<a class="code hl_struct" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> *(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)&gt;;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html">PbrRecipeRegistry</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html">PbrRecipeRegistry</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#a8fe0de7d4e5d9d931631e256d085807c">instance</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#af9647d62c19ceebadf2520f97016e10f">registerPbrRecipe</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <a class="code hl_typedef" href="namespaceeve_1_1procgen.html#a7165e2dca83b89dc347ba199ee5dd92c">PbrRecipeFn</a> <a class="code hl_variable" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#afad0f1a139a53ea95670a2a5bfe095a3">has</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#aca7d8ff8be294d087e0ec5cf8ff82f5c">generate</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#abd95a2df0933abc0eccb810217f87d59">list</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#ad9f380a2a81bccbc3711fce133600c51">registerPbrBuiltins</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html">PbrRecipeRegistry</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::unordered_map&lt;std::string, PbrRecipeFn&gt; recipes_;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">bool</span> builtinsRegistered_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><a class="code hl_struct" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> *<a class="code hl_function" href="namespaceeve_1_1procgen.html#aec9f1304ad1f1f2b32951a5644b85792">generatePbrSet</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TextureRecipeDef.html">TextureRecipeDef</a> &amp;def, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                              std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_function" href="namespaceeve_1_1procgen.html#aaa6f1d50aa6a6a1f86380bd97d7bc220">grayscaleImage</a>(<span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aParams_8h_html"><div class="ttname"><a href="Params_8h.html">Params.h</a></div></div>
+<div class="ttc" id="aSettlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="aTextureRecipe_8h_html"><div class="ttname"><a href="TextureRecipe_8h.html">TextureRecipe.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00025">ImageData.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Generation parameters. Algorithm-specific keys live in values as strings (no overloads; typed setters...</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00013">Params.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html">eve::procgen::PbrRecipeRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00039">PbrMaterial.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html_a8fe0de7d4e5d9d931631e256d085807c"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#a8fe0de7d4e5d9d931631e256d085807c">eve::procgen::PbrRecipeRegistry::instance</a></div><div class="ttdeci">static PbrRecipeRegistry &amp; instance()</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00022">PbrMaterial.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html_abd95a2df0933abc0eccb810217f87d59"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#abd95a2df0933abc0eccb810217f87d59">eve::procgen::PbrRecipeRegistry::list</a></div><div class="ttdeci">std::vector&lt; std::string &gt; list() const</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00045">PbrMaterial.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html_aca7d8ff8be294d087e0ec5cf8ff82f5c"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#aca7d8ff8be294d087e0ec5cf8ff82f5c">eve::procgen::PbrRecipeRegistry::generate</a></div><div class="ttdeci">PbrTextureSet * generate(const std::string &amp;id, const Params &amp;params, std::string &amp;error) const</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00035">PbrMaterial.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html_ad9f380a2a81bccbc3711fce133600c51"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#ad9f380a2a81bccbc3711fce133600c51">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins</a></div><div class="ttdeci">void registerPbrBuiltins()</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00053">PbrMaterial.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html_af9647d62c19ceebadf2520f97016e10f"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#af9647d62c19ceebadf2520f97016e10f">eve::procgen::PbrRecipeRegistry::registerPbrRecipe</a></div><div class="ttdeci">void registerPbrRecipe(const std::string &amp;id, PbrRecipeFn fn)</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00027">PbrMaterial.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PbrRecipeRegistry_html_afad0f1a139a53ea95670a2a5bfe095a3"><div class="ttname"><a href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#afad0f1a139a53ea95670a2a5bfe095a3">eve::procgen::PbrRecipeRegistry::has</a></div><div class="ttdeci">bool has(const std::string &amp;id) const</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00031">PbrMaterial.cpp:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00017">AvatarInstance.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="BuiltinAlgorithms_8cpp_source.html#l00013">BuiltinAlgorithms.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a7165e2dca83b89dc347ba199ee5dd92c"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a7165e2dca83b89dc347ba199ee5dd92c">eve::procgen::PbrRecipeFn</a></div><div class="ttdeci">std::function&lt; PbrTextureSet *(const Params &amp;params, std::string &amp;error)&gt; PbrRecipeFn</div><div class="ttdoc">Recipe returns a full PBR set (caller owns), or nullptr on failure.</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00037">PbrMaterial.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aaa6f1d50aa6a6a1f86380bd97d7bc220"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aaa6f1d50aa6a6a1f86380bd97d7bc220">eve::procgen::grayscaleImage</a></div><div class="ttdeci">image::ImageData * grayscaleImage(const std::vector&lt; float &gt; &amp;values, int w, int h)</div><div class="ttdoc">Build a grayscale RGBA8 image from per-pixel values in [0,1]. Caller owns.</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00064">PbrMaterial.cpp:64</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aec9f1304ad1f1f2b32951a5644b85792"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aec9f1304ad1f1f2b32951a5644b85792">eve::procgen::generatePbrSet</a></div><div class="ttdeci">PbrTextureSet * generatePbrSet(const TextureRecipeDef &amp;def, const Params &amp;params, std::string &amp;error)</div><div class="ttdoc">Build a full PBR set from a texture definition. Caller owns the result.</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00076">PbrMaterial.cpp:76</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html">eve::procgen::PbrTextureSet</a></div><div class="ttdoc">Full metallic-roughness PBR map set. All maps are caller-owned; call destroy() (or delete each pointe...</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00024">PbrMaterial.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_a6c633f9ca902dc98c41912080a367b96"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#a6c633f9ca902dc98c41912080a367b96">eve::procgen::PbrTextureSet::destroy</a></div><div class="ttdeci">void destroy()</div><div class="ttdoc">Deletes all maps and nulls the pointers (defined in PbrMaterial.cpp).</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00012">PbrMaterial.cpp:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_a718a6eefa765f215933c9c2de35f2ef7"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#a718a6eefa765f215933c9c2de35f2ef7">eve::procgen::PbrTextureSet::normal</a></div><div class="ttdeci">image::ImageData * normal</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00026">PbrMaterial.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_ab852c5a1fe1355adbee446a410083ce4"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#ab852c5a1fe1355adbee446a410083ce4">eve::procgen::PbrTextureSet::height</a></div><div class="ttdeci">image::ImageData * height</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00029">PbrMaterial.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_ad4e56a2a881e498908a33fffa4ca0855"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#ad4e56a2a881e498908a33fffa4ca0855">eve::procgen::PbrTextureSet::ao</a></div><div class="ttdeci">image::ImageData * ao</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00030">PbrMaterial.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_ae4842221ab15c35e92f9a8703df7bfc4"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#ae4842221ab15c35e92f9a8703df7bfc4">eve::procgen::PbrTextureSet::albedo</a></div><div class="ttdeci">image::ImageData * albedo</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00025">PbrMaterial.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_aefb54fffd7011a2340f91aeef942f523"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#aefb54fffd7011a2340f91aeef942f523">eve::procgen::PbrTextureSet::roughness</a></div><div class="ttdeci">image::ImageData * roughness</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00027">PbrMaterial.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html_af61158b32dd54f2681e913e384892f0b"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html#af61158b32dd54f2681e913e384892f0b">eve::procgen::PbrTextureSet::metallic</a></div><div class="ttdeci">image::ImageData * metallic</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00028">PbrMaterial.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html">eve::procgen::TextureRecipeDef</a></div><div class="ttdoc">A procedural texture is fully described by an albedo ramp + a displacement field + PBR knobs....</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00085">TextureRecipe.h:85</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/Waterfall.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Waterfall.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Waterfall_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Waterfall_8h.html">graphics/Waterfall.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;graphics/shaders/waterfall_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// Push-constant layout (data[32]):</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">//   0 time, 1 flowSpeed, 2 turbulence, 3 streakCount, 4 streakScale,</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">//   5 topFoam, 6 bottomFoam, 7 foamAmt, 8 reflIntensity,</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">//   9 sunIntensity, 10..12 waterColor.</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// Fragment shader source lives in graphics/shaders/waterfall_mesh.frag; it is</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// precompiled to SPIR-V (waterfall_mesh_frag_spv.inc) so it works on every</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// backend without a runtime glslc.</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">const</span> <span class="keywordtype">char</span> *kUniformNames[] = {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="stringliteral">&quot;time&quot;</span>, <span class="stringliteral">&quot;flowSpeed&quot;</span>, <span class="stringliteral">&quot;turbulence&quot;</span>, <span class="stringliteral">&quot;streakCnt&quot;</span>, <span class="stringliteral">&quot;streakScale&quot;</span>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="stringliteral">&quot;topFoam&quot;</span>, <span class="stringliteral">&quot;bottomFoam&quot;</span>, <span class="stringliteral">&quot;foamAmt&quot;</span>, <span class="stringliteral">&quot;reflInten&quot;</span>, <span class="stringliteral">&quot;sunInten&quot;</span>, <span class="stringliteral">&quot;waterCol&quot;</span>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">const</span> <span class="keywordtype">int</span> kUniformCount = int(<span class="keyword">sizeof</span>(kUniformNames) / <span class="keyword">sizeof</span>(kUniformNames[0]));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a1ccb46485aab014aee59f06865e2617f">   31</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="namespaceeve_1_1graphics.html#a1ccb46485aab014aee59f06865e2617f">newWaterfallShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>(waterfall_mesh_frag_spv,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                               waterfall_mesh_frag_spv + waterfall_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *sh = gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">newMeshShaderFromSpv</a>({}, <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; kUniformCount; ++i) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">if</span> (std::string(kUniformNames[i]) == <span class="stringliteral">&quot;waterCol&quot;</span>)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            sh-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a640f9925252f962ba3b8a5a6b15d6645">declareVec3</a>(kUniformNames[i]);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            sh-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(kUniformNames[i]);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> sh;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a26ee512f92a8a9e8d49a96383b52672b">   44</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a26ee512f92a8a9e8d49a96383b52672b">Waterfall::paramCount</a>() { <span class="keywordflow">return</span> kUniformCount; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#afeafb0905a0c07be31557f250eb2cd91">   46</a></span>std::string <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#afeafb0905a0c07be31557f250eb2cd91">Waterfall::paramName</a>(<span class="keywordtype">int</span> index) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= kUniformCount) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> kUniformNames[index];</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a9b663b441062af498c23ce8c583e9938">   51</a></span><a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a9b663b441062af498c23ce8c583e9938">Waterfall::Waterfall</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx) : gfx_(gfx) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    shader_ = <a class="code hl_function" href="namespaceeve_1_1graphics.html#a1ccb46485aab014aee59f06865e2617f">newWaterfallShader</a>(gfx);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">bindParams</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a270931ddceb7509c9877d3931b87182d">   56</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a270931ddceb7509c9877d3931b87182d">Waterfall::createSheet</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, <span class="keywordtype">int</span> segX, <span class="keywordtype">int</span> segY) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    segX = std::max(1, segX);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    segY = std::max(1, segY);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::vector&lt;float&gt; <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>, nrm, uv;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt;= segY; ++<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt;= segX; ++<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>.push_back(-<a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a> * 0.5f + <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a> * <span class="keywordtype">float</span>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) / segX);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>.push_back(-<a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a> * 0.5f + <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a> * <span class="keywordtype">float</span>(<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) / segY);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>.push_back(0.f);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            nrm.push_back(0.f);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            nrm.push_back(0.f);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            nrm.push_back(1.f);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            uv.push_back(<span class="keywordtype">float</span>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) / segX);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            uv.push_back(<span class="keywordtype">float</span>(<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) / segY);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; segY; ++<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; segX; ++<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = uint32_t(<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> * (segX + 1) + <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + 1;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + uint32_t(segX + 1);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> + 1;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.push_back(<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    mesh_ = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">newMeshFromArrays</a>(<a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>.data(), nrm.data(), uv.data(), <span class="keywordtype">int</span>(<a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>.size() / 3),</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                    <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.data(), <span class="keywordtype">int</span>(<a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>.size()));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#aa7cc6880c4f836732bbb0f076f44c3c5">   91</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#aa7cc6880c4f836732bbb0f076f44c3c5">Waterfall::update</a>(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    time_ += dt;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">bindParams</a>();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#ac6c3c1e860b2224b12621bc887a450a0">   96</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#ac6c3c1e860b2224b12621bc887a450a0">Waterfall::setTime</a>(<span class="keywordtype">float</span> seconds) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    time_ = seconds;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">bindParams</a>();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#ab0baa40e4047326f6f0fe8c70fd0c150">  101</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#ab0baa40e4047326f6f0fe8c70fd0c150">Waterfall::setFlowSpeed</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { flowSpeed_ = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a69bf019ff6f2d9097f4f12f6be624a0a">  102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a69bf019ff6f2d9097f4f12f6be624a0a">Waterfall::setTurbulence</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { turbulence_ = std::max(0.f, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>); }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a31283378746baffc4a631cf786fd5765">  103</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a31283378746baffc4a631cf786fd5765">Waterfall::setStreakCount</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { streakCount_ = std::max(0, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>); }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a89fa7f50db7f3bb840d3316987076e92">  104</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a89fa7f50db7f3bb840d3316987076e92">Waterfall::setStreakScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { streakScale_ = std::max(0.1f, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>); }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#aabf9db70f8d2ad8a0433d6db9b30785f">  105</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#aabf9db70f8d2ad8a0433d6db9b30785f">Waterfall::setTopFoam</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { topFoam_ = std::clamp(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, 0.001f, 0.5f); }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a7f3ce9d1f835999af158af27ebd7d3e8">  106</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a7f3ce9d1f835999af158af27ebd7d3e8">Waterfall::setBottomFoam</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { bottomFoam_ = std::clamp(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, 0.001f, 0.5f); }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a31a8509178a37ca54bce2ba47dcc9205">  107</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a31a8509178a37ca54bce2ba47dcc9205">Waterfall::setFoamAmount</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { foamAmount_ = std::max(0.f, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>); }</div>
+<div class="foldopen" id="foldopen00108" data-start="{" data-end="}">
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a4cfc3704aa2c7eeb77935095817737e4">  108</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a4cfc3704aa2c7eeb77935095817737e4">Waterfall::setWaterColor</a>(<span class="keywordtype">float</span> r, <span class="keywordtype">float</span> g, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    waterColor_[0] = r;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    waterColor_[1] = g;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    waterColor_[2] = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a08729a8a48903095fb29fb1a4b676062">  113</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a08729a8a48903095fb29fb1a4b676062">Waterfall::setReflectionIntensity</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { reflectionIntensity_ = std::max(0.f, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>); }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a017bfadcaf96580296d300ff7bf0809f">  114</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a017bfadcaf96580296d300ff7bf0809f">Waterfall::setSunIntensity</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { sunIntensity_ = std::max(0.f, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>); }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">  116</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">Waterfall::bindParams</a>() {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (!shader_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;time&quot;</span>, time_);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;flowSpeed&quot;</span>, flowSpeed_);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;turbulence&quot;</span>, turbulence_);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;streakCnt&quot;</span>, <span class="keywordtype">float</span>(streakCount_));</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;streakScale&quot;</span>, streakScale_);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;topFoam&quot;</span>, topFoam_);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;bottomFoam&quot;</span>, bottomFoam_);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;foamAmt&quot;</span>, foamAmount_);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;reflInten&quot;</span>, reflectionIntensity_);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;sunInten&quot;</span>, sunIntensity_);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    shader_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a30d1a03224c00f2ffd5f7ee5f5e477aa">sendVec3</a>(<span class="stringliteral">&quot;waterCol&quot;</span>, waterColor_[0], waterColor_[1], waterColor_[2]);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Waterfall.html#a4679778c4e0ef3367f1f85a547907c02">  131</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Waterfall.html#a4679778c4e0ef3367f1f85a547907c02">Waterfall::draw</a>() {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (!gfx_ || !mesh_ || !shader_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#acbd057ac365c66502742391d4aa42807">drawMeshShader</a>(mesh_, glm::mat4(1.f), <span class="keyword">nullptr</span>, glm::vec4(1.f), shader_);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_ae743cf0e5d1516ca41060ab8de001134"><div class="ttname"><a href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a></div><div class="ttdeci">vk::ShaderModule frag</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00271">GraphicsInternal.h:271</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a48083b65ac9a863566dc3e3fff09a5b4"><div class="ttname"><a href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00235">Grass.cpp:235</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a2474a5474cbff19523a51eb1de01cda4"><div class="ttname"><a href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00144">Pathfinder.cpp:144</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ae40354a1051342eb5a9db005715dcfa9"><div class="ttname"><a href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a></div><div class="ttdeci">int idx</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00290">Pathfinder.cpp:290</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_a6f364afbe132c4ecfea48bde1b0618ba"><div class="ttname"><a href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a></div><div class="ttdeci">int d</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a5438a597ee291f523ae04a9fe355924f"><div class="ttname"><a href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a></div><div class="ttdeci">size_t pos</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00058">UdpLink.cpp:58</a></div></div>
+<div class="ttc" id="aWaterfall_8h_html"><div class="ttname"><a href="Waterfall_8h.html">Waterfall.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a1a88617c82f58d00a3dd797e857018fe"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newMeshShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div><div class="ttdoc">Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo). Empty vert → default mesh3d....</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_acbd057ac365c66502742391d4aa42807"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#acbd057ac365c66502742391d4aa42807">eve::graphics::Graphics::drawMeshShader</a></div><div class="ttdeci">virtual void drawMeshShader(Mesh *mesh, const glm::mat4 &amp;model, Texture *texture, const Color &amp;tint, Shader *shader)=0</div><div class="ttdoc">Draw mesh with an explicit Mesh3D Shader (nullptr = default PBR pipeline).</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ad2394ae661385736c667a98446a5b9b4"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays</a></div><div class="ttdeci">virtual Mesh * newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div><div class="ttdoc">Upload a triangle mesh from packed CPU arrays. Owned by Graphics. posXYZ required (vertexCount*3)....</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a12384bb0fb5dffc0b0b12732b732b607"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">eve::graphics::Shader::sendFloat</a></div><div class="ttdeci">void sendFloat(const std::string &amp;name, float x)</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00082">Shader.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a30d1a03224c00f2ffd5f7ee5f5e477aa"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a30d1a03224c00f2ffd5f7ee5f5e477aa">eve::graphics::Shader::sendVec3</a></div><div class="ttdeci">void sendVec3(const std::string &amp;name, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00089">Shader.cpp:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a640f9925252f962ba3b8a5a6b15d6645"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a640f9925252f962ba3b8a5a6b15d6645">eve::graphics::Shader::declareVec3</a></div><div class="ttdeci">int declareVec3(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00032">Shader.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_ab15e58eeeaa70277a2d0b90a9a01c3e6"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">eve::graphics::Shader::declareFloat</a></div><div class="ttdeci">int declareFloat(const std::string &amp;name)</div><div class="ttdoc">Reserve sequential float slots in the push-constant block. Returns start index.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00030">Shader.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a017bfadcaf96580296d300ff7bf0809f"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a017bfadcaf96580296d300ff7bf0809f">eve::graphics::Waterfall::setSunIntensity</a></div><div class="ttdeci">void setSunIntensity(float intensity)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00114">Waterfall.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a08729a8a48903095fb29fb1a4b676062"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a08729a8a48903095fb29fb1a4b676062">eve::graphics::Waterfall::setReflectionIntensity</a></div><div class="ttdeci">void setReflectionIntensity(float intensity)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00113">Waterfall.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a26ee512f92a8a9e8d49a96383b52672b"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a26ee512f92a8a9e8d49a96383b52672b">eve::graphics::Waterfall::paramCount</a></div><div class="ttdeci">static int paramCount()</div><div class="ttdoc">Names of the push-constant parameters (for UI / inspection).</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00044">Waterfall.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a270931ddceb7509c9877d3931b87182d"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a270931ddceb7509c9877d3931b87182d">eve::graphics::Waterfall::createSheet</a></div><div class="ttdeci">void createSheet(float width, float height, int segX, int segY)</div><div class="ttdoc">Build a vertical XY plane (facing +Z, Y-up world) sized w×h, UVs [0,1]².</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00056">Waterfall.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a31283378746baffc4a631cf786fd5765"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a31283378746baffc4a631cf786fd5765">eve::graphics::Waterfall::setStreakCount</a></div><div class="ttdeci">void setStreakCount(int count)</div><div class="ttdoc">How many layered falling streaks are drawn.</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00103">Waterfall.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a31a8509178a37ca54bce2ba47dcc9205"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a31a8509178a37ca54bce2ba47dcc9205">eve::graphics::Waterfall::setFoamAmount</a></div><div class="ttdeci">void setFoamAmount(float v)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00107">Waterfall.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a4679778c4e0ef3367f1f85a547907c02"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a4679778c4e0ef3367f1f85a547907c02">eve::graphics::Waterfall::draw</a></div><div class="ttdeci">void draw()</div><div class="ttdoc">Draw the waterfall sheet (uses default mesh3d camera / lighting state).</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00131">Waterfall.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a4cfc3704aa2c7eeb77935095817737e4"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a4cfc3704aa2c7eeb77935095817737e4">eve::graphics::Waterfall::setWaterColor</a></div><div class="ttdeci">void setWaterColor(float r, float g, float b)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00108">Waterfall.cpp:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a69bf019ff6f2d9097f4f12f6be624a0a"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a69bf019ff6f2d9097f4f12f6be624a0a">eve::graphics::Waterfall::setTurbulence</a></div><div class="ttdeci">void setTurbulence(float t)</div><div class="ttdoc">Amount of turbulence / white-water streak in the body.</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00102">Waterfall.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a757816eb408d884c2fa445963e0eafb0"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a757816eb408d884c2fa445963e0eafb0">eve::graphics::Waterfall::bindParams</a></div><div class="ttdeci">void bindParams()</div><div class="ttdoc">Upload current params to the shader push constants.</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00116">Waterfall.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a7f3ce9d1f835999af158af27ebd7d3e8"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a7f3ce9d1f835999af158af27ebd7d3e8">eve::graphics::Waterfall::setBottomFoam</a></div><div class="ttdeci">void setBottomFoam(float v)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00106">Waterfall.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a89fa7f50db7f3bb840d3316987076e92"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a89fa7f50db7f3bb840d3316987076e92">eve::graphics::Waterfall::setStreakScale</a></div><div class="ttdeci">void setStreakScale(float scale)</div><div class="ttdoc">Horizontal stretch of the falling streaks (1 = circular, &gt;1 elongated).</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00104">Waterfall.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_a9b663b441062af498c23ce8c583e9938"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#a9b663b441062af498c23ce8c583e9938">eve::graphics::Waterfall::Waterfall</a></div><div class="ttdeci">Waterfall(Graphics *gfx)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00051">Waterfall.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_aa7cc6880c4f836732bbb0f076f44c3c5"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#aa7cc6880c4f836732bbb0f076f44c3c5">eve::graphics::Waterfall::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Advance the animation clock by dt seconds.</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00091">Waterfall.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_aabf9db70f8d2ad8a0433d6db9b30785f"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#aabf9db70f8d2ad8a0433d6db9b30785f">eve::graphics::Waterfall::setTopFoam</a></div><div class="ttdeci">void setTopFoam(float v)</div><div class="ttdoc">Relative height (0..1) of the top foam lip and bottom splash bands.</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00105">Waterfall.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_ab0baa40e4047326f6f0fe8c70fd0c150"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#ab0baa40e4047326f6f0fe8c70fd0c150">eve::graphics::Waterfall::setFlowSpeed</a></div><div class="ttdeci">void setFlowSpeed(float speed)</div><div class="ttdoc">Fall speed of the water (scales the downward scroll).</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00101">Waterfall.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_ac6c3c1e860b2224b12621bc887a450a0"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#ac6c3c1e860b2224b12621bc887a450a0">eve::graphics::Waterfall::setTime</a></div><div class="ttdeci">void setTime(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00096">Waterfall.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html_afeafb0905a0c07be31557f250eb2cd91"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html#afeafb0905a0c07be31557f250eb2cd91">eve::graphics::Waterfall::paramName</a></div><div class="ttdeci">static std::string paramName(int index)</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00046">Waterfall.cpp:46</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a1ccb46485aab014aee59f06865e2617f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a1ccb46485aab014aee59f06865e2617f">eve::graphics::newWaterfallShader</a></div><div class="ttdeci">Shader * newWaterfallShader(Graphics *gfx)</div><div class="ttdoc">Create the embedded waterfall fragment shader (owned by Graphics).</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8cpp_source.html#l00031">Waterfall.cpp:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

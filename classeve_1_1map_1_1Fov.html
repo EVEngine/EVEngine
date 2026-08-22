@@ -1,0 +1,2615 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map::Fov类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1map_1_1Fov-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map::Fov类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Dynamic field-of-view / fog-of-war facade. Phase A: 2D shadowcast + multi-revealer + explored memory. Phase B: raycast/permissive, heightmap, volume, dirty-skip, CPU masks. Phase C: hex topology FOV, rectangle-based FOV, perception/stealth detection helpers, GPU mask Texture upload.  
+ <a href="classeve_1_1map_1_1Fov.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Fov_8h_source.html">Fov.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a337f0b52c1179c320c98acad6105593f" id="r_a337f0b52c1179c320c98acad6105593f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a337f0b52c1179c320c98acad6105593f">Fov</a> ()</td></tr>
+<tr class="separator:a337f0b52c1179c320c98acad6105593f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5e7eed519378c5aed469c53250c341e" id="r_ab5e7eed519378c5aed469c53250c341e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ab5e7eed519378c5aed469c53250c341e">Fov</a> (<a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:ab5e7eed519378c5aed469c53250c341e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a529f68daa40b64c94716b3366caef2a8" id="r_a529f68daa40b64c94716b3366caef2a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a529f68daa40b64c94716b3366caef2a8">Fov</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:a529f68daa40b64c94716b3366caef2a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe4707db25437b75f43caab5bb26478" id="r_abbe4707db25437b75f43caab5bb26478"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#abbe4707db25437b75f43caab5bb26478">Fov</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>)</td></tr>
+<tr class="separator:abbe4707db25437b75f43caab5bb26478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda87a2878a37855c2d00b0b06f2b5f1" id="r_afda87a2878a37855c2d00b0b06f2b5f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#afda87a2878a37855c2d00b0b06f2b5f1">~Fov</a> ()</td></tr>
+<tr class="separator:afda87a2878a37855c2d00b0b06f2b5f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9fd2c3b43179ecc3ec1e2452cea37cb" id="r_ad9fd2c3b43179ecc3ec1e2452cea37cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ad9fd2c3b43179ecc3ec1e2452cea37cb">Fov</a> (<a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:ad9fd2c3b43179ecc3ec1e2452cea37cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2629a9551a69a2f5b6a3a497ddd86f33" id="r_a2629a9551a69a2f5b6a3a497ddd86f33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a2629a9551a69a2f5b6a3a497ddd86f33">operator=</a> (<a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a2629a9551a69a2f5b6a3a497ddd86f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a662cb6bffcd3159d0077bc27651c2aec" id="r_a662cb6bffcd3159d0077bc27651c2aec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a662cb6bffcd3159d0077bc27651c2aec">Fov</a> (const <a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;)=delete</td></tr>
+<tr class="separator:a662cb6bffcd3159d0077bc27651c2aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4d91745aa883cc47853834119430b23" id="r_ae4d91745aa883cc47853834119430b23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ae4d91745aa883cc47853834119430b23">operator=</a> (const <a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;)=delete</td></tr>
+<tr class="separator:ae4d91745aa883cc47853834119430b23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16baf290eae3d1e00e513dc420fb5a17" id="r_a16baf290eae3d1e00e513dc420fb5a17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a16baf290eae3d1e00e513dc420fb5a17">bindLayer</a> (<a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:a16baf290eae3d1e00e513dc420fb5a17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a447195359af6e201b911908609f268a4" id="r_a447195359af6e201b911908609f268a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a447195359af6e201b911908609f268a4">setSize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:a447195359af6e201b911908609f268a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5ba197ceaf600267da987daffc5f92b" id="r_af5ba197ceaf600267da987daffc5f92b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#af5ba197ceaf600267da987daffc5f92b">setVolumeSize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>)</td></tr>
+<tr class="separator:af5ba197ceaf600267da987daffc5f92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d14b731e81c97773e3c8318426b640a" id="r_a4d14b731e81c97773e3c8318426b640a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a4d14b731e81c97773e3c8318426b640a">getWidth</a> () const</td></tr>
+<tr class="separator:a4d14b731e81c97773e3c8318426b640a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155eead6f539ea797f4c7318b49a379d" id="r_a155eead6f539ea797f4c7318b49a379d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a155eead6f539ea797f4c7318b49a379d">getHeight</a> () const</td></tr>
+<tr class="separator:a155eead6f539ea797f4c7318b49a379d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aad6cd76346b9ab8f494c99158a9aa1" id="r_a5aad6cd76346b9ab8f494c99158a9aa1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a5aad6cd76346b9ab8f494c99158a9aa1">getDepth</a> () const</td></tr>
+<tr class="separator:a5aad6cd76346b9ab8f494c99158a9aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b44ff192bcd4f4c886e691ba3e7836" id="r_aa9b44ff192bcd4f4c886e691ba3e7836"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#aa9b44ff192bcd4f4c886e691ba3e7836">setMode</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:aa9b44ff192bcd4f4c886e691ba3e7836"><td class="mdescLeft">&#160;</td><td class="mdescRight">"grid2d" (default) | "heightmap" | "volume"  <br /></td></tr>
+<tr class="separator:aa9b44ff192bcd4f4c886e691ba3e7836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f751f2310e42a18c33fac1ddf88f84d" id="r_a5f751f2310e42a18c33fac1ddf88f84d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a5f751f2310e42a18c33fac1ddf88f84d">getMode</a> () const</td></tr>
+<tr class="separator:a5f751f2310e42a18c33fac1ddf88f84d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19cc51557fbbf3060eedb8433331163f" id="r_a19cc51557fbbf3060eedb8433331163f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a19cc51557fbbf3060eedb8433331163f">setAlgorithm</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a19cc51557fbbf3060eedb8433331163f"><td class="mdescLeft">&#160;</td><td class="mdescRight">"shadowcast" | "raycast" | "permissive" | "rectangle"  <br /></td></tr>
+<tr class="separator:a19cc51557fbbf3060eedb8433331163f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86af5145fe21049642ae68793edeca03" id="r_a86af5145fe21049642ae68793edeca03"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a86af5145fe21049642ae68793edeca03">getAlgorithm</a> () const</td></tr>
+<tr class="separator:a86af5145fe21049642ae68793edeca03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a23d4832bf345a35c06d028bf70b85" id="r_a29a23d4832bf345a35c06d028bf70b85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a29a23d4832bf345a35c06d028bf70b85">setRadiusMetric</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a29a23d4832bf345a35c06d028bf70b85"><td class="mdescLeft">&#160;</td><td class="mdescRight">"euclidean" | "chebyshev" | "manhattan" — ignored when topology is hex (cube distance).  <br /></td></tr>
+<tr class="separator:a29a23d4832bf345a35c06d028bf70b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19caa0c0a0fd3ab55c490b216a0a9cd6" id="r_a19caa0c0a0fd3ab55c490b216a0a9cd6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a19caa0c0a0fd3ab55c490b216a0a9cd6">getRadiusMetric</a> () const</td></tr>
+<tr class="separator:a19caa0c0a0fd3ab55c490b216a0a9cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebce8cc66be41c85be33ab64f669c0ad" id="r_aebce8cc66be41c85be33ab64f669c0ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#aebce8cc66be41c85be33ab64f669c0ad">setTopology</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:aebce8cc66be41c85be33ab64f669c0ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">"ortho" (default) | "hex" | "auto" (hex if bound layer is hex/staggered).  <br /></td></tr>
+<tr class="separator:aebce8cc66be41c85be33ab64f669c0ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9692253ff4cfa1522ebb1a3150bc16" id="r_a7e9692253ff4cfa1522ebb1a3150bc16"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a7e9692253ff4cfa1522ebb1a3150bc16">getTopology</a> () const</td></tr>
+<tr class="separator:a7e9692253ff4cfa1522ebb1a3150bc16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6c549e26aca90daa354b310fa296c4e" id="r_ad6c549e26aca90daa354b310fa296c4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ad6c549e26aca90daa354b310fa296c4e">setCornerPeek</a> (bool enable)</td></tr>
+<tr class="separator:ad6c549e26aca90daa354b310fa296c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95d6495fdb2eb60755ace0bf61c93b9e" id="r_a95d6495fdb2eb60755ace0bf61c93b9e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a95d6495fdb2eb60755ace0bf61c93b9e">getCornerPeek</a> () const</td></tr>
+<tr class="separator:a95d6495fdb2eb60755ace0bf61c93b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2243486d33c1ea94fb36ad408de7d1" id="r_a0a2243486d33c1ea94fb36ad408de7d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a0a2243486d33c1ea94fb36ad408de7d1">blockOpaqueGid</a> (int gid)</td></tr>
+<tr class="separator:a0a2243486d33c1ea94fb36ad408de7d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacc8afc47317298db873829804358ee6" id="r_aacc8afc47317298db873829804358ee6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#aacc8afc47317298db873829804358ee6">unblockOpaqueGid</a> (int gid)</td></tr>
+<tr class="separator:aacc8afc47317298db873829804358ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab9855cb81e80ed3a6108aadd9e894a" id="r_a6ab9855cb81e80ed3a6108aadd9e894a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a6ab9855cb81e80ed3a6108aadd9e894a">clearOpaqueGids</a> ()</td></tr>
+<tr class="separator:a6ab9855cb81e80ed3a6108aadd9e894a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dae0aa6e27749ab3e7df6cf704d91a3" id="r_a5dae0aa6e27749ab3e7df6cf704d91a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a5dae0aa6e27749ab3e7df6cf704d91a3">setBlockEmpty</a> (bool enable)</td></tr>
+<tr class="separator:a5dae0aa6e27749ab3e7df6cf704d91a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe5d5da1ba506b5002c444a1f359e89" id="r_acfe5d5da1ba506b5002c444a1f359e89"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#acfe5d5da1ba506b5002c444a1f359e89">getBlockEmpty</a> () const</td></tr>
+<tr class="separator:acfe5d5da1ba506b5002c444a1f359e89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad78f5027136e96835e9d2094cdbc1628" id="r_ad78f5027136e96835e9d2094cdbc1628"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ad78f5027136e96835e9d2094cdbc1628">setOpaque</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, bool opaque)</td></tr>
+<tr class="separator:ad78f5027136e96835e9d2094cdbc1628"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a113ac83eb1253b5acd57b8bf9fd8a5b1" id="r_a113ac83eb1253b5acd57b8bf9fd8a5b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a113ac83eb1253b5acd57b8bf9fd8a5b1">isOpaque</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a113ac83eb1253b5acd57b8bf9fd8a5b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d9c1f258fc599fc07ef226bc2e74156" id="r_a2d9c1f258fc599fc07ef226bc2e74156"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a2d9c1f258fc599fc07ef226bc2e74156">setOpaque3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, bool opaque)</td></tr>
+<tr class="separator:a2d9c1f258fc599fc07ef226bc2e74156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace73878db4be2a1a40aed859981aa2dc" id="r_ace73878db4be2a1a40aed859981aa2dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ace73878db4be2a1a40aed859981aa2dc">isOpaque3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) const</td></tr>
+<tr class="separator:ace73878db4be2a1a40aed859981aa2dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af08827199636b7a351b9b58ed84dd106" id="r_af08827199636b7a351b9b58ed84dd106"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#af08827199636b7a351b9b58ed84dd106">syncFromLayer</a> ()</td></tr>
+<tr class="separator:af08827199636b7a351b9b58ed84dd106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70b665b1f811795f3392c8f90be954cf" id="r_a70b665b1f811795f3392c8f90be954cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a70b665b1f811795f3392c8f90be954cf">setElevation</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float elev)</td></tr>
+<tr class="separator:a70b665b1f811795f3392c8f90be954cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e4e7e23aff761f2389f15afba0218fb" id="r_a0e4e7e23aff761f2389f15afba0218fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a0e4e7e23aff761f2389f15afba0218fb">getElevation</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a0e4e7e23aff761f2389f15afba0218fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f04905f5325c69d3a2597910bb99a36" id="r_a6f04905f5325c69d3a2597910bb99a36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a6f04905f5325c69d3a2597910bb99a36">setCliffBlock</a> (float delta)</td></tr>
+<tr class="separator:a6f04905f5325c69d3a2597910bb99a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc2f63a3109345dc95b4a21f15f7650" id="r_a2bc2f63a3109345dc95b4a21f15f7650"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a2bc2f63a3109345dc95b4a21f15f7650">getCliffBlock</a> () const</td></tr>
+<tr class="separator:a2bc2f63a3109345dc95b4a21f15f7650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3541c90af2ffbde7b8c07b5dcdfcf562" id="r_a3541c90af2ffbde7b8c07b5dcdfcf562"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a3541c90af2ffbde7b8c07b5dcdfcf562">setEyeOffset</a> (float offset)</td></tr>
+<tr class="separator:a3541c90af2ffbde7b8c07b5dcdfcf562"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28e330955b1b6b100a1d675af54bb0c7" id="r_a28e330955b1b6b100a1d675af54bb0c7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a28e330955b1b6b100a1d675af54bb0c7">getEyeOffset</a> () const</td></tr>
+<tr class="separator:a28e330955b1b6b100a1d675af54bb0c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1c6a32487275525084f5d431464ab42" id="r_ac1c6a32487275525084f5d431464ab42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ac1c6a32487275525084f5d431464ab42">setVerticalRange</a> (int range)</td></tr>
+<tr class="separator:ac1c6a32487275525084f5d431464ab42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a148979668acb92e2457333f891437733" id="r_a148979668acb92e2457333f891437733"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a148979668acb92e2457333f891437733">getVerticalRange</a> () const</td></tr>
+<tr class="separator:a148979668acb92e2457333f891437733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61d4a74bb40db73b998af04014edb1e2" id="r_a61d4a74bb40db73b998af04014edb1e2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a61d4a74bb40db73b998af04014edb1e2">addRevealer</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int radius)</td></tr>
+<tr class="separator:a61d4a74bb40db73b998af04014edb1e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84668cd98fa4510eb131d22a5ee5f680" id="r_a84668cd98fa4510eb131d22a5ee5f680"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a84668cd98fa4510eb131d22a5ee5f680">addRevealer3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, int radius)</td></tr>
+<tr class="separator:a84668cd98fa4510eb131d22a5ee5f680"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a927066fc49aa1f28bb4853381874159a" id="r_a927066fc49aa1f28bb4853381874159a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a927066fc49aa1f28bb4853381874159a">removeRevealer</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a927066fc49aa1f28bb4853381874159a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96355828439e309340f737e465d10a59" id="r_a96355828439e309340f737e465d10a59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a96355828439e309340f737e465d10a59">clearRevealers</a> ()</td></tr>
+<tr class="separator:a96355828439e309340f737e465d10a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54e1c02407395b1aea6f41898ab158ca" id="r_a54e1c02407395b1aea6f41898ab158ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a54e1c02407395b1aea6f41898ab158ca">setRevealerPosition</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="separator:a54e1c02407395b1aea6f41898ab158ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88d48862342ce32d27075a01d3d2a33c" id="r_a88d48862342ce32d27075a01d3d2a33c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a88d48862342ce32d27075a01d3d2a33c">setRevealerPosition3</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:a88d48862342ce32d27075a01d3d2a33c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877bbfaab98ab63189bfc8dae3e2e3d2" id="r_a877bbfaab98ab63189bfc8dae3e2e3d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a877bbfaab98ab63189bfc8dae3e2e3d2">setRevealerRadius</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, int radius)</td></tr>
+<tr class="separator:a877bbfaab98ab63189bfc8dae3e2e3d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ebedf33db3ecceb6fba7d2df36cd471" id="r_a8ebedf33db3ecceb6fba7d2df36cd471"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a8ebedf33db3ecceb6fba7d2df36cd471">setRevealerFacing</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float facingDeg, float halfAngleDeg)</td></tr>
+<tr class="separator:a8ebedf33db3ecceb6fba7d2df36cd471"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a88887c1cdf52be552b728d1e433552" id="r_a9a88887c1cdf52be552b728d1e433552"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a9a88887c1cdf52be552b728d1e433552">clearRevealerFacing</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a9a88887c1cdf52be552b728d1e433552"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d3bef77f8c59e221fd158de26a4e475" id="r_a2d3bef77f8c59e221fd158de26a4e475"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a2d3bef77f8c59e221fd158de26a4e475">setRevealerEnabled</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, bool <a class="el" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:a2d3bef77f8c59e221fd158de26a4e475"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cb8c5ba40305f82ea881e9c5e14b63c" id="r_a6cb8c5ba40305f82ea881e9c5e14b63c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a6cb8c5ba40305f82ea881e9c5e14b63c">getRevealerCount</a> () const</td></tr>
+<tr class="separator:a6cb8c5ba40305f82ea881e9c5e14b63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7975fc377f86e9af9ec7efb3ea177e" id="r_a8e7975fc377f86e9af9ec7efb3ea177e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a8e7975fc377f86e9af9ec7efb3ea177e">setRevealerPerception</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float perception)</td></tr>
+<tr class="memdesc:a8e7975fc377f86e9af9ec7efb3ea177e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soft RPG hooks (no hard dependency on rpg module). effectiveRadius = radius + floor(perception * perceptionRadiusScale) canDetect: cell visible AND perception + detectionMargin &gt;= targetStealth  <br /></td></tr>
+<tr class="separator:a8e7975fc377f86e9af9ec7efb3ea177e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55d918442bd95c453bb2b9903600ab9f" id="r_a55d918442bd95c453bb2b9903600ab9f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a55d918442bd95c453bb2b9903600ab9f">getRevealerPerception</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a55d918442bd95c453bb2b9903600ab9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4e7e8e711fe0f15cc363012726e2342" id="r_aa4e7e8e711fe0f15cc363012726e2342"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#aa4e7e8e711fe0f15cc363012726e2342">setPerceptionRadiusScale</a> (float <a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>)</td></tr>
+<tr class="separator:aa4e7e8e711fe0f15cc363012726e2342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accbc1b0fd905fdad06358ff5945d5573" id="r_accbc1b0fd905fdad06358ff5945d5573"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#accbc1b0fd905fdad06358ff5945d5573">getPerceptionRadiusScale</a> () const</td></tr>
+<tr class="separator:accbc1b0fd905fdad06358ff5945d5573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33554eb72c92239cd5e64a0583e9bac2" id="r_a33554eb72c92239cd5e64a0583e9bac2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a33554eb72c92239cd5e64a0583e9bac2">setDetectionMargin</a> (float <a class="el" href="TileConfig_8cpp.html#a863a6ce49a581dba9da9e7def06f2e1c">margin</a>)</td></tr>
+<tr class="separator:a33554eb72c92239cd5e64a0583e9bac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f51fe7da418f148b339a526e527dc4e" id="r_a1f51fe7da418f148b339a526e527dc4e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a1f51fe7da418f148b339a526e527dc4e">getDetectionMargin</a> () const</td></tr>
+<tr class="separator:a1f51fe7da418f148b339a526e527dc4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3de67f20b2156e68a6197d82c098d2f7" id="r_a3de67f20b2156e68a6197d82c098d2f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a3de67f20b2156e68a6197d82c098d2f7">getEffectiveRadius</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a3de67f20b2156e68a6197d82c098d2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac0a3fd6d93d26744d7abdf65e8acd7" id="r_a0ac0a3fd6d93d26744d7abdf65e8acd7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a0ac0a3fd6d93d26744d7abdf65e8acd7">canDetect</a> (int revealerId, int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float targetStealth) const</td></tr>
+<tr class="separator:a0ac0a3fd6d93d26744d7abdf65e8acd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac518f365818e3843e8996116a81e0b50" id="r_ac518f365818e3843e8996116a81e0b50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ac518f365818e3843e8996116a81e0b50">canDetect3</a> (int revealerId, int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, float targetStealth) const</td></tr>
+<tr class="separator:ac518f365818e3843e8996116a81e0b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafc03f9b7e063d7ecec72d0cc081f620" id="r_aafc03f9b7e063d7ecec72d0cc081f620"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#aafc03f9b7e063d7ecec72d0cc081f620">markDirty</a> ()</td></tr>
+<tr class="separator:aafc03f9b7e063d7ecec72d0cc081f620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d300487b882ed29db54cd8365274ea5" id="r_a9d300487b882ed29db54cd8365274ea5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a9d300487b882ed29db54cd8365274ea5">isDirty</a> () const</td></tr>
+<tr class="separator:a9d300487b882ed29db54cd8365274ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9da5bd9b5bbb623773763bbb56b091af" id="r_a9da5bd9b5bbb623773763bbb56b091af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a9da5bd9b5bbb623773763bbb56b091af">compute</a> ()</td></tr>
+<tr class="separator:a9da5bd9b5bbb623773763bbb56b091af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a390111bc22f7d5a1e13501daa3d18b65" id="r_a390111bc22f7d5a1e13501daa3d18b65"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a390111bc22f7d5a1e13501daa3d18b65">isVisible</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a390111bc22f7d5a1e13501daa3d18b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fc39cd8270b112644ce4022c2a4badf" id="r_a0fc39cd8270b112644ce4022c2a4badf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a0fc39cd8270b112644ce4022c2a4badf">isExplored</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a0fc39cd8270b112644ce4022c2a4badf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32ff2921c8f29cffd137da944f3f3345" id="r_a32ff2921c8f29cffd137da944f3f3345"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a32ff2921c8f29cffd137da944f3f3345">isVisible3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) const</td></tr>
+<tr class="separator:a32ff2921c8f29cffd137da944f3f3345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bfd6bd8e72774535ef3d2f398ec8685" id="r_a6bfd6bd8e72774535ef3d2f398ec8685"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a6bfd6bd8e72774535ef3d2f398ec8685">isExplored3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) const</td></tr>
+<tr class="separator:a6bfd6bd8e72774535ef3d2f398ec8685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2ec995510685bbbdc3fff7e46db2a05" id="r_ad2ec995510685bbbdc3fff7e46db2a05"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ad2ec995510685bbbdc3fff7e46db2a05">getState</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:ad2ec995510685bbbdc3fff7e46db2a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68c4d7af93f3ac516d7d0e610be589b5" id="r_a68c4d7af93f3ac516d7d0e610be589b5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a68c4d7af93f3ac516d7d0e610be589b5">getState3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) const</td></tr>
+<tr class="separator:a68c4d7af93f3ac516d7d0e610be589b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6600e26f72928dea0fa9685a9a56a96c" id="r_a6600e26f72928dea0fa9685a9a56a96c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a6600e26f72928dea0fa9685a9a56a96c">clearMemory</a> ()</td></tr>
+<tr class="separator:a6600e26f72928dea0fa9685a9a56a96c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8c05b3569c1adb556f4b1e23513738b" id="r_ae8c05b3569c1adb556f4b1e23513738b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#ae8c05b3569c1adb556f4b1e23513738b">resetVisibleOnly</a> ()</td></tr>
+<tr class="separator:ae8c05b3569c1adb556f4b1e23513738b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69e08c3368c17124b11fe96b2ebc6987" id="r_a69e08c3368c17124b11fe96b2ebc6987"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a69e08c3368c17124b11fe96b2ebc6987">getMaskValue</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a69e08c3368c17124b11fe96b2ebc6987"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc4f1ebba1f576d12e8faa7e231d1ba5" id="r_abc4f1ebba1f576d12e8faa7e231d1ba5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#abc4f1ebba1f576d12e8faa7e231d1ba5">getMaskByte</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:abc4f1ebba1f576d12e8faa7e231d1ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a564220d942a20a421201190edfd44b6b" id="r_a564220d942a20a421201190edfd44b6b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a564220d942a20a421201190edfd44b6b">getMaskValue3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) const</td></tr>
+<tr class="separator:a564220d942a20a421201190edfd44b6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64295e997b8d7b64fc11668c1171413" id="r_af64295e997b8d7b64fc11668c1171413"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#af64295e997b8d7b64fc11668c1171413">getMaskByte3</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) const</td></tr>
+<tr class="separator:af64295e997b8d7b64fc11668c1171413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4929d0177b2ed7e756e460d43155d9d2" id="r_a4929d0177b2ed7e756e460d43155d9d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a4929d0177b2ed7e756e460d43155d9d2">fillMaskR8</a> (std::vector&lt; uint8_t &gt; &amp;out) const</td></tr>
+<tr class="separator:a4929d0177b2ed7e756e460d43155d9d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa8ab2e0b5baee17c000b3eac225608" id="r_a7fa8ab2e0b5baee17c000b3eac225608"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a7fa8ab2e0b5baee17c000b3eac225608">fillMaskR8Slice</a> (std::vector&lt; uint8_t &gt; &amp;out, int sliceZ) const</td></tr>
+<tr class="separator:a7fa8ab2e0b5baee17c000b3eac225608"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adffc41a79a956ff0f4b4e8186e0ce229" id="r_adffc41a79a956ff0f4b4e8186e0ce229"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#adffc41a79a956ff0f4b4e8186e0ce229">buildMaskTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx) const</td></tr>
+<tr class="memdesc:adffc41a79a956ff0f4b4e8186e0ce229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload current 2D / slice mask as RGBA8 Texture (R=G=B=A=mask byte). Caller owns the returned Texture*. Null gfx / empty grid → nullptr.  <br /></td></tr>
+<tr class="separator:adffc41a79a956ff0f4b4e8186e0ce229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ce4a2d33bd6739865448c3a0a66e38c" id="r_a6ce4a2d33bd6739865448c3a0a66e38c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1Fov.html#a6ce4a2d33bd6739865448c3a0a66e38c">buildMaskTextureSlice</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, int sliceZ) const</td></tr>
+<tr class="separator:a6ce4a2d33bd6739865448c3a0a66e38c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Dynamic field-of-view / fog-of-war facade. Phase A: 2D shadowcast + multi-revealer + explored memory. Phase B: raycast/permissive, heightmap, volume, dirty-skip, CPU masks. Phase C: hex topology FOV, rectangle-based FOV, perception/stealth detection helpers, GPU mask Texture upload. </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8h_source.html">Fov.h</a> 第 <a class="el" href="Fov_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a337f0b52c1179c320c98acad6105593f" name="a337f0b52c1179c320c98acad6105593f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a337f0b52c1179c320c98acad6105593f">&#9670;&#160;</a></span>Fov() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::Fov </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00904">904</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5e7eed519378c5aed469c53250c341e" name="ab5e7eed519378c5aed469c53250c341e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e7eed519378c5aed469c53250c341e">&#9670;&#160;</a></span>Fov() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::Fov </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00905">905</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00912">bindLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a529f68daa40b64c94716b3366caef2a8" name="a529f68daa40b64c94716b3366caef2a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a529f68daa40b64c94716b3366caef2a8">&#9670;&#160;</a></span>Fov() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::Fov </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00906">906</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Fov_8cpp_source.html#l00917">setSize()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="abbe4707db25437b75f43caab5bb26478" name="abbe4707db25437b75f43caab5bb26478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbe4707db25437b75f43caab5bb26478">&#9670;&#160;</a></span>Fov() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::Fov </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00907">907</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Fov_8cpp_source.html#l00923">setVolumeSize()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="afda87a2878a37855c2d00b0b06f2b5f1" name="afda87a2878a37855c2d00b0b06f2b5f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afda87a2878a37855c2d00b0b06f2b5f1">&#9670;&#160;</a></span>~Fov()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::~Fov </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad9fd2c3b43179ecc3ec1e2452cea37cb" name="ad9fd2c3b43179ecc3ec1e2452cea37cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9fd2c3b43179ecc3ec1e2452cea37cb">&#9670;&#160;</a></span>Fov() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::Fov </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a662cb6bffcd3159d0077bc27651c2aec" name="a662cb6bffcd3159d0077bc27651c2aec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662cb6bffcd3159d0077bc27651c2aec">&#9670;&#160;</a></span>Fov() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map::Fov::Fov </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a61d4a74bb40db73b998af04014edb1e2" name="a61d4a74bb40db73b998af04014edb1e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61d4a74bb40db73b998af04014edb1e2">&#9670;&#160;</a></span>addRevealer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::addRevealer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01061">1061</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01063">addRevealer3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a84668cd98fa4510eb131d22a5ee5f680" name="a84668cd98fa4510eb131d22a5ee5f680"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84668cd98fa4510eb131d22a5ee5f680">&#9670;&#160;</a></span>addRevealer3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::addRevealer3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01063">1063</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00198">eve::map::Fov::Impl::Revealer::id</a>, <a class="el" href="Fov_8cpp_source.html#l00202">eve::map::Fov::Impl::Revealer::radius</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Fov_8cpp_source.html#l00199">eve::map::Fov::Impl::Revealer::x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a>, <a class="el" href="Fov_8cpp_source.html#l00200">eve::map::Fov::Impl::Revealer::y</a>, <a class="el" href="Grass_8cpp_source.html#l00135">z</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00201">eve::map::Fov::Impl::Revealer::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01061">addRevealer()</a>.</p>
+
+</div>
+</div>
+<a id="a16baf290eae3d1e00e513dc420fb5a17" name="a16baf290eae3d1e00e513dc420fb5a17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16baf290eae3d1e00e513dc420fb5a17">&#9670;&#160;</a></span>bindLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::bindLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00912">912</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l00912">bindLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00912">bindLayer()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l00905">Fov()</a>.</p>
+
+</div>
+</div>
+<a id="a0a2243486d33c1ea94fb36ad408de7d1" name="a0a2243486d33c1ea94fb36ad408de7d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2243486d33c1ea94fb36ad408de7d1">&#9670;&#160;</a></span>blockOpaqueGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::blockOpaqueGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00981">981</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adffc41a79a956ff0f4b4e8186e0ce229" name="adffc41a79a956ff0f4b4e8186e0ce229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adffc41a79a956ff0f4b4e8186e0ce229">&#9670;&#160;</a></span>buildMaskTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::map::Fov::buildMaskTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload current 2D / slice mask as RGBA8 Texture (R=G=B=A=mask byte). Caller owns the returned Texture*. Null gfx / empty grid → nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01280">1280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01284">buildMaskTextureSlice()</a>.</p>
+
+</div>
+</div>
+<a id="a6ce4a2d33bd6739865448c3a0a66e38c" name="a6ce4a2d33bd6739865448c3a0a66e38c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ce4a2d33bd6739865448c3a0a66e38c">&#9670;&#160;</a></span>buildMaskTextureSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::map::Fov::buildMaskTextureSlice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sliceZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01284">1284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01258">fillMaskR8Slice()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01280">buildMaskTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a0ac0a3fd6d93d26744d7abdf65e8acd7" name="a0ac0a3fd6d93d26744d7abdf65e8acd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac0a3fd6d93d26744d7abdf65e8acd7">&#9670;&#160;</a></span>canDetect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::canDetect </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>revealerId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetStealth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01159">1159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01167">canDetect3()</a>, <a class="el" href="Fov_8cpp_source.html#l01178">isVisible()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ac518f365818e3843e8996116a81e0b50" name="ac518f365818e3843e8996116a81e0b50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac518f365818e3843e8996116a81e0b50">&#9670;&#160;</a></span>canDetect3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::canDetect3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>revealerId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetStealth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01167">1167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01191">isVisible3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01159">canDetect()</a>.</p>
+
+</div>
+</div>
+<a id="a6600e26f72928dea0fa9685a9a56a96c" name="a6600e26f72928dea0fa9685a9a56a96c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6600e26f72928dea0fa9685a9a56a96c">&#9670;&#160;</a></span>clearMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::clearMemory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01227">1227</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ab9855cb81e80ed3a6108aadd9e894a" name="a6ab9855cb81e80ed3a6108aadd9e894a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab9855cb81e80ed3a6108aadd9e894a">&#9670;&#160;</a></span>clearOpaqueGids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::clearOpaqueGids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00995">995</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a88887c1cdf52be552b728d1e433552" name="a9a88887c1cdf52be552b728d1e433552"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a88887c1cdf52be552b728d1e433552">&#9670;&#160;</a></span>clearRevealerFacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::clearRevealerFacing </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01116">1116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96355828439e309340f737e465d10a59" name="a96355828439e309340f737e465d10a59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96355828439e309340f737e465d10a59">&#9670;&#160;</a></span>clearRevealers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::clearRevealers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01082">1082</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9da5bd9b5bbb623773763bbb56b091af" name="a9da5bd9b5bbb623773763bbb56b091af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9da5bd9b5bbb623773763bbb56b091af">&#9670;&#160;</a></span>compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::compute </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01176">1176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4929d0177b2ed7e756e460d43155d9d2" name="a4929d0177b2ed7e756e460d43155d9d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4929d0177b2ed7e756e460d43155d9d2">&#9670;&#160;</a></span>fillMaskR8()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::fillMaskR8 </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01256">1256</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01258">fillMaskR8Slice()</a>.</p>
+
+</div>
+</div>
+<a id="a7fa8ab2e0b5baee17c000b3eac225608" name="a7fa8ab2e0b5baee17c000b3eac225608"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fa8ab2e0b5baee17c000b3eac225608">&#9670;&#160;</a></span>fillMaskR8Slice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::fillMaskR8Slice </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sliceZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01258">1258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01284">buildMaskTextureSlice()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l01256">fillMaskR8()</a>.</p>
+
+</div>
+</div>
+<a id="a86af5145fe21049642ae68793edeca03" name="a86af5145fe21049642ae68793edeca03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86af5145fe21049642ae68793edeca03">&#9670;&#160;</a></span>getAlgorithm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Fov::getAlgorithm </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00949">949</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfe5d5da1ba506b5002c444a1f359e89" name="acfe5d5da1ba506b5002c444a1f359e89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe5d5da1ba506b5002c444a1f359e89">&#9670;&#160;</a></span>getBlockEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::getBlockEmpty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01007">1007</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2bc2f63a3109345dc95b4a21f15f7650" name="a2bc2f63a3109345dc95b4a21f15f7650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bc2f63a3109345dc95b4a21f15f7650">&#9670;&#160;</a></span>getCliffBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getCliffBlock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01047">1047</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95d6495fdb2eb60755ace0bf61c93b9e" name="a95d6495fdb2eb60755ace0bf61c93b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95d6495fdb2eb60755ace0bf61c93b9e">&#9670;&#160;</a></span>getCornerPeek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::getCornerPeek </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00979">979</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5aad6cd76346b9ab8f494c99158a9aa1" name="a5aad6cd76346b9ab8f494c99158a9aa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aad6cd76346b9ab8f494c99158a9aa1">&#9670;&#160;</a></span>getDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00931">931</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f51fe7da418f148b339a526e527dc4e" name="a1f51fe7da418f148b339a526e527dc4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f51fe7da418f148b339a526e527dc4e">&#9670;&#160;</a></span>getDetectionMargin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getDetectionMargin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01152">1152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3de67f20b2156e68a6197d82c098d2f7" name="a3de67f20b2156e68a6197d82c098d2f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3de67f20b2156e68a6197d82c098d2f7">&#9670;&#160;</a></span>getEffectiveRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getEffectiveRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01154">1154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e4e7e23aff761f2389f15afba0218fb" name="a0e4e7e23aff761f2389f15afba0218fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e4e7e23aff761f2389f15afba0218fb">&#9670;&#160;</a></span>getElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getElevation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01041">1041</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a28e330955b1b6b100a1d675af54bb0c7" name="a28e330955b1b6b100a1d675af54bb0c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28e330955b1b6b100a1d675af54bb0c7">&#9670;&#160;</a></span>getEyeOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getEyeOffset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01053">1053</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a155eead6f539ea797f4c7318b49a379d" name="a155eead6f539ea797f4c7318b49a379d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a155eead6f539ea797f4c7318b49a379d">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00930">930</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc4f1ebba1f576d12e8faa7e231d1ba5" name="abc4f1ebba1f576d12e8faa7e231d1ba5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc4f1ebba1f576d12e8faa7e231d1ba5">&#9670;&#160;</a></span>getMaskByte()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getMaskByte </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01240">1240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01251">getMaskByte3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="af64295e997b8d7b64fc11668c1171413" name="af64295e997b8d7b64fc11668c1171413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af64295e997b8d7b64fc11668c1171413">&#9670;&#160;</a></span>getMaskByte3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getMaskByte3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01251">1251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01240">getMaskByte()</a>.</p>
+
+</div>
+</div>
+<a id="a69e08c3368c17124b11fe96b2ebc6987" name="a69e08c3368c17124b11fe96b2ebc6987"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69e08c3368c17124b11fe96b2ebc6987">&#9670;&#160;</a></span>getMaskValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getMaskValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01234">1234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01246">getMaskValue3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a564220d942a20a421201190edfd44b6b" name="a564220d942a20a421201190edfd44b6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a564220d942a20a421201190edfd44b6b">&#9670;&#160;</a></span>getMaskValue3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getMaskValue3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01246">1246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01234">getMaskValue()</a>.</p>
+
+</div>
+</div>
+<a id="a5f751f2310e42a18c33fac1ddf88f84d" name="a5f751f2310e42a18c33fac1ddf88f84d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f751f2310e42a18c33fac1ddf88f84d">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Fov::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00942">942</a> 行定义.</p>
+
+</div>
+</div>
+<a id="accbc1b0fd905fdad06358ff5945d5573" name="accbc1b0fd905fdad06358ff5945d5573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accbc1b0fd905fdad06358ff5945d5573">&#9670;&#160;</a></span>getPerceptionRadiusScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getPerceptionRadiusScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01149">1149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19caa0c0a0fd3ab55c490b216a0a9cd6" name="a19caa0c0a0fd3ab55c490b216a0a9cd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19caa0c0a0fd3ab55c490b216a0a9cd6">&#9670;&#160;</a></span>getRadiusMetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Fov::getRadiusMetric </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00956">956</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6cb8c5ba40305f82ea881e9c5e14b63c" name="a6cb8c5ba40305f82ea881e9c5e14b63c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cb8c5ba40305f82ea881e9c5e14b63c">&#9670;&#160;</a></span>getRevealerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getRevealerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01131">1131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55d918442bd95c453bb2b9903600ab9f" name="a55d918442bd95c453bb2b9903600ab9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55d918442bd95c453bb2b9903600ab9f">&#9670;&#160;</a></span>getRevealerPerception()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::Fov::getRevealerPerception </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01140">1140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2ec995510685bbbdc3fff7e46db2a05" name="ad2ec995510685bbbdc3fff7e46db2a05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2ec995510685bbbdc3fff7e46db2a05">&#9670;&#160;</a></span>getState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Fov::getState </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01202">1202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01215">getState3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a68c4d7af93f3ac516d7d0e610be589b5" name="a68c4d7af93f3ac516d7d0e610be589b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68c4d7af93f3ac516d7d0e610be589b5">&#9670;&#160;</a></span>getState3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Fov::getState3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01215">1215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01202">getState()</a>.</p>
+
+</div>
+</div>
+<a id="a7e9692253ff4cfa1522ebb1a3150bc16" name="a7e9692253ff4cfa1522ebb1a3150bc16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9692253ff4cfa1522ebb1a3150bc16">&#9670;&#160;</a></span>getTopology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::Fov::getTopology </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00973">973</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a148979668acb92e2457333f891437733" name="a148979668acb92e2457333f891437733"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a148979668acb92e2457333f891437733">&#9670;&#160;</a></span>getVerticalRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getVerticalRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01059">1059</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d14b731e81c97773e3c8318426b640a" name="a4d14b731e81c97773e3c8318426b640a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d14b731e81c97773e3c8318426b640a">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::Fov::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00929">929</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d300487b882ed29db54cd8365274ea5" name="a9d300487b882ed29db54cd8365274ea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d300487b882ed29db54cd8365274ea5">&#9670;&#160;</a></span>isDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01175">1175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0fc39cd8270b112644ce4022c2a4badf" name="a0fc39cd8270b112644ce4022c2a4badf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fc39cd8270b112644ce4022c2a4badf">&#9670;&#160;</a></span>isExplored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isExplored </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01184">1184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01196">isExplored3()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a6bfd6bd8e72774535ef3d2f398ec8685" name="a6bfd6bd8e72774535ef3d2f398ec8685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bfd6bd8e72774535ef3d2f398ec8685">&#9670;&#160;</a></span>isExplored3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isExplored3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01196">1196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01184">isExplored()</a>.</p>
+
+</div>
+</div>
+<a id="a113ac83eb1253b5acd57b8bf9fd8a5b1" name="a113ac83eb1253b5acd57b8bf9fd8a5b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a113ac83eb1253b5acd57b8bf9fd8a5b1">&#9670;&#160;</a></span>isOpaque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isOpaque </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01020">1020</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00303">eve::map::Fov::Impl::syncFromLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ace73878db4be2a1a40aed859981aa2dc" name="ace73878db4be2a1a40aed859981aa2dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace73878db4be2a1a40aed859981aa2dc">&#9670;&#160;</a></span>isOpaque3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isOpaque3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01031">1031</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a390111bc22f7d5a1e13501daa3d18b65" name="a390111bc22f7d5a1e13501daa3d18b65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a390111bc22f7d5a1e13501daa3d18b65">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isVisible </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01178">1178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01191">isVisible3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01159">canDetect()</a>.</p>
+
+</div>
+</div>
+<a id="a32ff2921c8f29cffd137da944f3f3345" name="a32ff2921c8f29cffd137da944f3f3345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32ff2921c8f29cffd137da944f3f3345">&#9670;&#160;</a></span>isVisible3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::Fov::isVisible3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01191">1191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01167">canDetect3()</a> , 以及 <a class="el" href="Fov_8cpp_source.html#l01178">isVisible()</a>.</p>
+
+</div>
+</div>
+<a id="aafc03f9b7e063d7ecec72d0cc081f620" name="aafc03f9b7e063d7ecec72d0cc081f620"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafc03f9b7e063d7ecec72d0cc081f620">&#9670;&#160;</a></span>markDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::markDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01174">1174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4d91745aa883cc47853834119430b23" name="ae4d91745aa883cc47853834119430b23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4d91745aa883cc47853834119430b23">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp; eve::map::Fov::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2629a9551a69a2f5b6a3a497ddd86f33" name="a2629a9551a69a2f5b6a3a497ddd86f33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2629a9551a69a2f5b6a3a497ddd86f33">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp; eve::map::Fov::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a927066fc49aa1f28bb4853381874159a" name="a927066fc49aa1f28bb4853381874159a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a927066fc49aa1f28bb4853381874159a">&#9670;&#160;</a></span>removeRevealer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::removeRevealer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01075">1075</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<a id="ae8c05b3569c1adb556f4b1e23513738b" name="ae8c05b3569c1adb556f4b1e23513738b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c05b3569c1adb556f4b1e23513738b">&#9670;&#160;</a></span>resetVisibleOnly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::resetVisibleOnly </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01229">1229</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19cc51557fbbf3060eedb8433331163f" name="a19cc51557fbbf3060eedb8433331163f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19cc51557fbbf3060eedb8433331163f">&#9670;&#160;</a></span>setAlgorithm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setAlgorithm </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"shadowcast" | "raycast" | "permissive" | "rectangle" </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00944">944</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a5dae0aa6e27749ab3e7df6cf704d91a3" name="a5dae0aa6e27749ab3e7df6cf704d91a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dae0aa6e27749ab3e7df6cf704d91a3">&#9670;&#160;</a></span>setBlockEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setBlockEmpty </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01001">1001</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f04905f5325c69d3a2597910bb99a36" name="a6f04905f5325c69d3a2597910bb99a36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f04905f5325c69d3a2597910bb99a36">&#9670;&#160;</a></span>setCliffBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setCliffBlock </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>delta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01043">1043</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6c549e26aca90daa354b310fa296c4e" name="ad6c549e26aca90daa354b310fa296c4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6c549e26aca90daa354b310fa296c4e">&#9670;&#160;</a></span>setCornerPeek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setCornerPeek </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00975">975</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33554eb72c92239cd5e64a0583e9bac2" name="a33554eb72c92239cd5e64a0583e9bac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33554eb72c92239cd5e64a0583e9bac2">&#9670;&#160;</a></span>setDetectionMargin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setDetectionMargin </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>margin</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01151">1151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00116">margin</a>.</p>
+
+</div>
+</div>
+<a id="a70b665b1f811795f3392c8f90be954cf" name="a70b665b1f811795f3392c8f90be954cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70b665b1f811795f3392c8f90be954cf">&#9670;&#160;</a></span>setElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setElevation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>elev</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01035">1035</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a3541c90af2ffbde7b8c07b5dcdfcf562" name="a3541c90af2ffbde7b8c07b5dcdfcf562"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3541c90af2ffbde7b8c07b5dcdfcf562">&#9670;&#160;</a></span>setEyeOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setEyeOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01049">1049</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9b44ff192bcd4f4c886e691ba3e7836" name="aa9b44ff192bcd4f4c886e691ba3e7836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b44ff192bcd4f4c886e691ba3e7836">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"grid2d" (default) | "heightmap" | "volume" </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00933">933</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ad78f5027136e96835e9d2094cdbc1628" name="ad78f5027136e96835e9d2094cdbc1628"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad78f5027136e96835e9d2094cdbc1628">&#9670;&#160;</a></span>setOpaque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setOpaque </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>opaque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01009">1009</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00234">u</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a2d9c1f258fc599fc07ef226bc2e74156" name="a2d9c1f258fc599fc07ef226bc2e74156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d9c1f258fc599fc07ef226bc2e74156">&#9670;&#160;</a></span>setOpaque3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setOpaque3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>opaque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01025">1025</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00234">u</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="aa4e7e8e711fe0f15cc363012726e2342" name="aa4e7e8e711fe0f15cc363012726e2342"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4e7e8e711fe0f15cc363012726e2342">&#9670;&#160;</a></span>setPerceptionRadiusScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setPerceptionRadiusScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01145">1145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>.</p>
+
+</div>
+</div>
+<a id="a29a23d4832bf345a35c06d028bf70b85" name="a29a23d4832bf345a35c06d028bf70b85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a23d4832bf345a35c06d028bf70b85">&#9670;&#160;</a></span>setRadiusMetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRadiusMetric </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"euclidean" | "chebyshev" | "manhattan" — ignored when topology is hex (cube distance). </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00951">951</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a2d3bef77f8c59e221fd158de26a4e475" name="a2d3bef77f8c59e221fd158de26a4e475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d3bef77f8c59e221fd158de26a4e475">&#9670;&#160;</a></span>setRevealerEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRevealerEnabled </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01124">1124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a8ebedf33db3ecceb6fba7d2df36cd471" name="a8ebedf33db3ecceb6fba7d2df36cd471"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ebedf33db3ecceb6fba7d2df36cd471">&#9670;&#160;</a></span>setRevealerFacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRevealerFacing </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>facingDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>halfAngleDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01107">1107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e7975fc377f86e9af9ec7efb3ea177e" name="a8e7975fc377f86e9af9ec7efb3ea177e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e7975fc377f86e9af9ec7efb3ea177e">&#9670;&#160;</a></span>setRevealerPerception()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRevealerPerception </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>perception</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Soft RPG hooks (no hard dependency on rpg module). effectiveRadius = radius + floor(perception * perceptionRadiusScale) canDetect: cell visible AND perception + detectionMargin &gt;= targetStealth </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01133">1133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54e1c02407395b1aea6f41898ab158ca" name="a54e1c02407395b1aea6f41898ab158ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54e1c02407395b1aea6f41898ab158ca">&#9670;&#160;</a></span>setRevealerPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRevealerPosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01087">1087</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fov_8cpp_source.html#l01091">setRevealerPosition3()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a88d48862342ce32d27075a01d3d2a33c" name="a88d48862342ce32d27075a01d3d2a33c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88d48862342ce32d27075a01d3d2a33c">&#9670;&#160;</a></span>setRevealerPosition3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRevealerPosition3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01091">1091</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l01087">setRevealerPosition()</a>.</p>
+
+</div>
+</div>
+<a id="a877bbfaab98ab63189bfc8dae3e2e3d2" name="a877bbfaab98ab63189bfc8dae3e2e3d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a877bbfaab98ab63189bfc8dae3e2e3d2">&#9670;&#160;</a></span>setRevealerRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setRevealerRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01100">1100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a447195359af6e201b911908609f268a4" name="a447195359af6e201b911908609f268a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a447195359af6e201b911908609f268a4">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00917">917</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00906">Fov()</a>.</p>
+
+</div>
+</div>
+<a id="aebce8cc66be41c85be33ab64f669c0ad" name="aebce8cc66be41c85be33ab64f669c0ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebce8cc66be41c85be33ab64f669c0ad">&#9670;&#160;</a></span>setTopology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setTopology </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"ortho" (default) | "hex" | "auto" (hex if bound layer is hex/staggered). </p>
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00958">958</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ac1c6a32487275525084f5d431464ab42" name="ac1c6a32487275525084f5d431464ab42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c6a32487275525084f5d431464ab42">&#9670;&#160;</a></span>setVerticalRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setVerticalRange </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>range</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01055">1055</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5ba197ceaf600267da987daffc5f92b" name="af5ba197ceaf600267da987daffc5f92b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5ba197ceaf600267da987daffc5f92b">&#9670;&#160;</a></span>setVolumeSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::setVolumeSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00923">923</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00907">Fov()</a>.</p>
+
+</div>
+</div>
+<a id="af08827199636b7a351b9b58ed84dd106" name="af08827199636b7a351b9b58ed84dd106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af08827199636b7a351b9b58ed84dd106">&#9670;&#160;</a></span>syncFromLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::syncFromLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l01033">1033</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacc8afc47317298db873829804358ee6" name="aacc8afc47317298db873829804358ee6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc8afc47317298db873829804358ee6">&#9670;&#160;</a></span>unblockOpaqueGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::Fov::unblockOpaqueGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Fov_8cpp_source.html">Fov.cpp</a> 第 <a class="el" href="Fov_8cpp_source.html#l00988">988</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/map/<a class="el" href="Fov_8h_source.html">Fov.h</a></li>
+<li>src/modules/map/<a class="el" href="Fov_8cpp_source.html">Fov.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

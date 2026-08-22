@@ -1,0 +1,555 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Resource类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Resource.html">Resource</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1Resource-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Resource类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> is a game object that is managed by the <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a>. It can be loaded from a file or generated at runtime. If the resource is loaded from file, a monitor will be created to watch the file changes. When the file is modified, the resource will be reloaded. If the resource is generated at runtime, it can depend on a few other resources and the <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> will update the resource when the dependencies are changed.  
+ <a href="classeve_1_1Resource.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Resource_8h_source.html">Resource.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::Resource 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1Resource.png" usemap="#eve::Resource_map" alt=""/>
+  <map id="eve::Resource_map" name="eve::Resource_map">
+<area href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda..." alt="eve::Object" shape="rect" coords="244,0,397,24"/>
+<area href="classeve_1_1font_1_1FontData.html" title="CPU-side decoded font face (FreeType FT_Face + owned font bytes). Does not upload to GPU — rasterize ..." alt="eve::font::FontData" shape="rect" coords="0,112,153,136"/>
+<area href="classeve_1_1image_1_1ImageData.html" title="Represents raw pixel data." alt="eve::image::ImageData" shape="rect" coords="163,112,316,136"/>
+<area href="classeve_1_1model3d_1_1ModelData.html" title="CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ..." alt="eve::model3d::ModelData" shape="rect" coords="326,112,479,136"/>
+<area href="classeve_1_1sound_1_1SoundData.html" title="Raw PCM audio buffer with format metadata (samples/rate/bit depth/channels)." alt="eve::sound::SoundData" shape="rect" coords="489,112,642,136"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:adafa47210aae55b174c8186b2e4c8908" id="r_adafa47210aae55b174c8186b2e4c8908"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#adafa47210aae55b174c8186b2e4c8908">~Resource</a> ()</td></tr>
+<tr class="separator:adafa47210aae55b174c8186b2e4c8908"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdb89e5f7295e7e7560bc05103680432" id="r_abdb89e5f7295e7e7560bc05103680432"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#abdb89e5f7295e7e7560bc05103680432">getUri</a> () const</td></tr>
+<tr class="separator:abdb89e5f7295e7e7560bc05103680432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeb69b4dd82da6ee5687beef79752c5c" id="r_aeeb69b4dd82da6ee5687beef79752c5c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1ref.html">eve::ref</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#aeeb69b4dd82da6ee5687beef79752c5c">getDependencies</a> () const</td></tr>
+<tr class="separator:aeeb69b4dd82da6ee5687beef79752c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6f203aedd01f44f5b20a3c0fceaa6b6" id="r_af6f203aedd01f44f5b20a3c0fceaa6b6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#af6f203aedd01f44f5b20a3c0fceaa6b6">addDependency</a> (<a class="el" href="classeve_1_1ref.html">eve::ref</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; resource)</td></tr>
+<tr class="separator:af6f203aedd01f44f5b20a3c0fceaa6b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04d654ee5794c46aa5a17142d4c54f0e" id="r_a04d654ee5794c46aa5a17142d4c54f0e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#a04d654ee5794c46aa5a17142d4c54f0e">adopt</a> (<a class="el" href="classeve_1_1Resource.html">eve::Resource</a> &amp;replacement)=0</td></tr>
+<tr class="memdesc:a04d654ee5794c46aa5a17142d4c54f0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace this instance's contents with <code>replacement</code>'s. The <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> keeps instance identity stable across reloads, so existing holders (raw pointers, refs, script instances) keep a valid object. Subclasses move the payload out of <code>replacement</code>, which is drained and destroyed by the caller afterwards. <code>replacement</code> must be the same concrete type as <code>this</code>.  <br /></td></tr>
+<tr class="separator:a04d654ee5794c46aa5a17142d4c54f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a513f705d32a37006f25d79b57cae7563 inherit pub_methods_classeve_1_1Object" id="r_a513f705d32a37006f25d79b57cae7563"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a513f705d32a37006f25d79b57cae7563">Object</a> ()</td></tr>
+<tr class="separator:a513f705d32a37006f25d79b57cae7563 inherit pub_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object" id="r_a074c5f36236cc17f5c110f17be72b2b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a074c5f36236cc17f5c110f17be72b2b1">setUpdate</a> (<a class="el" href="classeve_1_1Object.html">Object</a> *replacement)</td></tr>
+<tr class="memdesc:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current object with a replacement. You don't need to care about the reference to the old object since it will be automatically updated in the ref smart pointer.  <br /></td></tr>
+<tr class="separator:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:aeeeec005a7224dadf0cc9da955709a4f" id="r_aeeeec005a7224dadf0cc9da955709a4f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#aeeeec005a7224dadf0cc9da955709a4f">Resource</a> (std::string <a class="el" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a>)</td></tr>
+<tr class="separator:aeeeec005a7224dadf0cc9da955709a4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f63ca3139fd056072173c848947d962" id="r_a2f63ca3139fd056072173c848947d962"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#a2f63ca3139fd056072173c848947d962">setUri</a> (std::string <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="memdesc:a2f63ca3139fd056072173c848947d962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the resource URI (the cache key). Used by <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a>.  <br /></td></tr>
+<tr class="separator:a2f63ca3139fd056072173c848947d962"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a50dcf4681be0179bbd04e911b33115cd inherit pro_methods_classeve_1_1Object" id="r_a50dcf4681be0179bbd04e911b33115cd"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a50dcf4681be0179bbd04e911b33115cd">~Object</a> ()</td></tr>
+<tr class="separator:a50dcf4681be0179bbd04e911b33115cd inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab010b8dc4a18ca9771e0b354042c7055 inherit pro_methods_classeve_1_1Object" id="r_ab010b8dc4a18ca9771e0b354042c7055"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab010b8dc4a18ca9771e0b354042c7055">isDirty</a> () const</td></tr>
+<tr class="separator:ab010b8dc4a18ca9771e0b354042c7055 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af940d294ff10b6d828c1f52f8139937f inherit pro_methods_classeve_1_1Object" id="r_af940d294ff10b6d828c1f52f8139937f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#af940d294ff10b6d828c1f52f8139937f">getUpdate</a> () const</td></tr>
+<tr class="separator:af940d294ff10b6d828c1f52f8139937f inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeddd56fdaabe8ddb3cb5ed1fc2857db0 inherit pro_methods_classeve_1_1Object" id="r_aeddd56fdaabe8ddb3cb5ed1fc2857db0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#aeddd56fdaabe8ddb3cb5ed1fc2857db0">ref</a> ()</td></tr>
+<tr class="separator:aeddd56fdaabe8ddb3cb5ed1fc2857db0 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4b9ac0bd673dc2582e13122cb7827d7 inherit pro_methods_classeve_1_1Object" id="r_ab4b9ac0bd673dc2582e13122cb7827d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab4b9ac0bd673dc2582e13122cb7827d7">unref</a> ()</td></tr>
+<tr class="separator:ab4b9ac0bd673dc2582e13122cb7827d7 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a1f7295af4abb7e69aef94b0daeb4bcee" id="r_a1f7295af4abb7e69aef94b0daeb4bcee"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a></td></tr>
+<tr class="separator:a1f7295af4abb7e69aef94b0daeb4bcee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6dfcee2f601ec2d9284249ea528881e" id="r_ac6dfcee2f601ec2d9284249ea528881e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1ref.html">eve::ref</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#ac6dfcee2f601ec2d9284249ea528881e">dependencies</a></td></tr>
+<tr class="separator:ac6dfcee2f601ec2d9284249ea528881e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Protected 属性 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a16b86af9dc497833e85daeddf7887d79 inherit pro_attribs_classeve_1_1Object" id="r_a16b86af9dc497833e85daeddf7887d79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a16b86af9dc497833e85daeddf7887d79">update</a></td></tr>
+<tr class="separator:a16b86af9dc497833e85daeddf7887d79 inherit pro_attribs_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9246cea7724ecf33485f595e1f2d20d9 inherit pro_attribs_classeve_1_1Object" id="r_a9246cea7724ecf33485f595e1f2d20d9"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a9246cea7724ecf33485f595e1f2d20d9">ref_count</a> = 0</td></tr>
+<tr class="separator:a9246cea7724ecf33485f595e1f2d20d9 inherit pro_attribs_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a54c1252abc87a78a301e6b6984470408" id="r_a54c1252abc87a78a301e6b6984470408"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html#a54c1252abc87a78a301e6b6984470408">ResourceManager</a></td></tr>
+<tr class="separator:a54c1252abc87a78a301e6b6984470408"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> is a game object that is managed by the <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a>. It can be loaded from a file or generated at runtime. If the resource is loaded from file, a monitor will be created to watch the file changes. When the file is modified, the resource will be reloaded. If the resource is generated at runtime, it can depend on a few other resources and the <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> will update the resource when the dependencies are changed. </p>
+<p><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> ID format:</p><ul>
+<li>File: <a href="file://path/to/file">file://path/to/file</a></li>
+<li>Generated: res://category/name</li>
+<li>Online: <a href="http://example.com/path/to/resource">http://example.com/path/to/resource</a></li>
+<li>Save: save://path/name</li>
+<li>Config: config://name</li>
+</ul>
+<p>The <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> cache keys file-backed resources by their normalized VFS path, optionally with <code>?param=value</code> suffixes for parameters that change the decoded asset (e.g. a font's pixel size). See <a class="el" href="classeve_1_1ResourceManager.html#ac6697138c08c8712dada9395a642755e" title="Build a cache key from a path and optional ?query parameters.">ResourceManager::makeKey</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="adafa47210aae55b174c8186b2e4c8908" name="adafa47210aae55b174c8186b2e4c8908"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adafa47210aae55b174c8186b2e4c8908">&#9670;&#160;</a></span>~Resource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::Resource::~Resource </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeeeec005a7224dadf0cc9da955709a4f" name="aeeeec005a7224dadf0cc9da955709a4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeeec005a7224dadf0cc9da955709a4f">&#9670;&#160;</a></span>Resource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Resource::Resource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>uri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af6f203aedd01f44f5b20a3c0fceaa6b6" name="af6f203aedd01f44f5b20a3c0fceaa6b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6f203aedd01f44f5b20a3c0fceaa6b6">&#9670;&#160;</a></span>addDependency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::Resource::addDependency </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ref.html">eve::ref</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt;&#160;</td>
+          <td class="paramname"><em>resource</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00063">dependencies</a>.</p>
+
+</div>
+</div>
+<a id="a04d654ee5794c46aa5a17142d4c54f0e" name="a04d654ee5794c46aa5a17142d4c54f0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04d654ee5794c46aa5a17142d4c54f0e">&#9670;&#160;</a></span>adopt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::Resource::adopt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Resource.html">eve::Resource</a> &amp;&#160;</td>
+          <td class="paramname"><em>replacement</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace this instance's contents with <code>replacement</code>'s. The <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> keeps instance identity stable across reloads, so existing holders (raw pointers, refs, script instances) keep a valid object. Subclasses move the payload out of <code>replacement</code>, which is drained and destroyed by the caller afterwards. <code>replacement</code> must be the same concrete type as <code>this</code>. </p>
+
+<p>在 <a class="el" href="classeve_1_1font_1_1FontData.html#a64c76ab0f682750683a1ae3368cb4603">eve::font::FontData</a>, <a class="el" href="classeve_1_1image_1_1ImageData.html#ad9413ab564f5bd6c5ec2ec140cc2ff70">eve::image::ImageData</a>, <a class="el" href="classeve_1_1model3d_1_1ModelData.html#afcb92bd4e90acbc45bf8b4da88fbb198">eve::model3d::ModelData</a> , 以及 <a class="el" href="classeve_1_1sound_1_1SoundData.html#a4e9e99940b7320cca8cb4e414c7e5b22">eve::sound::SoundData</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00146">eve::ResourceManager::refreshEntry()</a>.</p>
+
+</div>
+</div>
+<a id="aeeb69b4dd82da6ee5687beef79752c5c" name="aeeb69b4dd82da6ee5687beef79752c5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeb69b4dd82da6ee5687beef79752c5c">&#9670;&#160;</a></span>getDependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classeve_1_1ref.html">eve::ref</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; &gt; eve::Resource::getDependencies </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00063">dependencies</a>.</p>
+
+</div>
+</div>
+<a id="abdb89e5f7295e7e7560bc05103680432" name="abdb89e5f7295e7e7560bc05103680432"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdb89e5f7295e7e7560bc05103680432">&#9670;&#160;</a></span>getUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::Resource::getUri </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00062">uri</a>.</p>
+
+</div>
+</div>
+<a id="a2f63ca3139fd056072173c848947d962" name="a2f63ca3139fd056072173c848947d962"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f63ca3139fd056072173c848947d962">&#9670;&#160;</a></span>setUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Resource::setUri </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the resource URI (the cache key). Used by <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00062">uri</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00056">eve::ResourceManager::get()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a54c1252abc87a78a301e6b6984470408" name="a54c1252abc87a78a301e6b6984470408"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54c1252abc87a78a301e6b6984470408">&#9670;&#160;</a></span>ResourceManager</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1ResourceManager.html">ResourceManager</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ac6dfcee2f601ec2d9284249ea528881e" name="ac6dfcee2f601ec2d9284249ea528881e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6dfcee2f601ec2d9284249ea528881e">&#9670;&#160;</a></span>dependencies</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1ref.html">eve::ref</a>&lt;<a class="el" href="classeve_1_1Resource.html">Resource</a>&gt; &gt; eve::Resource::dependencies</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8h_source.html#l00042">addDependency()</a> , 以及 <a class="el" href="Resource_8h_source.html#l00040">getDependencies()</a>.</p>
+
+</div>
+</div>
+<a id="a1f7295af4abb7e69aef94b0daeb4bcee" name="a1f7295af4abb7e69aef94b0daeb4bcee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f7295af4abb7e69aef94b0daeb4bcee">&#9670;&#160;</a></span>uri</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::Resource::uri</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8h_source.html#l00039">getUri()</a> , 以及 <a class="el" href="Resource_8h_source.html#l00058">setUri()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Resource_8h_source.html">Resource.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

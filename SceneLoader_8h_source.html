@@ -1,0 +1,454 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sceneloader/SceneLoader.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_1cf88ecfe786144840331a12e0806771.html">sceneloader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneLoader.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneLoader_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="NodeDesc_8h.html">scene/NodeDesc.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">struct </span>aiScene;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">struct </span>aiNode;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">struct </span>aiMesh;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>animation {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>AnimClip;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}  <span class="comment">// namespace animation</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>graphics {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span>Renderable3D;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>Light3D;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span>Camera3D;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}  <span class="comment">// namespace graphics</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span>model3d {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">class </span>ModelData;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}  <span class="comment">// namespace model3d</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">namespace </span>scene {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">struct </span>NodeDesc;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">class </span>SceneHost;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace scene</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">namespace </span>thread {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">class </span>ThreadPool;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">namespace </span>sceneloader {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html">   57</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html">SceneDiffEntry</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00">   58</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00">Action</a> { <a class="code hl_enumvalue" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="code hl_enumvalue" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a1063e38cb53d94d386f21227fcd84717">Remove</a>, <a class="code hl_enumvalue" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a7f090bbab1cc7f9c08bf4e54d932d3c0">Modify</a>, <a class="code hl_enumvalue" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a6bc362dbf494c61ea117fe3c71ca48a5">Move</a> };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a081f35b95d5085f98951a33ca6f6c71c">   60</a></span>    <a class="code hl_enumeration" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00">Action</a> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a081f35b95d5085f98951a33ca6f6c71c">action</a> = <a class="code hl_enumvalue" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00aec211f7c20af43e742bf2570c3cb84f9">Action::Add</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#aeff3a0258bb5ef4cb7581cf72addb782">   61</a></span>    std::string <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#aeff3a0258bb5ef4cb7581cf72addb782">id</a>;      <span class="comment">// GameObject id (scene-object id).</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a1d8cce0798e435ab6f0a45a353e817be">   62</a></span>    std::string <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a1d8cce0798e435ab6f0a45a353e817be">parent</a>;  <span class="comment">// new parent id (Add / Move only).</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html">   65</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html#a7034cf94ce10ed9529da9aa758ab66e0">   66</a></span>    std::vector&lt;SceneDiffEntry&gt; <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiff.html#a7034cf94ce10ed9529da9aa758ab66e0">entries</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html#a7f989c167cf21c9060e6861e8cc7a8e3">   67</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiff.html#a7f989c167cf21c9060e6861e8cc7a8e3">added</a> = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html#a76f00c258731a3ef555bed505fba85b4">   68</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiff.html#a76f00c258731a3ef555bed505fba85b4">removed</a> = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html#af970bee55f60578505d9f534b377b8b6">   69</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiff.html#af970bee55f60578505d9f534b377b8b6">modified</a> = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html#ae5e696d9f2289a7e966a967ba041a2ed">   70</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiff.html#ae5e696d9f2289a7e966a967ba041a2ed">moved</a> = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneDiff.html#a524da38e5696af9ea10c27d4848207f0">   72</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1sceneloader_1_1SceneDiff.html#a524da38e5696af9ea10c27d4848207f0">empty</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneDiff.html#a7034cf94ce10ed9529da9aa758ab66e0">entries</a>.empty(); }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="};">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1MeshSlot.html">   82</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sceneloader_1_1MeshSlot.html">MeshSlot</a> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1MeshSlot.html#a93d5db1f2ebee8c84345a8c27d707189">   83</a></span>    <span class="keyword">const</span> aiScene *<a class="code hl_variable" href="structeve_1_1sceneloader_1_1MeshSlot.html#a93d5db1f2ebee8c84345a8c27d707189">scene</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1MeshSlot.html#a395d40f478de3500ba001787c4c2ff36">   84</a></span>    <span class="keyword">const</span> aiMesh *<a class="code hl_variable" href="structeve_1_1sceneloader_1_1MeshSlot.html#a395d40f478de3500ba001787c4c2ff36">mesh</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1MeshSlot.html#a9a746e1029a6af0100526df8ee71a1e3">   85</a></span>    <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1MeshSlot.html#a9a746e1029a6af0100526df8ee71a1e3">materialIndex</a> = 0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">   87</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> = std::unordered_map&lt;std::string, std::vector&lt;MeshSlot&gt;&gt;;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="};">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html">   99</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a035282711d6f9e5abb8d99637058d439">  100</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a035282711d6f9e5abb8d99637058d439">triangulate</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a379b46115cb0a5b3682f664d6120edf9">  101</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a379b46115cb0a5b3682f664d6120edf9">generateNormalsIfMissing</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#aeb8b76599b898799484836ce84791b07">  102</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#aeb8b76599b898799484836ce84791b07">joinIdenticalVertices</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac27eb74f23fda8fdb777ae4e3726e468">  103</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac27eb74f23fda8fdb777ae4e3726e468">flipUVs</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">  104</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">improveCacheLocality</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8">  106</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8">sharedMeshes</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a1db208540321b658e7489f3d5f19fce2">  108</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a1db208540321b658e7489f3d5f19fce2">mipmaps</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">  110</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">importLights</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">  112</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">importCameras</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">  114</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">importAnimations</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00137" data-start="{" data-end="};">
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader_1_1SceneLoader.html">  137</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1sceneloader_1_1SceneLoader.html">SceneLoader</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader_1_1SceneLoader.html#a017ac8fad179bebc2a0889221394773e">  139</a></span>    <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a017ac8fad179bebc2a0889221394773e">Module_REG</a>(<a class="code hl_class" href="classeve_1_1sceneloader_1_1SceneLoader.html">SceneLoader</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac0544ab2e290e64a27f58f9f1fd5490c">~SceneLoader</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e">load</a>(<span class="keyword">const</span> std::string &amp;path, <span class="keywordtype">bool</span> linkRenderables = <span class="keyword">true</span>,</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                           <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options = {});</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e">load</a>(<span class="keyword">const</span> std::string &amp;path, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a62612f4c6919abe23cd36a74be264e17">reload</a>(<span class="keyword">const</span> std::string &amp;path, <a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> *out = <span class="keyword">nullptr</span>,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options = {});</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader_1_1SceneLoader.html#ab18e48476feb8633aee68c32a14ef63f">  157</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#ab18e48476feb8633aee68c32a14ef63f">reloadChecked</a>(<span class="keyword">const</span> std::string &amp;path) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a62612f4c6919abe23cd36a74be264e17">reload</a>(path, <span class="keyword">nullptr</span>); }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a61b46c1e62efec726ae1683572dd79d7">diff</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac45f0c558e514c68e3b1544e5c9a14d7">unload</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac7d1cd366a79b65f250eaa0e77dd8e77">nodeCount</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a83f1fcd956ae7b18b6f7dee208fe24b9">loaded</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="comment">// ---- async loading (decode off-thread, mount on the main thread) ----</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a007b1d4ac4eb8861635ea20a0605cdfb">loadAsync</a>(<span class="keyword">const</span> std::string &amp;path, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options = {},</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                   std::function&lt;void(<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *)&gt; done = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370">pollAsync</a>();</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5c0e8341bbd8459e6132e88099d22ae6">prewarmAsync</a>(<span class="keyword">const</span> std::string &amp;path, <span class="keyword">const</span> LoadOptions &amp;options = {});</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac4dec923708f6389131ea70d5c26e58b">prewarmed</a>(<span class="keyword">const</span> std::string &amp;path) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a32bd3ce19626caf016f492d7c89be4f8">clearPrewarm</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a063026e11a6030ecf753c29ab3f8c8f7">pendingAsyncCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="comment">// ---- imported scene extras ----</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a3a8e9426a9c795ff401423183327ebbe">lightCount</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    graphics::Light3D *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a31a3a26e66ade7a670a868e83e26ae2b">light</a>(<span class="keyword">const</span> std::string &amp;path, <span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#afd6e47cc2050500aa6c261537244d9dc">cameraCount</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    graphics::Camera3D *camera(<span class="keyword">const</span> std::string &amp;path, <span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a4c6bb73ec0f592b748ded54a475de061">animationCount</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    animation::AnimSkeleton *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a7df1751c157e0e30cae69572315ba793">skeleton</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    animation::AnimClip *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a9162d011e61721a112cb411597be1dca">clip</a>(<span class="keyword">const</span> std::string &amp;path, <span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="comment">// ---- pure tree helpers (no graphics required; unit-testable) ----</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">  219</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">TextureCache</a> = std::unordered_map&lt;std::string, graphics::Texture *&gt;;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">  220</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">MeshCache</a> = std::unordered_map&lt;const aiMesh *, graphics::Mesh *&gt;;</div>
+<div class="foldopen" id="foldopen00222" data-start="{" data-end="};">
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html">  222</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html">CpuImage</a> {</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#a79c8b36e8e1235280eabf09ee20e91f2">  223</a></span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#a79c8b36e8e1235280eabf09ee20e91f2">w</a> = 0;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#aa0f4538aa274652fbb6f13c696e9731f">  224</a></span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#aa0f4538aa274652fbb6f13c696e9731f">h</a> = 0;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#a66a9d8a39b89a8e03379f326cde14eaf">  225</a></span>        std::vector&lt;uint8_t&gt; <a class="code hl_variable" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#a66a9d8a39b89a8e03379f326cde14eaf">rgba</a>;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    };</div>
+</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">  227</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">CpuImageMap</a> = std::unordered_map&lt;std::string, CpuImage&gt;;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a958330c0eee2520cee0d1aa8cbfdc070">buildNodeDesc</a>(<span class="keyword">const</span> aiScene *scene, <a class="code hl_typedef" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> *slotsOut = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#abea55f236223151fa9d1a1044c5aacb3">diffTree</a>(<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> &amp;newRoot);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a117d12fa176212cb2501695d3dec5c65">applyTreeDiff</a>(<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> &amp;newRoot,</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> &amp;<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a61b46c1e62efec726ae1683572dd79d7">diff</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                              <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> *slots);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#abe56d4ba994c2b28c7e0619adfb964c9">fillSceneBounds</a>(<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> &amp;slots);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keyword">struct </span><a class="code hl_enumvalue" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6">Loaded</a> {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        std::string path;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *host = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> options;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        std::vector&lt;graphics::Light3D *&gt; lights;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        std::vector&lt;graphics::Camera3D *&gt; cameras;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> *skeleton = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        std::vector&lt;animation::AnimClip *&gt; clips;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    };</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keyword">struct </span>DecodedScene {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        std::string path;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <a class="code hl_class" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *md = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <a class="code hl_struct" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> root;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <a class="code hl_typedef" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> slots;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> options;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">CpuImageMap</a> cpuImages;  <span class="comment">// external textures pre-decoded off-thread</span></div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        std::vector&lt;graphics::Light3D *&gt; lights;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        std::vector&lt;graphics::Camera3D *&gt; cameras;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> *skeleton = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        std::vector&lt;animation::AnimClip *&gt; clips;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordtype">bool</span> prewarmOnly = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        std::function&lt;void(<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *)&gt; done;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    };</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordtype">bool</span> decode(<span class="keyword">const</span> std::string &amp;path, <span class="keyword">const</span> LoadOptions &amp;options, DecodedScene *out);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *mount(DecodedScene &amp;<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keywordtype">void</span> linkMeshNodes(<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> &amp;slots,</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                       <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <span class="keyword">const</span> LoadOptions &amp;options,</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                       <a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">TextureCache</a> &amp;textures, <a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">MeshCache</a> &amp;shared,</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                       <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">CpuImageMap</a> *predecoded = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordtype">void</span> clearTextures();</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    std::unordered_map&lt;std::string, Loaded&gt; scenes_;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    std::unordered_map&lt;std::string, DecodedScene&gt; prewarmed_;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <a class="code hl_typedef" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">TextureCache</a> textures_;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    std::shared_ptr&lt;thread::ThreadPool&gt; pool_;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    std::vector&lt;DecodedScene&gt; pending_;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    <span class="keyword">mutable</span> std::mutex pendingMu_;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>};</div>
+</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>}  <span class="comment">// namespace sceneloader</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aNodeDesc_8h_html"><div class="ttname"><a href="NodeDesc_8h.html">NodeDesc.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_a6f364afbe132c4ecfea48bde1b0618ba"><div class="ttname"><a href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a></div><div class="ttdeci">int d</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1model3d_1_1ModelData_html"><div class="ttname"><a href="classeve_1_1model3d_1_1ModelData.html">eve::model3d::ModelData</a></div><div class="ttdoc">CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ...</div><div class="ttdef"><b>Definition</b> <a href="ModelData_8h_source.html#l00023">ModelData.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneHost_html"><div class="ttname"><a href="classeve_1_1scene_1_1SceneHost.html">eve::scene::SceneHost</a></div><div class="ttdoc">ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...</div><div class="ttdef"><b>Definition</b> <a href="SceneHost_8h_source.html#l00080">SceneHost.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></div><div class="ttdoc">Loads a 3D scene (glTF / OBJ / FBX / GLB ... via Assimp/medialoader) into the ECS scene tree.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00137">SceneLoader.h:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a007b1d4ac4eb8861635ea20a0605cdfb"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a007b1d4ac4eb8861635ea20a0605cdfb">eve::sceneloader::SceneLoader::loadAsync</a></div><div class="ttdeci">bool loadAsync(const std::string &amp;path, const LoadOptions &amp;options={}, std::function&lt; void(scene::SceneHost *)&gt; done=nullptr)</div><div class="ttdoc">Decode path on a worker thread, then apply it on the main thread the next time pollAsync() is called ...</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00988">SceneLoader.cpp:988</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a017ac8fad179bebc2a0889221394773e"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a017ac8fad179bebc2a0889221394773e">eve::sceneloader::SceneLoader::Module_REG</a></div><div class="ttdeci">Module_REG(SceneLoader)</div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a063026e11a6030ecf753c29ab3f8c8f7"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a063026e11a6030ecf753c29ab3f8c8f7">eve::sceneloader::SceneLoader::pendingAsyncCount</a></div><div class="ttdeci">int pendingAsyncCount() const</div><div class="ttdoc">Number of async loads still waiting to be mounted.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01059">SceneLoader.cpp:1059</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a117d12fa176212cb2501695d3dec5c65"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a117d12fa176212cb2501695d3dec5c65">eve::sceneloader::SceneLoader::applyTreeDiff</a></div><div class="ttdeci">static bool applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &amp;newRoot, const SceneDiff &amp;diff, graphics::Graphics *gfx, const MeshSlotMap *slots)</div><div class="ttdoc">Apply a diff to the host arena in place. Creates/destroys Renderable3D for added/removed mesh objects...</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00635">SceneLoader.cpp:635</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a205e2c9195db963d95b8695fbeb686ea"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">eve::sceneloader::SceneLoader::MeshCache</a></div><div class="ttdeci">std::unordered_map&lt; const aiMesh *, graphics::Mesh * &gt; MeshCache</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00220">SceneLoader.h:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a31a3a26e66ade7a670a868e83e26ae2b"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a31a3a26e66ade7a670a868e83e26ae2b">eve::sceneloader::SceneLoader::light</a></div><div class="ttdeci">graphics::Light3D * light(const std::string &amp;path, int index)</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01071">SceneLoader.cpp:1071</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a32bd3ce19626caf016f492d7c89be4f8"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a32bd3ce19626caf016f492d7c89be4f8">eve::sceneloader::SceneLoader::clearPrewarm</a></div><div class="ttdeci">void clearPrewarm(const std::string &amp;path)</div><div class="ttdoc">Drop a decoded prewarm result and release its CPU scene.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01053">SceneLoader.cpp:1053</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a3a8e9426a9c795ff401423183327ebbe"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a3a8e9426a9c795ff401423183327ebbe">eve::sceneloader::SceneLoader::lightCount</a></div><div class="ttdeci">int lightCount(const std::string &amp;path)</div><div class="ttdoc">Number of imported Light3D entities for path; 0 if none / disabled.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01066">SceneLoader.cpp:1066</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a4c6bb73ec0f592b748ded54a475de061"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a4c6bb73ec0f592b748ded54a475de061">eve::sceneloader::SceneLoader::animationCount</a></div><div class="ttdeci">int animationCount(const std::string &amp;path)</div><div class="ttdoc">Number of imported animation clips for path; 0 if none / disabled.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01092">SceneLoader.cpp:1092</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a5c0e8341bbd8459e6132e88099d22ae6"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a5c0e8341bbd8459e6132e88099d22ae6">eve::sceneloader::SceneLoader::prewarmAsync</a></div><div class="ttdeci">bool prewarmAsync(const std::string &amp;path, const LoadOptions &amp;options={})</div><div class="ttdoc">Decode and retain a scene without creating ECS/GPU objects.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01028">SceneLoader.cpp:1028</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a5cb975ba484fd4cc7a9e0712b173e80e"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e">eve::sceneloader::SceneLoader::load</a></div><div class="ttdeci">scene::SceneHost * load(const std::string &amp;path, bool linkRenderables=true, const LoadOptions &amp;options={})</div><div class="ttdoc">Full load: build the GameObject tree from path, mount it, return host.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00873">SceneLoader.cpp:873</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a60da3b4482a28c694ef5a251dd3753ef"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">eve::sceneloader::SceneLoader::CpuImageMap</a></div><div class="ttdeci">std::unordered_map&lt; std::string, CpuImage &gt; CpuImageMap</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00227">SceneLoader.h:227</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a61b46c1e62efec726ae1683572dd79d7"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a61b46c1e62efec726ae1683572dd79d7">eve::sceneloader::SceneLoader::diff</a></div><div class="ttdeci">SceneDiff diff(const std::string &amp;path)</div><div class="ttdoc">Dry-run diff for path against the currently mounted tree (no mutation).</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00923">SceneLoader.cpp:923</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a62612f4c6919abe23cd36a74be264e17"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a62612f4c6919abe23cd36a74be264e17">eve::sceneloader::SceneLoader::reload</a></div><div class="ttdeci">bool reload(const std::string &amp;path, SceneDiff *out=nullptr, const LoadOptions &amp;options={})</div><div class="ttdoc">Hot-reload path. Re-decodes, diffs, and applies only what changed. Returns false if the file failed t...</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00899">SceneLoader.cpp:899</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a6c5a56515982531a1eae081386f1de96"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">eve::sceneloader::SceneLoader::host</a></div><div class="ttdeci">scene::SceneHost * host(const std::string &amp;path)</div><div class="ttdoc">The mounted host for path, or nullptr if not loaded.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00954">SceneLoader.cpp:954</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a7df1751c157e0e30cae69572315ba793"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a7df1751c157e0e30cae69572315ba793">eve::sceneloader::SceneLoader::skeleton</a></div><div class="ttdeci">animation::AnimSkeleton * skeleton(const std::string &amp;path)</div><div class="ttdoc">Imported skeleton for path (nullptr when the scene has no animations).</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01097">SceneLoader.cpp:1097</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a83f1fcd956ae7b18b6f7dee208fe24b9"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a83f1fcd956ae7b18b6f7dee208fe24b9">eve::sceneloader::SceneLoader::loaded</a></div><div class="ttdeci">bool loaded(const std::string &amp;path)</div><div class="ttdoc">True if path is currently loaded.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00964">SceneLoader.cpp:964</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a9162d011e61721a112cb411597be1dca"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a9162d011e61721a112cb411597be1dca">eve::sceneloader::SceneLoader::clip</a></div><div class="ttdeci">animation::AnimClip * clip(const std::string &amp;path, int index)</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01102">SceneLoader.cpp:1102</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a958330c0eee2520cee0d1aa8cbfdc070"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a958330c0eee2520cee0d1aa8cbfdc070">eve::sceneloader::SceneLoader::buildNodeDesc</a></div><div class="ttdeci">static scene::NodeDesc buildNodeDesc(const aiScene *scene, MeshSlotMap *slotsOut=nullptr)</div><div class="ttdoc">Flatten an Assimp scene into a scene::NodeDesc tree (id = object id).</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00593">SceneLoader.cpp:593</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_ab18e48476feb8633aee68c32a14ef63f"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#ab18e48476feb8633aee68c32a14ef63f">eve::sceneloader::SceneLoader::reloadChecked</a></div><div class="ttdeci">bool reloadChecked(const std::string &amp;path)</div><div class="ttdoc">Script-friendly reload: returns true when anything was updated.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00157">SceneLoader.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_abe56d4ba994c2b28c7e0619adfb964c9"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#abe56d4ba994c2b28c7e0619adfb964c9">eve::sceneloader::SceneLoader::fillSceneBounds</a></div><div class="ttdeci">static void fillSceneBounds(scene::SceneHost *host, const MeshSlotMap &amp;slots)</div><div class="ttdoc">Fill node bounds from Assimp mesh AABBs (mesh GameObjects get the exact local-space AABB; ancestors g...</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00748">SceneLoader.cpp:748</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_abea55f236223151fa9d1a1044c5aacb3"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#abea55f236223151fa9d1a1044c5aacb3">eve::sceneloader::SceneLoader::diffTree</a></div><div class="ttdeci">static SceneDiff diffTree(scene::SceneHost *host, const scene::NodeDesc &amp;newRoot)</div><div class="ttdoc">Diff a mounted host tree against a freshly built NodeDesc tree.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00601">SceneLoader.cpp:601</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_ac0544ab2e290e64a27f58f9f1fd5490c"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#ac0544ab2e290e64a27f58f9f1fd5490c">eve::sceneloader::SceneLoader::~SceneLoader</a></div><div class="ttdeci">~SceneLoader() override</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00057">SceneLoader.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_ac45f0c558e514c68e3b1544e5c9a14d7"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#ac45f0c558e514c68e3b1544e5c9a14d7">eve::sceneloader::SceneLoader::unload</a></div><div class="ttdeci">void unload(const std::string &amp;path)</div><div class="ttdoc">Drop the loaded scene for path, destroying linked Renderable3D objects.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00966">SceneLoader.cpp:966</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_ac4dec923708f6389131ea70d5c26e58b"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#ac4dec923708f6389131ea70d5c26e58b">eve::sceneloader::SceneLoader::prewarmed</a></div><div class="ttdeci">bool prewarmed(const std::string &amp;path) const</div><div class="ttdoc">True when a decoded scene is ready for load() to consume.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01049">SceneLoader.cpp:1049</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_ac7d1cd366a79b65f250eaa0e77dd8e77"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#ac7d1cd366a79b65f250eaa0e77dd8e77">eve::sceneloader::SceneLoader::nodeCount</a></div><div class="ttdeci">int nodeCount(const std::string &amp;path)</div><div class="ttdoc">Number of GameObjects (SceneNodes) currently mounted for path; 0 if none.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00959">SceneLoader.cpp:959</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_ae8b6a62c7ae5d89b28b4e059d1277370"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370">eve::sceneloader::SceneLoader::pollAsync</a></div><div class="ttdeci">int pollAsync()</div><div class="ttdoc">Mount every decoded-but-not-applied scene. Must be called on the main / render thread....</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01010">SceneLoader.cpp:1010</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_afbdf250e29612a51c32fafeec878121f"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">eve::sceneloader::SceneLoader::TextureCache</a></div><div class="ttdeci">std::unordered_map&lt; std::string, graphics::Texture * &gt; TextureCache</div><div class="ttdoc">Caches shared across the loader: textures by source key, GPU meshes per aiMesh.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00219">SceneLoader.h:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_afd6e47cc2050500aa6c261537244d9dc"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#afd6e47cc2050500aa6c261537244d9dc">eve::sceneloader::SceneLoader::cameraCount</a></div><div class="ttdeci">int cameraCount(const std::string &amp;path)</div><div class="ttdoc">Number of imported Camera3D entities for path; 0 if none / disabled.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01079">SceneLoader.cpp:1079</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1sceneloader_html_ac4c3ce517bc3502b726ac0f5bd05acfa"><div class="ttname"><a href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">eve::sceneloader::MeshSlotMap</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::vector&lt; MeshSlot &gt; &gt; MeshSlotMap</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00087">SceneLoader.h:87</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6"><div class="ttname"><a href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6">eve::ScriptState::Loaded</a></div><div class="ttdeci">@ Loaded</div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1NodeDesc_html"><div class="ttname"><a href="structeve_1_1scene_1_1NodeDesc.html">eve::scene::NodeDesc</a></div><div class="ttdoc">Declarative scene-node description (build once / on dirty → flatten into SceneHost::Tree)....</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8h_source.html#l00015">NodeDesc.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html">eve::sceneloader::LoadOptions</a></div><div class="ttdoc">Options controlling how a 3D scene file is decoded and mounted.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00099">SceneLoader.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a035282711d6f9e5abb8d99637058d439"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a035282711d6f9e5abb8d99637058d439">eve::sceneloader::LoadOptions::triangulate</a></div><div class="ttdeci">bool triangulate</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00100">SceneLoader.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a140a966d1b3df71c9cb33446cd3cc56b"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">eve::sceneloader::LoadOptions::importLights</a></div><div class="ttdeci">bool importLights</div><div class="ttdoc">Import aiLight entries as graphics::Light3D entities.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00110">SceneLoader.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a1db208540321b658e7489f3d5f19fce2"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a1db208540321b658e7489f3d5f19fce2">eve::sceneloader::LoadOptions::mipmaps</a></div><div class="ttdeci">bool mipmaps</div><div class="ttdoc">Generate mipmaps + anisotropic filtering for imported textures.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00108">SceneLoader.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a2006c883697e215324fe76cca63328c8"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8">eve::sceneloader::LoadOptions::sharedMeshes</a></div><div class="ttdeci">bool sharedMeshes</div><div class="ttdoc">Reuse one GPU mesh when several nodes reference the same aiMesh.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00106">SceneLoader.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a379b46115cb0a5b3682f664d6120edf9"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a379b46115cb0a5b3682f664d6120edf9">eve::sceneloader::LoadOptions::generateNormalsIfMissing</a></div><div class="ttdeci">bool generateNormalsIfMissing</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00101">SceneLoader.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a4869a2b5dbc01fdac59611fd9dd499d2"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">eve::sceneloader::LoadOptions::importAnimations</a></div><div class="ttdeci">bool importAnimations</div><div class="ttdoc">Import aiAnimation clips (skeleton + clips exposed via accessors).</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00114">SceneLoader.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a792968ce3df94e01146372933f695bb0"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">eve::sceneloader::LoadOptions::improveCacheLocality</a></div><div class="ttdeci">bool improveCacheLocality</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00104">SceneLoader.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_ac27eb74f23fda8fdb777ae4e3726e468"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#ac27eb74f23fda8fdb777ae4e3726e468">eve::sceneloader::LoadOptions::flipUVs</a></div><div class="ttdeci">bool flipUVs</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00103">SceneLoader.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_ac674924bef61e54b0ae85e538643f712"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">eve::sceneloader::LoadOptions::importCameras</a></div><div class="ttdeci">bool importCameras</div><div class="ttdoc">Import aiCamera entries as inactive graphics::Camera3D entities.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00112">SceneLoader.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_aeb8b76599b898799484836ce84791b07"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#aeb8b76599b898799484836ce84791b07">eve::sceneloader::LoadOptions::joinIdenticalVertices</a></div><div class="ttdeci">bool joinIdenticalVertices</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00102">SceneLoader.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1MeshSlot_html"><div class="ttname"><a href="structeve_1_1sceneloader_1_1MeshSlot.html">eve::sceneloader::MeshSlot</a></div><div class="ttdoc">A GPU mesh reference for one Assimp mesh referenced by an aiNode. The loader uploads one Renderable3D...</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00082">SceneLoader.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1MeshSlot_html_a395d40f478de3500ba001787c4c2ff36"><div class="ttname"><a href="structeve_1_1sceneloader_1_1MeshSlot.html#a395d40f478de3500ba001787c4c2ff36">eve::sceneloader::MeshSlot::mesh</a></div><div class="ttdeci">const aiMesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00084">SceneLoader.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1MeshSlot_html_a93d5db1f2ebee8c84345a8c27d707189"><div class="ttname"><a href="structeve_1_1sceneloader_1_1MeshSlot.html#a93d5db1f2ebee8c84345a8c27d707189">eve::sceneloader::MeshSlot::scene</a></div><div class="ttdeci">const aiScene * scene</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00083">SceneLoader.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1MeshSlot_html_a9a746e1029a6af0100526df8ee71a1e3"><div class="ttname"><a href="structeve_1_1sceneloader_1_1MeshSlot.html#a9a746e1029a6af0100526df8ee71a1e3">eve::sceneloader::MeshSlot::materialIndex</a></div><div class="ttdeci">unsigned materialIndex</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00085">SceneLoader.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html">eve::sceneloader::SceneDiffEntry</a></div><div class="ttdoc">SceneDiffEntry / SceneDiff</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00057">SceneLoader.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a081f35b95d5085f98951a33ca6f6c71c"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a081f35b95d5085f98951a33ca6f6c71c">eve::sceneloader::SceneDiffEntry::action</a></div><div class="ttdeci">Action action</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00060">SceneLoader.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a1d8cce0798e435ab6f0a45a353e817be"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a1d8cce0798e435ab6f0a45a353e817be">eve::sceneloader::SceneDiffEntry::parent</a></div><div class="ttdeci">std::string parent</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00062">SceneLoader.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a3d057b5bc06d8cf089a9bd0d5a603c00"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00">eve::sceneloader::SceneDiffEntry::Action</a></div><div class="ttdeci">Action</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00058">SceneLoader.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a3d057b5bc06d8cf089a9bd0d5a603c00a1063e38cb53d94d386f21227fcd84717"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a1063e38cb53d94d386f21227fcd84717">eve::sceneloader::SceneDiffEntry::Action::Remove</a></div><div class="ttdeci">@ Remove</div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a3d057b5bc06d8cf089a9bd0d5a603c00a6bc362dbf494c61ea117fe3c71ca48a5"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a6bc362dbf494c61ea117fe3c71ca48a5">eve::sceneloader::SceneDiffEntry::Action::Move</a></div><div class="ttdeci">@ Move</div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a3d057b5bc06d8cf089a9bd0d5a603c00a7f090bbab1cc7f9c08bf4e54d932d3c0"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a7f090bbab1cc7f9c08bf4e54d932d3c0">eve::sceneloader::SceneDiffEntry::Action::Modify</a></div><div class="ttdeci">@ Modify</div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_a3d057b5bc06d8cf089a9bd0d5a603c00aec211f7c20af43e742bf2570c3cb84f9"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00aec211f7c20af43e742bf2570c3cb84f9">eve::sceneloader::SceneDiffEntry::Action::Add</a></div><div class="ttdeci">@ Add</div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiffEntry_html_aeff3a0258bb5ef4cb7581cf72addb782"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#aeff3a0258bb5ef4cb7581cf72addb782">eve::sceneloader::SceneDiffEntry::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00061">SceneLoader.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html">eve::sceneloader::SceneDiff</a></div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00065">SceneLoader.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html_a524da38e5696af9ea10c27d4848207f0"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html#a524da38e5696af9ea10c27d4848207f0">eve::sceneloader::SceneDiff::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00072">SceneLoader.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html_a7034cf94ce10ed9529da9aa758ab66e0"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html#a7034cf94ce10ed9529da9aa758ab66e0">eve::sceneloader::SceneDiff::entries</a></div><div class="ttdeci">std::vector&lt; SceneDiffEntry &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00066">SceneLoader.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html_a76f00c258731a3ef555bed505fba85b4"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html#a76f00c258731a3ef555bed505fba85b4">eve::sceneloader::SceneDiff::removed</a></div><div class="ttdeci">int removed</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00068">SceneLoader.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html_a7f989c167cf21c9060e6861e8cc7a8e3"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html#a7f989c167cf21c9060e6861e8cc7a8e3">eve::sceneloader::SceneDiff::added</a></div><div class="ttdeci">int added</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00067">SceneLoader.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html_ae5e696d9f2289a7e966a967ba041a2ed"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html#ae5e696d9f2289a7e966a967ba041a2ed">eve::sceneloader::SceneDiff::moved</a></div><div class="ttdeci">int moved</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00070">SceneLoader.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneDiff_html_af970bee55f60578505d9f534b377b8b6"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneDiff.html#af970bee55f60578505d9f534b377b8b6">eve::sceneloader::SceneDiff::modified</a></div><div class="ttdeci">int modified</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00069">SceneLoader.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage_html"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html">eve::sceneloader::SceneLoader::CpuImage</a></div><div class="ttdoc">CPU-decoded texture (RGBA8) keyed by the same source+suffix key as TextureCache.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00222">SceneLoader.h:222</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage_html_a66a9d8a39b89a8e03379f326cde14eaf"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#a66a9d8a39b89a8e03379f326cde14eaf">eve::sceneloader::SceneLoader::CpuImage::rgba</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; rgba</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00225">SceneLoader.h:225</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage_html_a79c8b36e8e1235280eabf09ee20e91f2"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#a79c8b36e8e1235280eabf09ee20e91f2">eve::sceneloader::SceneLoader::CpuImage::w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00223">SceneLoader.h:223</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage_html_aa0f4538aa274652fbb6f13c696e9731f"><div class="ttname"><a href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#aa0f4538aa274652fbb6f13c696e9731f">eve::sceneloader::SceneLoader::CpuImage::h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00224">SceneLoader.h:224</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

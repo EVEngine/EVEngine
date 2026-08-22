@@ -1,0 +1,1196 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::card::Card类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1card.html">card</a></li><li class="navelem"><a class="el" href="classeve_1_1card_1_1Card.html">Card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1card_1_1Card-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::card::Card类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。  
+ <a href="classeve_1_1card_1_1Card.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Card_8h_source.html">Card.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::card::Card 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1card_1_1Card.png" usemap="#eve::card::Card_map" alt=""/>
+  <map id="eve::card::Card_map" name="eve::card::Card_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,99,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3f58c6e7ec1f97a38e50c74408cd3fd9" id="r_a3f58c6e7ec1f97a38e50c74408cd3fd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a3f58c6e7ec1f97a38e50c74408cd3fd9">Module_REG</a> (<a class="el" href="classeve_1_1card_1_1Card.html">Card</a>)</td></tr>
+<tr class="separator:a3f58c6e7ec1f97a38e50c74408cd3fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92b3ec14dbc62820ba429a33343769d0" id="r_a92b3ec14dbc62820ba429a33343769d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a92b3ec14dbc62820ba429a33343769d0">Card</a> ()=default</td></tr>
+<tr class="separator:a92b3ec14dbc62820ba429a33343769d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f70f4b46e01fcc502d8134d1d741461" id="r_a6f70f4b46e01fcc502d8134d1d741461"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a6f70f4b46e01fcc502d8134d1d741461">~Card</a> () override</td></tr>
+<tr class="separator:a6f70f4b46e01fcc502d8134d1d741461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a39b43357ff9ec8b6ec9e86206edb20" id="r_a3a39b43357ff9ec8b6ec9e86206edb20"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a3a39b43357ff9ec8b6ec9e86206edb20">registerCardsFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a3a39b43357ff9ec8b6ec9e86206edb20"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 JSON 注册卡牌类型；返回成功注册数量。  <br /></td></tr>
+<tr class="separator:a3a39b43357ff9ec8b6ec9e86206edb20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adac61e2cf9182de0f8c4f20fc6672b18" id="r_adac61e2cf9182de0f8c4f20fc6672b18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#adac61e2cf9182de0f8c4f20fc6672b18">clearCardDefinitions</a> ()</td></tr>
+<tr class="memdesc:adac61e2cf9182de0f8c4f20fc6672b18"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部卡牌类型定义。  <br /></td></tr>
+<tr class="separator:adac61e2cf9182de0f8c4f20fc6672b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0eceba55722668344090474351e22ba" id="r_aa0eceba55722668344090474351e22ba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#aa0eceba55722668344090474351e22ba">getCardDefinitionCount</a> ()</td></tr>
+<tr class="memdesc:aa0eceba55722668344090474351e22ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">已注册卡牌类型数量。  <br /></td></tr>
+<tr class="separator:aa0eceba55722668344090474351e22ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c92df37d7247d3755a76f30508fc426" id="r_a5c92df37d7247d3755a76f30508fc426"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a5c92df37d7247d3755a76f30508fc426">hasCardDefinition</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a5c92df37d7247d3755a76f30508fc426"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌类型查询。  <br /></td></tr>
+<tr class="separator:a5c92df37d7247d3755a76f30508fc426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9d88f5ef0a0fad8152509e5613a60d2" id="r_ad9d88f5ef0a0fad8152509e5613a60d2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#ad9d88f5ef0a0fad8152509e5613a60d2">getCardDefinitionName</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:ad9d88f5ef0a0fad8152509e5613a60d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7d911a061bd2ec4962802fe7919234" id="r_afc7d911a061bd2ec4962802fe7919234"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#afc7d911a061bd2ec4962802fe7919234">getCardDefinitionKind</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:afc7d911a061bd2ec4962802fe7919234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15eafc731c664d6a66e903df2525d63d" id="r_a15eafc731c664d6a66e903df2525d63d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a15eafc731c664d6a66e903df2525d63d">getCardDefinitionCost</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a15eafc731c664d6a66e903df2525d63d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac90d5daae1faec2a18575eef99204e3" id="r_aac90d5daae1faec2a18575eef99204e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#aac90d5daae1faec2a18575eef99204e3">getCardDefinitionAttack</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:aac90d5daae1faec2a18575eef99204e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8013a9b4f742eb8062b14c7e53fc5d19" id="r_a8013a9b4f742eb8062b14c7e53fc5d19"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a8013a9b4f742eb8062b14c7e53fc5d19">getCardDefinitionHealth</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a8013a9b4f742eb8062b14c7e53fc5d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf4f0700b2797a75e614bacbcbf6d67" id="r_acdf4f0700b2797a75e614bacbcbf6d67"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#acdf4f0700b2797a75e614bacbcbf6d67">getCardDefinitionTintR</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:acdf4f0700b2797a75e614bacbcbf6d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eb5db1f40b220df36528d9b0281d73d" id="r_a6eb5db1f40b220df36528d9b0281d73d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a6eb5db1f40b220df36528d9b0281d73d">getCardDefinitionTintG</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a6eb5db1f40b220df36528d9b0281d73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16eea58258db53f74636070177717494" id="r_a16eea58258db53f74636070177717494"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a16eea58258db53f74636070177717494">getCardDefinitionTintB</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a16eea58258db53f74636070177717494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d34b76d8b7389a859d0929884a088e1" id="r_a5d34b76d8b7389a859d0929884a088e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a5d34b76d8b7389a859d0929884a088e1">newConfig</a> ()</td></tr>
+<tr class="memdesc:a5d34b76d8b7389a859d0929884a088e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。  <br /></td></tr>
+<tr class="separator:a5d34b76d8b7389a859d0929884a088e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af05fddf61bd337cfc2304ec9151fcdc6" id="r_af05fddf61bd337cfc2304ec9151fcdc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#af05fddf61bd337cfc2304ec9151fcdc6">newCard</a> (const std::string &amp;defId)</td></tr>
+<tr class="separator:af05fddf61bd337cfc2304ec9151fcdc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2131dcfe1d708365cad218d627350d8" id="r_ad2131dcfe1d708365cad218d627350d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Deck.html">Deck</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#ad2131dcfe1d708365cad218d627350d8">newDeck</a> ()</td></tr>
+<tr class="separator:ad2131dcfe1d708365cad218d627350d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd3228743f0a1ad3ab8a5c8ca9d0566" id="r_aecd3228743f0a1ad3ab8a5c8ca9d0566"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Zone.html">Zone</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#aecd3228743f0a1ad3ab8a5c8ca9d0566">newZone</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const std::string &amp;label, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:aecd3228743f0a1ad3ab8a5c8ca9d0566"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建一个落牌区。  <br /></td></tr>
+<tr class="separator:aecd3228743f0a1ad3ab8a5c8ca9d0566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64ce9160f69bb0e42a226ac680b34c99" id="r_a64ce9160f69bb0e42a226ac680b34c99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Hand.html">Hand</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a64ce9160f69bb0e42a226ac680b34c99">newHand</a> (<a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> *cfg)</td></tr>
+<tr class="memdesc:a64ce9160f69bb0e42a226ac680b34c99"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建一个手牌布局。  <br /></td></tr>
+<tr class="separator:a64ce9160f69bb0e42a226ac680b34c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7381bf4b216662183d1f884019fb0117" id="r_a7381bf4b216662183d1f884019fb0117"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a7381bf4b216662183d1f884019fb0117">setConfig</a> (<a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> *cfg)</td></tr>
+<tr class="memdesc:a7381bf4b216662183d1f884019fb0117"><td class="mdescLeft">&#160;</td><td class="mdescRight">游戏状态：当前布局、手牌、落牌区、牌库。  <br /></td></tr>
+<tr class="separator:a7381bf4b216662183d1f884019fb0117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a297468783d6c7b6a7df115520cd031f5" id="r_a297468783d6c7b6a7df115520cd031f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a297468783d6c7b6a7df115520cd031f5">getConfig</a> () const</td></tr>
+<tr class="separator:a297468783d6c7b6a7df115520cd031f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a7d47f3773f6de268e191f9366e96b" id="r_a45a7d47f3773f6de268e191f9366e96b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a45a7d47f3773f6de268e191f9366e96b">handCount</a> () const</td></tr>
+<tr class="separator:a45a7d47f3773f6de268e191f9366e96b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bb9487adc2eadb2795f12e251c68a03" id="r_a9bb9487adc2eadb2795f12e251c68a03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Hand.html">Hand</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a9bb9487adc2eadb2795f12e251c68a03">getHand</a> (int index) const</td></tr>
+<tr class="separator:a9bb9487adc2eadb2795f12e251c68a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ee9cd06f75f4266d1564e4f1cdd5c48" id="r_a8ee9cd06f75f4266d1564e4f1cdd5c48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Hand.html">Hand</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a8ee9cd06f75f4266d1564e4f1cdd5c48">findHand</a> (const std::string &amp;owner) const</td></tr>
+<tr class="separator:a8ee9cd06f75f4266d1564e4f1cdd5c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16fdc91ed549e1c8e540e30f15529ae8" id="r_a16fdc91ed549e1c8e540e30f15529ae8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a16fdc91ed549e1c8e540e30f15529ae8">zoneCount</a> () const</td></tr>
+<tr class="separator:a16fdc91ed549e1c8e540e30f15529ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae172cea442d0dea417acb9af7a01e31d" id="r_ae172cea442d0dea417acb9af7a01e31d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Zone.html">Zone</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#ae172cea442d0dea417acb9af7a01e31d">getZone</a> (int index) const</td></tr>
+<tr class="separator:ae172cea442d0dea417acb9af7a01e31d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab75635851c2cd3cb38ff2c941a0498d" id="r_aab75635851c2cd3cb38ff2c941a0498d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1Deck.html">Deck</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#aab75635851c2cd3cb38ff2c941a0498d">getDeck</a> () const</td></tr>
+<tr class="separator:aab75635851c2cd3cb38ff2c941a0498d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29d1e89f174c390da4064e5e55b5dab3" id="r_a29d1e89f174c390da4064e5e55b5dab3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a29d1e89f174c390da4064e5e55b5dab3">drawCard</a> (const std::string &amp;handOwner)</td></tr>
+<tr class="memdesc:a29d1e89f174c390da4064e5e55b5dab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">从牌库抽一张牌加入指定手牌；无牌时返回 nullptr。  <br /></td></tr>
+<tr class="separator:a29d1e89f174c390da4064e5e55b5dab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e23010b3dc137060d31cb00acec4f01" id="r_a5e23010b3dc137060d31cb00acec4f01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a5e23010b3dc137060d31cb00acec4f01">update</a> (float dt, float mx, float my, bool down)</td></tr>
+<tr class="memdesc:a5e23010b3dc137060d31cb00acec4f01"><td class="mdescLeft">&#160;</td><td class="mdescRight">每帧更新布局与交互。  <br /></td></tr>
+<tr class="separator:a5e23010b3dc137060d31cb00acec4f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3af1b040da5bf6c3805c54e79ca49688" id="r_a3af1b040da5bf6c3805c54e79ca49688"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a3af1b040da5bf6c3805c54e79ca49688">render</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a3af1b040da5bf6c3805c54e79ca49688"><td class="mdescLeft">&#160;</td><td class="mdescRight">绘制手牌/落牌区（与牌库）。  <br /></td></tr>
+<tr class="separator:a3af1b040da5bf6c3805c54e79ca49688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e98610549c499df3d7db7f2df35816a" id="r_a1e98610549c499df3d7db7f2df35816a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a1e98610549c499df3d7db7f2df35816a">renderDeck</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="separator:a1e98610549c499df3d7db7f2df35816a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ff785d9d11f7482ebd7e8bdbe1f8aa" id="r_a23ff785d9d11f7482ebd7e8bdbe1f8aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a23ff785d9d11f7482ebd7e8bdbe1f8aa">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a23ff785d9d11f7482ebd7e8bdbe1f8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">交互事件队列（抽牌/出牌/拖拽等）。  <br /></td></tr>
+<tr class="separator:a23ff785d9d11f7482ebd7e8bdbe1f8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9d80c3a52d7b6fc2643cd4092d07ff6" id="r_ac9d80c3a52d7b6fc2643cd4092d07ff6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#ac9d80c3a52d7b6fc2643cd4092d07ff6">getEventCount</a> () const</td></tr>
+<tr class="separator:ac9d80c3a52d7b6fc2643cd4092d07ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14b206361a9eeedc168599541726365c" id="r_a14b206361a9eeedc168599541726365c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a14b206361a9eeedc168599541726365c">getEventType</a> (int index) const</td></tr>
+<tr class="separator:a14b206361a9eeedc168599541726365c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b47055495160f508edd0fe4aaf68f6" id="r_a85b47055495160f508edd0fe4aaf68f6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a85b47055495160f508edd0fe4aaf68f6">getEventHand</a> (int index) const</td></tr>
+<tr class="separator:a85b47055495160f508edd0fe4aaf68f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7093e408ee867f1126a8ecf6c3baae2f" id="r_a7093e408ee867f1126a8ecf6c3baae2f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a7093e408ee867f1126a8ecf6c3baae2f">getEventZone</a> (int index) const</td></tr>
+<tr class="separator:a7093e408ee867f1126a8ecf6c3baae2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5049afd758459947605e58c11c068aaa" id="r_a5049afd758459947605e58c11c068aaa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a5049afd758459947605e58c11c068aaa">getEventCardId</a> (int index) const</td></tr>
+<tr class="separator:a5049afd758459947605e58c11c068aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1347736facccbfaa46bc36f07b45c818" id="r_a1347736facccbfaa46bc36f07b45c818"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1card_1_1Card.html#a1347736facccbfaa46bc36f07b45c818">getEventReason</a> (int index) const</td></tr>
+<tr class="separator:a1347736facccbfaa46bc36f07b45c818"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8h_source.html">Card.h</a> 第 <a class="el" href="Card_8h_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a92b3ec14dbc62820ba429a33343769d0" name="a92b3ec14dbc62820ba429a33343769d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92b3ec14dbc62820ba429a33343769d0">&#9670;&#160;</a></span>Card()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::card::Card::Card </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f70f4b46e01fcc502d8134d1d741461" name="a6f70f4b46e01fcc502d8134d1d741461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f70f4b46e01fcc502d8134d1d741461">&#9670;&#160;</a></span>~Card()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::card::Card::~Card </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="adac61e2cf9182de0f8c4f20fc6672b18" name="adac61e2cf9182de0f8c4f20fc6672b18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adac61e2cf9182de0f8c4f20fc6672b18">&#9670;&#160;</a></span>clearCardDefinitions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::Card::clearCardDefinitions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空全部卡牌类型定义。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a23ff785d9d11f7482ebd7e8bdbe1f8aa" name="a23ff785d9d11f7482ebd7e8bdbe1f8aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23ff785d9d11f7482ebd7e8bdbe1f8aa">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::Card::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>交互事件队列（抽牌/出牌/拖拽等）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29d1e89f174c390da4064e5e55b5dab3" name="a29d1e89f174c390da4064e5e55b5dab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d1e89f174c390da4064e5e55b5dab3">&#9670;&#160;</a></span>drawCard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> * eve::card::Card::drawCard </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>handOwner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从牌库抽一张牌加入指定手牌；无牌时返回 nullptr。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba2b487b0f260da950751013344a2e4cdc">eve::card::Deck</a>, <a class="el" href="CardTypes_8h_source.html#l00066">eve::card::LayoutConfig::deckX</a>, <a class="el" href="CardTypes_8h_source.html#l00067">eve::card::LayoutConfig::deckY</a>, <a class="el" href="CardTypes_8cpp_source.html#l00137">eve::card::Deck::draw()</a>, <a class="el" href="Card_8cpp_source.html#l00233">findHand()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+</div>
+</div>
+<a id="a8ee9cd06f75f4266d1564e4f1cdd5c48" name="a8ee9cd06f75f4266d1564e4f1cdd5c48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ee9cd06f75f4266d1564e4f1cdd5c48">&#9670;&#160;</a></span>findHand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Hand.html">Hand</a> * eve::card::Card::findHand </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Card_8cpp_source.html#l00250">drawCard()</a>.</p>
+
+</div>
+</div>
+<a id="aac90d5daae1faec2a18575eef99204e3" name="aac90d5daae1faec2a18575eef99204e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac90d5daae1faec2a18575eef99204e3">&#9670;&#160;</a></span>getCardDefinitionAttack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::getCardDefinitionAttack </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="a15eafc731c664d6a66e903df2525d63d" name="a15eafc731c664d6a66e903df2525d63d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15eafc731c664d6a66e903df2525d63d">&#9670;&#160;</a></span>getCardDefinitionCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::getCardDefinitionCost </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="aa0eceba55722668344090474351e22ba" name="aa0eceba55722668344090474351e22ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0eceba55722668344090474351e22ba">&#9670;&#160;</a></span>getCardDefinitionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::getCardDefinitionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>已注册卡牌类型数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8013a9b4f742eb8062b14c7e53fc5d19" name="a8013a9b4f742eb8062b14c7e53fc5d19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8013a9b4f742eb8062b14c7e53fc5d19">&#9670;&#160;</a></span>getCardDefinitionHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::getCardDefinitionHealth </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="afc7d911a061bd2ec4962802fe7919234" name="afc7d911a061bd2ec4962802fe7919234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7d911a061bd2ec4962802fe7919234">&#9670;&#160;</a></span>getCardDefinitionKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getCardDefinitionKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="ad9d88f5ef0a0fad8152509e5613a60d2" name="ad9d88f5ef0a0fad8152509e5613a60d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9d88f5ef0a0fad8152509e5613a60d2">&#9670;&#160;</a></span>getCardDefinitionName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getCardDefinitionName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="a16eea58258db53f74636070177717494" name="a16eea58258db53f74636070177717494"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16eea58258db53f74636070177717494">&#9670;&#160;</a></span>getCardDefinitionTintB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::card::Card::getCardDefinitionTintB </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="a6eb5db1f40b220df36528d9b0281d73d" name="a6eb5db1f40b220df36528d9b0281d73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eb5db1f40b220df36528d9b0281d73d">&#9670;&#160;</a></span>getCardDefinitionTintG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::card::Card::getCardDefinitionTintG </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="acdf4f0700b2797a75e614bacbcbf6d67" name="acdf4f0700b2797a75e614bacbcbf6d67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdf4f0700b2797a75e614bacbcbf6d67">&#9670;&#160;</a></span>getCardDefinitionTintR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::card::Card::getCardDefinitionTintR </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="a297468783d6c7b6a7df115520cd031f5" name="a297468783d6c7b6a7df115520cd031f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a297468783d6c7b6a7df115520cd031f5">&#9670;&#160;</a></span>getConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> * eve::card::Card::getConfig </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab75635851c2cd3cb38ff2c941a0498d" name="aab75635851c2cd3cb38ff2c941a0498d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab75635851c2cd3cb38ff2c941a0498d">&#9670;&#160;</a></span>getDeck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Deck.html">Deck</a> * eve::card::Card::getDeck </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5049afd758459947605e58c11c068aaa" name="a5049afd758459947605e58c11c068aaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5049afd758459947605e58c11c068aaa">&#9670;&#160;</a></span>getEventCardId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getEventCardId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9d80c3a52d7b6fc2643cd4092d07ff6" name="ac9d80c3a52d7b6fc2643cd4092d07ff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d80c3a52d7b6fc2643cd4092d07ff6">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85b47055495160f508edd0fe4aaf68f6" name="a85b47055495160f508edd0fe4aaf68f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b47055495160f508edd0fe4aaf68f6">&#9670;&#160;</a></span>getEventHand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getEventHand </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1347736facccbfaa46bc36f07b45c818" name="a1347736facccbfaa46bc36f07b45c818"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1347736facccbfaa46bc36f07b45c818">&#9670;&#160;</a></span>getEventReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getEventReason </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14b206361a9eeedc168599541726365c" name="a14b206361a9eeedc168599541726365c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14b206361a9eeedc168599541726365c">&#9670;&#160;</a></span>getEventType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getEventType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="a7093e408ee867f1126a8ecf6c3baae2f" name="a7093e408ee867f1126a8ecf6c3baae2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7093e408ee867f1126a8ecf6c3baae2f">&#9670;&#160;</a></span>getEventZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::card::Card::getEventZone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9bb9487adc2eadb2795f12e251c68a03" name="a9bb9487adc2eadb2795f12e251c68a03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bb9487adc2eadb2795f12e251c68a03">&#9670;&#160;</a></span>getHand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Hand.html">Hand</a> * eve::card::Card::getHand </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae172cea442d0dea417acb9af7a01e31d" name="ae172cea442d0dea417acb9af7a01e31d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae172cea442d0dea417acb9af7a01e31d">&#9670;&#160;</a></span>getZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Zone.html">Zone</a> * eve::card::Card::getZone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45a7d47f3773f6de268e191f9366e96b" name="a45a7d47f3773f6de268e191f9366e96b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45a7d47f3773f6de268e191f9366e96b">&#9670;&#160;</a></span>handCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::handCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c92df37d7247d3755a76f30508fc426" name="a5c92df37d7247d3755a76f30508fc426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c92df37d7247d3755a76f30508fc426">&#9670;&#160;</a></span>hasCardDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::card::Card::hasCardDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>卡牌类型查询。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f58c6e7ec1f97a38e50c74408cd3fd9" name="a3f58c6e7ec1f97a38e50c74408cd3fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f58c6e7ec1f97a38e50c74408cd3fd9">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::card::Card::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1card_1_1Card.html">Card</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af05fddf61bd337cfc2304ec9151fcdc6" name="af05fddf61bd337cfc2304ec9151fcdc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af05fddf61bd337cfc2304ec9151fcdc6">&#9670;&#160;</a></span>newCard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1CardData.html">CardData</a> * eve::card::Card::newCard </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>defId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="CardTypes_8cpp_source.html#l00100">eve::card::CardData::createCard()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="a5d34b76d8b7389a859d0929884a088e1" name="a5d34b76d8b7389a859d0929884a088e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d34b76d8b7389a859d0929884a088e1">&#9670;&#160;</a></span>newConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> * eve::card::Card::newConfig </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2131dcfe1d708365cad218d627350d8" name="ad2131dcfe1d708365cad218d627350d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2131dcfe1d708365cad218d627350d8">&#9670;&#160;</a></span>newDeck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Deck.html">Deck</a> * eve::card::Card::newDeck </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00131">eve::card::Deck::createDeck()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+</div>
+</div>
+<a id="a64ce9160f69bb0e42a226ac680b34c99" name="a64ce9160f69bb0e42a226ac680b34c99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64ce9160f69bb0e42a226ac680b34c99">&#9670;&#160;</a></span>newHand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Hand.html">Hand</a> * eve::card::Card::newHand </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> *&#160;</td>
+          <td class="paramname"><em>cfg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>创建一个手牌布局。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00316">eve::card::Hand::createHand()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+</div>
+</div>
+<a id="aecd3228743f0a1ad3ab8a5c8ca9d0566" name="aecd3228743f0a1ad3ab8a5c8ca9d0566"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd3228743f0a1ad3ab8a5c8ca9d0566">&#9670;&#160;</a></span>newZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1card_1_1Zone.html">Zone</a> * eve::card::Card::newZone </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>创建一个落牌区。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00165">eve::card::Zone::createZone()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a3a39b43357ff9ec8b6ec9e86206edb20" name="a3a39b43357ff9ec8b6ec9e86206edb20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a39b43357ff9ec8b6ec9e86206edb20">&#9670;&#160;</a></span>registerCardsFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::registerCardsFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从 JSON 注册卡牌类型；返回成功注册数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Json_8cpp_source.html#l00449">eve::json::Document::parse()</a>, <a class="el" href="Json_8h_source.html#l00112">eve::json::Document::root()</a> , 以及 <a class="el" href="Json_8h_source.html#l00111">eve::json::Document::valid()</a>.</p>
+
+</div>
+</div>
+<a id="a3af1b040da5bf6c3805c54e79ca49688" name="a3af1b040da5bf6c3805c54e79ca49688"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af1b040da5bf6c3805c54e79ca49688">&#9670;&#160;</a></span>render()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::Card::render </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>绘制手牌/落牌区（与牌库）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="CardTypes_8h_source.html#l00064">eve::card::LayoutConfig::showZones</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a1e98610549c499df3d7db7f2df35816a" name="a1e98610549c499df3d7db7f2df35816a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e98610549c499df3d7db7f2df35816a">&#9670;&#160;</a></span>renderDeck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::Card::renderDeck </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="CardTypes_8h_source.html#l00043">eve::card::LayoutConfig::cardH</a>, <a class="el" href="CardTypes_8h_source.html#l00042">eve::card::LayoutConfig::cardW</a>, <a class="el" href="CardTypes_8h_source.html#l00169">eve::card::Deck::count()</a>, <a class="el" href="CardTypes_8h_source.html#l00066">eve::card::LayoutConfig::deckX</a>, <a class="el" href="CardTypes_8h_source.html#l00067">eve::card::LayoutConfig::deckY</a>, <a class="el" href="Graphics_8h_source.html#l00875">eve::graphics::Graphics::getFont()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="CardTypes_8cpp_source.html#l00203">eve::card::printCentered()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00213">eve::card::renderCardBack()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a7381bf4b216662183d1f884019fb0117" name="a7381bf4b216662183d1f884019fb0117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7381bf4b216662183d1f884019fb0117">&#9670;&#160;</a></span>setConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::Card::setConfig </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1card_1_1LayoutConfig.html">LayoutConfig</a> *&#160;</td>
+          <td class="paramname"><em>cfg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>游戏状态：当前布局、手牌、落牌区、牌库。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e23010b3dc137060d31cb00acec4f01" name="a5e23010b3dc137060d31cb00acec4f01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e23010b3dc137060d31cb00acec4f01">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::card::Card::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>my</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>down</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>每帧更新布局与交互。 </p>
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a16fdc91ed549e1c8e540e30f15529ae8" name="a16fdc91ed549e1c8e540e30f15529ae8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16fdc91ed549e1c8e540e30f15529ae8">&#9670;&#160;</a></span>zoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::card::Card::zoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Card_8cpp_source.html">Card.cpp</a> 第 <a class="el" href="Card_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/card/<a class="el" href="Card_8h_source.html">Card.h</a></li>
+<li>src/modules/card/<a class="el" href="Card_8cpp_source.html">Card.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

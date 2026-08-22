@@ -1,0 +1,1401 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。  
+<a href="namespaceeve_1_1graphics.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1graphics_1_1grass" id="r_namespaceeve_1_1graphics_1_1grass"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1grass.html">grass</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics_1_1grass"><td class="mdescLeft">&#160;</td><td class="mdescRight">t3ssel8r-style stylized grass. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics_1_1hair" id="r_namespaceeve_1_1graphics_1_1hair"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html">hair</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics_1_1hair"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in Kajiya-Kay hair/fur card shader helpers. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics_1_1vulkan" id="r_namespaceeve_1_1graphics_1_1vulkan"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">vulkan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics_1_1webgpu" id="r_namespaceeve_1_1graphics_1_1webgpu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space ambient occlusion.  <a href="classeve_1_1graphics_1_1AmbientOcclusion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classic image-space anti-aliasing.  <a href="classeve_1_1graphics_1_1AntiAliasing.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html">Batcher</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulates solid / textured quads in logical (Y-down) coordinates. Used by <a class="el" href="classeve_1_1graphics_1_1RenderSystem.html" title="Walks ECS Renderable2D views and draws via Graphics batch path.">RenderSystem</a>; not a public script API.  <a href="classeve_1_1graphics_1_1Batcher.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1BatchVertex.html">BatchVertex</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-side vertex for 2D batching (logical or NDC depending on stage).  <a href="structeve_1_1graphics_1_1BatchVertex.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera.html">Camera</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。  <a href="classeve_1_1graphics_1_1Camera.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative 2D camera (viewport center + zoom).  <a href="classeve_1_1graphics_1_1Camera2D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightConfig.html">ClusteredLightConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clustered forward grid (CPU assign, GPU consume).  <a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-built clustered lighting upload for one frame/camera. Point lights are clustered; directional lights become the primary dir (first by intensity).  <a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusterTableEntry.html">ClusterTableEntry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html">Drawable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases).">Drawable</a> base (textures, meshes, canvases).  <a href="classeve_1_1graphics_1_1Drawable.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared 2D draw queue item (sprites + tiles).  <a href="structeve_1_1graphics_1_1DrawItem2D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-side font: wraps a decoded <code><a class="el" href="classeve_1_1font_1_1FontData.html" title="CPU-side decoded font face (FreeType FT_Face + owned font bytes). Does not upload to GPU — rasterize ...">font::FontData</a></code> and rasterizes a fixed set of codepoints into a single RGBA8 glyph atlas texture up front, so <code><a class="el" href="classeve_1_1graphics_1_1Graphics.html#a94effaf27d38e2d624222cb358989c6e" title="Draws UTF-8 text with the current font (see setFont), baseline-aligned so that (x,...">Graphics::print()</a></code> can draw text with plain textured-quad draws.  <a href="classeve_1_1graphics_1_1Font.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1FrameDrawList3D.html">FrameDrawList3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Double-buffered per-frame draw list written by the prep jobs and only read by the render thread. Vectors keep their capacity across frames, so the steady state does not allocate per frame.  <a href="structeve_1_1graphics_1_1FrameDrawList3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GBuffer.html">GBuffer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).  <a href="classeve_1_1graphics_1_1GBuffer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space single-bounce GI (SSGI).  <a href="classeve_1_1graphics_1_1GlobalIllumination.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuIndirectCommand.html">GpuIndirectCommand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indirect draw command; layout identical to VkDrawIndexedIndirectCommand.  <a href="structeve_1_1graphics_1_1GpuIndirectCommand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuInstance.html">GpuInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-instance GPU record (std430). Mirrors GLSL <a class="el" href="structeve_1_1graphics_1_1GpuInstance.html" title="Per-instance GPU record (std430). Mirrors GLSL GpuInstance.">GpuInstance</a>.  <a href="structeve_1_1graphics_1_1GpuInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMaterialRecord.html">GpuMaterialRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU material table record (std430). Mirrors GLSL <a class="el" href="structeve_1_1graphics_1_1GpuMaterialRecord.html" title="GPU material table record (std430). Mirrors GLSL GpuMaterialRecord.">GpuMaterialRecord</a>.  <a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html">GpuMeshRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU mesh table record (std430). Mirrors GLSL <a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html" title="GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.">GpuMeshRecord</a>.  <a href="structeve_1_1graphics_1_1GpuMeshRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html">GpuVgAssetUpload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neutral GPU upload for one virtual-geometry asset. Raw arrays so the graphics module does not depend on the virtualgeometry module.  <a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuVgCluster.html">GpuVgCluster</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-packed cluster node (std430, 4 x uvec4). Mirrors the virtualgeometry module's VgGpuCluster layout.  <a href="structeve_1_1graphics_1_1GpuVgCluster.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*; GPU <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> / <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> / <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> are owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>.  <a href="classeve_1_1graphics_1_1GrassField.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">IGraphics2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D immediate-mode drawing surface (screen or offscreen <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a>).  <a href="classeve_1_1graphics_1_1IGraphics2D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">IGraphics3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D frame / mesh / light / shadow rendering surface.  <a href="classeve_1_1graphics_1_1IGraphics3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IndirectBuilder.html">IndirectBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-side builder for GPU-driven indirect draws (stage 1).  <a href="classeve_1_1graphics_1_1IndirectBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IPostFX.html">IPostFX</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post-process / special-effect object factory.  <a href="classeve_1_1graphics_1_1IPostFX.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">IResourceFactory</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> / mesh / shader / canvas creation and release.  <a href="classeve_1_1graphics_1_1IResourceFactory.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light2D.html">Light2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative 2D light. Collected by <a class="el" href="classeve_1_1graphics_1_1RenderSystem.html" title="Walks ECS Renderable2D views and draws via Graphics batch path.">RenderSystem</a> (max 8 per canvas/frame). type: "point" | "dir" (≤15 chars).  <a href="classeve_1_1graphics_1_1Light2D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Light2DGpu.html">Light2DGpu</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU light packing for lit2d (std140-friendly).  <a href="structeve_1_1graphics_1_1Light2DGpu.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">Light3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative 3D light. Collected by <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> (max 8 per frame). type: "point" | "dir" (≤15 chars).  <a href="classeve_1_1graphics_1_1Light3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Light3DGpu.html">Light3DGpu</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU light packing for mesh3d / PBR (std140-friendly).  <a href="structeve_1_1graphics_1_1Light3DGpu.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Lighting2DUBO.html">Lighting2DUBO</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Lighting3DPack.html">Lighting3DPack</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packages shading method + surface parameters into one attachable asset.  <a href="classeve_1_1graphics_1_1Material.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU mesh handle (+ optional CPU morph targets).  <a href="classeve_1_1graphics_1_1Mesh.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ModelPart.html">ModelPart</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One mesh + material slot on a multi-part model (Assimp mesh / body region). When Material* is null, the owning <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">Renderable3D</a> MeshRenderer fields are used.  <a href="structeve_1_1graphics_1_1ModelPart.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space model outline (t3ssel8r-style), computed from the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> hardware depth + world-normal buffers.  <a href="classeve_1_1graphics_1_1Outline.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ParallaxParams.html">ParallaxParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU reference for simple offset parallax (matches the scale / height convention of parallax_map.glsl POM; used by unit tests, not the GPU path).  <a href="structeve_1_1graphics_1_1ParallaxParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Quad.html">Quad</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pixel-space sub-rectangle of a <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> (atlas cell / sprite frame). UV conversion uses the texture's logical width/height.  <a href="classeve_1_1graphics_1_1Quad.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable2D.html">Renderable2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default renderable entity for declarative 2D sprites / solid quads.  <a href="classeve_1_1graphics_1_1Renderable2D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">Renderable3D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1RenderControl.html">RenderControl</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative, compilable 3D render control.  <a href="classeve_1_1graphics_1_1RenderControl.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1RenderItem3D.html">RenderItem3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One resolved 3D draw, produced by the frame data prep jobs.  <a href="structeve_1_1graphics_1_1RenderItem3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1RenderSystem.html">RenderSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Walks ECS <a class="el" href="classeve_1_1graphics_1_1Renderable2D.html" title="Default renderable entity for declarative 2D sprites / solid quads.">Renderable2D</a> views and draws via <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> batch path.  <a href="classeve_1_1graphics_1_1RenderSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space reflections (SSR) as a fullscreen post pass.  <a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom GPU program.  <a href="classeve_1_1graphics_1_1Shader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ShadowConfig.html">ShadowConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ShadowUBO.html">ShadowUBO</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-frame / per-draw CSM constants (std140). Binding separate from Mesh3D Frame UBO.  <a href="structeve_1_1graphics_1_1ShadowUBO.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ShadowUpload.html">ShadowUpload</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TexCellBombParams.html">TexCellBombParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU reference for texture cell-bombing math (matches tex_cell_bomb.glsl). Used by unit tests; the GPU path lives in mesh3d*.frag.  <a href="structeve_1_1graphics_1_1TexCellBombParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU texture created via <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">Graphics::newTexture</a>. Owns GPU resources through an opaque backend handle.  <a href="classeve_1_1graphics_1_1Texture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">Graphics::newTexture</a> / newCubemap. When generateMipmaps is true and sampler.mipmap is Disabled, mipmap mode becomes Linear.  <a href="structeve_1_1graphics_1_1TextureCreateInfo.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampler state for a <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> (filter, wrap, mip LOD, anisotropy). Defaults match historical engine behaviour: linear, clamp, no mips, no aniso.  <a href="structeve_1_1graphics_1_1TextureSampler.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Transform.html">Transform</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">矩阵变换栈（2D/3D）：旋转/缩放/平移 + push/pop。  <a href="classeve_1_1graphics_1_1Transform.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a> light + fog.  <a href="classeve_1_1graphics_1_1Volumetric.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dynamic water surface with sky reflection and animated ripples.  <a href="classeve_1_1graphics_1_1Water.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Waterfall.html">Waterfall</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flowing waterfall (falling water sheet) rendered on a vertical plane.  <a href="classeve_1_1graphics_1_1Waterfall.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a799720fa4932b401e8b55a9ef05722dc" id="r_a799720fa4932b401e8b55a9ef05722dc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a> = <a class="el" href="structeve_1_1graphics_1_1Light3DGpu.html">Light3DGpu</a></td></tr>
+<tr class="separator:a799720fa4932b401e8b55a9ef05722dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a984994cf626422557f08db6251ec6617" id="r_a984994cf626422557f08db6251ec6617"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> = glm::vec4</td></tr>
+<tr class="memdesc:a984994cf626422557f08db6251ec6617"><td class="mdescLeft">&#160;</td><td class="mdescRight">RGBA color used by every graphics draw call. Lives inside <a class="el" href="namespaceeve_1_1graphics.html" title="卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...">eve::graphics</a> so including a graphics header cannot pollute the global namespace. Kept in its own tiny header so modules that only need the color type (e.g. map, particles) do not have to include Canvas.h.  <br /></td></tr>
+<tr class="separator:a984994cf626422557f08db6251ec6617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:abc083de12d920618862cc85049e780e4" id="r_abc083de12d920618862cc85049e780e4"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4">BlendMode</a> { <a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4a6132295fcf5570fb8b0a944ef322a598">Alpha</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4a3f7b3d8ee7bf0d542bd50821c083888f">Additive</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4afaa90538de35640e4b1e31ccf35b6eb5">Opaque</a> = 2
+ }</td></tr>
+<tr class="memdesc:abc083de12d920618862cc85049e780e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D quad blend mode (drawn in draw order within a layer).  <a href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4">更多...</a><br /></td></tr>
+<tr class="separator:abc083de12d920618862cc85049e780e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1101bde6b430dcbf0bbc96839a5b4855" id="r_a1101bde6b430dcbf0bbc96839a5b4855"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a> { <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007">Nearest</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">Linear</a>
+ }</td></tr>
+<tr class="memdesc:a1101bde6b430dcbf0bbc96839a5b4855"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mag/min filter for texture sampling.  <a href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">更多...</a><br /></td></tr>
+<tr class="separator:a1101bde6b430dcbf0bbc96839a5b4855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bd6bbb7f652cb64fc0927c04f8b6c4b" id="r_a5bd6bbb7f652cb64fc0927c04f8b6c4b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a> { <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">Disabled</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4ba60494f02d440f316319dd0fad40ad007">Nearest</a>
+, <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4ba32a843da6ea40ab3b17a3421ccdf671b">Linear</a>
+ }</td></tr>
+<tr class="memdesc:a5bd6bbb7f652cb64fc0927c04f8b6c4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mipmap filter; Disabled turns off mip sampling (maxLod clamped to 0).  <a href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">更多...</a><br /></td></tr>
+<tr class="separator:a5bd6bbb7f652cb64fc0927c04f8b6c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a34cda9de4fb770bf462e39c03ad2ff0b" id="r_a34cda9de4fb770bf462e39c03ad2ff0b"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a34cda9de4fb770bf462e39c03ad2ff0b">perspectiveVulkanRH_ZO</a> (float fovyRad, float aspect, float zNear, float zFar)</td></tr>
+<tr class="memdesc:a34cda9de4fb770bf462e39c03ad2ff0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Right-handed, zero-to-one depth perspective for Vulkan swapchains.  <br /></td></tr>
+<tr class="separator:a34cda9de4fb770bf462e39c03ad2ff0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae908f63800a07e195d8f05ee7b78317f" id="r_ae908f63800a07e195d8f05ee7b78317f"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#ae908f63800a07e195d8f05ee7b78317f">orthoVulkanRH_ZO</a> (float left, float right, float bottom, float top, float zNear, float zFar)</td></tr>
+<tr class="separator:ae908f63800a07e195d8f05ee7b78317f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafffa4de2e1f00711aebd61f81cb9360" id="r_aafffa4de2e1f00711aebd61f81cb9360"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#aafffa4de2e1f00711aebd61f81cb9360">buildClusteredLighting</a> (const std::vector&lt; <a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a> &gt; &amp;<a class="el" href="TreeMesh_8cpp.html#ab0d901dbc2b3a02f445b75b206b413f7">points</a>, const std::vector&lt; <a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a> &gt; &amp;dirs, const glm::mat4 &amp;<a class="el" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, float nearZ, float farZ, int screenW, int screenH, float fovYRad, const glm::vec4 &amp;ambient)</td></tr>
+<tr class="memdesc:aafffa4de2e1f00711aebd61f81cb9360"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build clustered tables for point lights in view space.  <br /></td></tr>
+<tr class="separator:aafffa4de2e1f00711aebd61f81cb9360"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57a2ef893af9fa844685a5c63c0d9a9" id="r_ac57a2ef893af9fa844685a5c63c0d9a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">sortDrawItems2D</a> (std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a> &gt; &amp;items)</td></tr>
+<tr class="separator:ac57a2ef893af9fa844685a5c63c0d9a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a713f9e0a4fb6ddd6e56f6cb888fa2406" id="r_a713f9e0a4fb6ddd6e56f6cb888fa2406"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a713f9e0a4fb6ddd6e56f6cb888fa2406">nextCodepointUtf8</a> (const std::string &amp;text, size_t &amp;i)</td></tr>
+<tr class="memdesc:a713f9e0a4fb6ddd6e56f6cb888fa2406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodes one UTF-8 codepoint from <code>text</code> starting at byte offset <code>i</code>, advancing <code>i</code> past it. Returns 0 at end of string; invalid/truncated sequences decode as U+FFFD and advance by one byte.  <br /></td></tr>
+<tr class="separator:a713f9e0a4fb6ddd6e56f6cb888fa2406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb7f91cc5df99e9ecd30fdbdb2361810" id="r_afb7f91cc5df99e9ecd30fdbdb2361810"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#afb7f91cc5df99e9ecd30fdbdb2361810">Module_IMPL</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>, new <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">vulkan::Graphics</a>())</td></tr>
+<tr class="separator:afb7f91cc5df99e9ecd30fdbdb2361810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e8aab964c66c55ba428a1812940897" id="r_a51e8aab964c66c55ba428a1812940897"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a51e8aab964c66c55ba428a1812940897">registerGraphicsCapabilities</a> ()</td></tr>
+<tr class="separator:a51e8aab964c66c55ba428a1812940897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23549e7a92519b93691663374803759a" id="r_a23549e7a92519b93691663374803759a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a23549e7a92519b93691663374803759a">parallaxOffsetUV</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, float height01, float viewTSx, float viewTSy, float viewTSz, float <a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>, float &amp;ou, float &amp;ov)</td></tr>
+<tr class="memdesc:a23549e7a92519b93691663374803759a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single-sample offset mapping (cheap approximation of the first POM step).  <br /></td></tr>
+<tr class="separator:a23549e7a92519b93691663374803759a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8c6cf6bfa2834167943b36aa08e8f95" id="r_ae8c6cf6bfa2834167943b36aa08e8f95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#ae8c6cf6bfa2834167943b36aa08e8f95">clampParallaxParams</a> (<a class="el" href="structeve_1_1graphics_1_1ParallaxParams.html">ParallaxParams</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="separator:ae8c6cf6bfa2834167943b36aa08e8f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc5a9c9b32d895c9876ec8789ceb88da" id="r_abc5a9c9b32d895c9876ec8789ceb88da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1ShadowUpload.html">ShadowUpload</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#abc5a9c9b32d895c9876ec8789ceb88da">buildDirectionalCSM</a> (const glm::vec3 &amp;lightDirTowardSurface, const glm::vec3 &amp;<a class="el" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>, const glm::vec3 &amp;target, const glm::vec3 &amp;up, float fovYRad, float aspect, float nearZ, float farZ, float bias, float strength)</td></tr>
+<tr class="memdesc:abc5a9c9b32d895c9876ec8789ceb88da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build 3 cascade light view-proj matrices for a directional light.  <br /></td></tr>
+<tr class="separator:abc5a9c9b32d895c9876ec8789ceb88da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fa68f9f7cf2e6654086f91bfeaabc1b" id="r_a1fa68f9f7cf2e6654086f91bfeaabc1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a1fa68f9f7cf2e6654086f91bfeaabc1b">texBombHash22</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float &amp;ox, float &amp;oy)</td></tr>
+<tr class="separator:a1fa68f9f7cf2e6654086f91bfeaabc1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ecc1a72a8d8203d8981ccec7a727fb7" id="r_a8ecc1a72a8d8203d8981ccec7a727fb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a8ecc1a72a8d8203d8981ccec7a727fb7">texCellBombSampleUV</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, const <a class="el" href="structeve_1_1graphics_1_1TexCellBombParams.html">TexCellBombParams</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, float &amp;ou, float &amp;ov)</td></tr>
+<tr class="memdesc:a8ecc1a72a8d8203d8981ccec7a727fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map UV → bombed sample UV for the dominant (floor) cell; strength≤0 → identity.  <br /></td></tr>
+<tr class="separator:a8ecc1a72a8d8203d8981ccec7a727fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92e5fbb888c47126b1e423b381542816" id="r_a92e5fbb888c47126b1e423b381542816"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a92e5fbb888c47126b1e423b381542816">mipmapCountForSize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="memdesc:a92e5fbb888c47126b1e423b381542816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full mip chain count for a 2D image (including base level).  <br /></td></tr>
+<tr class="separator:a92e5fbb888c47126b1e423b381542816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b871872774fd03f3dd68e04d72c2046" id="r_a6b871872774fd03f3dd68e04d72c2046"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a6b871872774fd03f3dd68e04d72c2046">newWaterShader</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a6b871872774fd03f3dd68e04d72c2046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the embedded water fragment shader (owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>).  <br /></td></tr>
+<tr class="separator:a6b871872774fd03f3dd68e04d72c2046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ccb46485aab014aee59f06865e2617f" id="r_a1ccb46485aab014aee59f06865e2617f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a1ccb46485aab014aee59f06865e2617f">newWaterfallShader</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a1ccb46485aab014aee59f06865e2617f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the embedded waterfall fragment shader (owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>).  <br /></td></tr>
+<tr class="separator:a1ccb46485aab014aee59f06865e2617f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a9ec544d01912754ed851d4d0a0aa97a9" id="r_a9ec544d01912754ed851d4d0a0aa97a9"><td class="memItemLeft" align="right" valign="top">constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a> = 0xFFFFFFFFu</td></tr>
+<tr class="memdesc:a9ec544d01912754ed851d4d0a0aa97a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-driven rendering shared constants + std430 GPU layouts.  <br /></td></tr>
+<tr class="separator:a9ec544d01912754ed851d4d0a0aa97a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a7c4c7cc5c0951520b4b58a62fb3847" id="r_a0a7c4c7cc5c0951520b4b58a62fb3847"><td class="memItemLeft" align="right" valign="top">constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a0a7c4c7cc5c0951520b4b58a62fb3847">kMaxGpuDrivenTextures</a> = 1024</td></tr>
+<tr class="separator:a0a7c4c7cc5c0951520b4b58a62fb3847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02580469648c8c27665771f77ca73cf2" id="r_a02580469648c8c27665771f77ca73cf2"><td class="memItemLeft" align="right" valign="top">constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html#a02580469648c8c27665771f77ca73cf2">kMaxGpuDrivenCubemaps</a> = 64</td></tr>
+<tr class="separator:a02580469648c8c27665771f77ca73cf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 </p>
+<p>卡牌游戏 UI 工具模块：数据模型与渲染/交互逻辑（功能参考 ycarowr/UiCard）。 模块入口 eve.Card() 见 Card.h；本文件是 CardData/Deck/Zone/Hand 等 ECS 实体与布局渲染实现。 </p>
+</div><h2 class="groupheader">类型定义说明</h2>
+<a id="a799720fa4932b401e8b55a9ef05722dc" name="a799720fa4932b401e8b55a9ef05722dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a799720fa4932b401e8b55a9ef05722dc">&#9670;&#160;</a></span>ClusteredLightGpu</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">eve::graphics::ClusteredLightGpu</a> = typedef <a class="el" href="structeve_1_1graphics_1_1Light3DGpu.html">Light3DGpu</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a984994cf626422557f08db6251ec6617" name="a984994cf626422557f08db6251ec6617"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a984994cf626422557f08db6251ec6617">&#9670;&#160;</a></span>Color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">eve::graphics::Color</a> = typedef glm::vec4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RGBA color used by every graphics draw call. Lives inside <a class="el" href="namespaceeve_1_1graphics.html" title="卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...">eve::graphics</a> so including a graphics header cannot pollute the global namespace. Kept in its own tiny header so modules that only need the color type (e.g. map, particles) do not have to include Canvas.h. </p>
+
+<p class="definition">在文件 <a class="el" href="Color_8h_source.html">Color.h</a> 第 <a class="el" href="Color_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="abc083de12d920618862cc85049e780e4" name="abc083de12d920618862cc85049e780e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc083de12d920618862cc85049e780e4">&#9670;&#160;</a></span>BlendMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics.html#abc083de12d920618862cc85049e780e4">eve::graphics::BlendMode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>2D quad blend mode (drawn in draw order within a layer). </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="abc083de12d920618862cc85049e780e4a6132295fcf5570fb8b0a944ef322a598" name="abc083de12d920618862cc85049e780e4a6132295fcf5570fb8b0a944ef322a598"></a>Alpha&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abc083de12d920618862cc85049e780e4a3f7b3d8ee7bf0d542bd50821c083888f" name="abc083de12d920618862cc85049e780e4a3f7b3d8ee7bf0d542bd50821c083888f"></a>Additive&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abc083de12d920618862cc85049e780e4afaa90538de35640e4b1e31ccf35b6eb5" name="abc083de12d920618862cc85049e780e4afaa90538de35640e4b1e31ccf35b6eb5"></a>Opaque&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="BlendMode_8h_source.html">BlendMode.h</a> 第 <a class="el" href="BlendMode_8h_source.html#l00006">6</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1101bde6b430dcbf0bbc96839a5b4855" name="a1101bde6b430dcbf0bbc96839a5b4855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1101bde6b430dcbf0bbc96839a5b4855">&#9670;&#160;</a></span>FilterMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">eve::graphics::FilterMode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mag/min filter for texture sampling. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007" name="a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007"></a>Nearest&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b" name="a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5bd6bbb7f652cb64fc0927c04f8b6c4b" name="a5bd6bbb7f652cb64fc0927c04f8b6c4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bd6bbb7f652cb64fc0927c04f8b6c4b">&#9670;&#160;</a></span>MipmapMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">eve::graphics::MipmapMode</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mipmap filter; Disabled turns off mip sampling (maxLod clamped to 0). </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241" name="a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241"></a>Disabled&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5bd6bbb7f652cb64fc0927c04f8b6c4ba60494f02d440f316319dd0fad40ad007" name="a5bd6bbb7f652cb64fc0927c04f8b6c4ba60494f02d440f316319dd0fad40ad007"></a>Nearest&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5bd6bbb7f652cb64fc0927c04f8b6c4ba32a843da6ea40ab3b17a3421ccdf671b" name="a5bd6bbb7f652cb64fc0927c04f8b6c4ba32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aafffa4de2e1f00711aebd61f81cb9360" name="aafffa4de2e1f00711aebd61f81cb9360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafffa4de2e1f00711aebd61f81cb9360">&#9670;&#160;</a></span>buildClusteredLighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a> eve::graphics::buildClusteredLighting </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dirs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>view</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>screenW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>screenH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYRad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>ambient</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build clustered tables for point lights in view space. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">points</td><td>world-space point lights (posRadius.w = radius &gt; 0) </td></tr>
+    <tr><td class="paramname">dirs</td><td>world-space directional lights (optional; first becomes primary) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8cpp_source.html">ClusteredLight.cpp</a> 第 <a class="el" href="ClusteredLight_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="ClusteredLight_8h_source.html#l00033">eve::graphics::ClusteredLightingUpload::ambient</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ClusteredLight_8h_source.html#l00016">eve::graphics::ClusteredLightConfig::kClusterCount</a>, <a class="el" href="ClusteredLight_8h_source.html#l00017">eve::graphics::ClusteredLightConfig::kMaxLights</a>, <a class="el" href="ClusteredLight_8h_source.html#l00018">eve::graphics::ClusteredLightConfig::kMaxLightsPerCluster</a>, <a class="el" href="ClusteredLight_8h_source.html#l00015">eve::graphics::ClusteredLightConfig::kSlices</a>, <a class="el" href="ClusteredLight_8h_source.html#l00013">eve::graphics::ClusteredLightConfig::kTilesX</a>, <a class="el" href="ClusteredLight_8h_source.html#l00014">eve::graphics::ClusteredLightConfig::kTilesY</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00126">points</a>, <a class="el" href="Grass_8cpp_source.html#l00234">u</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00485">view</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="abc5a9c9b32d895c9876ec8789ceb88da" name="abc5a9c9b32d895c9876ec8789ceb88da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc5a9c9b32d895c9876ec8789ceb88da">&#9670;&#160;</a></span>buildDirectionalCSM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1ShadowUpload.html">ShadowUpload</a> eve::graphics::buildDirectionalCSM </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>lightDirTowardSurface</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>eye</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>up</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYRad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bias</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build 3 cascade light view-proj matrices for a directional light. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lightDirTowardSurface</td><td>world-space direction toward the surface (same as <a class="el" href="structeve_1_1graphics_1_1Light3DGpu.html" title="GPU light packing for mesh3d / PBR (std140-friendly).">Light3DGpu</a>) </td></tr>
+    <tr><td class="paramname">eye</td><td>/ target / up camera basis </td></tr>
+    <tr><td class="paramname">fovYRad</td><td>/ aspect / nearZ / farZ camera clip Splits are camera-forward (view-space +Z) distances. Shaders must select cascades with the same metric (max(-viewPos.z, 0)), not euclidean eye-to-point length. <a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> far is clamped to kMaxDistance so large scenes keep usable texel density. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Shadow_8cpp_source.html">Shadow.cpp</a> 第 <a class="el" href="Shadow_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shadow_8h_source.html#l00027">eve::graphics::ShadowUpload::active</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00484">eye</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="Shadow_8h_source.html#l00008">eve::graphics::ShadowConfig::kCascades</a>, <a class="el" href="Shadow_8h_source.html#l00013">eve::graphics::ShadowConfig::kMaxDistance</a>, <a class="el" href="Shadow_8h_source.html#l00010">eve::graphics::ShadowConfig::kSplitLambda</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00544">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ae8c6cf6bfa2834167943b36aa08e8f95" name="ae8c6cf6bfa2834167943b36aa08e8f95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c6cf6bfa2834167943b36aa08e8f95">&#9670;&#160;</a></span>clampParallaxParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::clampParallaxParams </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1ParallaxParams.html">ParallaxParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParallaxMap_8h_source.html">ParallaxMap.h</a> 第 <a class="el" href="ParallaxMap_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="a92e5fbb888c47126b1e423b381542816" name="a92e5fbb888c47126b1e423b381542816"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92e5fbb888c47126b1e423b381542816">&#9670;&#160;</a></span>mipmapCountForSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::mipmapCountForSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Full mip chain count for a 2D image (including base level). </p>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsTexture_8cpp_source.html#l00100">eve::graphics::vulkan::Graphics::newCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01666">eve::graphics::webgpu::Graphics::newCubemap()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00047">eve::graphics::vulkan::Graphics::newTexture()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01566">eve::graphics::webgpu::Graphics::newTexture()</a> , 以及 <a class="el" href="GraphicsTexture_8cpp_source.html#l00225">eve::graphics::vulkan::Graphics::replaceTexturePixels()</a>.</p>
+
+</div>
+</div>
+<a id="afb7f91cc5df99e9ecd30fdbdb2361810" name="afb7f91cc5df99e9ecd30fdbdb2361810"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb7f91cc5df99e9ecd30fdbdb2361810">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>vulkan::Graphics</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1ccb46485aab014aee59f06865e2617f" name="a1ccb46485aab014aee59f06865e2617f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ccb46485aab014aee59f06865e2617f">&#9670;&#160;</a></span>newWaterfallShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::newWaterfallShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the embedded waterfall fragment shader (owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="Waterfall_8cpp_source.html">Waterfall.cpp</a> 第 <a class="el" href="Waterfall_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00030">eve::graphics::Shader::declareFloat()</a>, <a class="el" href="Shader_8cpp_source.html#l00032">eve::graphics::Shader::declareVec3()</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00271">frag</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Waterfall_8cpp_source.html#l00051">eve::graphics::Waterfall::Waterfall()</a>.</p>
+
+</div>
+</div>
+<a id="a6b871872774fd03f3dd68e04d72c2046" name="a6b871872774fd03f3dd68e04d72c2046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b871872774fd03f3dd68e04d72c2046">&#9670;&#160;</a></span>newWaterShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::newWaterShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the embedded water fragment shader (owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00030">eve::graphics::Shader::declareFloat()</a>, <a class="el" href="Shader_8cpp_source.html#l00032">eve::graphics::Shader::declareVec3()</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00271">frag</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Water_8cpp_source.html#l00054">eve::graphics::Water::Water()</a>.</p>
+
+</div>
+</div>
+<a id="a713f9e0a4fb6ddd6e56f6cb888fa2406" name="a713f9e0a4fb6ddd6e56f6cb888fa2406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a713f9e0a4fb6ddd6e56f6cb888fa2406">&#9670;&#160;</a></span>nextCodepointUtf8()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::nextCodepointUtf8 </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodes one UTF-8 codepoint from <code>text</code> starting at byte offset <code>i</code>, advancing <code>i</code> past it. Returns 0 at end of string; invalid/truncated sequences decode as U+FFFD and advance by one byte. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01005">eve::graphics::Graphics::print()</a>.</p>
+
+</div>
+</div>
+<a id="ae908f63800a07e195d8f05ee7b78317f" name="ae908f63800a07e195d8f05ee7b78317f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae908f63800a07e195d8f05ee7b78317f">&#9670;&#160;</a></span>orthoVulkanRH_ZO()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::orthoVulkanRH_ZO </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>right</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bottom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>top</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>zNear</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>zFar</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Matching Y-flip for directional shadow ortho so clip space matches the camera (and mesh pipelines' Clockwise frontFace). </p>
+
+<p class="definition">在文件 <a class="el" href="ClipSpace_8h_source.html">ClipSpace.h</a> 第 <a class="el" href="ClipSpace_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="a23549e7a92519b93691663374803759a" name="a23549e7a92519b93691663374803759a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23549e7a92519b93691663374803759a">&#9670;&#160;</a></span>parallaxOffsetUV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::parallaxOffsetUV </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height01</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viewTSx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viewTSy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viewTSz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>ou</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>ov</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Single-sample offset mapping (cheap approximation of the first POM step). </p>
+
+<p class="definition">在文件 <a class="el" href="ParallaxMap_8h_source.html">ParallaxMap.h</a> 第 <a class="el" href="ParallaxMap_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>, <a class="el" href="Grass_8cpp_source.html#l00234">u</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<a id="a34cda9de4fb770bf462e39c03ad2ff0b" name="a34cda9de4fb770bf462e39c03ad2ff0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34cda9de4fb770bf462e39c03ad2ff0b">&#9670;&#160;</a></span>perspectiveVulkanRH_ZO()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::perspectiveVulkanRH_ZO </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovyRad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>zNear</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>zFar</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Right-handed, zero-to-one depth perspective for Vulkan swapchains. </p>
+<p>GLM's perspectiveRH_ZO matches Vulkan's Z range but keeps OpenGL's Y-up clip space. Vulkan NDC has Y pointing down (same as our 2D <a class="el" href="classeve_1_1graphics_1_1Batcher.html" title="Accumulates solid / textured quads in logical (Y-down) coordinates. Used by RenderSystem; not a publi...">Batcher</a>), so without flipping Y, world +Y appears at the bottom of the framebuffer — models look upside-down. Negating proj[1][1] maps world +Y to screen up.</p>
+<p>Side effect: the Y flip reverses screen-space winding, so 3D pipelines that use this projection must declare frontFace = Clockwise (mesh winding stays CCW in RH Y-up object space). </p>
+
+<p class="definition">在文件 <a class="el" href="ClipSpace_8h_source.html">ClipSpace.h</a> 第 <a class="el" href="ClipSpace_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00034">eve::scene::Scene::collectFrustumIdsAt()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00913">eve::spritestack::SpriteStackBatch::render()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00791">eve::spritestack::SpriteStack3D::render()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l01025">eve::graphics::RenderSystem3D::renderToCanvas()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00174">eve::graphics::Camera3D::screenToRay()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00238">eve::graphics::AmbientOcclusion::setCamera()</a>, <a class="el" href="GlobalIllumination_8cpp_source.html#l00097">eve::graphics::GlobalIllumination::setCamera()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00052">eve::graphics::ScreenSpaceReflection::setCamera()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00278">eve::graphics::Volumetric::setCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a51e8aab964c66c55ba428a1812940897" name="a51e8aab964c66c55ba428a1812940897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51e8aab964c66c55ba428a1812940897">&#9670;&#160;</a></span>registerGraphicsCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::registerGraphicsCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsCapabilities_8cpp_source.html">GraphicsCapabilities.cpp</a> 第 <a class="el" href="GraphicsCapabilities_8cpp_source.html#l00527">527</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00013">impl</a> , 以及 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00124">eve::graphics::Graphics::Graphics()</a>.</p>
+
+</div>
+</div>
+<a id="ac57a2ef893af9fa844685a5c63c0d9a9" name="ac57a2ef893af9fa844685a5c63c0d9a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57a2ef893af9fa844685a5c63c0d9a9">&#9670;&#160;</a></span>sortDrawItems2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::sortDrawItems2D </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>items</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DrawItem2D_8h_source.html">DrawItem2D.h</a> 第 <a class="el" href="DrawItem2D_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem_8cpp_source.html#l00257">eve::graphics::RenderSystem::drawItems()</a>.</p>
+
+</div>
+</div>
+<a id="a1fa68f9f7cf2e6654086f91bfeaabc1b" name="a1fa68f9f7cf2e6654086f91bfeaabc1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa68f9f7cf2e6654086f91bfeaabc1b">&#9670;&#160;</a></span>texBombHash22()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::texBombHash22 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>oy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureCellBomb_8h_source.html">TextureCellBomb.h</a> 第 <a class="el" href="TextureCellBomb_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TextureCellBomb_8h_source.html#l00036">texCellBombSampleUV()</a>.</p>
+
+</div>
+</div>
+<a id="a8ecc1a72a8d8203d8981ccec7a727fb7" name="a8ecc1a72a8d8203d8981ccec7a727fb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ecc1a72a8d8203d8981ccec7a727fb7">&#9670;&#160;</a></span>texCellBombSampleUV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::texCellBombSampleUV </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1TexCellBombParams.html">TexCellBombParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>ou</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>ov</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map UV → bombed sample UV for the dominant (floor) cell; strength≤0 → identity. </p>
+
+<p class="definition">在文件 <a class="el" href="TextureCellBomb_8h_source.html">TextureCellBomb.h</a> 第 <a class="el" href="TextureCellBomb_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>, <a class="el" href="TextureCellBomb_8h_source.html#l00018">texBombHash22()</a>, <a class="el" href="Grass_8cpp_source.html#l00234">u</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a9ec544d01912754ed851d4d0a0aa97a9" name="a9ec544d01912754ed851d4d0a0aa97a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec544d01912754ed851d4d0a0aa97a9">&#9670;&#160;</a></span>kInvalidGpuDrivenSlot</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t eve::graphics::kInvalidGpuDrivenSlot = 0xFFFFFFFFu</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>GPU-driven rendering shared constants + std430 GPU layouts. </p>
+<p>These layouts are mirrored by the GLSL shaders that consume the bindless table (mesh3d_gpudriven.*) and by the compute passes (stage 2+). They live in the backend-independent graphics namespace so <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> can build them without depending on the Vulkan backend. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8h_source.html#l00140">eve::graphics::Graphics::gpuDrivenMaterialRecord()</a>, <a class="el" href="Graphics_8h_source.html#l00137">eve::graphics::Graphics::gpuDrivenMeshRecord()</a>, <a class="el" href="Graphics_8h_source.html#l00224">eve::graphics::Graphics::gpuDrivenVgAssetId()</a>, <a class="el" href="Graphics_8h_source.html#l00218">eve::graphics::Graphics::gpuDrivenVgUpload()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00544">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a02580469648c8c27665771f77ca73cf2" name="a02580469648c8c27665771f77ca73cf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02580469648c8c27665771f77ca73cf2">&#9670;&#160;</a></span>kMaxGpuDrivenCubemaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t eve::graphics::kMaxGpuDrivenCubemaps = 64</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a7c4c7cc5c0951520b4b58a62fb3847" name="a0a7c4c7cc5c0951520b4b58a62fb3847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a7c4c7cc5c0951520b4b58a62fb3847">&#9670;&#160;</a></span>kMaxGpuDrivenTextures</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t eve::graphics::kMaxGpuDrivenTextures = 1024</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

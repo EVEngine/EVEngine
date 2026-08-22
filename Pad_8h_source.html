@@ -1,0 +1,257 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/joystick/Pad.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_1e10a68d33cb0a4803f91e7a2f06e4dd.html">joystick</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Pad.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Pad_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1joystick.html">eve::joystick</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html">   13</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1joystick_1_1Pad.html">Pad</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#adb57afb32567600810f258a777a27f7d">   15</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#adb57afb32567600810f258a777a27f7d">~Pad</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a5d7b9d51b7c1bf678dc98cdb55aede87">   17</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a5d7b9d51b7c1bf678dc98cdb55aede87">open</a>(<span class="keywordtype">int</span> deviceindex) = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#acae90403204186087011d18fd8509600">   18</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#acae90403204186087011d18fd8509600">close</a>() = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#afa468c7973d7990b50ca1e034201ea74">   19</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#afa468c7973d7990b50ca1e034201ea74">isConnected</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#ad6d6049cc7800a6bbe2e41c8a035b436">   21</a></span>    <span class="keyword">virtual</span> std::string <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#ad6d6049cc7800a6bbe2e41c8a035b436">getName</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a28a9f41b7ca395764b4c743167af0c81">   23</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a28a9f41b7ca395764b4c743167af0c81">getAxisCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a281e5c7bc44ba1ee5003263381438f86">   24</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a281e5c7bc44ba1ee5003263381438f86">getButtonCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#aa0e91fd1de948a941abe78e978288164">   25</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#aa0e91fd1de948a941abe78e978288164">getHatCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a268bf03ffd072875794f09e778a3878f">   27</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a268bf03ffd072875794f09e778a3878f">getAxis</a>(<span class="keywordtype">int</span> axisindex) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#aa3957536efbd5d81812091e6302b9fcb">   28</a></span>    <span class="keyword">virtual</span> std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#aa3957536efbd5d81812091e6302b9fcb">getAxes</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a4aa6ed9033a92d73ae76c03c0d362b7a">   29</a></span>    <span class="keyword">virtual</span> std::string <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a4aa6ed9033a92d73ae76c03c0d362b7a">getHat</a>(<span class="keywordtype">int</span> hatindex) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a0b668804528580fdf1967016287a4fde">   31</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a0b668804528580fdf1967016287a4fde">isDown</a>(<span class="keywordtype">int</span> button) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a82c77ae4690657cea834e414ebb13785">   32</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a82c77ae4690657cea834e414ebb13785">isDown</a>(<span class="keyword">const</span> std::vector&lt;int&gt;&amp; buttons) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a843aebd8ef5917b7f548993ce63ee38c">   34</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a843aebd8ef5917b7f548993ce63ee38c">openGamepad</a>(<span class="keywordtype">int</span> deviceindex) = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#af1c4fb49a2a71b2f46695371a97ad140">   35</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#af1c4fb49a2a71b2f46695371a97ad140">isGamepad</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a463ffd734a9ec8923fb6137c2a1f9eee">   37</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a463ffd734a9ec8923fb6137c2a1f9eee">getGamepadAxis</a>(<span class="keyword">const</span> std::string&amp; axis) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a1b7dd0a62cc4270d46bb6828ef42364c">   38</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a1b7dd0a62cc4270d46bb6828ef42364c">isGamepadDown</a>(<span class="keyword">const</span> std::string&amp; button) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a05d015556c3bdb3013c4c21084382a08">   39</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a05d015556c3bdb3013c4c21084382a08">isGamepadDown</a>(<span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; buttons) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a0c9bff12251b58a92e9914f442975603">   41</a></span>    <span class="keyword">virtual</span> std::string <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a0c9bff12251b58a92e9914f442975603">getGamepadMappingString</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a40d8b3b6fc41f383d9b5dcbf9748ae4e">   43</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a40d8b3b6fc41f383d9b5dcbf9748ae4e">getHandle</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a504ce9cc5a3c63e135224aafaf24253f">   44</a></span>    <span class="keyword">virtual</span> std::string <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a504ce9cc5a3c63e135224aafaf24253f">getGUID</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#afb40952c3a951d86d80b85323c16f924">   45</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#afb40952c3a951d86d80b85323c16f924">getInstanceID</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a99f0157d4f12c074695e0d6c76c90f7b">   46</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a99f0157d4f12c074695e0d6c76c90f7b">getID</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#abbd97c3da71efba7315d252cfc0e95de">   48</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#abbd97c3da71efba7315d252cfc0e95de">getDeviceInfo</a>(<span class="keywordtype">int</span>&amp; vendorID, <span class="keywordtype">int</span>&amp; productID, <span class="keywordtype">int</span>&amp; productVersion) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a1c4e68373723411e481e7a8702bd8403">   50</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a1c4e68373723411e481e7a8702bd8403">isVibrationSupported</a>() = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a337fbebeb0af91c1b745606cef850073">   51</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a337fbebeb0af91c1b745606cef850073">setVibration</a>(<span class="keywordtype">float</span> left, <span class="keywordtype">float</span> right, <span class="keywordtype">float</span> duration = -1.0f) = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#a535cad2b3abc320505a0f5094a2f294e">   52</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#a535cad2b3abc320505a0f5094a2f294e">setVibration</a>() = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1joystick_1_1Pad.html#ae243720a35d99ee6eeae07bbb6d7f3ea">   53</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1joystick_1_1Pad.html#ae243720a35d99ee6eeae07bbb6d7f3ea">getVibration</a>(<span class="keywordtype">float</span>&amp; left, <span class="keywordtype">float</span>&amp; right) = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1joystick.html#a2c2cc522452a19cf76f784257c9dd3ab">clampAxis</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}  <span class="comment">// namespace eve::joystick</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html">eve::joystick::Pad</a></div><div class="ttdoc">One connected (or previously connected) joystick / gamepad device. Gamepad axis/button names follow S...</div><div class="ttdef"><b>Definition</b> <a href="Pad_8h_source.html#l00013">Pad.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a05d015556c3bdb3013c4c21084382a08"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a05d015556c3bdb3013c4c21084382a08">eve::joystick::Pad::isGamepadDown</a></div><div class="ttdeci">virtual bool isGamepadDown(const std::vector&lt; std::string &gt; &amp;buttons) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a0b668804528580fdf1967016287a4fde"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a0b668804528580fdf1967016287a4fde">eve::joystick::Pad::isDown</a></div><div class="ttdeci">virtual bool isDown(int button) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a0c9bff12251b58a92e9914f442975603"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a0c9bff12251b58a92e9914f442975603">eve::joystick::Pad::getGamepadMappingString</a></div><div class="ttdeci">virtual std::string getGamepadMappingString() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a1b7dd0a62cc4270d46bb6828ef42364c"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a1b7dd0a62cc4270d46bb6828ef42364c">eve::joystick::Pad::isGamepadDown</a></div><div class="ttdeci">virtual bool isGamepadDown(const std::string &amp;button) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a1c4e68373723411e481e7a8702bd8403"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a1c4e68373723411e481e7a8702bd8403">eve::joystick::Pad::isVibrationSupported</a></div><div class="ttdeci">virtual bool isVibrationSupported()=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a268bf03ffd072875794f09e778a3878f"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a268bf03ffd072875794f09e778a3878f">eve::joystick::Pad::getAxis</a></div><div class="ttdeci">virtual float getAxis(int axisindex) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a281e5c7bc44ba1ee5003263381438f86"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a281e5c7bc44ba1ee5003263381438f86">eve::joystick::Pad::getButtonCount</a></div><div class="ttdeci">virtual int getButtonCount() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a28a9f41b7ca395764b4c743167af0c81"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a28a9f41b7ca395764b4c743167af0c81">eve::joystick::Pad::getAxisCount</a></div><div class="ttdeci">virtual int getAxisCount() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a337fbebeb0af91c1b745606cef850073"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a337fbebeb0af91c1b745606cef850073">eve::joystick::Pad::setVibration</a></div><div class="ttdeci">virtual bool setVibration(float left, float right, float duration=-1.0f)=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a40d8b3b6fc41f383d9b5dcbf9748ae4e"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a40d8b3b6fc41f383d9b5dcbf9748ae4e">eve::joystick::Pad::getHandle</a></div><div class="ttdeci">virtual void * getHandle() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a463ffd734a9ec8923fb6137c2a1f9eee"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a463ffd734a9ec8923fb6137c2a1f9eee">eve::joystick::Pad::getGamepadAxis</a></div><div class="ttdeci">virtual float getGamepadAxis(const std::string &amp;axis) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a4aa6ed9033a92d73ae76c03c0d362b7a"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a4aa6ed9033a92d73ae76c03c0d362b7a">eve::joystick::Pad::getHat</a></div><div class="ttdeci">virtual std::string getHat(int hatindex) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a504ce9cc5a3c63e135224aafaf24253f"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a504ce9cc5a3c63e135224aafaf24253f">eve::joystick::Pad::getGUID</a></div><div class="ttdeci">virtual std::string getGUID() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a535cad2b3abc320505a0f5094a2f294e"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a535cad2b3abc320505a0f5094a2f294e">eve::joystick::Pad::setVibration</a></div><div class="ttdeci">virtual bool setVibration()=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a5d7b9d51b7c1bf678dc98cdb55aede87"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a5d7b9d51b7c1bf678dc98cdb55aede87">eve::joystick::Pad::open</a></div><div class="ttdeci">virtual bool open(int deviceindex)=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a82c77ae4690657cea834e414ebb13785"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a82c77ae4690657cea834e414ebb13785">eve::joystick::Pad::isDown</a></div><div class="ttdeci">virtual bool isDown(const std::vector&lt; int &gt; &amp;buttons) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a843aebd8ef5917b7f548993ce63ee38c"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a843aebd8ef5917b7f548993ce63ee38c">eve::joystick::Pad::openGamepad</a></div><div class="ttdeci">virtual bool openGamepad(int deviceindex)=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_a99f0157d4f12c074695e0d6c76c90f7b"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#a99f0157d4f12c074695e0d6c76c90f7b">eve::joystick::Pad::getID</a></div><div class="ttdeci">virtual int getID() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_aa0e91fd1de948a941abe78e978288164"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#aa0e91fd1de948a941abe78e978288164">eve::joystick::Pad::getHatCount</a></div><div class="ttdeci">virtual int getHatCount() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_aa3957536efbd5d81812091e6302b9fcb"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#aa3957536efbd5d81812091e6302b9fcb">eve::joystick::Pad::getAxes</a></div><div class="ttdeci">virtual std::vector&lt; float &gt; getAxes() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_abbd97c3da71efba7315d252cfc0e95de"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#abbd97c3da71efba7315d252cfc0e95de">eve::joystick::Pad::getDeviceInfo</a></div><div class="ttdeci">virtual void getDeviceInfo(int &amp;vendorID, int &amp;productID, int &amp;productVersion) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_acae90403204186087011d18fd8509600"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#acae90403204186087011d18fd8509600">eve::joystick::Pad::close</a></div><div class="ttdeci">virtual void close()=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_ad6d6049cc7800a6bbe2e41c8a035b436"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#ad6d6049cc7800a6bbe2e41c8a035b436">eve::joystick::Pad::getName</a></div><div class="ttdeci">virtual std::string getName() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_adb57afb32567600810f258a777a27f7d"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#adb57afb32567600810f258a777a27f7d">eve::joystick::Pad::~Pad</a></div><div class="ttdeci">virtual ~Pad()=default</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_ae243720a35d99ee6eeae07bbb6d7f3ea"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#ae243720a35d99ee6eeae07bbb6d7f3ea">eve::joystick::Pad::getVibration</a></div><div class="ttdeci">virtual void getVibration(float &amp;left, float &amp;right)=0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_af1c4fb49a2a71b2f46695371a97ad140"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#af1c4fb49a2a71b2f46695371a97ad140">eve::joystick::Pad::isGamepad</a></div><div class="ttdeci">virtual bool isGamepad() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_afa468c7973d7990b50ca1e034201ea74"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#afa468c7973d7990b50ca1e034201ea74">eve::joystick::Pad::isConnected</a></div><div class="ttdeci">virtual bool isConnected() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1joystick_1_1Pad_html_afb40952c3a951d86d80b85323c16f924"><div class="ttname"><a href="classeve_1_1joystick_1_1Pad.html#afb40952c3a951d86d80b85323c16f924">eve::joystick::Pad::getInstanceID</a></div><div class="ttdeci">virtual int getInstanceID() const =0</div></div>
+<div class="ttc" id="anamespaceeve_1_1joystick_html"><div class="ttname"><a href="namespaceeve_1_1joystick.html">eve::joystick</a></div><div class="ttdef"><b>Definition</b> <a href="Joystick_8cpp_source.html#l00008">Joystick.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1joystick_html_a2c2cc522452a19cf76f784257c9dd3ab"><div class="ttname"><a href="namespaceeve_1_1joystick.html#a2c2cc522452a19cf76f784257c9dd3ab">eve::joystick::clampAxis</a></div><div class="ttdeci">float clampAxis(float x)</div><div class="ttdef"><b>Definition</b> <a href="Joystick_8cpp_source.html#l00014">Joystick.cpp:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

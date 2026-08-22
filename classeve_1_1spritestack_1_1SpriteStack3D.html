@@ -1,0 +1,1317 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::spritestack::SpriteStack3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1spritestack.html">spritestack</a></li><li class="navelem"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1spritestack_1_1SpriteStack3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::spritestack::SpriteStack3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A renderable pseudo-3D sprite stack: a column of layer textures drawn as alpha-blended slices inside the 3D forward pass (call <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a42db9378f93cd19710da4a18236c2a80" title="Draw all slices into the currently open 3D scene pass (Vulkan). Uses the active Camera3D when camera ...">render()</a> after gfx.render3D() / RenderSystem3D::render and before present).  
+ <a href="classeve_1_1spritestack_1_1SpriteStack3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SpriteStack_8h_source.html">SpriteStack.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1spritestack_1_1SpriteStack3D_1_1SliceDraw.html">SliceDraw</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One slice instance with its baked world transform and layer UV rect.  <a href="structeve_1_1spritestack_1_1SpriteStack3D_1_1SliceDraw.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae2e708c8f635a6949a993160a25fe7ed" id="r_ae2e708c8f635a6949a993160a25fe7ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ae2e708c8f635a6949a993160a25fe7ed">SpriteStack3D</a> ()=default</td></tr>
+<tr class="separator:ae2e708c8f635a6949a993160a25fe7ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55875e4e8aa8a1c469da3c4883a71e94" id="r_a55875e4e8aa8a1c469da3c4883a71e94"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a55875e4e8aa8a1c469da3c4883a71e94">~SpriteStack3D</a> ()</td></tr>
+<tr class="separator:a55875e4e8aa8a1c469da3c4883a71e94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb68f2ab0c4398cc4057ea6b3b813237" id="r_acb68f2ab0c4398cc4057ea6b3b813237"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#acb68f2ab0c4398cc4057ea6b3b813237">SpriteStack3D</a> (const <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a> &amp;)=delete</td></tr>
+<tr class="separator:acb68f2ab0c4398cc4057ea6b3b813237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a5221d3db83ab13b4db7fe23eb9c1b" id="r_a02a5221d3db83ab13b4db7fe23eb9c1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a02a5221d3db83ab13b4db7fe23eb9c1b">operator=</a> (const <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a02a5221d3db83ab13b4db7fe23eb9c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f3d01fcf9f9ce3639d22b22749a92f" id="r_ad8f3d01fcf9f9ce3639d22b22749a92f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ad8f3d01fcf9f9ce3639d22b22749a92f">setLayerCount</a> (int count)</td></tr>
+<tr class="separator:ad8f3d01fcf9f9ce3639d22b22749a92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47565d9b3d8323a983a43e93b3e2af8e" id="r_a47565d9b3d8323a983a43e93b3e2af8e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a47565d9b3d8323a983a43e93b3e2af8e">getLayerCount</a> () const</td></tr>
+<tr class="separator:a47565d9b3d8323a983a43e93b3e2af8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55fe314dee462779bf0017979f28096f" id="r_a55fe314dee462779bf0017979f28096f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a55fe314dee462779bf0017979f28096f">setLayerTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture, int index)</td></tr>
+<tr class="memdesc:a55fe314dee462779bf0017979f28096f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Null texture clears the slot (that layer is skipped).  <br /></td></tr>
+<tr class="separator:a55fe314dee462779bf0017979f28096f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a0b4f0f9a455be6a9ce212e9bd572e5" id="r_a6a0b4f0f9a455be6a9ce212e9bd572e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a6a0b4f0f9a455be6a9ce212e9bd572e5">getLayerTexture</a> (int index) const</td></tr>
+<tr class="separator:a6a0b4f0f9a455be6a9ce212e9bd572e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a313c95c94fe3bd2840c55903931d6774" id="r_a313c95c94fe3bd2840c55903931d6774"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a313c95c94fe3bd2840c55903931d6774">setLayerImage</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *img, int index)</td></tr>
+<tr class="memdesc:a313c95c94fe3bd2840c55903931d6774"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload RGBA8 ImageData layers (convenience around setLayerTexture).  <br /></td></tr>
+<tr class="separator:a313c95c94fe3bd2840c55903931d6774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ec1e75544c533ea0af0d6af2fea459d" id="r_a7ec1e75544c533ea0af0d6af2fea459d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a7ec1e75544c533ea0af0d6af2fea459d">setLayerFile</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, const std::string &amp;path, int index)</td></tr>
+<tr class="memdesc:a7ec1e75544c533ea0af0d6af2fea459d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload each path via Graphics::newTextureFromFile (reloads in place).  <br /></td></tr>
+<tr class="separator:a7ec1e75544c533ea0af0d6af2fea459d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed41879299efe2933d51c7ffe826b801" id="r_aed41879299efe2933d51c7ffe826b801"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#aed41879299efe2933d51c7ffe826b801">setLayersFromAtlas</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *atlas, int layerCount)</td></tr>
+<tr class="memdesc:aed41879299efe2933d51c7ffe826b801"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split one horizontal atlas strip into <code>layerCount</code> layers (layer i = columns [i/count..(i+1)/count)). The strip stays one GPU texture; slices sample their cell through per-layer UV rects.  <br /></td></tr>
+<tr class="separator:aed41879299efe2933d51c7ffe826b801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6506f5e62ed6694a4da8e3a5c032963" id="r_af6506f5e62ed6694a4da8e3a5c032963"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#af6506f5e62ed6694a4da8e3a5c032963">setThickness</a> (float <a class="el" href="LinearStructure_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>)</td></tr>
+<tr class="memdesc:af6506f5e62ed6694a4da8e3a5c032963"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space spacing between consecutive slices.  <br /></td></tr>
+<tr class="separator:af6506f5e62ed6694a4da8e3a5c032963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3239b437916ba2e55b14bf7631ef3a56" id="r_a3239b437916ba2e55b14bf7631ef3a56"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a3239b437916ba2e55b14bf7631ef3a56">getThickness</a> () const</td></tr>
+<tr class="separator:a3239b437916ba2e55b14bf7631ef3a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f3423d423475be949c452deac1c06f" id="r_a53f3423d423475be949c452deac1c06f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a53f3423d423475be949c452deac1c06f">setSize</a> (float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="memdesc:a53f3423d423475be949c452deac1c06f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quad size for every slice (world units). Default 1 x 1.  <br /></td></tr>
+<tr class="separator:a53f3423d423475be949c452deac1c06f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cab4b8e0ea27f52ba397a6b1a5e39a1" id="r_a0cab4b8e0ea27f52ba397a6b1a5e39a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a0cab4b8e0ea27f52ba397a6b1a5e39a1">getWidth</a> () const</td></tr>
+<tr class="separator:a0cab4b8e0ea27f52ba397a6b1a5e39a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eaafbc6969df6b06261ccee14cbd7bc" id="r_a4eaafbc6969df6b06261ccee14cbd7bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a4eaafbc6969df6b06261ccee14cbd7bc">getHeight</a> () const</td></tr>
+<tr class="separator:a4eaafbc6969df6b06261ccee14cbd7bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6520e735e40e2d58049c02b453080370" id="r_a6520e735e40e2d58049c02b453080370"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a6520e735e40e2d58049c02b453080370">setPosition</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:a6520e735e40e2d58049c02b453080370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac864253b70ea14417f48b50bc1128f06" id="r_ac864253b70ea14417f48b50bc1128f06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac864253b70ea14417f48b50bc1128f06">setYaw</a> (float radians)</td></tr>
+<tr class="separator:ac864253b70ea14417f48b50bc1128f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429cd8868dfc2643d2415ac9d4c1f3bc" id="r_a429cd8868dfc2643d2415ac9d4c1f3bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a429cd8868dfc2643d2415ac9d4c1f3bc">setTint</a> (float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a429cd8868dfc2643d2415ac9d4c1f3bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93d8326ef77a81aefa91821f9b23fee0" id="r_a93d8326ef77a81aefa91821f9b23fee0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a93d8326ef77a81aefa91821f9b23fee0">setAlphaCutoff</a> (float cutoff)</td></tr>
+<tr class="separator:a93d8326ef77a81aefa91821f9b23fee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a85f5a4057491c92d23946a639e9b97" id="r_a2a85f5a4057491c92d23946a639e9b97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a2a85f5a4057491c92d23946a639e9b97">setVisible</a> (bool visible)</td></tr>
+<tr class="separator:a2a85f5a4057491c92d23946a639e9b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af56aecb6e83fc55259ee7392a432d293" id="r_af56aecb6e83fc55259ee7392a432d293"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#af56aecb6e83fc55259ee7392a432d293">getVisible</a> () const</td></tr>
+<tr class="separator:af56aecb6e83fc55259ee7392a432d293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7da498adf25a4765dbccdd1d4819d3c3" id="r_a7da498adf25a4765dbccdd1d4819d3c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a7da498adf25a4765dbccdd1d4819d3c3">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="separator:a7da498adf25a4765dbccdd1d4819d3c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf635d04321067687ab0b716f76b6f47" id="r_acf635d04321067687ab0b716f76b6f47"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#acf635d04321067687ab0b716f76b6f47">getMode</a> () const</td></tr>
+<tr class="separator:acf635d04321067687ab0b716f76b6f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac526567e61c69ba0380667507f69efbe" id="r_ac526567e61c69ba0380667507f69efbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac526567e61c69ba0380667507f69efbe">setShadowEnabled</a> (bool <a class="el" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ac526567e61c69ba0380667507f69efbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pseudo-3D projected contact shadow (soft dark silhouette on the ground).  <br /></td></tr>
+<tr class="separator:ac526567e61c69ba0380667507f69efbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec86d47da361b384d914352de2c36f36" id="r_aec86d47da361b384d914352de2c36f36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#aec86d47da361b384d914352de2c36f36">getShadowEnabled</a> () const</td></tr>
+<tr class="separator:aec86d47da361b384d914352de2c36f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92a5f9b46452a77cc8d0a173baf4353" id="r_ac92a5f9b46452a77cc8d0a173baf4353"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac92a5f9b46452a77cc8d0a173baf4353">setShadowOpacity</a> (float opacity)</td></tr>
+<tr class="separator:ac92a5f9b46452a77cc8d0a173baf4353"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18851cea4a4873a05faeac20ac686b46" id="r_a18851cea4a4873a05faeac20ac686b46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a18851cea4a4873a05faeac20ac686b46">setShadowLight</a> (float dx, float dy, float dz)</td></tr>
+<tr class="separator:a18851cea4a4873a05faeac20ac686b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af862eaa9ff07301b3a1a028bd4079930" id="r_af862eaa9ff07301b3a1a028bd4079930"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#af862eaa9ff07301b3a1a028bd4079930">setShadowPlaneY</a> (float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="separator:af862eaa9ff07301b3a1a028bd4079930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa774c8611ccbec7434c944b858e5c3ad" id="r_aa774c8611ccbec7434c944b858e5c3ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#aa774c8611ccbec7434c944b858e5c3ad">setOutline</a> (float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float r=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float g=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aa774c8611ccbec7434c944b858e5c3ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stylized rim outline: an expanded dark silhouette behind every slice.  <br /></td></tr>
+<tr class="separator:aa774c8611ccbec7434c944b858e5c3ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40ba7ae244ee2c0413a722e11494ad1a" id="r_a40ba7ae244ee2c0413a722e11494ad1a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a40ba7ae244ee2c0413a722e11494ad1a">getOutlineWidth</a> () const</td></tr>
+<tr class="separator:a40ba7ae244ee2c0413a722e11494ad1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14f9fc8b85f547803e732e7446a0881e" id="r_a14f9fc8b85f547803e732e7446a0881e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a14f9fc8b85f547803e732e7446a0881e">setOutlineColor</a> (float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a14f9fc8b85f547803e732e7446a0881e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab08cd1113ea6789611ae0f17663b3827" id="r_ab08cd1113ea6789611ae0f17663b3827"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ab08cd1113ea6789611ae0f17663b3827">setGbufferEnabled</a> (bool <a class="el" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ab08cd1113ea6789611ae0f17663b3827"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contribute this stack to the G-buffer (via RenderSystem3D's extra-drawer hook) so post-processing that reads depth/normal (AO, outline) recognizes the slice silhouettes instead of empty space.  <br /></td></tr>
+<tr class="separator:ab08cd1113ea6789611ae0f17663b3827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addb710e536ca52154b36866ab67208e2" id="r_addb710e536ca52154b36866ab67208e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#addb710e536ca52154b36866ab67208e2">getGbufferEnabled</a> () const</td></tr>
+<tr class="separator:addb710e536ca52154b36866ab67208e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1cb817f0057652268ff75a0ccd38ee8" id="r_ac1cb817f0057652268ff75a0ccd38ee8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac1cb817f0057652268ff75a0ccd38ee8">setCastShadow</a> (bool cast)</td></tr>
+<tr class="memdesc:ac1cb817f0057652268ff75a0ccd38ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast real CSM shadows: the stack's slices are drawn into the cascaded shadow map through the alpha-cutout shadow pipeline, so the silhouette (not a solid quad) lands on receiving geometry. Requires a directional light with castShadow, or the legacy directional light fallback.  <br /></td></tr>
+<tr class="separator:ac1cb817f0057652268ff75a0ccd38ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1777512fec71dc87d5b89da9aa6af5c5" id="r_a1777512fec71dc87d5b89da9aa6af5c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a1777512fec71dc87d5b89da9aa6af5c5">getCastShadow</a> () const</td></tr>
+<tr class="separator:a1777512fec71dc87d5b89da9aa6af5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d0757d9904679a69cf3b66915656559" id="r_a6d0757d9904679a69cf3b66915656559"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a6d0757d9904679a69cf3b66915656559">getVersion</a> () const</td></tr>
+<tr class="memdesc:a6d0757d9904679a69cf3b66915656559"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic revision counter; <a class="el" href="classeve_1_1spritestack_1_1SpriteStackBatch.html" title="Multi-stack batching: draws every visible slice of the registered stacks as ONE draw call per (textur...">SpriteStackBatch</a> uses it to detect changes.  <br /></td></tr>
+<tr class="separator:a6d0757d9904679a69cf3b66915656559"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42db9378f93cd19710da4a18236c2a80" id="r_a42db9378f93cd19710da4a18236c2a80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a42db9378f93cd19710da4a18236c2a80">render</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *camera=nullptr) const</td></tr>
+<tr class="memdesc:a42db9378f93cd19710da4a18236c2a80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw all slices into the currently open 3D scene pass (Vulkan). Uses the active Camera3D when <code>camera</code> is null. Slices are sorted back-to-front and depth-tested against the scene (depth writes stay off).  <br /></td></tr>
+<tr class="separator:a42db9378f93cd19710da4a18236c2a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a2a4815a1028ad165a7a54f9520a0ab23" id="r_a2a4815a1028ad165a7a54f9520a0ab23"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a2a4815a1028ad165a7a54f9520a0ab23">SpriteStackBatch</a></td></tr>
+<tr class="separator:a2a4815a1028ad165a7a54f9520a0ab23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A renderable pseudo-3D sprite stack: a column of layer textures drawn as alpha-blended slices inside the 3D forward pass (call <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a42db9378f93cd19710da4a18236c2a80" title="Draw all slices into the currently open 3D scene pass (Vulkan). Uses the active Camera3D when camera ...">render()</a> after gfx.render3D() / RenderSystem3D::render and before present). </p>
+<p>Modes: "vertical" (default) — bread-slice billboards that always face the camera; yaw rotates the stack's depth layout around Y. "horizontal" — slices are horizontal quads (top-down layers); a 3/4 camera sees true volume with yaw parallax.</p>
+<p>Textures are owned by Graphics; this object only holds pointers. Create via eve.SpriteStack().newStack(gfx); the script VM owns the object. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8h_source.html">SpriteStack.h</a> 第 <a class="el" href="SpriteStack_8h_source.html#l00098">98</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae2e708c8f635a6949a993160a25fe7ed" name="ae2e708c8f635a6949a993160a25fe7ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2e708c8f635a6949a993160a25fe7ed">&#9670;&#160;</a></span>SpriteStack3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spritestack::SpriteStack3D::SpriteStack3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a55875e4e8aa8a1c469da3c4883a71e94" name="a55875e4e8aa8a1c469da3c4883a71e94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55875e4e8aa8a1c469da3c4883a71e94">&#9670;&#160;</a></span>~SpriteStack3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spritestack::SpriteStack3D::~SpriteStack3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00782">782</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb68f2ab0c4398cc4057ea6b3b813237" name="acb68f2ab0c4398cc4057ea6b3b813237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb68f2ab0c4398cc4057ea6b3b813237">&#9670;&#160;</a></span>SpriteStack3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spritestack::SpriteStack3D::SpriteStack3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1777512fec71dc87d5b89da9aa6af5c5" name="a1777512fec71dc87d5b89da9aa6af5c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1777512fec71dc87d5b89da9aa6af5c5">&#9670;&#160;</a></span>getCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spritestack::SpriteStack3D::getCastShadow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00780">780</a> 行定义.</p>
+
+</div>
+</div>
+<a id="addb710e536ca52154b36866ab67208e2" name="addb710e536ca52154b36866ab67208e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addb710e536ca52154b36866ab67208e2">&#9670;&#160;</a></span>getGbufferEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spritestack::SpriteStack3D::getGbufferEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00733">733</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4eaafbc6969df6b06261ccee14cbd7bc" name="a4eaafbc6969df6b06261ccee14cbd7bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eaafbc6969df6b06261ccee14cbd7bc">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spritestack::SpriteStack3D::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00511">511</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47565d9b3d8323a983a43e93b3e2af8e" name="a47565d9b3d8323a983a43e93b3e2af8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47565d9b3d8323a983a43e93b3e2af8e">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spritestack::SpriteStack3D::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a0b4f0f9a455be6a9ce212e9bd572e5" name="a6a0b4f0f9a455be6a9ce212e9bd572e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a0b4f0f9a455be6a9ce212e9bd572e5">&#9670;&#160;</a></span>getLayerTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::spritestack::SpriteStack3D::getLayerTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00464">464</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf635d04321067687ab0b716f76b6f47" name="acf635d04321067687ab0b716f76b6f47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf635d04321067687ab0b716f76b6f47">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::spritestack::SpriteStack3D::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00550">550</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40ba7ae244ee2c0413a722e11494ad1a" name="a40ba7ae244ee2c0413a722e11494ad1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40ba7ae244ee2c0413a722e11494ad1a">&#9670;&#160;</a></span>getOutlineWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spritestack::SpriteStack3D::getOutlineWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00584">584</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec86d47da361b384d914352de2c36f36" name="aec86d47da361b384d914352de2c36f36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec86d47da361b384d914352de2c36f36">&#9670;&#160;</a></span>getShadowEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spritestack::SpriteStack3D::getShadowEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00557">557</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3239b437916ba2e55b14bf7631ef3a56" name="a3239b437916ba2e55b14bf7631ef3a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3239b437916ba2e55b14bf7631ef3a56">&#9670;&#160;</a></span>getThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spritestack::SpriteStack3D::getThickness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00500">500</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6d0757d9904679a69cf3b66915656559" name="a6d0757d9904679a69cf3b66915656559"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d0757d9904679a69cf3b66915656559">&#9670;&#160;</a></span>getVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::spritestack::SpriteStack3D::getVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic revision counter; <a class="el" href="classeve_1_1spritestack_1_1SpriteStackBatch.html" title="Multi-stack batching: draws every visible slice of the registered stacks as ONE draw call per (textur...">SpriteStackBatch</a> uses it to detect changes. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8h_source.html">SpriteStack.h</a> 第 <a class="el" href="SpriteStack_8h_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af56aecb6e83fc55259ee7392a432d293" name="af56aecb6e83fc55259ee7392a432d293"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af56aecb6e83fc55259ee7392a432d293">&#9670;&#160;</a></span>getVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spritestack::SpriteStack3D::getVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00540">540</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cab4b8e0ea27f52ba397a6b1a5e39a1" name="a0cab4b8e0ea27f52ba397a6b1a5e39a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cab4b8e0ea27f52ba397a6b1a5e39a1">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spritestack::SpriteStack3D::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00510">510</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a02a5221d3db83ab13b4db7fe23eb9c1b" name="a02a5221d3db83ab13b4db7fe23eb9c1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02a5221d3db83ab13b4db7fe23eb9c1b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a> &amp; eve::spritestack::SpriteStack3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42db9378f93cd19710da4a18236c2a80" name="a42db9378f93cd19710da4a18236c2a80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42db9378f93cd19710da4a18236c2a80">&#9670;&#160;</a></span>render()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::render </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw all slices into the currently open 3D scene pass (Vulkan). Uses the active Camera3D when <code>camera</code> is null. Slices are sorted back-to-front and depth-tested against the scene (depth writes stay off). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00791">791</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#acbd057ac365c66502742391d4aa42807">eve::graphics::Graphics::drawMeshShader()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00484">eye</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00489">fovRad</a>, <a class="el" href="Graphics_8h_source.html#l00284">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00283">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="SpriteStack_8h_source.html#l00108">eve::spritestack::SpriteStack3D::SliceDraw::model</a>, <a class="el" href="ClipSpace_8h_source.html#l00020">eve::graphics::perspectiveVulkanRH_ZO()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="Shader_8cpp_source.html#l00094">eve::graphics::Shader::sendVec4()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a3f803b32e9b4d8d0d95a82fc356ca4e5">eve::graphics::Graphics::setMesh3DCameraPos()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a20b691b056cf3040b427475b1410670f">eve::graphics::Graphics::setMesh3DClip()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a55b9dc52456ebbc4984370ee570312ae">eve::graphics::Graphics::setMesh3DEnv()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a82b2a6de2f7f9359a9b93fbe4a99d301">eve::graphics::Graphics::setMesh3DView()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a34470db3183c3e69ffab389a291e2f61">eve::graphics::Graphics::setMesh3DViewProj()</a> , 以及 <a class="el" href="SpriteStack_8h_source.html#l00111">eve::spritestack::SpriteStack3D::SliceDraw::texture</a>.</p>
+
+</div>
+</div>
+<a id="a93d8326ef77a81aefa91821f9b23fee0" name="a93d8326ef77a81aefa91821f9b23fee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93d8326ef77a81aefa91821f9b23fee0">&#9670;&#160;</a></span>setAlphaCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setAlphaCutoff </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cutoff</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00533">533</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1cb817f0057652268ff75a0ccd38ee8" name="ac1cb817f0057652268ff75a0ccd38ee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1cb817f0057652268ff75a0ccd38ee8">&#9670;&#160;</a></span>setCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setCastShadow </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cast real CSM shadows: the stack's slices are drawn into the cascaded shadow map through the alpha-cutout shadow pipeline, so the silhouette (not a solid quad) lands on receiving geometry. Requires a directional light with castShadow, or the legacy directional light fallback. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00771">771</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab08cd1113ea6789611ae0f17663b3827" name="ab08cd1113ea6789611ae0f17663b3827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab08cd1113ea6789611ae0f17663b3827">&#9670;&#160;</a></span>setGbufferEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setGbufferEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Contribute this stack to the G-buffer (via RenderSystem3D's extra-drawer hook) so post-processing that reads depth/normal (AO, outline) recognizes the slice silhouettes instead of empty space. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00724">724</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ad8f3d01fcf9f9ce3639d22b22749a92f" name="ad8f3d01fcf9f9ce3639d22b22749a92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8f3d01fcf9f9ce3639d22b22749a92f">&#9670;&#160;</a></span>setLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setLayerCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00447">447</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteStack_8cpp_source.html#l00480">setLayersFromAtlas()</a>.</p>
+
+</div>
+</div>
+<a id="a7ec1e75544c533ea0af0d6af2fea459d" name="a7ec1e75544c533ea0af0d6af2fea459d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ec1e75544c533ea0af0d6af2fea459d">&#9670;&#160;</a></span>setLayerFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setLayerFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload each path via Graphics::newTextureFromFile (reloads in place). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00475">475</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa32e256e0cf514fb5cce92c0390b8211">eve::graphics::Graphics::newTextureFromFile()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00456">setLayerTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a313c95c94fe3bd2840c55903931d6774" name="a313c95c94fe3bd2840c55903931d6774"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a313c95c94fe3bd2840c55903931d6774">&#9670;&#160;</a></span>setLayerImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setLayerImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td>
+          <td class="paramname"><em>img</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload RGBA8 ImageData layers (convenience around setLayerTexture). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00469">469</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00932">eve::graphics::Graphics::newTextureFromImageData()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00456">setLayerTexture()</a>.</p>
+
+</div>
+</div>
+<a id="aed41879299efe2933d51c7ffe826b801" name="aed41879299efe2933d51c7ffe826b801"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed41879299efe2933d51c7ffe826b801">&#9670;&#160;</a></span>setLayersFromAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setLayersFromAtlas </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>atlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Split one horizontal atlas strip into <code>layerCount</code> layers (layer i = columns [i/count..(i+1)/count)). The strip stays one GPU texture; slices sample their cell through per-layer UV rects. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00447">setLayerCount()</a>.</p>
+
+</div>
+</div>
+<a id="a55fe314dee462779bf0017979f28096f" name="a55fe314dee462779bf0017979f28096f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55fe314dee462779bf0017979f28096f">&#9670;&#160;</a></span>setLayerTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setLayerTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Null texture clears the slot (that layer is skipped). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteStack_8cpp_source.html#l00475">setLayerFile()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00469">setLayerImage()</a>.</p>
+
+</div>
+</div>
+<a id="a7da498adf25a4765dbccdd1d4819d3c3" name="a7da498adf25a4765dbccdd1d4819d3c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7da498adf25a4765dbccdd1d4819d3c3">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00542">542</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa774c8611ccbec7434c944b858e5c3ad" name="aa774c8611ccbec7434c944b858e5c3ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa774c8611ccbec7434c944b858e5c3ad">&#9670;&#160;</a></span>setOutline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setOutline </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stylized rim outline: an expanded dark silhouette behind every slice. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00576">576</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="a14f9fc8b85f547803e732e7446a0881e" name="a14f9fc8b85f547803e732e7446a0881e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14f9fc8b85f547803e732e7446a0881e">&#9670;&#160;</a></span>setOutlineColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setOutlineColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00586">586</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>.</p>
+
+</div>
+</div>
+<a id="a6520e735e40e2d58049c02b453080370" name="a6520e735e40e2d58049c02b453080370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6520e735e40e2d58049c02b453080370">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="ac526567e61c69ba0380667507f69efbe" name="ac526567e61c69ba0380667507f69efbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac526567e61c69ba0380667507f69efbe">&#9670;&#160;</a></span>setShadowEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setShadowEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pseudo-3D projected contact shadow (soft dark silhouette on the ground). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00552">552</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a18851cea4a4873a05faeac20ac686b46" name="a18851cea4a4873a05faeac20ac686b46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18851cea4a4873a05faeac20ac686b46">&#9670;&#160;</a></span>setShadowLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setShadowLight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00564">564</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac92a5f9b46452a77cc8d0a173baf4353" name="ac92a5f9b46452a77cc8d0a173baf4353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92a5f9b46452a77cc8d0a173baf4353">&#9670;&#160;</a></span>setShadowOpacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setShadowOpacity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>opacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00559">559</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af862eaa9ff07301b3a1a028bd4079930" name="af862eaa9ff07301b3a1a028bd4079930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af862eaa9ff07301b3a1a028bd4079930">&#9670;&#160;</a></span>setShadowPlaneY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setShadowPlaneY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00571">571</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a53f3423d423475be949c452deac1c06f" name="a53f3423d423475be949c452deac1c06f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53f3423d423475be949c452deac1c06f">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Quad size for every slice (world units). Default 1 x 1. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00502">502</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="af6506f5e62ed6694a4da8e3a5c032963" name="af6506f5e62ed6694a4da8e3a5c032963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6506f5e62ed6694a4da8e3a5c032963">&#9670;&#160;</a></span>setThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setThickness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>thickness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space spacing between consecutive slices. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00494">494</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00032">thickness</a>.</p>
+
+</div>
+</div>
+<a id="a429cd8868dfc2643d2415ac9d4c1f3bc" name="a429cd8868dfc2643d2415ac9d4c1f3bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a429cd8868dfc2643d2415ac9d4c1f3bc">&#9670;&#160;</a></span>setTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setTint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00525">525</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>.</p>
+
+</div>
+</div>
+<a id="a2a85f5a4057491c92d23946a639e9b97" name="a2a85f5a4057491c92d23946a639e9b97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a85f5a4057491c92d23946a639e9b97">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00535">535</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac864253b70ea14417f48b50bc1128f06" name="ac864253b70ea14417f48b50bc1128f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac864253b70ea14417f48b50bc1128f06">&#9670;&#160;</a></span>setYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spritestack::SpriteStack3D::setYaw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a> 第 <a class="el" href="SpriteStack_8cpp_source.html#l00520">520</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a2a4815a1028ad165a7a54f9520a0ab23" name="a2a4815a1028ad165a7a54f9520a0ab23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a4815a1028ad165a7a54f9520a0ab23">&#9670;&#160;</a></span>SpriteStackBatch</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1spritestack_1_1SpriteStackBatch.html">SpriteStackBatch</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteStack_8h_source.html">SpriteStack.h</a> 第 <a class="el" href="SpriteStack_8h_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/spritestack/<a class="el" href="SpriteStack_8h_source.html">SpriteStack.h</a></li>
+<li>src/modules/spritestack/<a class="el" href="SpriteStack_8cpp_source.html">SpriteStack.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

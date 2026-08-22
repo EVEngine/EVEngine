@@ -1,0 +1,596 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::filesystem::HotReload类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1filesystem.html">filesystem</a></li><li class="navelem"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html">HotReload</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1filesystem_1_1HotReload-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::filesystem::HotReload类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Path→reload dispatcher for soft hot reload. Driven from load.nut via pollWatch → tryReload; also used by watchTree.  
+ <a href="classeve_1_1filesystem_1_1HotReload.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HotReload_8h_source.html">HotReload.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::filesystem::HotReload 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1filesystem_1_1HotReload.png" usemap="#eve::filesystem::HotReload_map" alt=""/>
+  <map id="eve::filesystem::HotReload_map" name="eve::filesystem::HotReload_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,158,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9a9ff4d3ef6e31155ef1d89805faa819" id="r_a9a9ff4d3ef6e31155ef1d89805faa819"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a9a9ff4d3ef6e31155ef1d89805faa819">Module_REG</a> (<a class="el" href="classeve_1_1filesystem_1_1HotReload.html">HotReload</a>)</td></tr>
+<tr class="separator:a9a9ff4d3ef6e31155ef1d89805faa819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a730f0599cf868541b97971ca44a429a4" id="r_a730f0599cf868541b97971ca44a429a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a730f0599cf868541b97971ca44a429a4">HotReload</a> ()=default</td></tr>
+<tr class="separator:a730f0599cf868541b97971ca44a429a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62139df15ff8007843b3953102ef307c" id="r_a62139df15ff8007843b3953102ef307c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a62139df15ff8007843b3953102ef307c">~HotReload</a> () override</td></tr>
+<tr class="separator:a62139df15ff8007843b3953102ef307c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae979894723e5b74e3f3ee6464d823253" id="r_ae979894723e5b74e3f3ee6464d823253"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#ae979894723e5b74e3f3ee6464d823253">bind</a> (std::string path, std::string <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>=&quot;auto&quot;)</td></tr>
+<tr class="memdesc:ae979894723e5b74e3f3ee6464d823253"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin a path to one reloader kind ("particle" / "tilemap" / "texture" / whatever a linked module registers), bypassing extension matching. "auto" (the default) lets every reloader claim the path itself.  <br /></td></tr>
+<tr class="separator:ae979894723e5b74e3f3ee6464d823253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a793990eb8480c1bb3e9fe35885b4cfce" id="r_a793990eb8480c1bb3e9fe35885b4cfce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a793990eb8480c1bb3e9fe35885b4cfce">unbind</a> (std::string path)</td></tr>
+<tr class="separator:a793990eb8480c1bb3e9fe35885b4cfce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46ddab76d34179ba9f49166cd058cc4e" id="r_a46ddab76d34179ba9f49166cd058cc4e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a46ddab76d34179ba9f49166cd058cc4e">tryReload</a> (std::string path)</td></tr>
+<tr class="memdesc:a46ddab76d34179ba9f49166cd058cc4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offer a (normalized) path to the registered reloaders; true if any reloaded.  <br /></td></tr>
+<tr class="separator:a46ddab76d34179ba9f49166cd058cc4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d6524ef2f52acf1e40b5dea4dcb92b" id="r_a12d6524ef2f52acf1e40b5dea4dcb92b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a12d6524ef2f52acf1e40b5dea4dcb92b">watchTree</a> (std::string root=&quot;.&quot;)</td></tr>
+<tr class="memdesc:a12d6524ef2f52acf1e40b5dea4dcb92b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively watch root and all subdirectories. Returns number of watches added.  <br /></td></tr>
+<tr class="separator:a12d6524ef2f52acf1e40b5dea4dcb92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8d5c5405af316df958a0014bb8ba897" id="r_aa8d5c5405af316df958a0014bb8ba897"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#aa8d5c5405af316df958a0014bb8ba897">startRemoteSync</a> (std::string url, int pollMs=1000)</td></tr>
+<tr class="separator:aa8d5c5405af316df958a0014bb8ba897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d76bb7290e88a449a00a155cf135772" id="r_a9d76bb7290e88a449a00a155cf135772"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a9d76bb7290e88a449a00a155cf135772">stopRemoteSync</a> ()</td></tr>
+<tr class="separator:a9d76bb7290e88a449a00a155cf135772"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a032b124ef574bee18ff75441ea85e013" id="r_a032b124ef574bee18ff75441ea85e013"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a032b124ef574bee18ff75441ea85e013">setRemoteHotDir</a> (std::string <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)</td></tr>
+<tr class="separator:a032b124ef574bee18ff75441ea85e013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a416cb069fd977a49f2b937d35bf522d9" id="r_a416cb069fd977a49f2b937d35bf522d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a416cb069fd977a49f2b937d35bf522d9">isRemoteSyncing</a> () const</td></tr>
+<tr class="separator:a416cb069fd977a49f2b937d35bf522d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3c68e73c1b23a10098f6c55cfa7c374" id="r_ad3c68e73c1b23a10098f6c55cfa7c374"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#ad3c68e73c1b23a10098f6c55cfa7c374">remoteSyncStatus</a> () const</td></tr>
+<tr class="separator:ad3c68e73c1b23a10098f6c55cfa7c374"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc4ecfc4e69cb9f3aa44ffcece7d065" id="r_a3cc4ecfc4e69cb9f3aa44ffcece7d065"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a3cc4ecfc4e69cb9f3aa44ffcece7d065">pollRemoteChange</a> ()</td></tr>
+<tr class="separator:a3cc4ecfc4e69cb9f3aa44ffcece7d065"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:af862fe5d31e38fb879797969951ff692" id="r_af862fe5d31e38fb879797969951ff692"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html#af862fe5d31e38fb879797969951ff692">normalizePath</a> (std::string path)</td></tr>
+<tr class="separator:af862fe5d31e38fb879797969951ff692"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Path→reload dispatcher for soft hot reload. Driven from load.nut via pollWatch → tryReload; also used by watchTree. </p>
+<p>What a given file means is not known here. Modules that own an asset kind register an <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a> (see <a class="el" href="AssetReloader_8h.html">common/AssetReloader.h</a>) and this only routes paths to them, so reloadable kinds grow with the linked module set rather than with this file.</p>
+<p>On top of the local watchers, <a class="el" href="classeve_1_1filesystem_1_1HotReload.html" title="Path→reload dispatcher for soft hot reload. Driven from load.nut via pollWatch → tryReload; also used...">HotReload</a> can act as a remote hot-reload client: a background thread polls a dev server (<code>eve dev</code>) manifest, downloads changed files into a writable overlay directory mounted at "/" (see <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a6dc2f5e70c721323b4e2cd3887ebc697">Filesystem::mountRealDirectory</a>), and queues the changed virtual paths for the script layer to <code>dofile</code> / reload. This is what makes hot reload work on read-only mobile bundles (iOS app bundle / Android APK). </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8h_source.html">HotReload.h</a> 第 <a class="el" href="HotReload_8h_source.html#l00034">34</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a730f0599cf868541b97971ca44a429a4" name="a730f0599cf868541b97971ca44a429a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a730f0599cf868541b97971ca44a429a4">&#9670;&#160;</a></span>HotReload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::filesystem::HotReload::HotReload </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62139df15ff8007843b3953102ef307c" name="a62139df15ff8007843b3953102ef307c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62139df15ff8007843b3953102ef307c">&#9670;&#160;</a></span>~HotReload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::filesystem::HotReload::~HotReload </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HotReload_8cpp_source.html#l00400">stopRemoteSync()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae979894723e5b74e3f3ee6464d823253" name="ae979894723e5b74e3f3ee6464d823253"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae979894723e5b74e3f3ee6464d823253">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::filesystem::HotReload::bind </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em> = <code>&quot;auto&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pin a path to one reloader kind ("particle" / "tilemap" / "texture" / whatever a linked module registers), bypassing extension matching. "auto" (the default) lets every reloader claim the path itself. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="HotReload_8cpp_source.html#l00116">normalizePath()</a>.</p>
+
+</div>
+</div>
+<a id="a416cb069fd977a49f2b937d35bf522d9" name="a416cb069fd977a49f2b937d35bf522d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a416cb069fd977a49f2b937d35bf522d9">&#9670;&#160;</a></span>isRemoteSyncing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::HotReload::isRemoteSyncing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Whether the remote sync thread is currently running. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a9ff4d3ef6e31155ef1d89805faa819" name="a9a9ff4d3ef6e31155ef1d89805faa819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a9ff4d3ef6e31155ef1d89805faa819">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::filesystem::HotReload::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1filesystem_1_1HotReload.html">HotReload</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af862fe5d31e38fb879797969951ff692" name="af862fe5d31e38fb879797969951ff692"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af862fe5d31e38fb879797969951ff692">&#9670;&#160;</a></span>normalizePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::filesystem::HotReload::normalizePath </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HotReload_8cpp_source.html#l00125">bind()</a>, <a class="el" href="HotReload_8cpp_source.html#l00136">tryReload()</a>, <a class="el" href="HotReload_8cpp_source.html#l00132">unbind()</a> , 以及 <a class="el" href="HotReload_8cpp_source.html#l00155">watchTree()</a>.</p>
+
+</div>
+</div>
+<a id="a3cc4ecfc4e69cb9f3aa44ffcece7d065" name="a3cc4ecfc4e69cb9f3aa44ffcece7d065"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cc4ecfc4e69cb9f3aa44ffcece7d065">&#9670;&#160;</a></span>pollRemoteChange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::filesystem::HotReload::pollRemoteChange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Pop the next changed virtual path reported by remote sync. Returns empty string when the queue is drained. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00420">420</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="ad3c68e73c1b23a10098f6c55cfa7c374" name="ad3c68e73c1b23a10098f6c55cfa7c374"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3c68e73c1b23a10098f6c55cfa7c374">&#9670;&#160;</a></span>remoteSyncStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::filesystem::HotReload::remoteSyncStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Last sync status: "idle" | "syncing" | "synced" | "error:&lt;reason&gt;". </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a032b124ef574bee18ff75441ea85e013" name="a032b124ef574bee18ff75441ea85e013"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a032b124ef574bee18ff75441ea85e013">&#9670;&#160;</a></span>setRemoteHotDir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::filesystem::HotReload::setRemoteHotDir </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Override the writable overlay directory used to stage remote-sync downloads (default: platform appdata/EVE/hotreload, or the internal storage hotreload dir on Android). Must be called before startRemoteSync. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>.</p>
+
+</div>
+</div>
+<a id="aa8d5c5405af316df958a0014bb8ba897" name="aa8d5c5405af316df958a0014bb8ba897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8d5c5405af316df958a0014bb8ba897">&#9670;&#160;</a></span>startRemoteSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::HotReload::startRemoteSync </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pollMs</em> = <code>1000</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Start remote hot reload against a dev server. Background thread polls &lt;url&gt;/manifest and downloads changed files via &lt;url&gt;/raw/&lt;path&gt; into a writable overlay directory (mounted in front of the bundled game source), then queues the virtual paths. Returns false if already running. </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url</td><td>Base URL, e.g. "http://192.168.1.5:8765". </td></tr>
+    <tr><td class="paramname">pollMs</td><td>Poll interval in milliseconds (default 1000). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d76bb7290e88a449a00a155cf135772" name="a9d76bb7290e88a449a00a155cf135772"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d76bb7290e88a449a00a155cf135772">&#9670;&#160;</a></span>stopRemoteSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::filesystem::HotReload::stopRemoteSync </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Stop the remote sync thread (joining it). Safe to call twice. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HotReload_8cpp_source.html#l00114">~HotReload()</a>.</p>
+
+</div>
+</div>
+<a id="a46ddab76d34179ba9f49166cd058cc4e" name="a46ddab76d34179ba9f49166cd058cc4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46ddab76d34179ba9f49166cd058cc4e">&#9670;&#160;</a></span>tryReload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::HotReload::tryReload </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Offer a (normalized) path to the registered reloaders; true if any reloaded. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a34a5b5943c77f14a4a20a1d2363d2541">eve::caps::IAssetReloader::handlesPath()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>, <a class="el" href="HotReload_8cpp_source.html#l00116">normalizePath()</a>, <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>, <a class="el" href="AssetReloader_8h_source.html#l00068">eve::caps::IAssetReloader::reload()</a> , 以及 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a1027feee70f22f1ff25ea5e070061c47">eve::caps::IAssetReloader::reloadKind()</a>.</p>
+
+</div>
+</div>
+<a id="a793990eb8480c1bb3e9fe35885b4cfce" name="a793990eb8480c1bb3e9fe35885b4cfce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a793990eb8480c1bb3e9fe35885b4cfce">&#9670;&#160;</a></span>unbind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::filesystem::HotReload::unbind </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HotReload_8cpp_source.html#l00116">normalizePath()</a>.</p>
+
+</div>
+</div>
+<a id="a12d6524ef2f52acf1e40b5dea4dcb92b" name="a12d6524ef2f52acf1e40b5dea4dcb92b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d6524ef2f52acf1e40b5dea4dcb92b">&#9670;&#160;</a></span>watchTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::filesystem::HotReload::watchTree </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>root</em> = <code>&quot;.&quot;</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recursively watch root and all subdirectories. Returns number of watches added. </p>
+
+<p class="definition">在文件 <a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a> 第 <a class="el" href="HotReload_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a> , 以及 <a class="el" href="HotReload_8cpp_source.html#l00116">normalizePath()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/filesystem/<a class="el" href="HotReload_8h_source.html">HotReload.h</a></li>
+<li>src/modules/filesystem/<a class="el" href="HotReload_8cpp_source.html">HotReload.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

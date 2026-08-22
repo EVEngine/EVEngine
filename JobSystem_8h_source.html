@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/thread/JobSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d0f964ef2f4a5250338b1e00ea12ead0.html">thread</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">JobSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="JobSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>thread {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>JobSystem;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">   15</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> = std::function&lt;void()&gt;;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">   22</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a> = std::function&lt;void(<span class="keywordtype">int</span> first, <span class="keywordtype">int</span> last)&gt;;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#a604b3d62d37a4efb307725c40b8585e6">   43</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#a604b3d62d37a4efb307725c40b8585e6">~Job</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#acbd69143b51b29e45da0f6dd7647f7c2">   52</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#acbd69143b51b29e45da0f6dd7647f7c2">wait</a>() = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#af57432c8fee2057fc485952de943660f">   55</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#af57432c8fee2057fc485952de943660f">isDone</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#a0512b94f0ad38649a9a62d6921772825">   58</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#a0512b94f0ad38649a9a62d6921772825">hasFailed</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#a9f1ff0ed0c5d93b9dbe36c3121f006c7">   64</a></span>    <span class="keyword">virtual</span> std::string <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#a9f1ff0ed0c5d93b9dbe36c3121f006c7">getError</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#a35f6c7001857f9862e182fe13d534b62">   70</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#a35f6c7001857f9862e182fe13d534b62">getPendingDependencyCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#a24b7fd2dcd008a2be2651071d46a9af3">   81</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#a24b7fd2dcd008a2be2651071d46a9af3">addDependency</a>(<a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *predecessor) = 0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Job.html#a473e6fd6bed0b62dc8647014ed2def03">   95</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1Job.html#a473e6fd6bed0b62dc8647014ed2def03">setCompletionCallback</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> callback) = 0;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="};">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1TaskGroup.html">  106</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1TaskGroup.html#ad180249a9d2e63d6df8afb1e7eb2b78f">  108</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1thread_1_1TaskGroup.html#ad180249a9d2e63d6df8afb1e7eb2b78f">~TaskGroup</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1TaskGroup.html#ada233ab3c5dcc1e5095a74c365dda75f">  115</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1TaskGroup.html#ada233ab3c5dcc1e5095a74c365dda75f">fork</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) = 0;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1TaskGroup.html#a901b74f17b91e2030b1bc5c12884d622">  123</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1TaskGroup.html#a901b74f17b91e2030b1bc5c12884d622">fork</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, <a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8d5ca65462822f0af8efaa6f74022d8d">onComplete</a>) = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1TaskGroup.html#a6790a64987ee02d829f40bed29366a95">  129</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1TaskGroup.html#a6790a64987ee02d829f40bed29366a95">wait</a>() = 0;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1TaskGroup.html#a69f2f409d61112d9363d40c1a8ea63eb">  132</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1thread_1_1TaskGroup.html#a69f2f409d61112d9363d40c1a8ea63eb">getPendingCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>};</div>
+</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="foldopen" id="foldopen00153" data-start="{" data-end="};">
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html">  153</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1thread_1_1JobSystem.html">JobSystem</a> {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a89a978d30d2ac3e4ab3e4477231e325d">  155</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a89a978d30d2ac3e4ab3e4477231e325d">~JobSystem</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a537f7662a917c4ed5f3778f7e81237c4">  158</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a537f7662a917c4ed5f3778f7e81237c4">getWorkerCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#adf34e6f35de830e30851118cc7e8c58d">  161</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#adf34e6f35de830e30851118cc7e8c58d">isRunning</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a671277445120321daff598528a66af4e">  164</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a671277445120321daff598528a66af4e">getPendingCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a257724575a399d95d952b3f4efba468b">  167</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a257724575a399d95d952b3f4efba468b">getOutstandingCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="comment">// ---- heap jobs (caller owns returned handles) ----</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a5687f6d3ee6fd39273ffa6f889031608">  177</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a5687f6d3ee6fd39273ffa6f889031608">submit</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) = 0;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a13fc80151174e1e32b955bba941d8cc2">  185</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a13fc80151174e1e32b955bba941d8cc2">createJob</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) = 0;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a43455a77fec2ad114ec53b6f2baaa9a7">  196</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a43455a77fec2ad114ec53b6f2baaa9a7">schedule</a>(<a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *job) = 0;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#aee60de9ecb2e622f4d9748ff1be14031">  212</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#aee60de9ecb2e622f4d9748ff1be14031">parallelFor</a>(<span class="keywordtype">int</span> first, <span class="keywordtype">int</span> last, <a class="code hl_typedef" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, <span class="keywordtype">int</span> chunk = 1) = 0;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a729e694c30bc1d8f526b816ea83c9142">  218</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a729e694c30bc1d8f526b816ea83c9142">createTaskGroup</a>() = 0;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="comment">// ---- frame jobs (arena-allocated; valid until next beginFrame) ----</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#afc4bbc6b7bb48b5261e04bed65339426">  227</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#afc4bbc6b7bb48b5261e04bed65339426">submitFrame</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) = 0;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#abf1f440a6b8dcdb74f81dfbcdc45d9f9">  234</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#abf1f440a6b8dcdb74f81dfbcdc45d9f9">createFrameJob</a>(<a class="code hl_typedef" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) = 0;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a0e55afcd9a2666ac95c486ff1171aa87">  240</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1Job.html">Job</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a0e55afcd9a2666ac95c486ff1171aa87">parallelForFrame</a>(<span class="keywordtype">int</span> first, <span class="keywordtype">int</span> last, <a class="code hl_typedef" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, <span class="keywordtype">int</span> chunk = 1) = 0;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a8041c27e9e68076c79ee8a147149669c">  246</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> *<a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a8041c27e9e68076c79ee8a147149669c">createFrameTaskGroup</a>() = 0;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#a291556ba71f1454339bea75579436ab2">  254</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#a291556ba71f1454339bea75579436ab2">beginFrame</a>() = 0;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#aed2e9bef87b01a0d2a5ca4397a26e5d5">  262</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#aed2e9bef87b01a0d2a5ca4397a26e5d5">endFrame</a>() = 0;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="comment">// ---- lifecycle ----</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#aacb783a78198cca676f037d16364086f">  270</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#aacb783a78198cca676f037d16364086f">waitAll</a>() = 0;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1JobSystem.html#abcfdb2c858d3a220fab9eb2440c245b1">  276</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1JobSystem.html#abcfdb2c858d3a220fab9eb2440c245b1">stop</a>() = 0;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>};</div>
+</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><a class="code hl_class" href="classeve_1_1thread_1_1JobSystem.html">JobSystem</a> *<a class="code hl_function" href="namespaceeve_1_1thread.html#af52a6b5e3f7ad0dc47ba9e1380555d31">createJobSystem</a>(<span class="keywordtype">int</span> workerCount = 0);</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>}  <span class="comment">// namespace thread</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a503889937f87ab447382207f9d5cba56"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a></div><div class="ttdeci">JobFunc body</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00159">JobSystemThreadPool.cpp:159</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8d5ca65462822f0af8efaa6f74022d8d"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8d5ca65462822f0af8efaa6f74022d8d">onComplete</a></div><div class="ttdeci">JobFunc onComplete</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00160">JobSystemThreadPool.cpp:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html">eve::thread::JobSystem</a></div><div class="ttdoc">Abstract job scheduler: dependencies, parallel_for, task_group, arena.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00153">JobSystem.h:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a0e55afcd9a2666ac95c486ff1171aa87"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a0e55afcd9a2666ac95c486ff1171aa87">eve::thread::JobSystem::parallelForFrame</a></div><div class="ttdeci">virtual Job * parallelForFrame(int first, int last, ParallelForBody body, int chunk=1)=0</div><div class="ttdoc">Frame-scoped parallel_for; see parallelFor().</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a13fc80151174e1e32b955bba941d8cc2"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a13fc80151174e1e32b955bba941d8cc2">eve::thread::JobSystem::createJob</a></div><div class="ttdeci">virtual Job * createJob(JobFunc body)=0</div><div class="ttdoc">Create a paused job (dependencies can be wired, then schedule()).</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a257724575a399d95d952b3f4efba468b"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a257724575a399d95d952b3f4efba468b">eve::thread::JobSystem::getOutstandingCount</a></div><div class="ttdeci">virtual int getOutstandingCount() const =0</div><div class="ttdoc">Number of scheduled jobs that have not finished (approximate).</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a291556ba71f1454339bea75579436ab2"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a291556ba71f1454339bea75579436ab2">eve::thread::JobSystem::beginFrame</a></div><div class="ttdeci">virtual void beginFrame()=0</div><div class="ttdoc">Start a new frame: join leftover frame jobs and recycle the arena.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a43455a77fec2ad114ec53b6f2baaa9a7"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a43455a77fec2ad114ec53b6f2baaa9a7">eve::thread::JobSystem::schedule</a></div><div class="ttdeci">virtual void schedule(Job *job)=0</div><div class="ttdoc">Kick a paused job so it can run.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a537f7662a917c4ed5f3778f7e81237c4"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a537f7662a917c4ed5f3778f7e81237c4">eve::thread::JobSystem::getWorkerCount</a></div><div class="ttdeci">virtual int getWorkerCount() const =0</div><div class="ttdoc">Number of scheduler worker threads.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a5687f6d3ee6fd39273ffa6f889031608"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a5687f6d3ee6fd39273ffa6f889031608">eve::thread::JobSystem::submit</a></div><div class="ttdeci">virtual Job * submit(JobFunc body)=0</div><div class="ttdoc">Create a job and schedule it immediately.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a671277445120321daff598528a66af4e"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a671277445120321daff598528a66af4e">eve::thread::JobSystem::getPendingCount</a></div><div class="ttdeci">virtual int getPendingCount() const =0</div><div class="ttdoc">Number of ready jobs waiting for a worker (approximate).</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a729e694c30bc1d8f526b816ea83c9142"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a729e694c30bc1d8f526b816ea83c9142">eve::thread::JobSystem::createTaskGroup</a></div><div class="ttdeci">virtual TaskGroup * createTaskGroup()=0</div><div class="ttdoc">Create a fork/join task group.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a8041c27e9e68076c79ee8a147149669c"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a8041c27e9e68076c79ee8a147149669c">eve::thread::JobSystem::createFrameTaskGroup</a></div><div class="ttdeci">virtual TaskGroup * createFrameTaskGroup()=0</div><div class="ttdoc">Create a fork/join task group whose children are frame-scoped.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_a89a978d30d2ac3e4ab3e4477231e325d"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#a89a978d30d2ac3e4ab3e4477231e325d">eve::thread::JobSystem::~JobSystem</a></div><div class="ttdeci">virtual ~JobSystem()=default</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_aacb783a78198cca676f037d16364086f"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#aacb783a78198cca676f037d16364086f">eve::thread::JobSystem::waitAll</a></div><div class="ttdeci">virtual void waitAll()=0</div><div class="ttdoc">Block until every scheduled job has finished.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_abcfdb2c858d3a220fab9eb2440c245b1"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#abcfdb2c858d3a220fab9eb2440c245b1">eve::thread::JobSystem::stop</a></div><div class="ttdeci">virtual void stop()=0</div><div class="ttdoc">Stop accepting work and join workers. Idempotent.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_abf1f440a6b8dcdb74f81dfbcdc45d9f9"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#abf1f440a6b8dcdb74f81dfbcdc45d9f9">eve::thread::JobSystem::createFrameJob</a></div><div class="ttdeci">virtual Job * createFrameJob(JobFunc body)=0</div><div class="ttdoc">Create a paused frame-scoped job.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_adf34e6f35de830e30851118cc7e8c58d"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#adf34e6f35de830e30851118cc7e8c58d">eve::thread::JobSystem::isRunning</a></div><div class="ttdeci">virtual bool isRunning() const =0</div><div class="ttdoc">Whether the system is still accepting new jobs.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_aed2e9bef87b01a0d2a5ca4397a26e5d5"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#aed2e9bef87b01a0d2a5ca4397a26e5d5">eve::thread::JobSystem::endFrame</a></div><div class="ttdeci">virtual void endFrame()=0</div><div class="ttdoc">End the frame: join outstanding frame jobs and recycle the arena.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_aee60de9ecb2e622f4d9748ff1be14031"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#aee60de9ecb2e622f4d9748ff1be14031">eve::thread::JobSystem::parallelFor</a></div><div class="ttdeci">virtual Job * parallelFor(int first, int last, ParallelForBody body, int chunk=1)=0</div><div class="ttdoc">Run body over [first, last) in parallel.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html_afc4bbc6b7bb48b5261e04bed65339426"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html#afc4bbc6b7bb48b5261e04bed65339426">eve::thread::JobSystem::submitFrame</a></div><div class="ttdeci">virtual Job * submitFrame(JobFunc body)=0</div><div class="ttdoc">Create a frame-scoped job and schedule it immediately.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html">eve::thread::Job</a></div><div class="ttdoc">Handle to a single job inside a JobSystem.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00041">JobSystem.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_a0512b94f0ad38649a9a62d6921772825"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#a0512b94f0ad38649a9a62d6921772825">eve::thread::Job::hasFailed</a></div><div class="ttdeci">virtual bool hasFailed() const =0</div><div class="ttdoc">Whether the job body (or completion callback) failed.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_a24b7fd2dcd008a2be2651071d46a9af3"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#a24b7fd2dcd008a2be2651071d46a9af3">eve::thread::Job::addDependency</a></div><div class="ttdeci">virtual void addDependency(Job *predecessor)=0</div><div class="ttdoc">Make this job wait for another job to finish first.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_a35f6c7001857f9862e182fe13d534b62"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#a35f6c7001857f9862e182fe13d534b62">eve::thread::Job::getPendingDependencyCount</a></div><div class="ttdeci">virtual int getPendingDependencyCount() const =0</div><div class="ttdoc">Number of not-yet-completed predecessors this job is waiting for.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_a473e6fd6bed0b62dc8647014ed2def03"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#a473e6fd6bed0b62dc8647014ed2def03">eve::thread::Job::setCompletionCallback</a></div><div class="ttdeci">virtual void setCompletionCallback(JobFunc callback)=0</div><div class="ttdoc">Register a callback fired once when the job finishes.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_a604b3d62d37a4efb307725c40b8585e6"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#a604b3d62d37a4efb307725c40b8585e6">eve::thread::Job::~Job</a></div><div class="ttdeci">virtual ~Job()=default</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_a9f1ff0ed0c5d93b9dbe36c3121f006c7"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#a9f1ff0ed0c5d93b9dbe36c3121f006c7">eve::thread::Job::getError</a></div><div class="ttdeci">virtual std::string getError() const =0</div><div class="ttdoc">Error message from a failed body or completion callback.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_acbd69143b51b29e45da0f6dd7647f7c2"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#acbd69143b51b29e45da0f6dd7647f7c2">eve::thread::Job::wait</a></div><div class="ttdeci">virtual void wait()=0</div><div class="ttdoc">Block until this job finishes (done or failed).</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Job_html_af57432c8fee2057fc485952de943660f"><div class="ttname"><a href="classeve_1_1thread_1_1Job.html#af57432c8fee2057fc485952de943660f">eve::thread::Job::isDone</a></div><div class="ttdeci">virtual bool isDone() const =0</div><div class="ttdoc">Whether the job has finished (done or failed).</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1TaskGroup_html"><div class="ttname"><a href="classeve_1_1thread_1_1TaskGroup.html">eve::thread::TaskGroup</a></div><div class="ttdoc">Fork/join group: fork() spawns scheduled children, wait() joins them.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00106">JobSystem.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1TaskGroup_html_a6790a64987ee02d829f40bed29366a95"><div class="ttname"><a href="classeve_1_1thread_1_1TaskGroup.html#a6790a64987ee02d829f40bed29366a95">eve::thread::TaskGroup::wait</a></div><div class="ttdeci">virtual void wait()=0</div><div class="ttdoc">Join every forked child: block until all of them finish. Safe from a worker thread.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1TaskGroup_html_a69f2f409d61112d9363d40c1a8ea63eb"><div class="ttname"><a href="classeve_1_1thread_1_1TaskGroup.html#a69f2f409d61112d9363d40c1a8ea63eb">eve::thread::TaskGroup::getPendingCount</a></div><div class="ttdeci">virtual int getPendingCount() const =0</div><div class="ttdoc">Number of forked children that have not finished yet.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1TaskGroup_html_a901b74f17b91e2030b1bc5c12884d622"><div class="ttname"><a href="classeve_1_1thread_1_1TaskGroup.html#a901b74f17b91e2030b1bc5c12884d622">eve::thread::TaskGroup::fork</a></div><div class="ttdeci">virtual Job * fork(JobFunc body, JobFunc onComplete)=0</div><div class="ttdoc">Spawn a scheduled child job with a completion callback.</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1TaskGroup_html_ad180249a9d2e63d6df8afb1e7eb2b78f"><div class="ttname"><a href="classeve_1_1thread_1_1TaskGroup.html#ad180249a9d2e63d6df8afb1e7eb2b78f">eve::thread::TaskGroup::~TaskGroup</a></div><div class="ttdeci">virtual ~TaskGroup()=default</div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1TaskGroup_html_ada233ab3c5dcc1e5095a74c365dda75f"><div class="ttname"><a href="classeve_1_1thread_1_1TaskGroup.html#ada233ab3c5dcc1e5095a74c365dda75f">eve::thread::TaskGroup::fork</a></div><div class="ttdeci">virtual Job * fork(JobFunc body)=0</div><div class="ttdoc">Spawn a scheduled child job and add it to this group.</div></div>
+<div class="ttc" id="anamespaceeve_1_1thread_html_a14691c1abafc5bfafee50439d04baa07"><div class="ttname"><a href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">eve::thread::ParallelForBody</a></div><div class="ttdeci">std::function&lt; void(int first, int last)&gt; ParallelForBody</div><div class="ttdoc">Body of a parallel_for subrange.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00022">JobSystem.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1thread_html_a72440c2fdea246250a70fe10068a3843"><div class="ttname"><a href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">eve::thread::JobFunc</a></div><div class="ttdeci">std::function&lt; void()&gt; JobFunc</div><div class="ttdoc">A unit of work executed by a JobSystem worker.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00015">JobSystem.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1thread_html_af52a6b5e3f7ad0dc47ba9e1380555d31"><div class="ttname"><a href="namespaceeve_1_1thread.html#af52a6b5e3f7ad0dc47ba9e1380555d31">eve::thread::createJobSystem</a></div><div class="ttdeci">JobSystem * createJobSystem(int workerCount)</div><div class="ttdoc">Create a JobSystem with the configured backend.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8cpp_source.html#l00014">JobSystem.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

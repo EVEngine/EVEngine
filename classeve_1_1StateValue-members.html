@@ -1,0 +1,208 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1StateValue.html">StateValue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::StateValue 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">array</a>()</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a8443baddb044ef74393c0a8904206067">arraySize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">asBool</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aab697179d1ee57b6b7932114b07c6699">asDouble</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a415747f7f02bed1a9ee2471cec80182e">asInt</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">asString</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">at</a>(size_t index)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ac7fde0ba1f1734c06caea9e4129f7930">at</a>(size_t index) const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">boolean</a>(bool v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(const std::string &amp;key) const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#af8c8a87303c004cf6bc0e4506b772ca5">find</a>(const std::string &amp;key)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a84dea8c19b058469a772ba928a9eca1a">get</a>(const std::string &amp;dottedPath) const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a848956b2aad96aee11c42127059c27ed">get</a>(const std::string &amp;dottedPath)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a4bc1f200083d80d1415e72bc56c4cc6f">integer</a>(int64_t v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aabb639ea8a63e067ce9bfc23e956972d">isArray</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">isBool</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a03d2eeb3641117d4fb03f4de3c3e18b7">isFloat</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ae8e18b7b4439151dd818e53212a56200">isInt</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a733c9a14cd992e8d9b8ce01092ea504f">isNull</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">isString</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#adc8d31383a0d9a631eed5433c8836fed">keys</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">Kind</a> 枚举名称</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a19d94198021f2a5884636161f7daa6da">kind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a600a2856388ec2ba719c12981df59919">mergeDefaults</a>(const StateValue &amp;defaults)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ad482878f4c8c4634a5b4d8dae7c1bb3f">null</a>()</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">number</a>(double v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">object</a>()</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a1c334806cdd3864bc0cfd4437a1435fd">operator!=</a>(const StateValue &amp;o) const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ac7b7bbcf46adf76702b1ab4a59751065">operator==</a>(const StateValue &amp;o) const</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a648045efb0c5ed3c4654da543e4ff1a0">pushBack</a>(StateValue v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(const std::string &amp;key, StateValue v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#a39df7f28f3f07ff37fdde48ec73b41c0">setPath</a>(const std::string &amp;dottedPath, StateValue v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#ad6031296d131b44e4ca2dc740ff1a8bf">StateValue</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1StateValue.html#aed9daf3f70ad735a6615625b0061b8a1">string</a>(std::string v)</td><td class="entry"><a class="el" href="classeve_1_1StateValue.html">eve::StateValue</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

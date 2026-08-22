@@ -1,0 +1,334 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/image/ImageData.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_19e83706931414807c883b23e86e1767.html">image</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ImageData.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ImageData_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Data_8h.html">common/Data.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Resource_8h.html">common/Resource.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;medialoader/image/pixelformat.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;medialoader/image/floattypes.h&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;medialoader/image/Color.h&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;medialoader/image/FormatHandler.h&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>filesystem {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>FileData;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html">   25</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#a02ce4c76f923cf91e7d0cfb4077c82e5">   28</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a02ce4c76f923cf91e7d0cfb4077c82e5">float16</a> = medialoader::float16;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">   29</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">Colorf</a> = medialoader::Colorf;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#ae59729e1faf03fc810aea89199b8f468">   30</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#ae59729e1faf03fc810aea89199b8f468">FormatHandler</a> = medialoader::FormatHandler;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html">   32</a></span>    <span class="keyword">union </span><a class="code hl_union" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html">Pixel</a></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a9370420a6c2fa0116b30fa8cc85f052e">   34</a></span>        uint8_t   <a class="code hl_variable" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a9370420a6c2fa0116b30fa8cc85f052e">rgba8</a>[4];</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a8b9c09940744b17cd90d493d6bd94b15">   35</a></span>        uint16_t  <a class="code hl_variable" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a8b9c09940744b17cd90d493d6bd94b15">rgba16</a>[4];</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a7212f26745f319e32a1bb5eafb820b38">   36</a></span>        <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a02ce4c76f923cf91e7d0cfb4077c82e5">float16</a>   <a class="code hl_variable" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a7212f26745f319e32a1bb5eafb820b38">rgba16f</a>[4];</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#ad588882ce10560464a9d974576f230a5">   37</a></span>        <span class="keywordtype">float</span>     <a class="code hl_variable" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#ad588882ce10560464a9d974576f230a5">rgba32f</a>[4];</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#ac42779392d1851048afb21735391f894">   38</a></span>        uint16_t  <a class="code hl_variable" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#ac42779392d1851048afb21735391f894">packed16</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a6ed470a4db96216b7e6245b493f291be">   39</a></span>        uint32_t  <a class="code hl_variable" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a6ed470a4db96216b7e6245b493f291be">packed32</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    };</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#ac2b80288c49b5cd7048c3c6eb9d6e5f7">   42</a></span>    <span class="keyword">typedef</span> void (*<a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#ac2b80288c49b5cd7048c3c6eb9d6e5f7">PixelSetFunction</a>)(<span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">Colorf</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, <a class="code hl_union" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html">Pixel</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#a0e775cd58f3b271d56007bb06ed88296">   43</a></span>    <span class="keyword">typedef</span> void (*<a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a0e775cd58f3b271d56007bb06ed88296">PixelGetFunction</a>)(<span class="keyword">const</span> <a class="code hl_union" href="unioneve_1_1image_1_1ImageData_1_1Pixel.html">Pixel</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">Colorf</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a>(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *data);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a>(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, std::string format = <span class="stringliteral">&quot;RGBA8&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a>(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, std::string format, <span class="keywordtype">void</span> *data, <span class="keywordtype">bool</span> own);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a8db7e41e1296bc43be75eed02ca2de8c">~ImageData</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a51e62dcaf54ae22a80120a8d5bac7e8b">paste</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a> *src, <span class="keywordtype">int</span> dx, <span class="keywordtype">int</span> dy, <span class="keywordtype">int</span> sx, <span class="keywordtype">int</span> sy, <span class="keywordtype">int</span> sw, <span class="keywordtype">int</span> sh);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a> *<a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#aac2482173aaf7ad5e36e9da63bc60726">rotate</a>(<span class="keywordtype">float</span> radians, std::string <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a> = <span class="stringliteral">&quot;nearest&quot;</span>, <span class="keywordtype">bool</span> expand = <span class="keyword">true</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a0f269f0a7c5ebcf7b08f7c106f29d48b">inside</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a347b2747bff189937caec62c2ea2b9da">setPixel</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">Colorf</a> &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a18bb801eac0d3afbd7445d7cb58002df">getPixel</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">Colorf</a> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">Colorf</a> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a18bb801eac0d3afbd7445d7cb58002df">getPixel</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">filesystem::FileData</a> *<a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a15f3fe2f9ac791be8f2f1e026d2ee06e">encode</a>(FormatHandler::EncodedFormat format, <span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keywordtype">bool</span> writefile) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="comment">// Implements ImageDataBase.</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">ImageData</a> *<a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a08406957955de68fb72817f4e178bfff">clone</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">void</span> *<a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#ab7bd1b8d836cba5663b3293ac5ff8e5f">getData</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a7e963cb6dbc39d865fc9ed1688563f20">getSize</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#ad53a0c469e68457ff3d2ad0c704b23fb">isSRGB</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#ad9413ab564f5bd6c5ec2ec140cc2ff70">adopt</a>(<a class="code hl_class" href="classeve_1_1Resource.html">eve::Resource</a> &amp;replacement) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a16529b3278d3cd47ef8ba39bec01b594">getWidth</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#ac09d8979c6b9792058f8ce725d97d725">getHeight</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::string <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#af8e914a31ede1256437593851ab3ab45">getFormat</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#ad2f8666942b59afb7a5dba779c0adb75">getPixelSize</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#aa5de248bcbd9764f4c74d235bae905d0">  132</a></span>    <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#ac2b80288c49b5cd7048c3c6eb9d6e5f7">PixelSetFunction</a> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#aa5de248bcbd9764f4c74d235bae905d0">getPixelSetFunction</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pixelSetFunction; }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#acd42ae08ed4ab670f56eb31d3072d46f">  133</a></span>    <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a0e775cd58f3b271d56007bb06ed88296">PixelGetFunction</a> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#acd42ae08ed4ab670f56eb31d3072d46f">getPixelGetFunction</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pixelGetFunction; }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#aa932acb44696bf80c29ef21a6c6afe89">validPixelFormat</a>(std::string format);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a79e14201d8375af40a35d9289d6960c9">canPaste</a>(std::string src, std::string dst);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#ac2b80288c49b5cd7048c3c6eb9d6e5f7">PixelSetFunction</a> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#aa5de248bcbd9764f4c74d235bae905d0">getPixelSetFunction</a>(std::string format);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a0e775cd58f3b271d56007bb06ed88296">PixelGetFunction</a> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#acd42ae08ed4ab670f56eb31d3072d46f">getPixelGetFunction</a>(std::string format);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#a18dc3852fdb0186db8d3b9c4cc3b8d2c">  141</a></span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a18dc3852fdb0186db8d3b9c4cc3b8d2c">getConstant</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *in, FormatHandler::EncodedFormat &amp;out);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#a982edb602b5529ae3bfdad482f01ba0a">  142</a></span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a982edb602b5529ae3bfdad482f01ba0a">getConstant</a>(FormatHandler::EncodedFormat in, <span class="keyword">const</span> <span class="keywordtype">char</span> *&amp;out);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1image_1_1ImageData.html#a9ed9768cd989ed93256cd6b06cc5f857">  143</a></span>    <span class="keyword">static</span> std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1image_1_1ImageData.html#a9ed9768cd989ed93256cd6b06cc5f857">getConstants</a>(FormatHandler::EncodedFormat);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="comment">// Create imagedata. Initialize with data if not null.</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">void</span> create(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, std::string format, <span class="keywordtype">void</span> *data = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="comment">// Decode and load an encoded format.</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">void</span> decode(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *data);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="comment">// The actual data.</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *data = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">int</span> width, height;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    std::string format;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="comment">// The format handler that was used to decode the ImageData. We need to know</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="comment">// this so we can properly delete memory allocated by the decoder.</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#ae59729e1faf03fc810aea89199b8f468">FormatHandler</a>* decodeHandler;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#ac2b80288c49b5cd7048c3c6eb9d6e5f7">PixelSetFunction</a> pixelSetFunction;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <a class="code hl_typedef" href="classeve_1_1image_1_1ImageData.html#a0e775cd58f3b271d56007bb06ed88296">PixelGetFunction</a> pixelGetFunction;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}; <span class="comment">// ImageData</span></div>
+</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>} <span class="comment">// image</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>} <span class="comment">// eve</span></div>
+<div class="ttc" id="aData_8h_html"><div class="ttname"><a href="Data_8h.html">Data.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00444">RenderSystem3D.cpp:444</a></div></div>
+<div class="ttc" id="aResource_8h_html"><div class="ttname"><a href="Resource_8h.html">Resource.h</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a61e0e449fd7e8647d521cafd4f1d55a3"><div class="ttname"><a href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a></div><div class="ttdeci">std::string filter</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00130">SceneLoader.cpp:130</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a96b4a087acee7543a7624102a67fc14d"><div class="ttname"><a href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a></div><div class="ttdeci">std::string image</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00111">TileConfig.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1Data_html"><div class="ttname"><a href="classeve_1_1Data.html">eve::Data</a></div><div class="ttdef"><b>Definition</b> <a href="Data_8h_source.html#l00008">Data.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html"><div class="ttname"><a href="classeve_1_1Resource.html">eve::Resource</a></div><div class="ttdoc">Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00035">Resource.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1FileData_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1FileData.html">eve::filesystem::FileData</a></div><div class="ttdoc">Data buffer paired with a filename (used for type identification).</div><div class="ttdef"><b>Definition</b> <a href="FileData_8h_source.html#l00012">FileData.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00025">ImageData.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a02ce4c76f923cf91e7d0cfb4077c82e5"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a02ce4c76f923cf91e7d0cfb4077c82e5">eve::image::ImageData::float16</a></div><div class="ttdeci">medialoader::float16 float16</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00028">ImageData.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a08406957955de68fb72817f4e178bfff"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a08406957955de68fb72817f4e178bfff">eve::image::ImageData::clone</a></div><div class="ttdeci">ImageData * clone() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00072">ImageData.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a0e775cd58f3b271d56007bb06ed88296"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a0e775cd58f3b271d56007bb06ed88296">eve::image::ImageData::PixelGetFunction</a></div><div class="ttdeci">void(* PixelGetFunction)(const Pixel *p, Colorf &amp;c)</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00043">ImageData.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a0f269f0a7c5ebcf7b08f7c106f29d48b"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a0f269f0a7c5ebcf7b08f7c106f29d48b">eve::image::ImageData::inside</a></div><div class="ttdeci">bool inside(int x, int y) const</div><div class="ttdoc">Checks whether a position is inside this ImageData. Useful for checking bounds.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00248">ImageData.cpp:248</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a15f3fe2f9ac791be8f2f1e026d2ee06e"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a15f3fe2f9ac791be8f2f1e026d2ee06e">eve::image::ImageData::encode</a></div><div class="ttdeci">filesystem::FileData * encode(FormatHandler::EncodedFormat format, const char *filename, bool writefile) const</div><div class="ttdoc">Encodes raw pixel data into a given format.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00178">ImageData.cpp:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a16529b3278d3cd47ef8ba39bec01b594"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a16529b3278d3cd47ef8ba39bec01b594">eve::image::ImageData::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00250">ImageData.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a18bb801eac0d3afbd7445d7cb58002df"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a18bb801eac0d3afbd7445d7cb58002df">eve::image::ImageData::getPixel</a></div><div class="ttdeci">void getPixel(int x, int y, Colorf &amp;c) const</div><div class="ttdoc">Gets the pixel at location (x,y).</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00498">ImageData.cpp:498</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a18dc3852fdb0186db8d3b9c4cc3b8d2c"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a18dc3852fdb0186db8d3b9c4cc3b8d2c">eve::image::ImageData::getConstant</a></div><div class="ttdeci">static bool getConstant(const char *in, FormatHandler::EncodedFormat &amp;out)</div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a347b2747bff189937caec62c2ea2b9da"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a347b2747bff189937caec62c2ea2b9da">eve::image::ImageData::setPixel</a></div><div class="ttdeci">void setPixel(int x, int y, const Colorf &amp;p)</div><div class="ttdoc">Sets the pixel at location (x,y).</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00483">ImageData.cpp:483</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a3ac0dddaaeb038f843516a9f385d4201"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a3ac0dddaaeb038f843516a9f385d4201">eve::image::ImageData::Colorf</a></div><div class="ttdeci">medialoader::Colorf Colorf</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00029">ImageData.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a51e62dcaf54ae22a80120a8d5bac7e8b"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a51e62dcaf54ae22a80120a8d5bac7e8b">eve::image::ImageData::paste</a></div><div class="ttdeci">void paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh)</div><div class="ttdoc">Paste part of one ImageData onto another. The subregion defined by the top-left corner (sx,...</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l01035">ImageData.cpp:1035</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a79e14201d8375af40a35d9289d6960c9"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a79e14201d8375af40a35d9289d6960c9">eve::image::ImageData::canPaste</a></div><div class="ttdeci">static bool canPaste(std::string src, std::string dst)</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l01168">ImageData.cpp:1168</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a7e963cb6dbc39d865fc9ed1688563f20"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a7e963cb6dbc39d865fc9ed1688563f20">eve::image::ImageData::getSize</a></div><div class="ttdeci">size_t getSize() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00242">ImageData.cpp:242</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a8db7e41e1296bc43be75eed02ca2de8c"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a8db7e41e1296bc43be75eed02ca2de8c">eve::image::ImageData::~ImageData</a></div><div class="ttdeci">virtual ~ImageData()</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00054">ImageData.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a982edb602b5529ae3bfdad482f01ba0a"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a982edb602b5529ae3bfdad482f01ba0a">eve::image::ImageData::getConstant</a></div><div class="ttdeci">static bool getConstant(FormatHandler::EncodedFormat in, const char *&amp;out)</div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_a9ed9768cd989ed93256cd6b06cc5f857"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#a9ed9768cd989ed93256cd6b06cc5f857">eve::image::ImageData::getConstants</a></div><div class="ttdeci">static std::vector&lt; std::string &gt; getConstants(FormatHandler::EncodedFormat)</div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_aa5de248bcbd9764f4c74d235bae905d0"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#aa5de248bcbd9764f4c74d235bae905d0">eve::image::ImageData::getPixelSetFunction</a></div><div class="ttdeci">PixelSetFunction getPixelSetFunction() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00132">ImageData.h:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_aa932acb44696bf80c29ef21a6c6afe89"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#aa932acb44696bf80c29ef21a6c6afe89">eve::image::ImageData::validPixelFormat</a></div><div class="ttdeci">static bool validPixelFormat(std::string format)</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l01147">ImageData.cpp:1147</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_aac2482173aaf7ad5e36e9da63bc60726"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#aac2482173aaf7ad5e36e9da63bc60726">eve::image::ImageData::rotate</a></div><div class="ttdeci">ImageData * rotate(float radians, std::string filter=&quot;nearest&quot;, bool expand=true) const</div><div class="ttdoc">Rotate pixels around the image center and return a new ImageData.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00922">ImageData.cpp:922</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ab7bd1b8d836cba5663b3293ac5ff8e5f"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ab7bd1b8d836cba5663b3293ac5ff8e5f">eve::image::ImageData::getData</a></div><div class="ttdeci">void * getData() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00244">ImageData.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ac09d8979c6b9792058f8ce725d97d725"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ac09d8979c6b9792058f8ce725d97d725">eve::image::ImageData::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00252">ImageData.cpp:252</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ac2b80288c49b5cd7048c3c6eb9d6e5f7"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ac2b80288c49b5cd7048c3c6eb9d6e5f7">eve::image::ImageData::PixelSetFunction</a></div><div class="ttdeci">void(* PixelSetFunction)(const Colorf &amp;c, Pixel *p)</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00042">ImageData.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_acd42ae08ed4ab670f56eb31d3072d46f"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#acd42ae08ed4ab670f56eb31d3072d46f">eve::image::ImageData::getPixelGetFunction</a></div><div class="ttdeci">PixelGetFunction getPixelGetFunction() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00133">ImageData.h:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ad2f8666942b59afb7a5dba779c0adb75"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ad2f8666942b59afb7a5dba779c0adb75">eve::image::ImageData::getPixelSize</a></div><div class="ttdeci">size_t getPixelSize() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l01145">ImageData.cpp:1145</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ad53a0c469e68457ff3d2ad0c704b23fb"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ad53a0c469e68457ff3d2ad0c704b23fb">eve::image::ImageData::isSRGB</a></div><div class="ttdeci">bool isSRGB() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00246">ImageData.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ad9413ab564f5bd6c5ec2ec140cc2ff70"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ad9413ab564f5bd6c5ec2ec140cc2ff70">eve::image::ImageData::adopt</a></div><div class="ttdeci">void adopt(eve::Resource &amp;replacement) override</div><div class="ttdoc">Replace this instance's pixels with replacement's (cache reload). The replacement is drained; its des...</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00061">ImageData.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_ae59729e1faf03fc810aea89199b8f468"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#ae59729e1faf03fc810aea89199b8f468">eve::image::ImageData::FormatHandler</a></div><div class="ttdeci">medialoader::FormatHandler FormatHandler</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00030">ImageData.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html_af8e914a31ede1256437593851ab3ab45"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html#af8e914a31ede1256437593851ab3ab45">eve::image::ImageData::getFormat</a></div><div class="ttdeci">std::string getFormat() const</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00254">ImageData.cpp:254</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html">eve::image::ImageData::Pixel</a></div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00032">ImageData.h:33</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html_a6ed470a4db96216b7e6245b493f291be"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a6ed470a4db96216b7e6245b493f291be">eve::image::ImageData::Pixel::packed32</a></div><div class="ttdeci">uint32_t packed32</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00039">ImageData.h:39</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html_a7212f26745f319e32a1bb5eafb820b38"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a7212f26745f319e32a1bb5eafb820b38">eve::image::ImageData::Pixel::rgba16f</a></div><div class="ttdeci">float16 rgba16f[4]</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00036">ImageData.h:36</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html_a8b9c09940744b17cd90d493d6bd94b15"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a8b9c09940744b17cd90d493d6bd94b15">eve::image::ImageData::Pixel::rgba16</a></div><div class="ttdeci">uint16_t rgba16[4]</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00035">ImageData.h:35</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html_a9370420a6c2fa0116b30fa8cc85f052e"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#a9370420a6c2fa0116b30fa8cc85f052e">eve::image::ImageData::Pixel::rgba8</a></div><div class="ttdeci">uint8_t rgba8[4]</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00034">ImageData.h:34</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html_ac42779392d1851048afb21735391f894"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#ac42779392d1851048afb21735391f894">eve::image::ImageData::Pixel::packed16</a></div><div class="ttdeci">uint16_t packed16</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00038">ImageData.h:38</a></div></div>
+<div class="ttc" id="aunioneve_1_1image_1_1ImageData_1_1Pixel_html_ad588882ce10560464a9d974576f230a5"><div class="ttname"><a href="unioneve_1_1image_1_1ImageData_1_1Pixel.html#ad588882ce10560464a9d974576f230a5">eve::image::ImageData::Pixel::rgba32f</a></div><div class="ttdeci">float rgba32f[4]</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00037">ImageData.h:37</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

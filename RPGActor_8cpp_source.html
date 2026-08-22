@@ -1,0 +1,538 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/RPGActor.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RPGActor.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RPGActor_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="RPGActor_8h.html">rpg/RPGActor.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="AttributeSystem_8h.html">rpg/AttributeSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="StatusSystem_8h.html">rpg/StatusSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="SkillSystem_8h.html">rpg/SkillSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// 按 handle（id + generation）而非裸指针跟踪存活 actor：</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">// ECS 的 entity 槽位在销毁后会被复用，复用后地址相同但其实是另一个实体，</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// 裸指针 + is_entity_visible 无法区分这种复用（复用后 flags 会被重置，</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// 旧的裸指针看起来又&quot;活&quot;了），必须连同 generation 一起校验才安全。</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>std::vector&lt;ecs::EntityHandle&gt; &amp;registryStorage() {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">static</span> std::vector&lt;ecs::EntityHandle&gt; <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672">   23</a></span><a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672">RPGActor::createActor</a>() {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor = RPGActor::create();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment">// Touch each component once so accessors are cheap/valid immediately.</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    actor-&gt;attributes();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    actor-&gt;statuses();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    actor-&gt;skills();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    registryStorage().push_back(ecs::handle_of(actor));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> actor;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7">   33</a></span><span class="keyword">const</span> std::vector&lt;RPGActor *&gt; &amp;<a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7">RPGActor::liveActors</a>() {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">static</span> std::vector&lt;RPGActor *&gt; resolved;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">auto</span> &amp;handles = registryStorage();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    handles.erase(std::remove_if(handles.begin(), handles.end(),</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                  [](<span class="keyword">const</span> ecs::EntityHandle &amp;<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) { return ecs::try_get(h) == nullptr; }),</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                  handles.end());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    resolved.clear();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    resolved.reserve(handles.size());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> ecs::EntityHandle &amp;<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> : handles)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        resolved.push_back(<span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<span class="keyword">&gt;</span>(ecs::try_get(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> resolved;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment">// ---- Attributes ----</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a99835dda1c2cbb0cf81741cd4d4fdf37">   50</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a99835dda1c2cbb0cf81741cd4d4fdf37">RPGActor::setBaseAttribute</a>(<span class="keyword">const</span> std::string &amp;attribute, <span class="keywordtype">double</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a21578c411e87c032930fae8dc8e6d2d6">AttributeSystem::setBase</a>(<span class="keyword">this</span>, attribute, <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a1088028070c66d33c73fea7b364cafb9">   54</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a1088028070c66d33c73fea7b364cafb9">RPGActor::getBaseAttribute</a>(<span class="keyword">const</span> std::string &amp;attribute) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a82c7d3e52f64a1a891fcc6716ab2efe1">AttributeSystem::getBase</a>(<span class="keyword">this</span>, attribute);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a9d1fddcf1ba76ec1999d206b86c70cff">   58</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a9d1fddcf1ba76ec1999d206b86c70cff">RPGActor::modifyBaseAttribute</a>(<span class="keyword">const</span> std::string &amp;attribute, <span class="keywordtype">double</span> delta) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a7c09b96e7fb8fb1a1ce28783587a60f6">AttributeSystem::modifyBase</a>(<span class="keyword">this</span>, attribute, delta);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a694db59306b0051333fb27a78a187887">   62</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a694db59306b0051333fb27a78a187887">RPGActor::hasAttribute</a>(<span class="keyword">const</span> std::string &amp;attribute) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a52254caa070789bd7a126b253434ce09">AttributeSystem::hasAttribute</a>(<span class="keyword">this</span>, attribute);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ab2e3987a8f9189c2daaddc034d41af6a">   66</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ab2e3987a8f9189c2daaddc034d41af6a">RPGActor::addAttributeModifier</a>(<span class="keyword">const</span> std::string &amp;attribute, <span class="keyword">const</span> std::string &amp;source,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                            <span class="keyword">const</span> std::string &amp;op, <span class="keywordtype">double</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a0e7a955ec9471a662c903af65009ab19">AttributeSystem::addModifier</a>(<span class="keyword">this</span>, attribute, source, op, <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>, <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#af1f45617594d95e17b06a401c6de8bf5">   71</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#af1f45617594d95e17b06a401c6de8bf5">RPGActor::removeAttributeModifier</a>(<span class="keyword">const</span> std::string &amp;attribute, <span class="keyword">const</span> std::string &amp;modifierId) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a3cd4b45531e633712e962347488d6094">AttributeSystem::removeModifier</a>(<span class="keyword">this</span>, attribute, modifierId);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a42a7c234a76aed475aa097b76473c45f">   75</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a42a7c234a76aed475aa097b76473c45f">RPGActor::removeAttributeModifiersBySource</a>(<span class="keyword">const</span> std::string &amp;attribute,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                <span class="keyword">const</span> std::string &amp;source) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ac641437e7ac1e6f2a4dbea6fe45a89f1">AttributeSystem::removeModifiersBySource</a>(<span class="keyword">this</span>, attribute, source);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a4ca37d0593e130ef2a3ecea298ace6a9">   80</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a4ca37d0593e130ef2a3ecea298ace6a9">RPGActor::removeAllAttributeModifiersBySource</a>(<span class="keyword">const</span> std::string &amp;source) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a915a390fd15a11fcd9c5f37b3565ae0a">AttributeSystem::removeAllModifiersBySource</a>(<span class="keyword">this</span>, source);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ad20a8ff2485a1df898a095c96ca25172">   84</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ad20a8ff2485a1df898a095c96ca25172">RPGActor::getFinalAttribute</a>(<span class="keyword">const</span> std::string &amp;attribute) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ab5a01c83f54dde5b50a033301bbfb3e5">AttributeSystem::getFinal</a>(<span class="keyword">this</span>, attribute);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment">// ---- Status ----</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="}">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#adef24e7aafd1d17e4c7271a6314bfabd">   90</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#adef24e7aafd1d17e4c7271a6314bfabd">RPGActor::applyEffect</a>(<span class="keyword">const</span> std::string &amp;effectId, <span class="keyword">const</span> std::string &amp;source) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a1a0a624863d4ccda3e8e1335545fcdc8">StatusSystem::apply</a>(<span class="keyword">this</span>, effectId, source);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a1d4e2d3ae0e6ae570d0acee6324f19ad">   94</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a1d4e2d3ae0e6ae570d0acee6324f19ad">RPGActor::removeStatus</a>(<span class="keywordtype">int</span> instanceId) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a740835b1368bb9a4592bc158c1f75ed2">StatusSystem::remove</a>(<span class="keyword">this</span>, instanceId); }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ab324a96129ed27f66340c49071df2ea0">   96</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ab324a96129ed27f66340c49071df2ea0">RPGActor::removeStatusByEffect</a>(<span class="keyword">const</span> std::string &amp;effectId) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#aaef2376f9a9405951599dfe39c71da66">StatusSystem::removeByEffect</a>(<span class="keyword">this</span>, effectId);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a6321dcc8a75beead11b385d0213964f4">  100</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a6321dcc8a75beead11b385d0213964f4">RPGActor::removeStatusBySource</a>(<span class="keyword">const</span> std::string &amp;source) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a5cacdee43abea3f6c0e87d00cef0a41e">StatusSystem::removeBySource</a>(<span class="keyword">this</span>, source);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a5f3b73e1b645ee8bae8606bb48b02eb8">  104</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a5f3b73e1b645ee8bae8606bb48b02eb8">RPGActor::removeStatusByTag</a>(<span class="keyword">const</span> std::string &amp;tag) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#ae51781bcded2c249469b8cdab0dcae99">StatusSystem::removeByTag</a>(<span class="keyword">this</span>, tag);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ae3f9e39c6be1e8f37ad39064cd33338f">  108</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ae3f9e39c6be1e8f37ad39064cd33338f">RPGActor::hasEffect</a>(<span class="keyword">const</span> std::string &amp;effectId) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a3e0bf7e8182ef7c01ccd9fc1921fa51e">StatusSystem::hasEffect</a>(<span class="keyword">this</span>, effectId); }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#aaef2855ec9b56d7ebc8d997548f8cb98">  110</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aaef2855ec9b56d7ebc8d997548f8cb98">RPGActor::hasStatusTag</a>(<span class="keyword">const</span> std::string &amp;tag) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a5be4569d451967e2496fba5da40fad88">StatusSystem::hasTag</a>(<span class="keyword">this</span>, tag); }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#aa213b7544640ca11cc409acfd37346d8">  112</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aa213b7544640ca11cc409acfd37346d8">RPGActor::getStatusCount</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a9d4fecffa1cf6e536e4232b0294d9314">StatusSystem::getActiveCount</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a3d53fbf46869f85d30e60f3f1ab9825f">  114</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a3d53fbf46869f85d30e60f3f1ab9825f">RPGActor::getStatusEffectId</a>(<span class="keywordtype">int</span> index) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#af410849d5f9db98b1726f9144267fba3">StatusSystem::getActiveEffectId</a>(<span class="keyword">this</span>, index);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a9a3d4245248c28a5e44c7c1224db041c">  118</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a9a3d4245248c28a5e44c7c1224db041c">RPGActor::getStatusStacks</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a2419b10e8afdcd6d51630da0fa19cdbd">StatusSystem::getActiveStacks</a>(<span class="keyword">this</span>, index); }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#addeefc52c986e817d8817d6fa7b07392">  120</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#addeefc52c986e817d8817d6fa7b07392">RPGActor::getStatusRemaining</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#afe8725afeaa08da847043987cce38586">StatusSystem::getActiveRemaining</a>(<span class="keyword">this</span>, index); }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ac3a85883db91c565dcf6aa067b4489f8">  122</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac3a85883db91c565dcf6aa067b4489f8">RPGActor::getStatusInstanceId</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a3682d447aaedce2896d658d185e766b0">StatusSystem::getActiveInstanceId</a>(<span class="keyword">this</span>, index); }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">  124</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">RPGActor::getStatusSource</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a1040aeb69d7e8123938fa40437426f61">StatusSystem::getActiveSource</a>(<span class="keyword">this</span>, index); }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ad7bf02b0ab972c8d8f0cda7520392786">  126</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ad7bf02b0ab972c8d8f0cda7520392786">RPGActor::getStatusProp</a>(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;key,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                     <span class="keyword">const</span> std::string &amp;fallback) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a9da8f6284575c25fe109461c7604d966">StatusSystem::getProp</a>(<span class="keyword">this</span>, instanceId, key, fallback);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ac78810aca4fb6050a115c3536bc020cc">  131</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac78810aca4fb6050a115c3536bc020cc">RPGActor::setStatusProp</a>(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a055ae90b1b2510749ae379105ab76f2f">StatusSystem::setProp</a>(<span class="keyword">this</span>, instanceId, key, <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>}</div>
+</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="foldopen" id="foldopen00135" data-start="{" data-end="}">
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a802ed963a9581ce6ef1e83bd62db21ac">  135</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a802ed963a9581ce6ef1e83bd62db21ac">RPGActor::applyBuff</a>(<span class="keyword">const</span> std::string &amp;effectId, <span class="keyword">const</span> std::string &amp;source) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#adef24e7aafd1d17e4c7271a6314bfabd">applyEffect</a>(effectId, source);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}</div>
+</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a129cd7e1d7f27e3610ec1b0708c527f0">  139</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a129cd7e1d7f27e3610ec1b0708c527f0">RPGActor::removeBuff</a>(<span class="keywordtype">int</span> instanceId) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a1d4e2d3ae0e6ae570d0acee6324f19ad">removeStatus</a>(instanceId); }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="}">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#aae8e45ab445c6276fb7923e2335a3c9a">  141</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aae8e45ab445c6276fb7923e2335a3c9a">RPGActor::removeBuffByEffect</a>(<span class="keyword">const</span> std::string &amp;effectId) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ab324a96129ed27f66340c49071df2ea0">removeStatusByEffect</a>(effectId);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>}</div>
+</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="}">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ab42375a1591757875edac59f417767a2">  145</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ab42375a1591757875edac59f417767a2">RPGActor::removeBuffBySource</a>(<span class="keyword">const</span> std::string &amp;source) {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a6321dcc8a75beead11b385d0213964f4">removeStatusBySource</a>(source);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ae4aa8a88ce43dca55f95b574fd264ed9">  149</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ae4aa8a88ce43dca55f95b574fd264ed9">RPGActor::removeBuffByTag</a>(<span class="keyword">const</span> std::string &amp;tag) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a5f3b73e1b645ee8bae8606bb48b02eb8">removeStatusByTag</a>(tag); }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ac1230de1ed7fd3b3155641b641248c91">  151</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac1230de1ed7fd3b3155641b641248c91">RPGActor::hasBuff</a>(<span class="keyword">const</span> std::string &amp;effectId) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ae3f9e39c6be1e8f37ad39064cd33338f">hasEffect</a>(effectId); }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ad16ef68e52ba561b61a92719b828ec14">  153</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ad16ef68e52ba561b61a92719b828ec14">RPGActor::hasBuffTag</a>(<span class="keyword">const</span> std::string &amp;tag) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aaef2855ec9b56d7ebc8d997548f8cb98">hasStatusTag</a>(tag); }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#ab018bdb64a28231c7dc8bb02a527ab23">  155</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ab018bdb64a28231c7dc8bb02a527ab23">RPGActor::getBuffCount</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aa213b7544640ca11cc409acfd37346d8">getStatusCount</a>(); }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a68048cc3bc2762ea748c9ef9d9b4a453">  157</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a68048cc3bc2762ea748c9ef9d9b4a453">RPGActor::getBuffEffectId</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a3d53fbf46869f85d30e60f3f1ab9825f">getStatusEffectId</a>(index); }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a2aa026bf68da98cdab8576677ec91a81">  159</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a2aa026bf68da98cdab8576677ec91a81">RPGActor::getBuffStacks</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a9a3d4245248c28a5e44c7c1224db041c">getStatusStacks</a>(index); }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a9629184b6f3a9bb2cb5b18362a90cb03">  161</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a9629184b6f3a9bb2cb5b18362a90cb03">RPGActor::getBuffRemaining</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#addeefc52c986e817d8817d6fa7b07392">getStatusRemaining</a>(index); }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a718f177754a482efe7b1b04fad5cfb62">  163</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a718f177754a482efe7b1b04fad5cfb62">RPGActor::getBuffInstanceId</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac3a85883db91c565dcf6aa067b4489f8">getStatusInstanceId</a>(index); }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#aea78d4e20a5a24b032536404aa36fda8">  165</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aea78d4e20a5a24b032536404aa36fda8">RPGActor::getBuffSource</a>(<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">getStatusSource</a>(index); }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a75e93b68df57f67fe2ca3b25f48d4029">  167</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a75e93b68df57f67fe2ca3b25f48d4029">RPGActor::getBuffProp</a>(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;key,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                                   <span class="keyword">const</span> std::string &amp;fallback) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ad7bf02b0ab972c8d8f0cda7520392786">getStatusProp</a>(instanceId, key, fallback);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>}</div>
+</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#abcdf9c43da23b7abe244e8cd2479be2a">  172</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#abcdf9c43da23b7abe244e8cd2479be2a">RPGActor::setBuffProp</a>(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#ac78810aca4fb6050a115c3536bc020cc">setStatusProp</a>(instanceId, key, <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>}</div>
+</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="comment">// ---- Skills ----</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a6d6626ef069ebab0edcac2eec5295c54">  178</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a6d6626ef069ebab0edcac2eec5295c54">RPGActor::learnSkill</a>(<span class="keyword">const</span> std::string &amp;skillId) { <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a7d2749b9cb19f8f8ce28e3a513514e5d">SkillSystem::learn</a>(<span class="keyword">this</span>, skillId); }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#aaaf868fa5e99616618e81249f87e8199">  180</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aaaf868fa5e99616618e81249f87e8199">RPGActor::knowsSkill</a>(<span class="keyword">const</span> std::string &amp;skillId) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#aadf7c187e0117028a27f86a08c974b5b">SkillSystem::knows</a>(<span class="keyword">this</span>, skillId); }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a699de16741d22265d8cdc979d2aa54e8">  182</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a699de16741d22265d8cdc979d2aa54e8">RPGActor::forgetSkill</a>(<span class="keyword">const</span> std::string &amp;skillId) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a012c7a050f95ce55df676d08360b800b">SkillSystem::forget</a>(<span class="keyword">this</span>, skillId); }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="foldopen" id="foldopen00184" data-start="{" data-end="}">
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#aedf16e5a7d8d819381f2f43a9737baa1">  184</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#aedf16e5a7d8d819381f2f43a9737baa1">RPGActor::getSkillCooldown</a>(<span class="keyword">const</span> std::string &amp;skillId) {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a75451ad1ce0ab820f406b3d121c14a63">SkillSystem::getCooldownRemaining</a>(<span class="keyword">this</span>, skillId);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>}</div>
+</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="foldopen" id="foldopen00188" data-start="{" data-end="}">
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a62f35ce20c6de35b184ec4ffc0e7743f">  188</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a62f35ce20c6de35b184ec4ffc0e7743f">RPGActor::setSkillCooldown</a>(<span class="keyword">const</span> std::string &amp;skillId, <span class="keywordtype">float</span> seconds) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a1c3325163dc6eeb1433cb023855e6d63">SkillSystem::setCooldownRemaining</a>(<span class="keyword">this</span>, skillId, seconds);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>}</div>
+</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a94843a992928cf9f40c4db3f200bc630">  192</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a94843a992928cf9f40c4db3f200bc630">RPGActor::canCastSkill</a>(<span class="keyword">const</span> std::string &amp;skillId) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#ac496e94902522f755217e855ca8f1b31">SkillSystem::canCast</a>(<span class="keyword">this</span>, skillId, <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>}</div>
+</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="foldopen" id="foldopen00196" data-start="{" data-end="}">
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a2fffbb8debe1b6d455e80891f55f7909">  196</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a2fffbb8debe1b6d455e80891f55f7909">RPGActor::canCastSkillReason</a>(<span class="keyword">const</span> std::string &amp;skillId) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    std::string reason;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#ac496e94902522f755217e855ca8f1b31">SkillSystem::canCast</a>(<span class="keyword">this</span>, skillId, &amp;reason);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordflow">return</span> reason;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
+</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="foldopen" id="foldopen00202" data-start="{" data-end="}">
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a0141af94ef3706f7e01943b9542b8e0b">  202</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a0141af94ef3706f7e01943b9542b8e0b">RPGActor::beginCastSkill</a>(<span class="keyword">const</span> std::string &amp;skillId, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *target) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#aecdf67a0e481dc19710bf760565e4913">SkillSystem::beginCast</a>(<span class="keyword">this</span>, skillId, target, <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>}</div>
+</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a49ac960ec781fef51bfd7da31704c9fe">  206</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a49ac960ec781fef51bfd7da31704c9fe">RPGActor::cancelCastSkill</a>() { <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a05514266899244a5891e48851dcab931">SkillSystem::cancelCast</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a0e5083571cf515ae18babee186f99972">  208</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a0e5083571cf515ae18babee186f99972">RPGActor::isCastingSkill</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a46938fcbc7706e45a86821fcbdad345d">SkillSystem::isCasting</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a0a4ee473bf60213f66c3831236be1aa1">  210</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a0a4ee473bf60213f66c3831236be1aa1">RPGActor::getCastingSkillId</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a0c2cd67036a5dad86565d21fb9804c3d">SkillSystem::getCastingSkillId</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RPGActor.html#a6cb118f87ea36b1b676fc2204f2861c9">  212</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RPGActor.html#a6cb118f87ea36b1b676fc2204f2861c9">RPGActor::getCastProgress</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1rpg_1_1SkillSystem.html#a14c7e8ff2fbaec09ab0b8dd0ea10f7f7">SkillSystem::getCastProgress</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aAttributeSystem_8h_html"><div class="ttname"><a href="AttributeSystem_8h.html">AttributeSystem.h</a></div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00014">Capability.cpp:14</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aRPGActor_8h_html"><div class="ttname"><a href="RPGActor_8h.html">RPGActor.h</a></div></div>
+<div class="ttc" id="aSkillSystem_8h_html"><div class="ttname"><a href="SkillSystem_8h.html">SkillSystem.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aStatusSystem_8h_html"><div class="ttname"><a href="StatusSystem_8h.html">StatusSystem.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a0e7a955ec9471a662c903af65009ab19"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a0e7a955ec9471a662c903af65009ab19">eve::rpg::AttributeSystem::addModifier</a></div><div class="ttdeci">static std::string addModifier(RPGActor *actor, const std::string &amp;attribute, const std::string &amp;source, const std::string &amp;op, double value, int priority=0)</div><div class="ttdoc">添加一条修改器，返回自动生成的唯一 id（用于之后精确移除）。 空字符串 id 表示失败（actor 为空）。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00102">AttributeSystem.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a21578c411e87c032930fae8dc8e6d2d6"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a21578c411e87c032930fae8dc8e6d2d6">eve::rpg::AttributeSystem::setBase</a></div><div class="ttdeci">static void setBase(RPGActor *actor, const std::string &amp;attribute, double value)</div><div class="ttdoc">设置基础值（不存在则创建该属性）。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00075">AttributeSystem.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a3cd4b45531e633712e962347488d6094"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a3cd4b45531e633712e962347488d6094">eve::rpg::AttributeSystem::removeModifier</a></div><div class="ttdeci">static bool removeModifier(RPGActor *actor, const std::string &amp;attribute, const std::string &amp;modifierId)</div><div class="ttdoc">按 id 精确移除；返回是否命中。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00119">AttributeSystem.cpp:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a52254caa070789bd7a126b253434ce09"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a52254caa070789bd7a126b253434ce09">eve::rpg::AttributeSystem::hasAttribute</a></div><div class="ttdeci">static bool hasAttribute(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00096">AttributeSystem.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a7c09b96e7fb8fb1a1ce28783587a60f6"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a7c09b96e7fb8fb1a1ce28783587a60f6">eve::rpg::AttributeSystem::modifyBase</a></div><div class="ttdeci">static void modifyBase(RPGActor *actor, const std::string &amp;attribute, double delta)</div><div class="ttdoc">增量修改基础值（如自然回蓝、升级加点）。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00089">AttributeSystem.cpp:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a82c7d3e52f64a1a891fcc6716ab2efe1"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a82c7d3e52f64a1a891fcc6716ab2efe1">eve::rpg::AttributeSystem::getBase</a></div><div class="ttdeci">static double getBase(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00082">AttributeSystem.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a915a390fd15a11fcd9c5f37b3565ae0a"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a915a390fd15a11fcd9c5f37b3565ae0a">eve::rpg::AttributeSystem::removeAllModifiersBySource</a></div><div class="ttdeci">static int removeAllModifiersBySource(RPGActor *actor, const std::string &amp;source)</div><div class="ttdoc">按来源标签批量移除该 actor 所有属性上的修改器；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00150">AttributeSystem.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_ab5a01c83f54dde5b50a033301bbfb3e5"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#ab5a01c83f54dde5b50a033301bbfb3e5">eve::rpg::AttributeSystem::getFinal</a></div><div class="ttdeci">static double getFinal(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdoc">计算并返回最终值（内部带缓存，属性未变化时不会重复计算）。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00168">AttributeSystem.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_ac641437e7ac1e6f2a4dbea6fe45a89f1"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#ac641437e7ac1e6f2a4dbea6fe45a89f1">eve::rpg::AttributeSystem::removeModifiersBySource</a></div><div class="ttdeci">static int removeModifiersBySource(RPGActor *actor, const std::string &amp;attribute, const std::string &amp;source)</div><div class="ttdoc">按来源标签批量移除某个属性上的修改器；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00134">AttributeSystem.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00028">RPGActor.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a0141af94ef3706f7e01943b9542b8e0b"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a0141af94ef3706f7e01943b9542b8e0b">eve::rpg::RPGActor::beginCastSkill</a></div><div class="ttdeci">bool beginCastSkill(const std::string &amp;skillId, RPGActor *target=nullptr)</div><div class="ttdoc">开始读条释放；false 表示不满足条件。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00202">RPGActor.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a0a4ee473bf60213f66c3831236be1aa1"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a0a4ee473bf60213f66c3831236be1aa1">eve::rpg::RPGActor::getCastingSkillId</a></div><div class="ttdeci">std::string getCastingSkillId()</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00210">RPGActor.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a0e5083571cf515ae18babee186f99972"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a0e5083571cf515ae18babee186f99972">eve::rpg::RPGActor::isCastingSkill</a></div><div class="ttdeci">bool isCastingSkill()</div><div class="ttdoc">读条状态查询。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00208">RPGActor.cpp:208</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a1088028070c66d33c73fea7b364cafb9"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a1088028070c66d33c73fea7b364cafb9">eve::rpg::RPGActor::getBaseAttribute</a></div><div class="ttdeci">double getBaseAttribute(const std::string &amp;attribute)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00054">RPGActor.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a129cd7e1d7f27e3610ec1b0708c527f0"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a129cd7e1d7f27e3610ec1b0708c527f0">eve::rpg::RPGActor::removeBuff</a></div><div class="ttdeci">bool removeBuff(int instanceId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00139">RPGActor.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a1d4e2d3ae0e6ae570d0acee6324f19ad"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a1d4e2d3ae0e6ae570d0acee6324f19ad">eve::rpg::RPGActor::removeStatus</a></div><div class="ttdeci">bool removeStatus(int instanceId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00094">RPGActor.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a1fa37e0232f2132dd6a780b781420bf7"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7">eve::rpg::RPGActor::liveActors</a></div><div class="ttdeci">static const std::vector&lt; RPGActor * &gt; &amp; liveActors()</div><div class="ttdoc">返回所有通过 createActor() 创建、且当前仍存活的 actor。 StatusSystem::update / SkillSystem::update 用它遍历所有 actor 逐帧推进。 ...</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00033">RPGActor.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a2aa026bf68da98cdab8576677ec91a81"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a2aa026bf68da98cdab8576677ec91a81">eve::rpg::RPGActor::getBuffStacks</a></div><div class="ttdeci">int getBuffStacks(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00159">RPGActor.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a2fffbb8debe1b6d455e80891f55f7909"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a2fffbb8debe1b6d455e80891f55f7909">eve::rpg::RPGActor::canCastSkillReason</a></div><div class="ttdeci">std::string canCastSkillReason(const std::string &amp;skillId)</div><div class="ttdoc">不能释放的原因（&quot;&quot; = 可以）。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00196">RPGActor.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a3d53fbf46869f85d30e60f3f1ab9825f"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a3d53fbf46869f85d30e60f3f1ab9825f">eve::rpg::RPGActor::getStatusEffectId</a></div><div class="ttdeci">std::string getStatusEffectId(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00114">RPGActor.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a42a7c234a76aed475aa097b76473c45f"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a42a7c234a76aed475aa097b76473c45f">eve::rpg::RPGActor::removeAttributeModifiersBySource</a></div><div class="ttdeci">int removeAttributeModifiersBySource(const std::string &amp;attribute, const std::string &amp;source)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00075">RPGActor.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a49ac960ec781fef51bfd7da31704c9fe"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a49ac960ec781fef51bfd7da31704c9fe">eve::rpg::RPGActor::cancelCastSkill</a></div><div class="ttdeci">void cancelCastSkill()</div><div class="ttdoc">取消读条。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00206">RPGActor.cpp:206</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a4ca37d0593e130ef2a3ecea298ace6a9"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a4ca37d0593e130ef2a3ecea298ace6a9">eve::rpg::RPGActor::removeAllAttributeModifiersBySource</a></div><div class="ttdeci">int removeAllAttributeModifiersBySource(const std::string &amp;source)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00080">RPGActor.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a5e60092f746d92a47952cde7b485e672"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672">eve::rpg::RPGActor::createActor</a></div><div class="ttdeci">static RPGActor * createActor()</div><div class="ttdoc">创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00023">RPGActor.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a5f3b73e1b645ee8bae8606bb48b02eb8"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a5f3b73e1b645ee8bae8606bb48b02eb8">eve::rpg::RPGActor::removeStatusByTag</a></div><div class="ttdeci">int removeStatusByTag(const std::string &amp;tag)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00104">RPGActor.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a62f35ce20c6de35b184ec4ffc0e7743f"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a62f35ce20c6de35b184ec4ffc0e7743f">eve::rpg::RPGActor::setSkillCooldown</a></div><div class="ttdeci">void setSkillCooldown(const std::string &amp;skillId, float seconds)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00188">RPGActor.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a6321dcc8a75beead11b385d0213964f4"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a6321dcc8a75beead11b385d0213964f4">eve::rpg::RPGActor::removeStatusBySource</a></div><div class="ttdeci">int removeStatusBySource(const std::string &amp;source)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00100">RPGActor.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a68048cc3bc2762ea748c9ef9d9b4a453"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a68048cc3bc2762ea748c9ef9d9b4a453">eve::rpg::RPGActor::getBuffEffectId</a></div><div class="ttdeci">std::string getBuffEffectId(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00157">RPGActor.cpp:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a694db59306b0051333fb27a78a187887"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a694db59306b0051333fb27a78a187887">eve::rpg::RPGActor::hasAttribute</a></div><div class="ttdeci">bool hasAttribute(const std::string &amp;attribute)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00062">RPGActor.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a699de16741d22265d8cdc979d2aa54e8"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a699de16741d22265d8cdc979d2aa54e8">eve::rpg::RPGActor::forgetSkill</a></div><div class="ttdeci">bool forgetSkill(const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00182">RPGActor.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a6cb118f87ea36b1b676fc2204f2861c9"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a6cb118f87ea36b1b676fc2204f2861c9">eve::rpg::RPGActor::getCastProgress</a></div><div class="ttdeci">float getCastProgress()</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00212">RPGActor.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a6d6626ef069ebab0edcac2eec5295c54"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a6d6626ef069ebab0edcac2eec5295c54">eve::rpg::RPGActor::learnSkill</a></div><div class="ttdeci">void learnSkill(const std::string &amp;skillId)</div><div class="ttdoc">技能：学习 / 查询 / 冷却。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00178">RPGActor.cpp:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a718f177754a482efe7b1b04fad5cfb62"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a718f177754a482efe7b1b04fad5cfb62">eve::rpg::RPGActor::getBuffInstanceId</a></div><div class="ttdeci">int getBuffInstanceId(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00163">RPGActor.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a75e93b68df57f67fe2ca3b25f48d4029"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a75e93b68df57f67fe2ca3b25f48d4029">eve::rpg::RPGActor::getBuffProp</a></div><div class="ttdeci">std::string getBuffProp(int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00167">RPGActor.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a802ed963a9581ce6ef1e83bd62db21ac"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a802ed963a9581ce6ef1e83bd62db21ac">eve::rpg::RPGActor::applyBuff</a></div><div class="ttdeci">int applyBuff(const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</div><div class="ttdoc">Buff 别名（与 Status API 等价，便于游戏侧按习惯命名）。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00135">RPGActor.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a94843a992928cf9f40c4db3f200bc630"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a94843a992928cf9f40c4db3f200bc630">eve::rpg::RPGActor::canCastSkill</a></div><div class="ttdeci">bool canCastSkill(const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00192">RPGActor.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a9629184b6f3a9bb2cb5b18362a90cb03"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a9629184b6f3a9bb2cb5b18362a90cb03">eve::rpg::RPGActor::getBuffRemaining</a></div><div class="ttdeci">float getBuffRemaining(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00161">RPGActor.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a99835dda1c2cbb0cf81741cd4d4fdf37"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a99835dda1c2cbb0cf81741cd4d4fdf37">eve::rpg::RPGActor::setBaseAttribute</a></div><div class="ttdeci">void setBaseAttribute(const std::string &amp;attribute, double value)</div><div class="ttdoc">便捷成员方法（转发到 AttributeSystem / StatusSystem / SkillSystem）。 提供这一层薄封装主要是为了让脚本可以写 actor....</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00050">RPGActor.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a9a3d4245248c28a5e44c7c1224db041c"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a9a3d4245248c28a5e44c7c1224db041c">eve::rpg::RPGActor::getStatusStacks</a></div><div class="ttdeci">int getStatusStacks(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00118">RPGActor.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_a9d1fddcf1ba76ec1999d206b86c70cff"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#a9d1fddcf1ba76ec1999d206b86c70cff">eve::rpg::RPGActor::modifyBaseAttribute</a></div><div class="ttdeci">void modifyBaseAttribute(const std::string &amp;attribute, double delta)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00058">RPGActor.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_aa213b7544640ca11cc409acfd37346d8"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#aa213b7544640ca11cc409acfd37346d8">eve::rpg::RPGActor::getStatusCount</a></div><div class="ttdeci">int getStatusCount()</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00112">RPGActor.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_aaaf868fa5e99616618e81249f87e8199"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#aaaf868fa5e99616618e81249f87e8199">eve::rpg::RPGActor::knowsSkill</a></div><div class="ttdeci">bool knowsSkill(const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00180">RPGActor.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_aae8e45ab445c6276fb7923e2335a3c9a"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#aae8e45ab445c6276fb7923e2335a3c9a">eve::rpg::RPGActor::removeBuffByEffect</a></div><div class="ttdeci">int removeBuffByEffect(const std::string &amp;effectId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00141">RPGActor.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_aaef2855ec9b56d7ebc8d997548f8cb98"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#aaef2855ec9b56d7ebc8d997548f8cb98">eve::rpg::RPGActor::hasStatusTag</a></div><div class="ttdeci">bool hasStatusTag(const std::string &amp;tag)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00110">RPGActor.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ab018bdb64a28231c7dc8bb02a527ab23"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ab018bdb64a28231c7dc8bb02a527ab23">eve::rpg::RPGActor::getBuffCount</a></div><div class="ttdeci">int getBuffCount()</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00155">RPGActor.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ab2e3987a8f9189c2daaddc034d41af6a"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ab2e3987a8f9189c2daaddc034d41af6a">eve::rpg::RPGActor::addAttributeModifier</a></div><div class="ttdeci">std::string addAttributeModifier(const std::string &amp;attribute, const std::string &amp;source, const std::string &amp;op, double value, int priority=0)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00066">RPGActor.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ab324a96129ed27f66340c49071df2ea0"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ab324a96129ed27f66340c49071df2ea0">eve::rpg::RPGActor::removeStatusByEffect</a></div><div class="ttdeci">int removeStatusByEffect(const std::string &amp;effectId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00096">RPGActor.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ab42375a1591757875edac59f417767a2"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ab42375a1591757875edac59f417767a2">eve::rpg::RPGActor::removeBuffBySource</a></div><div class="ttdeci">int removeBuffBySource(const std::string &amp;source)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00145">RPGActor.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_abcdf9c43da23b7abe244e8cd2479be2a"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#abcdf9c43da23b7abe244e8cd2479be2a">eve::rpg::RPGActor::setBuffProp</a></div><div class="ttdeci">bool setBuffProp(int instanceId, const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00172">RPGActor.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ac1230de1ed7fd3b3155641b641248c91"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ac1230de1ed7fd3b3155641b641248c91">eve::rpg::RPGActor::hasBuff</a></div><div class="ttdeci">bool hasBuff(const std::string &amp;effectId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00151">RPGActor.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ac3a85883db91c565dcf6aa067b4489f8"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ac3a85883db91c565dcf6aa067b4489f8">eve::rpg::RPGActor::getStatusInstanceId</a></div><div class="ttdeci">int getStatusInstanceId(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00122">RPGActor.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ac78810aca4fb6050a115c3536bc020cc"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ac78810aca4fb6050a115c3536bc020cc">eve::rpg::RPGActor::setStatusProp</a></div><div class="ttdeci">bool setStatusProp(int instanceId, const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00131">RPGActor.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ac9d0e7d2f07eb1e6c76a0ab8167d45cf"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">eve::rpg::RPGActor::getStatusSource</a></div><div class="ttdeci">std::string getStatusSource(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00124">RPGActor.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ad16ef68e52ba561b61a92719b828ec14"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ad16ef68e52ba561b61a92719b828ec14">eve::rpg::RPGActor::hasBuffTag</a></div><div class="ttdeci">bool hasBuffTag(const std::string &amp;tag)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00153">RPGActor.cpp:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ad20a8ff2485a1df898a095c96ca25172"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ad20a8ff2485a1df898a095c96ca25172">eve::rpg::RPGActor::getFinalAttribute</a></div><div class="ttdeci">double getFinalAttribute(const std::string &amp;attribute)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00084">RPGActor.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ad7bf02b0ab972c8d8f0cda7520392786"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ad7bf02b0ab972c8d8f0cda7520392786">eve::rpg::RPGActor::getStatusProp</a></div><div class="ttdeci">std::string getStatusProp(int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00126">RPGActor.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_addeefc52c986e817d8817d6fa7b07392"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#addeefc52c986e817d8817d6fa7b07392">eve::rpg::RPGActor::getStatusRemaining</a></div><div class="ttdeci">float getStatusRemaining(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00120">RPGActor.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_adef24e7aafd1d17e4c7271a6314bfabd"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#adef24e7aafd1d17e4c7271a6314bfabd">eve::rpg::RPGActor::applyEffect</a></div><div class="ttdeci">int applyEffect(const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</div><div class="ttdoc">状态（buff/debuff）—— Statuses ECS 组件的薄封装。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00090">RPGActor.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ae3f9e39c6be1e8f37ad39064cd33338f"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ae3f9e39c6be1e8f37ad39064cd33338f">eve::rpg::RPGActor::hasEffect</a></div><div class="ttdeci">bool hasEffect(const std::string &amp;effectId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00108">RPGActor.cpp:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_ae4aa8a88ce43dca55f95b574fd264ed9"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#ae4aa8a88ce43dca55f95b574fd264ed9">eve::rpg::RPGActor::removeBuffByTag</a></div><div class="ttdeci">int removeBuffByTag(const std::string &amp;tag)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00149">RPGActor.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_aea78d4e20a5a24b032536404aa36fda8"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#aea78d4e20a5a24b032536404aa36fda8">eve::rpg::RPGActor::getBuffSource</a></div><div class="ttdeci">std::string getBuffSource(int index)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00165">RPGActor.cpp:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_aedf16e5a7d8d819381f2f43a9737baa1"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#aedf16e5a7d8d819381f2f43a9737baa1">eve::rpg::RPGActor::getSkillCooldown</a></div><div class="ttdeci">float getSkillCooldown(const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00184">RPGActor.cpp:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html_af1f45617594d95e17b06a401c6de8bf5"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html#af1f45617594d95e17b06a401c6de8bf5">eve::rpg::RPGActor::removeAttributeModifier</a></div><div class="ttdeci">bool removeAttributeModifier(const std::string &amp;attribute, const std::string &amp;modifierId)</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8cpp_source.html#l00071">RPGActor.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a012c7a050f95ce55df676d08360b800b"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a012c7a050f95ce55df676d08360b800b">eve::rpg::SkillSystem::forget</a></div><div class="ttdeci">static bool forget(RPGActor *actor, const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00066">SkillSystem.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a05514266899244a5891e48851dcab931"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a05514266899244a5891e48851dcab931">eve::rpg::SkillSystem::cancelCast</a></div><div class="ttdeci">static void cancelCast(RPGActor *actor)</div><div class="ttdoc">打断当前读条（不退还已扣除的消耗/冷却）。</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00125">SkillSystem.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a0c2cd67036a5dad86565d21fb9804c3d"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a0c2cd67036a5dad86565d21fb9804c3d">eve::rpg::SkillSystem::getCastingSkillId</a></div><div class="ttdeci">static std::string getCastingSkillId(RPGActor *actor)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00132">SkillSystem.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a14c7e8ff2fbaec09ab0b8dd0ea10f7f7"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a14c7e8ff2fbaec09ab0b8dd0ea10f7f7">eve::rpg::SkillSystem::getCastProgress</a></div><div class="ttdeci">static float getCastProgress(RPGActor *actor)</div><div class="ttdoc">0..1，非读条状态返回 0</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00136">SkillSystem.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a1c3325163dc6eeb1433cb023855e6d63"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a1c3325163dc6eeb1433cb023855e6d63">eve::rpg::SkillSystem::setCooldownRemaining</a></div><div class="ttdeci">static void setCooldownRemaining(RPGActor *actor, const std::string &amp;skillId, float seconds)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00078">SkillSystem.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a46938fcbc7706e45a86821fcbdad345d"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a46938fcbc7706e45a86821fcbdad345d">eve::rpg::SkillSystem::isCasting</a></div><div class="ttdeci">static bool isCasting(RPGActor *actor)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00130">SkillSystem.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a75451ad1ce0ab820f406b3d121c14a63"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a75451ad1ce0ab820f406b3d121c14a63">eve::rpg::SkillSystem::getCooldownRemaining</a></div><div class="ttdeci">static float getCooldownRemaining(RPGActor *actor, const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00071">SkillSystem.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_a7d2749b9cb19f8f8ce28e3a513514e5d"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#a7d2749b9cb19f8f8ce28e3a513514e5d">eve::rpg::SkillSystem::learn</a></div><div class="ttdeci">static void learn(RPGActor *actor, const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00055">SkillSystem.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_aadf7c187e0117028a27f86a08c974b5b"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#aadf7c187e0117028a27f86a08c974b5b">eve::rpg::SkillSystem::knows</a></div><div class="ttdeci">static bool knows(RPGActor *actor, const std::string &amp;skillId)</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00060">SkillSystem.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_ac496e94902522f755217e855ca8f1b31"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#ac496e94902522f755217e855ca8f1b31">eve::rpg::SkillSystem::canCast</a></div><div class="ttdeci">static bool canCast(RPGActor *actor, const std::string &amp;skillId, std::string *reason=nullptr)</div><div class="ttdoc">检查冷却/消耗/学会状态/自定义条件，不产生任何副作用。</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00083">SkillSystem.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1SkillSystem_html_aecdf67a0e481dc19710bf760565e4913"><div class="ttname"><a href="classeve_1_1rpg_1_1SkillSystem.html#aecdf67a0e481dc19710bf760565e4913">eve::rpg::SkillSystem::beginCast</a></div><div class="ttdeci">static bool beginCast(RPGActor *actor, const std::string &amp;skillId, RPGActor *target=nullptr, std::string *reason=nullptr)</div><div class="ttdoc">尝试释放技能：通过 canCast 检查后立即扣除消耗并进入冷却； castTime&lt;=0 时立即结算（授予效果 + 产生 SkillCastEvent）， 否则进入读条状态，由 update() 在读...</div><div class="ttdef"><b>Definition</b> <a href="SkillSystem_8cpp_source.html#l00103">SkillSystem.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a055ae90b1b2510749ae379105ab76f2f"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a055ae90b1b2510749ae379105ab76f2f">eve::rpg::StatusSystem::setProp</a></div><div class="ttdeci">static bool setProp(RPGActor *actor, int instanceId, const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00423">StatusSystem.cpp:423</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a1040aeb69d7e8123938fa40437426f61"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a1040aeb69d7e8123938fa40437426f61">eve::rpg::StatusSystem::getActiveSource</a></div><div class="ttdeci">static std::string getActiveSource(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00408">StatusSystem.cpp:408</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a1a0a624863d4ccda3e8e1335545fcdc8"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a1a0a624863d4ccda3e8e1335545fcdc8">eve::rpg::StatusSystem::apply</a></div><div class="ttdeci">static int apply(RPGActor *actor, const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</div><div class="ttdoc">施加一个效果。返回值： -1 — 失败（actor 为空 / 效果不存在 / 条件拒绝 / stackPolicy 拒绝重复） 0 — durationPolicy==&quot;instant&quot;：已立即生效，无...</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00118">StatusSystem.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a2419b10e8afdcd6d51630da0fa19cdbd"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a2419b10e8afdcd6d51630da0fa19cdbd">eve::rpg::StatusSystem::getActiveStacks</a></div><div class="ttdeci">static int getActiveStacks(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00387">StatusSystem.cpp:387</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a3682d447aaedce2896d658d185e766b0"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a3682d447aaedce2896d658d185e766b0">eve::rpg::StatusSystem::getActiveInstanceId</a></div><div class="ttdeci">static int getActiveInstanceId(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00401">StatusSystem.cpp:401</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a3e0bf7e8182ef7c01ccd9fc1921fa51e"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a3e0bf7e8182ef7c01ccd9fc1921fa51e">eve::rpg::StatusSystem::hasEffect</a></div><div class="ttdeci">static bool hasEffect(RPGActor *actor, const std::string &amp;effectId)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00358">StatusSystem.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a5be4569d451967e2496fba5da40fad88"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a5be4569d451967e2496fba5da40fad88">eve::rpg::StatusSystem::hasTag</a></div><div class="ttdeci">static bool hasTag(RPGActor *actor, const std::string &amp;tag)</div><div class="ttdoc">是否存在任一效果定义带有该 tag 的活动实例。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00366">StatusSystem.cpp:366</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a5cacdee43abea3f6c0e87d00cef0a41e"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a5cacdee43abea3f6c0e87d00cef0a41e">eve::rpg::StatusSystem::removeBySource</a></div><div class="ttdeci">static int removeBySource(RPGActor *actor, const std::string &amp;source)</div><div class="ttdoc">移除该 actor 身上所有 source 匹配的实例；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00309">StatusSystem.cpp:309</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a740835b1368bb9a4592bc158c1f75ed2"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a740835b1368bb9a4592bc158c1f75ed2">eve::rpg::StatusSystem::remove</a></div><div class="ttdeci">static bool remove(RPGActor *actor, int instanceId)</div><div class="ttdoc">按实例 id 精确移除（撤销其属性修改器）；返回是否命中。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00264">StatusSystem.cpp:264</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a9d4fecffa1cf6e536e4232b0294d9314"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a9d4fecffa1cf6e536e4232b0294d9314">eve::rpg::StatusSystem::getActiveCount</a></div><div class="ttdeci">static int getActiveCount(RPGActor *actor)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00375">StatusSystem.cpp:375</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a9da8f6284575c25fe109461c7604d966"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a9da8f6284575c25fe109461c7604d966">eve::rpg::StatusSystem::getProp</a></div><div class="ttdeci">static std::string getProp(RPGActor *actor, int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdoc">按实例 id 读写 props；找不到实例时 get 返回 fallback，set 返回 false。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00415">StatusSystem.cpp:415</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_aaef2376f9a9405951599dfe39c71da66"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#aaef2376f9a9405951599dfe39c71da66">eve::rpg::StatusSystem::removeByEffect</a></div><div class="ttdeci">static int removeByEffect(RPGActor *actor, const std::string &amp;effectId)</div><div class="ttdoc">移除该 actor 身上所有 effectId 匹配的实例；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00285">StatusSystem.cpp:285</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_ae51781bcded2c249469b8cdab0dcae99"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#ae51781bcded2c249469b8cdab0dcae99">eve::rpg::StatusSystem::removeByTag</a></div><div class="ttdeci">static int removeByTag(RPGActor *actor, const std::string &amp;tag)</div><div class="ttdoc">移除该 actor 身上所有 tag 匹配（效果定义带该 tag）的实例；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00333">StatusSystem.cpp:333</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_af410849d5f9db98b1726f9144267fba3"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#af410849d5f9db98b1726f9144267fba3">eve::rpg::StatusSystem::getActiveEffectId</a></div><div class="ttdeci">static std::string getActiveEffectId(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00380">StatusSystem.cpp:380</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_afe8725afeaa08da847043987cce38586"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#afe8725afeaa08da847043987cce38586">eve::rpg::StatusSystem::getActiveRemaining</a></div><div class="ttdeci">static float getActiveRemaining(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00394">StatusSystem.cpp:394</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00007">AttributeSystem.cpp:7</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

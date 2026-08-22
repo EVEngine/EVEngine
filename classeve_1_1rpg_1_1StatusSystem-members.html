@@ -1,0 +1,206 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">StatusSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::rpg::StatusSystem 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a1a0a624863d4ccda3e8e1335545fcdc8">apply</a>(RPGActor *actor, const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a1b30afc839160c4891b2f1d92b76c812">ApplyCondition</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#ab5878a7cc1e580f33db0d725eae647ab">clearApplyConditions</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a483b91e944e80380a6e6dc80ff93f7c3">clearLifecycleHooks</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a0e3618cda95ffdee0bbfcb019f551363">clearStackPolicies</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a9d4fecffa1cf6e536e4232b0294d9314">getActiveCount</a>(RPGActor *actor)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#af410849d5f9db98b1726f9144267fba3">getActiveEffectId</a>(RPGActor *actor, int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a3682d447aaedce2896d658d185e766b0">getActiveInstanceId</a>(RPGActor *actor, int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#afe8725afeaa08da847043987cce38586">getActiveRemaining</a>(RPGActor *actor, int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a1040aeb69d7e8123938fa40437426f61">getActiveSource</a>(RPGActor *actor, int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a2419b10e8afdcd6d51630da0fa19cdbd">getActiveStacks</a>(RPGActor *actor, int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a9da8f6284575c25fe109461c7604d966">getProp</a>(RPGActor *actor, int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a24c9c9ee45e5f20caca8502ea0292e3f">hasApplyCondition</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a3e0bf7e8182ef7c01ccd9fc1921fa51e">hasEffect</a>(RPGActor *actor, const std::string &amp;effectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a2f2019725137a0deec0993970d21d989">hasLifecycleHook</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a252c0dc9aa58ca7f4657d6c52a1224e8">hasStackPolicy</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a5be4569d451967e2496fba5da40fad88">hasTag</a>(RPGActor *actor, const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#ad43f8003cfd71256798f8dae013478b7">LifecycleHook</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a2ac81a1ef4c434209048e62ed3db3775">pollChanges</a>(std::vector&lt; StatusChangeEvent &gt; &amp;out)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a5b6e8e74af88653031625ae815434224">pollTicks</a>(std::vector&lt; StatusTickEvent &gt; &amp;out)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a7af41c75eccb10abe1b8203009a8b622">registerApplyCondition</a>(const std::string &amp;name, ApplyCondition fn)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#aaa2addbee8ffdbf9d33ae547d4f091fd">registerLifecycleHook</a>(const std::string &amp;name, LifecycleHook fn)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a8b09b4309c9d1701e755bacc82b2c381">registerStackPolicy</a>(const std::string &amp;name, StackPolicyFn fn)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a740835b1368bb9a4592bc158c1f75ed2">remove</a>(RPGActor *actor, int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#aaef2376f9a9405951599dfe39c71da66">removeByEffect</a>(RPGActor *actor, const std::string &amp;effectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a5cacdee43abea3f6c0e87d00cef0a41e">removeBySource</a>(RPGActor *actor, const std::string &amp;source)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#ae51781bcded2c249469b8cdab0dcae99">removeByTag</a>(RPGActor *actor, const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a055ae90b1b2510749ae379105ab76f2f">setProp</a>(RPGActor *actor, int instanceId, const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a219d4e009f864be545a33bf764e6cdcc">StackPolicyFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a474670b910b6403d6af355ba6abcbbad">unregisterApplyCondition</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a194e3e0de484bbb76f997ef08b45a381">unregisterLifecycleHook</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#ab4ed9b142dfacb408575ef266e1b8fcf">unregisterStackPolicy</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#a232634cda4fb28b63b93e294c7e8f6ac">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

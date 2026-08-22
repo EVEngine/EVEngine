@@ -1,0 +1,401 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/RenderFlow.hpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RenderFlow.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RenderFlow_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="RenderTrace_8h.html">common/RenderTrace.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;iterator&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">   15</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">RenderEventKind</a> : uint8_t {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15">FrameBegin</a> = 0,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666">FrameEnd</a>,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">PassBegin</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1">PassEnd</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5">Target</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581">Bind</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2">Draw</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd">Error</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html">   26</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html#abcefade5c16ae87e02b683f0fff13924">   27</a></span>    uint32_t       <span class="keywordtype">id</span>   = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html#a22017bdbc8a5d20a2a2e7e5ee521bb1d">   28</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">RenderEventKind</a> <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a> = RenderEventKind::Draw;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html#acb6ed6940a7238a814aa1e9dafdf38c0">   29</a></span>    std::string    <a class="code hl_variable" href="structeve_1_1dev_1_1RenderEvent.html#acb6ed6940a7238a814aa1e9dafdf38c0">name</a>;     <span class="comment">// pass / api / resource kind / &quot;error&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html#a0d9873f4a76d5bcca76aaec666720ed2">   30</a></span>    std::string    <a class="code hl_variable" href="structeve_1_1dev_1_1RenderEvent.html#a0d9873f4a76d5bcca76aaec666720ed2">detail</a>;   <span class="comment">// resource name, draw detail, error message</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html#a5498560ff30046df8c3822858bb2abdc">   31</a></span>    uint32_t       parentId = 0;  <span class="comment">// control predecessor</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderEvent.html#ae0c3268dc9f0039f862816a3164ca3fb">   32</a></span>    uint32_t       passId   = 0;  <span class="comment">// enclosing PassBegin event</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceCriterion.html">   35</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceCriterion.html#aa49cbef3509f9ab65a6b8a62961015db">   36</a></span>    uint32_t    eventId = 0;  <span class="comment">// 0 ⇒ last Error, else last event</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceCriterion.html#a1e8029e676fc7c3a0efaf922c57b14c3">   37</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1RenderSliceCriterion.html#a1e8029e676fc7c3a0efaf922c57b14c3">resource</a>;     <span class="comment">// optional: focus on a bound resource name</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceResult.html">   40</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderSliceResult.html">RenderSliceResult</a> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceResult.html#a86d89756af582514c5ceaaf83b520987">   41</a></span>    std::vector&lt;uint32_t&gt;    <a class="code hl_variable" href="structeve_1_1dev_1_1RenderSliceResult.html#a86d89756af582514c5ceaaf83b520987">eventIds</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceResult.html#ad69f6c29ed2988bd8356c55d589e81b4">   42</a></span>    std::vector&lt;RenderEvent&gt; <a class="code hl_variable" href="structeve_1_1dev_1_1RenderSliceResult.html#ad69f6c29ed2988bd8356c55d589e81b4">path</a>;      <span class="comment">// chronological events in the slice</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceResult.html#a0049dfe9f5eda7570f4c7609500804e6">   43</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1dev_1_1RenderSliceResult.html#a0049dfe9f5eda7570f4c7609500804e6">passes</a>;    <span class="comment">// nested pass names at criterion</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1RenderSliceResult.html#a298706d6ff9770c4417ff21f79f5faf8">   44</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1dev_1_1RenderSliceResult.html#a298706d6ff9770c4417ff21f79f5faf8">summary</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html">   56</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">eve::debug::IRenderTracer</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#a1eae5897411210d30de41e313aa2c82c">   58</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow.html#a1eae5897411210d30de41e313aa2c82c">RenderFlow</a>();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#a3ef9ce40ca721d59bc34b2f91a70f184">   59</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow.html#a3ef9ce40ca721d59bc34b2f91a70f184">~RenderFlow</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> clear();</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> setMaxEvents(<span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#ad3191e70bc8b767af39f5b71606d1b46">   63</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow.html#ad3191e70bc8b767af39f5b71606d1b46">maxEvents</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxEvents_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#a23a7340e8ed3a87550834de8f6b30570">   64</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow.html#a23a7340e8ed3a87550834de8f6b30570">eventCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> count_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="};">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">   67</a></span>    <span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">   69</a></span>        <span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a67ee6181a9eb4a65d38a1a83b5eb52c7">   71</a></span>            <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a67ee6181a9eb4a65d38a1a83b5eb52c7">iterator_category</a> = std::forward_iterator_tag;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a507d7dd147a3af3f73554e6623937b8a">   72</a></span>            <span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">value_type</a>        = <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#adf66e1d27f6f9d8076fc946a8a35c23d">   73</a></span>            <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#adf66e1d27f6f9d8076fc946a8a35c23d">difference_type</a>   = std::ptrdiff_t;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#ae8c2dc3751b9bb8e914158ce96337667">   74</a></span>            <span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">pointer</a>           = <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>*;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#abf2fc7fa61c812d86e1ebd6862ccbaaa">   75</a></span>            <span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">reference</a>         = <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>&amp;;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#aa332b518459d41199d6f73651e650fa1">   77</a></span>            <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#aa332b518459d41199d6f73651e650fa1">const_iterator</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a74c643441075a7b431fef1c29bdc04bc">   78</a></span>            <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">reference</a> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a74c643441075a7b431fef1c29bdc04bc">operator*</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (*g_)[idx_]; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#af762ad2bf0c93702ded64e6c0b962b37">   79</a></span>            <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">pointer</a>   <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#af762ad2bf0c93702ded64e6c0b962b37">operator-&gt;</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> &amp;(*g_)[idx_]; }</div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a0b0550d36db7af875624e53e20affc4a">   80</a></span>            <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a0b0550d36db7af875624e53e20affc4a">operator++</a>() {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                ++idx_;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            }</div>
+</div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#ad2613af3c58ceb8e611f0c11016e58d2">   84</a></span>            <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#ad2613af3c58ceb8e611f0c11016e58d2">operator++</a>(<span class="keywordtype">int</span>) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a> t = *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                ++(*this);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                <span class="keywordflow">return</span> t;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            }</div>
+</div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a277df5d5ab88da4d2ba4c0cced25f17f">   89</a></span>            <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a277df5d5ab88da4d2ba4c0cced25f17f">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a>&amp; o)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <span class="keywordflow">return</span> g_ == o.g_ &amp;&amp; idx_ == o.idx_;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            }</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a2302f5c75154fede8e2e6ac93deb26cf">   92</a></span>            <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a2302f5c75154fede8e2e6ac93deb26cf">operator!=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a>&amp; o)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !(*<span class="keyword">this</span> == o); }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a9a160477d7f33ea3b95c658b3eed7bc9">   95</a></span>            <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a>* g, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>) : g_(g), idx_(<a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>) {}</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a>* g_   = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordtype">size_t</span>            idx_ = 0;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        };</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a7f5a92e587d2bf144fd0c51d7b2f39ee">  101</a></span>        <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a7f5a92e587d2bf144fd0c51d7b2f39ee">EventsView</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a>* g) : g_(g) {}</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a6295e4419cc1f6ba395cc01ba5b78973">  103</a></span>        <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a6295e4419cc1f6ba395cc01ba5b78973">begin</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a>(g_, 0); }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#ae47c8d961a408517703267417bf7df90">  104</a></span>        <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#ae47c8d961a408517703267417bf7df90">end</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">const_iterator</a>(g_, g_ ? g_-&gt;count_ : 0); }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#ae6a2efb0667dfba9ae46b9ea34919acb">  105</a></span>        <span class="keywordtype">bool</span>   <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#ae6a2efb0667dfba9ae46b9ea34919acb">empty</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !g_ || g_-&gt;count_ == 0; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a8ec70c6d72c35f11b4f9fed7ab9127e7">  106</a></span>        <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a8ec70c6d72c35f11b4f9fed7ab9127e7">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> g_ ? g_-&gt;count_ : 0; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a2d8b4cf4213f0d711194a2ab1fcb4d5f">  107</a></span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a2d8b4cf4213f0d711194a2ab1fcb4d5f">operator[]</a>(<span class="keywordtype">size_t</span> i)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (*g_)[i]; }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#aeb67b6ef1db4de137d5e80f96c9e2c34">  108</a></span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#aeb67b6ef1db4de137d5e80f96c9e2c34">front</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (*g_)[0]; }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#abc7e4b3ea62dcab9919580a9c32229d1">  109</a></span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#abc7e4b3ea62dcab9919580a9c32229d1">back</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (*g_)[g_-&gt;count_ - 1]; }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow.html">RenderFlow</a>* g_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    };</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#abc142d5c45180dbdfe39fb03eeb58392">  115</a></span>    <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a> <a class="code hl_function" href="classeve_1_1dev_1_1RenderFlow.html#abc142d5c45180dbdfe39fb03eeb58392">events</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a>(<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>* event(uint32_t <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="comment">// IRenderTracer</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> frameBegin() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">void</span> frameEnd() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">void</span> passBegin(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">void</span> passEnd(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> target(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> bind(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">void</span> draw(<span class="keyword">const</span> <span class="keywordtype">char</span>* api, <span class="keyword">const</span> <span class="keywordtype">char</span>* detail) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* message) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1RenderSliceResult.html">RenderSliceResult</a> sliceBackward(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    std::string formatErrorReport(<span class="keyword">const</span> std::string&amp; errorMessage,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                  <span class="keyword">const</span> RenderSliceCriterion&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#a9a160477d7f33ea3b95c658b3eed7bc9">  133</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">EventsView</a>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1RenderFlow.html#a03bc5eaf6adb6fb5e49100a11eaa5345">  134</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">EventsView::const_iterator</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    uint32_t append(<a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">RenderEventKind</a> <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keyword">const</span> std::string&amp; detail);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">void</span>     retireSlot(<span class="keywordtype">size_t</span> physical);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">void</span>     ensureRing();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    uint32_t findSeed(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderSliceCriterion.html">RenderSliceCriterion</a>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">size_t</span> physicalIndex(<span class="keywordtype">size_t</span> chrono)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">return</span> (head_ + chrono) % maxEvents_;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1RenderEvent.html">RenderEvent</a>&amp; operator[](<span class="keywordtype">size_t</span> chrono)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">return</span> slots_[physicalIndex(chrono)];</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    RenderEvent&amp; operator[](<span class="keywordtype">size_t</span> chrono) { <span class="keywordflow">return</span> slots_[physicalIndex(chrono)]; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    RenderEvent&amp; newest() { <span class="keywordflow">return</span> (*<span class="keyword">this</span>)[count_ - 1]; }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">size_t</span> maxEvents_   = 50000;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    uint32_t nextEventId_ = 1;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    uint32_t lastEventId_ = 0;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    std::vector&lt;RenderEvent&gt; slots_;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">size_t</span>                   head_  = 0;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">size_t</span>                   count_ = 0;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    std::vector&lt;uint32_t&gt; passStack_;  <span class="comment">// PassBegin event ids</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="comment">// last Bind event id for (kind, name) — resource reaching-def for draws</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    std::unordered_map&lt;std::string, uint32_t&gt; lastBind_;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="comment">// Draw/Error → Bind / Pass deps</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    std::unordered_map&lt;uint32_t, std::vector&lt;uint32_t&gt;&gt; dataDeps_;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>};</div>
+</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5744cedb1550b25c28b21ecb540428ca"><div class="ttname"><a href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a></div><div class="ttdeci">Tok kind</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00017">DnutParser.cpp:17</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ae40354a1051342eb5a9db005715dcfa9"><div class="ttname"><a href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a></div><div class="ttdeci">int idx</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00290">Pathfinder.cpp:290</a></div></div>
+<div class="ttc" id="aRenderTrace_8h_html"><div class="ttname"><a href="RenderTrace_8h.html">RenderTrace.h</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html">eve::debug::IRenderTracer</a></div><div class="ttdoc">Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers; when no tracer is inst...</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00014">RenderTrace.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html">eve::dev::RenderFlow::EventsView::const_iterator</a></div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00069">RenderFlow.hpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_a0b0550d36db7af875624e53e20affc4a"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a0b0550d36db7af875624e53e20affc4a">eve::dev::RenderFlow::EventsView::const_iterator::operator++</a></div><div class="ttdeci">const_iterator &amp; operator++()</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00080">RenderFlow.hpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_a2302f5c75154fede8e2e6ac93deb26cf"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a2302f5c75154fede8e2e6ac93deb26cf">eve::dev::RenderFlow::EventsView::const_iterator::operator!=</a></div><div class="ttdeci">bool operator!=(const const_iterator &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00092">RenderFlow.hpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_a277df5d5ab88da4d2ba4c0cced25f17f"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a277df5d5ab88da4d2ba4c0cced25f17f">eve::dev::RenderFlow::EventsView::const_iterator::operator==</a></div><div class="ttdeci">bool operator==(const const_iterator &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00089">RenderFlow.hpp:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_a67ee6181a9eb4a65d38a1a83b5eb52c7"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a67ee6181a9eb4a65d38a1a83b5eb52c7">eve::dev::RenderFlow::EventsView::const_iterator::iterator_category</a></div><div class="ttdeci">std::forward_iterator_tag iterator_category</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00071">RenderFlow.hpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_a74c643441075a7b431fef1c29bdc04bc"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#a74c643441075a7b431fef1c29bdc04bc">eve::dev::RenderFlow::EventsView::const_iterator::operator*</a></div><div class="ttdeci">reference operator*() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00078">RenderFlow.hpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_aa332b518459d41199d6f73651e650fa1"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#aa332b518459d41199d6f73651e650fa1">eve::dev::RenderFlow::EventsView::const_iterator::const_iterator</a></div><div class="ttdeci">const_iterator()=default</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_ad2613af3c58ceb8e611f0c11016e58d2"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#ad2613af3c58ceb8e611f0c11016e58d2">eve::dev::RenderFlow::EventsView::const_iterator::operator++</a></div><div class="ttdeci">const_iterator operator++(int)</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00084">RenderFlow.hpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_adf66e1d27f6f9d8076fc946a8a35c23d"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#adf66e1d27f6f9d8076fc946a8a35c23d">eve::dev::RenderFlow::EventsView::const_iterator::difference_type</a></div><div class="ttdeci">std::ptrdiff_t difference_type</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00073">RenderFlow.hpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator_html_af762ad2bf0c93702ded64e6c0b962b37"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView_1_1const__iterator.html#af762ad2bf0c93702ded64e6c0b962b37">eve::dev::RenderFlow::EventsView::const_iterator::operator-&gt;</a></div><div class="ttdeci">pointer operator-&gt;() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00079">RenderFlow.hpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html">eve::dev::RenderFlow::EventsView</a></div><div class="ttdoc">Chronological view over the live ring window (oldest → newest).</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00067">RenderFlow.hpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_a2d8b4cf4213f0d711194a2ab1fcb4d5f"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a2d8b4cf4213f0d711194a2ab1fcb4d5f">eve::dev::RenderFlow::EventsView::operator[]</a></div><div class="ttdeci">const RenderEvent &amp; operator[](size_t i) const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00107">RenderFlow.hpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_a6295e4419cc1f6ba395cc01ba5b78973"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a6295e4419cc1f6ba395cc01ba5b78973">eve::dev::RenderFlow::EventsView::begin</a></div><div class="ttdeci">const_iterator begin() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00103">RenderFlow.hpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_a7f5a92e587d2bf144fd0c51d7b2f39ee"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a7f5a92e587d2bf144fd0c51d7b2f39ee">eve::dev::RenderFlow::EventsView::EventsView</a></div><div class="ttdeci">EventsView(const RenderFlow *g)</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00101">RenderFlow.hpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_a8ec70c6d72c35f11b4f9fed7ab9127e7"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#a8ec70c6d72c35f11b4f9fed7ab9127e7">eve::dev::RenderFlow::EventsView::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00106">RenderFlow.hpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_abc7e4b3ea62dcab9919580a9c32229d1"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#abc7e4b3ea62dcab9919580a9c32229d1">eve::dev::RenderFlow::EventsView::back</a></div><div class="ttdeci">const RenderEvent &amp; back() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00109">RenderFlow.hpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_ae47c8d961a408517703267417bf7df90"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#ae47c8d961a408517703267417bf7df90">eve::dev::RenderFlow::EventsView::end</a></div><div class="ttdeci">const_iterator end() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00104">RenderFlow.hpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_ae6a2efb0667dfba9ae46b9ea34919acb"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#ae6a2efb0667dfba9ae46b9ea34919acb">eve::dev::RenderFlow::EventsView::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00105">RenderFlow.hpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_1_1EventsView_html_aeb67b6ef1db4de137d5e80f96c9e2c34"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow_1_1EventsView.html#aeb67b6ef1db4de137d5e80f96c9e2c34">eve::dev::RenderFlow::EventsView::front</a></div><div class="ttdeci">const RenderEvent &amp; front() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00108">RenderFlow.hpp:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_html"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow.html">eve::dev::RenderFlow</a></div><div class="ttdoc">Render-pipeline flow tracer with a Weiser-style backward slice.</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00056">RenderFlow.hpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_html_a1eae5897411210d30de41e313aa2c82c"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow.html#a1eae5897411210d30de41e313aa2c82c">eve::dev::RenderFlow::RenderFlow</a></div><div class="ttdeci">RenderFlow()</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_html_a23a7340e8ed3a87550834de8f6b30570"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow.html#a23a7340e8ed3a87550834de8f6b30570">eve::dev::RenderFlow::eventCount</a></div><div class="ttdeci">size_t eventCount() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00064">RenderFlow.hpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_html_a3ef9ce40ca721d59bc34b2f91a70f184"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow.html#a3ef9ce40ca721d59bc34b2f91a70f184">eve::dev::RenderFlow::~RenderFlow</a></div><div class="ttdeci">~RenderFlow() override</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_html_abc142d5c45180dbdfe39fb03eeb58392"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow.html#abc142d5c45180dbdfe39fb03eeb58392">eve::dev::RenderFlow::events</a></div><div class="ttdeci">EventsView events() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00115">RenderFlow.hpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1RenderFlow_html_ad3191e70bc8b767af39f5b71606d1b46"><div class="ttname"><a href="classeve_1_1dev_1_1RenderFlow.html#ad3191e70bc8b767af39f5b71606d1b46">eve::dev::RenderFlow::maxEvents</a></div><div class="ttdeci">size_t maxEvents() const</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00063">RenderFlow.hpp:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00008">AiPanel.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172">eve::dev::RenderEventKind</a></div><div class="ttdeci">RenderEventKind</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00015">RenderFlow.hpp:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0526bfe956591337eeb68eca998aec15">eve::dev::RenderEventKind::FrameBegin</a></div><div class="ttdeci">@ FrameBegin</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a0b172674284d79079624051d2ae11581">eve::dev::RenderEventKind::Bind</a></div><div class="ttdeci">@ Bind</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2a90766822ad1788db33fb654fdd2d68">eve::dev::RenderEventKind::PassBegin</a></div><div class="ttdeci">@ PassBegin</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a2d03c2d5a7ec65ef4619e0582c272ec2">eve::dev::RenderEventKind::Draw</a></div><div class="ttdeci">@ Draw</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172a902b0d55fddef6f8d651fe1035b7d4bd">eve::dev::RenderEventKind::Error</a></div><div class="ttdeci">@ Error</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172ac41a31890959544c6523af684561abe5">eve::dev::RenderEventKind::Target</a></div><div class="ttdeci">@ Target</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172aed83fbbafbb1bc671af2473fffe784d1">eve::dev::RenderEventKind::PassEnd</a></div><div class="ttdeci">@ PassEnd</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666"><div class="ttname"><a href="namespaceeve_1_1dev.html#a1f91d69f07a12554a15d8bb895890172af32dfac7bfae19e243e9e6d180228666">eve::dev::RenderEventKind::FrameEnd</a></div><div class="ttdeci">@ FrameEnd</div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderEvent_html"><div class="ttname"><a href="structeve_1_1dev_1_1RenderEvent.html">eve::dev::RenderEvent</a></div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00026">RenderFlow.hpp:26</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderEvent_html_a0d9873f4a76d5bcca76aaec666720ed2"><div class="ttname"><a href="structeve_1_1dev_1_1RenderEvent.html#a0d9873f4a76d5bcca76aaec666720ed2">eve::dev::RenderEvent::detail</a></div><div class="ttdeci">std::string detail</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00030">RenderFlow.hpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderEvent_html_acb6ed6940a7238a814aa1e9dafdf38c0"><div class="ttname"><a href="structeve_1_1dev_1_1RenderEvent.html#acb6ed6940a7238a814aa1e9dafdf38c0">eve::dev::RenderEvent::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00029">RenderFlow.hpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceCriterion_html"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceCriterion.html">eve::dev::RenderSliceCriterion</a></div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00035">RenderFlow.hpp:35</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceCriterion_html_a1e8029e676fc7c3a0efaf922c57b14c3"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceCriterion.html#a1e8029e676fc7c3a0efaf922c57b14c3">eve::dev::RenderSliceCriterion::resource</a></div><div class="ttdeci">std::string resource</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00037">RenderFlow.hpp:37</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceResult_html"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceResult.html">eve::dev::RenderSliceResult</a></div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00040">RenderFlow.hpp:40</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceResult_html_a0049dfe9f5eda7570f4c7609500804e6"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceResult.html#a0049dfe9f5eda7570f4c7609500804e6">eve::dev::RenderSliceResult::passes</a></div><div class="ttdeci">std::vector&lt; std::string &gt; passes</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00043">RenderFlow.hpp:43</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceResult_html_a298706d6ff9770c4417ff21f79f5faf8"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceResult.html#a298706d6ff9770c4417ff21f79f5faf8">eve::dev::RenderSliceResult::summary</a></div><div class="ttdeci">std::string summary</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00044">RenderFlow.hpp:44</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceResult_html_a86d89756af582514c5ceaaf83b520987"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceResult.html#a86d89756af582514c5ceaaf83b520987">eve::dev::RenderSliceResult::eventIds</a></div><div class="ttdeci">std::vector&lt; uint32_t &gt; eventIds</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00041">RenderFlow.hpp:41</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1RenderSliceResult_html_ad69f6c29ed2988bd8356c55d589e81b4"><div class="ttname"><a href="structeve_1_1dev_1_1RenderSliceResult.html#ad69f6c29ed2988bd8356c55d589e81b4">eve::dev::RenderSliceResult::path</a></div><div class="ttdeci">std::vector&lt; RenderEvent &gt; path</div><div class="ttdef"><b>Definition</b> <a href="RenderFlow_8hpp_source.html#l00042">RenderFlow.hpp:42</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

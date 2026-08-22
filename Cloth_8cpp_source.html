@@ -1,0 +1,577 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/Cloth.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Cloth.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Cloth_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Cloth_8h.html">physics/Cloth.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Canvas_8h.html">graphics/Canvas.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">eve::graphics::Color</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a9bc35bf35c50307647edb51d961eca6b">   15</a></span><a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a9bc35bf35c50307647edb51d961eca6b">Cloth::Cloth</a>(<span class="keywordtype">int</span> cols, <span class="keywordtype">int</span> rows, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY)</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    : cols_(cols), rows_(rows), spacing_(<a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>), originX_(originX), originY_(originY) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (cols_ &lt; 2 || rows_ &lt; 2)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Cloth: cols and rows must be &gt;= 2&quot;</span>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (spacing_ &lt;= 0.f)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Cloth: spacing must be &gt; 0&quot;</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    particles_.resize(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(cols_ * rows_));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> r = 0; r &lt; rows_; ++r) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = 0; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> &lt; cols_; ++<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(r * cols_ + <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)];</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = originX_ + float(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) * spacing_;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = originY_ + float(r) * spacing_;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.pinned = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    rebuildLinks();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#afa3f7c8d5d83155e3ae5bb9188722db4">pinTopRow</a>();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a3c0d04a8289d5f0c789517e9a687aa50">   35</a></span><a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a3c0d04a8289d5f0c789517e9a687aa50">Cloth::~Cloth</a>() { <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab4ecb85c828f465a4a250fd14f246963">destroy</a>(); }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ab4ecb85c828f465a4a250fd14f246963">   37</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab4ecb85c828f465a4a250fd14f246963">Cloth::destroy</a>() { destroyed_ = <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keywordtype">void</span> Cloth::rebuildLinks() {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    links_.clear();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">auto</span> add = [&amp;](<span class="keywordtype">int</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> &lt; 0 || b &lt; 0 || a &gt;= <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">getParticleCount</a>() || <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> &gt;= <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">getParticleCount</a>()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        Link link;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        link.a    = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        link.b    = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">const</span> Particle &amp;pa = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> Particle &amp;pb = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)];</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx = pb.x - pa.x;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dy = pb.y - pa.y;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        link.rest = std::sqrt(dx * dx + dy * dy);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (link.rest &gt; 1e-4f) links_.push_back(link);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> r = 0; r &lt; rows_; ++r) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = 0; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> &lt; cols_; ++<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> i = r * cols_ + <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="comment">// Structural</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> + 1 &lt; cols_) add(i, i + 1);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">if</span> (r + 1 &lt; rows_) add(i, i + cols_);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="comment">// Shear</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> + 1 &lt; cols_ &amp;&amp; r + 1 &lt; rows_) add(i, i + cols_ + 1);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> &gt; 0 &amp;&amp; r + 1 &lt; rows_) add(i, i + cols_ - 1);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="comment">// Bend (every other)</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> + 2 &lt; cols_) add(i, i + 2);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">if</span> (r + 2 &lt; rows_) add(i, i + cols_ * 2);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keywordtype">bool</span> Cloth::validIndex(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">return</span> index &gt;= 0 &amp;&amp; index &lt; <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">getParticleCount</a>();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a74104e788eb8dd83633b78b0b6a27ea1">   74</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a74104e788eb8dd83633b78b0b6a27ea1">Cloth::setGravity</a>(<span class="keywordtype">float</span> gx, <span class="keywordtype">float</span> gy) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    gravityX_ = gx;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    gravityY_ = gy;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a16c3d97ec93e9d6666c7a7e19c1c47fe">   79</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a16c3d97ec93e9d6666c7a7e19c1c47fe">Cloth::setStiffness</a>(<span class="keywordtype">float</span> stiffness) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    stiffness_ = std::clamp(stiffness, 0.f, 1.f);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#abde34ad705f5963f1cdf050d4ffbb82e">   83</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#abde34ad705f5963f1cdf050d4ffbb82e">Cloth::setIterations</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    iterations_ = std::max(1, <a class="code hl_variable" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a39d45a64dd32b7d16e9387ae52463a15">   87</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a39d45a64dd32b7d16e9387ae52463a15">Cloth::setDamping</a>(<span class="keywordtype">float</span> damping) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    damping_ = std::clamp(damping, 0.f, 1.f);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a100bce50a61503a5c1619603a5f3952d">   91</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a100bce50a61503a5c1619603a5f3952d">Cloth::setBounds</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt;= 0.f || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt;= 0.f) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a34ab11215f5d602656fb38a6b46d1626">clearBounds</a>();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    hasBounds_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    boundX_ = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    boundY_ = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    boundW_ = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    boundH_ = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a34ab11215f5d602656fb38a6b46d1626">  103</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a34ab11215f5d602656fb38a6b46d1626">Cloth::clearBounds</a>() { hasBounds_ = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="foldopen" id="foldopen00105" data-start="{" data-end="}">
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#aa9630cb34755e73d1eeec21cdcca4ef5">  105</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aa9630cb34755e73d1eeec21cdcca4ef5">Cloth::pin</a>(<span class="keywordtype">int</span> index) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (!validIndex(index)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Cloth.pin: index out of range&quot;</span>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index)].pinned = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#af22c557b36f17e9b102cb878a101a24a">  110</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#af22c557b36f17e9b102cb878a101a24a">Cloth::unpin</a>(<span class="keywordtype">int</span> index) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!validIndex(index)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Cloth.unpin: index out of range&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index)].pinned = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="}">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#afa3f7c8d5d83155e3ae5bb9188722db4">  115</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#afa3f7c8d5d83155e3ae5bb9188722db4">Cloth::pinTopRow</a>() {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = 0; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> &lt; cols_; ++<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)].pinned = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a601c095ec9fecf5d5f647eb98f018fc8">  120</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a601c095ec9fecf5d5f647eb98f018fc8">Cloth::isPinned</a>(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (!validIndex(index)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index)].pinned;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="foldopen" id="foldopen00125" data-start="{" data-end="}">
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ad3676dba789066d0bae2400a68d9b94a">  125</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ad3676dba789066d0bae2400a68d9b94a">Cloth::grabAt</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> radius) {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    grabIndex_ = -1;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">float</span> best = radius * radius;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">getParticleCount</a>(); ++i) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keyword">const</span> Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.pinned) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x - <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dy = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y - <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> d2 = dx * dx + dy * dy;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (d2 &lt;= best) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            best = d2;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            grabIndex_ = i;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (grabIndex_ &gt;= 0) <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a83cc823609186bd99a045877e03937fc">moveGrab</a>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">return</span> grabIndex_;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>}</div>
+</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a83cc823609186bd99a045877e03937fc">  143</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a83cc823609186bd99a045877e03937fc">Cloth::moveGrab</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    grabX_ = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    grabY_ = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">if</span> (!validIndex(grabIndex_)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(grabIndex_)];</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>}</div>
+</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ad6b25e9dbde4df0d7fdd2a59beb51d64">  154</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ad6b25e9dbde4df0d7fdd2a59beb51d64">Cloth::releaseGrab</a>() { grabIndex_ = -1; }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="foldopen" id="foldopen00156" data-start="{" data-end="}">
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ab8330f245b9f5c3240b47a497f701bea">  156</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab8330f245b9f5c3240b47a497f701bea">Cloth::applyForce</a>(<span class="keywordtype">float</span> fx, <span class="keywordtype">float</span> fy) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    forceX_ += fx;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    forceY_ += fy;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="foldopen" id="foldopen00161" data-start="{" data-end="}">
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a9109f65a461ea08d2a02fc98939e8414">  161</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a9109f65a461ea08d2a02fc98939e8414">Cloth::setColor</a>(<span class="keywordtype">float</span> r, <span class="keywordtype">float</span> g, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    colorR_ = r;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    colorG_ = g;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    colorB_ = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    colorA_ = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="foldopen" id="foldopen00168" data-start="{" data-end="}">
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a44eddb3509afea9cd3af9e82c15127f5">  168</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a44eddb3509afea9cd3af9e82c15127f5">Cloth::getParticleX</a>(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">if</span> (!validIndex(index)) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">return</span> particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index)].<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}</div>
+</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a6e305629127c9fb51e064c9811174554">  173</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a6e305629127c9fb51e064c9811174554">Cloth::getParticleY</a>(<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">if</span> (!validIndex(index)) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">return</span> particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index)].<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}</div>
+</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="foldopen" id="foldopen00178" data-start="{" data-end="}">
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a01490e86e3a6ab78bc0180a68f0ccc85">  178</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a01490e86e3a6ab78bc0180a68f0ccc85">Cloth::setParticlePosition</a>(<span class="keywordtype">int</span> index, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">if</span> (!validIndex(index)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;Cloth.setParticlePosition: index out of range&quot;</span>);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(index)];</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="keywordtype">void</span> Cloth::integrate(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">if</span> (dt &lt;= 0.f) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> ax = gravityX_ + forceX_;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> ay = gravityY_ + forceY_;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> damp = 1.f - damping_;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">for</span> (Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : particles_) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.pinned) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> vx = (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px) * damp;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> vy = (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py) * damp;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x += vx + ax * dt * dt;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y += vy + ay * dt * dt;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>}</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="keywordtype">void</span> Cloth::solveConstraints() {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iter = 0; iter &lt; iterations_; ++iter) {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> Link &amp;link : links_) {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            Particle &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(link.a)];</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            Particle &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(link.b)];</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.pinned &amp;&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pinned) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <span class="keywordtype">float</span> dx = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            <span class="keywordtype">float</span> dy = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keywordtype">float</span> dist = std::sqrt(dx * dx + dy * dy);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">if</span> (dist &lt; 1e-5f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> diff = (dist - link.rest) / dist * stiffness_;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            <span class="comment">// When one end is pinned, apply the full correction to the free end.</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.pinned) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x -= dx * diff;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y -= dy * diff;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.pinned) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x += dx * diff;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y += dy * diff;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> half = diff * 0.5f;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x += dx * half;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y += dy * half;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x -= dx * half;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y -= dy * half;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            }</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordflow">if</span> (validIndex(grabIndex_)) {</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            Particle &amp;g = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(grabIndex_)];</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            g.x  = grabX_;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            g.y  = grabY_;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            g.px = grabX_;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            g.py = grabY_;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>}</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="keywordtype">void</span> Cloth::collideBounds() {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keywordflow">if</span> (!hasBounds_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> minX = boundX_;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> minY = boundY_;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> maxX = boundX_ + boundW_;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> maxY = boundY_ + boundH_;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keyword">constexpr</span> <span class="keywordtype">float</span> bounce = 0.35f;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">for</span> (Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : particles_) {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.pinned) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x &lt; minX) {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> vx = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x  = minX;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x + vx * bounce;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x &gt; maxX) {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> vx = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x  = maxX;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x + vx * bounce;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        }</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y &lt; minY) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> vy = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y  = minY;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y + vy * bounce;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y &gt; maxY) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> vy = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y - <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y  = maxY;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y + vy * bounce;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        }</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    }</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>}</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="foldopen" id="foldopen00273" data-start="{" data-end="}">
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a851241c9f23cc2f0539b4ac90701b089">  273</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a851241c9f23cc2f0539b4ac90701b089">Cloth::update</a>(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordflow">if</span> (destroyed_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="keywordflow">if</span> (dt &lt; 0.f) dt = 0.f;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordflow">if</span> (dt &gt; 0.05f) dt = 0.05f;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="comment">// Fixed substeps for stability under hitch frames.</span></div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> substeps = 2;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = dt / float(substeps);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> = 0; <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> &lt; substeps; ++<a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) {</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        integrate(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        solveConstraints();</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        collideBounds();</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordflow">if</span> (grabIndex_ &gt;= 0) {</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(grabIndex_)];</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            <span class="comment">// Preserve grab target set by moveGrab (px/py already synced there).</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.px = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.py = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        }</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    }</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    forceX_ = 0.f;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    forceY_ = 0.f;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>}</div>
+</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="foldopen" id="foldopen00296" data-start="{" data-end="}">
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ab97fa8e9e14ba9e85d3a41a1cce304b2">  296</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab97fa8e9e14ba9e85d3a41a1cce304b2">Cloth::draw</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx) {</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <span class="keywordflow">if</span> (!gfx || destroyed_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keyword">const</span> Color linkColor(colorR_, colorG_, colorB_, colorA_ * 0.75f);</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keyword">const</span> Color nodeColor(colorR_, colorG_, colorB_, colorA_);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> Link &amp;link : links_) {</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        <span class="keyword">const</span> Particle &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(link.a)];</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        <span class="keyword">const</span> Particle &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(link.b)];</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> x1 = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x, y1 = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y, x2 = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, y2 = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx = x2 - x1;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dy = y2 - y1;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> len = std::sqrt(dx * dx + dy * dy);</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> steps = std::max(1, <span class="keywordtype">int</span>(len / 4.f));</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt;= steps; ++i) {</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> t = float(i) / float(steps);</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a69362b88d9a68889fcab66bee5f73146">drawSolidRect</a>(x1 + dx * t - 1.f, y1 + dy * t - 1.f, 2.f, 2.f, linkColor);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        }</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    }</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : particles_) {</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.pinned ? 5.f : 3.f;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a69362b88d9a68889fcab66bee5f73146">drawSolidRect</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x - <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> * 0.5f, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y - <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> * 0.5f, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>, <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>, nodeColor);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    }</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keywordflow">if</span> (grabIndex_ &gt;= 0) {</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <span class="keyword">const</span> Particle &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = particles_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(grabIndex_)];</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a69362b88d9a68889fcab66bee5f73146">drawSolidRect</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x - 6.f, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y - 6.f, 12.f, 12.f,</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>                           Color(1.f, 0.85f, 0.35f, 0.9f));</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    }</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>}</div>
+</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aCanvas_8h_html"><div class="ttname"><a href="Canvas_8h.html">Canvas.h</a></div></div>
+<div class="ttc" id="aCloth_8h_html"><div class="ttname"><a href="Cloth_8h.html">Cloth.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00444">RenderSystem3D.cpp:444</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a12acf4cc0533ead229b8b9f6c86b7fe6"><div class="ttname"><a href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a></div><div class="ttdeci">int spacing</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00117">TileConfig.cpp:117</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a1d10e252e778731e59f0f71afd7e727e"><div class="ttname"><a href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00193">TreeMesh.cpp:193</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a69362b88d9a68889fcab66bee5f73146"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a69362b88d9a68889fcab66bee5f73146">eve::graphics::Graphics::drawSolidRect</a></div><div class="ttdeci">virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a=1.f)</div><div class="ttdoc">RGBA-float overload matching the script-facing drawSolidRect name.</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00923">Graphics.cpp:923</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a01490e86e3a6ab78bc0180a68f0ccc85"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a01490e86e3a6ab78bc0180a68f0ccc85">eve::physics::Cloth::setParticlePosition</a></div><div class="ttdeci">void setParticlePosition(int index, float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00178">Cloth.cpp:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a100bce50a61503a5c1619603a5f3952d"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a100bce50a61503a5c1619603a5f3952d">eve::physics::Cloth::setBounds</a></div><div class="ttdeci">void setBounds(float x, float y, float w, float h)</div><div class="ttdoc">Axis-aligned walls; particles bounce inside. Disabled if w/h &lt;= 0.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00091">Cloth.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a16c3d97ec93e9d6666c7a7e19c1c47fe"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a16c3d97ec93e9d6666c7a7e19c1c47fe">eve::physics::Cloth::setStiffness</a></div><div class="ttdeci">void setStiffness(float stiffness)</div><div class="ttdoc">Constraint relaxation strength in [0,1] (default 0.85).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00079">Cloth.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a34ab11215f5d602656fb38a6b46d1626"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a34ab11215f5d602656fb38a6b46d1626">eve::physics::Cloth::clearBounds</a></div><div class="ttdeci">void clearBounds()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00103">Cloth.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a39d45a64dd32b7d16e9387ae52463a15"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a39d45a64dd32b7d16e9387ae52463a15">eve::physics::Cloth::setDamping</a></div><div class="ttdeci">void setDamping(float damping)</div><div class="ttdoc">Damping applied to Verlet velocity [0,1] (default 0.01).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00087">Cloth.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a3c0d04a8289d5f0c789517e9a687aa50"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a3c0d04a8289d5f0c789517e9a687aa50">eve::physics::Cloth::~Cloth</a></div><div class="ttdeci">~Cloth()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00035">Cloth.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a44eddb3509afea9cd3af9e82c15127f5"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a44eddb3509afea9cd3af9e82c15127f5">eve::physics::Cloth::getParticleX</a></div><div class="ttdeci">float getParticleX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00168">Cloth.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a601c095ec9fecf5d5f647eb98f018fc8"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a601c095ec9fecf5d5f647eb98f018fc8">eve::physics::Cloth::isPinned</a></div><div class="ttdeci">bool isPinned(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00120">Cloth.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a6e305629127c9fb51e064c9811174554"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a6e305629127c9fb51e064c9811174554">eve::physics::Cloth::getParticleY</a></div><div class="ttdeci">float getParticleY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00173">Cloth.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a74104e788eb8dd83633b78b0b6a27ea1"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a74104e788eb8dd83633b78b0b6a27ea1">eve::physics::Cloth::setGravity</a></div><div class="ttdeci">void setGravity(float gx, float gy)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00074">Cloth.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a80953d8e8c2903b8a60bceb04e11ddb7"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">eve::physics::Cloth::getParticleCount</a></div><div class="ttdeci">int getParticleCount() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00082">Cloth.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a83cc823609186bd99a045877e03937fc"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a83cc823609186bd99a045877e03937fc">eve::physics::Cloth::moveGrab</a></div><div class="ttdeci">void moveGrab(float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00143">Cloth.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a851241c9f23cc2f0539b4ac90701b089"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a851241c9f23cc2f0539b4ac90701b089">eve::physics::Cloth::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00273">Cloth.cpp:273</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a9109f65a461ea08d2a02fc98939e8414"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a9109f65a461ea08d2a02fc98939e8414">eve::physics::Cloth::setColor</a></div><div class="ttdeci">void setColor(float r, float g, float b, float a=1.f)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00161">Cloth.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a9bc35bf35c50307647edb51d961eca6b"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a9bc35bf35c50307647edb51d961eca6b">eve::physics::Cloth::Cloth</a></div><div class="ttdeci">Cloth(int cols, int rows, float spacing, float originX, float originY)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00015">Cloth.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aa9630cb34755e73d1eeec21cdcca4ef5"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aa9630cb34755e73d1eeec21cdcca4ef5">eve::physics::Cloth::pin</a></div><div class="ttdeci">void pin(int index)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00105">Cloth.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ab4ecb85c828f465a4a250fd14f246963"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ab4ecb85c828f465a4a250fd14f246963">eve::physics::Cloth::destroy</a></div><div class="ttdeci">void destroy()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00037">Cloth.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ab8330f245b9f5c3240b47a497f701bea"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ab8330f245b9f5c3240b47a497f701bea">eve::physics::Cloth::applyForce</a></div><div class="ttdeci">void applyForce(float fx, float fy)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00156">Cloth.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ab97fa8e9e14ba9e85d3a41a1cce304b2"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ab97fa8e9e14ba9e85d3a41a1cce304b2">eve::physics::Cloth::draw</a></div><div class="ttdeci">void draw(graphics::Graphics *gfx)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00296">Cloth.cpp:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_abde34ad705f5963f1cdf050d4ffbb82e"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#abde34ad705f5963f1cdf050d4ffbb82e">eve::physics::Cloth::setIterations</a></div><div class="ttdeci">void setIterations(int iterations)</div><div class="ttdoc">Constraint solver iterations per substep (default 4).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00083">Cloth.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ad3676dba789066d0bae2400a68d9b94a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ad3676dba789066d0bae2400a68d9b94a">eve::physics::Cloth::grabAt</a></div><div class="ttdeci">int grabAt(float x, float y, float radius=24.f)</div><div class="ttdoc">Grab nearest free particle within radius (pixels). Returns particle index, or -1 if none.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00125">Cloth.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ad6b25e9dbde4df0d7fdd2a59beb51d64"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ad6b25e9dbde4df0d7fdd2a59beb51d64">eve::physics::Cloth::releaseGrab</a></div><div class="ttdeci">void releaseGrab()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00154">Cloth.cpp:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_af22c557b36f17e9b102cb878a101a24a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#af22c557b36f17e9b102cb878a101a24a">eve::physics::Cloth::unpin</a></div><div class="ttdeci">void unpin(int index)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00110">Cloth.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_afa3f7c8d5d83155e3ae5bb9188722db4"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#afa3f7c8d5d83155e3ae5bb9188722db4">eve::physics::Cloth::pinTopRow</a></div><div class="ttdeci">void pinTopRow()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00115">Cloth.cpp:115</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a984994cf626422557f08db6251ec6617"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">eve::graphics::Color</a></div><div class="ttdeci">glm::vec4 Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdef"><b>Definition</b> <a href="Body_8cpp_source.html#l00011">Body.cpp:11</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

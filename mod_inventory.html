@@ -1,0 +1,217 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 背包 / 物品栏模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">背包 / 物品栏模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>背包 / 物品栏模块</h1>
+<p><b>脚本入口：</b> <code>eve.Inventory()</code></p>
+<p>数据驱动的物品定义、固定格容器（背包/箱子）、跨包转移、具名装备栏，以及可插拔的接纳 / 容量 / 堆叠规则。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local inv = eve.Inventory();</div>
+<div class="line">inv.registerItemsFromJson(@&quot;[</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;potion.hp&quot;&quot;,&quot;&quot;displayName&quot;&quot;:&quot;&quot;治疗药水&quot;&quot;,&quot;&quot;maxStack&quot;&quot;:20,&quot;&quot;weight&quot;&quot;:0.2,&quot;&quot;tags&quot;&quot;:[&quot;&quot;potion&quot;&quot;]},</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;sword.iron&quot;&quot;,&quot;&quot;maxStack&quot;&quot;:1,&quot;&quot;weight&quot;&quot;:3.5,&quot;&quot;equipSlot&quot;&quot;:&quot;&quot;weapon&quot;&quot;,&quot;&quot;tags&quot;&quot;:[&quot;&quot;weapon&quot;&quot;]}</div>
+<div class="line">]&quot;);</div>
+<div class="line"> </div>
+<div class="line">local bag = inv.newBag(20);</div>
+<div class="line">bag.setId(&quot;player&quot;);</div>
+<div class="line">bag.setMaxWeight(50.0);</div>
+<div class="line">bag.addItem(&quot;potion.hp&quot;, 5);</div>
+<div class="line">print(bag.countItem(&quot;potion.hp&quot;) + &quot;\n&quot;);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Inventory</code> 持有进程级物品定义表，并创建 <code>Bag</code> / <code>EquipmentSet</code>。容量策略名、接纳规则名、堆叠规则名都是字符串；内置规则开箱即用，自定义规则需在 C++ 侧 <code>InventorySystem::register*</code>。变更事件可在操作后用 <code>getChangeEvent*</code> 轮询。</p>
+<h2>目标导向指南</h2>
+<h3>做玩家背包与任务栏</h3>
+<p><code>newBag(n)</code> 建主背包；另建一个 <code>acceptTags</code> 仅含 <code>"quest"</code> 的袋子作任务栏。主背包可 <code>addRejectTag("quest")</code> 拒绝任务物品误入。</p>
+<h3>穿脱装备</h3>
+<p><code>newEquipmentSet()</code> 后 <code>defineSlot("weapon")</code>，可选 <code>addSlotAllowedTag</code>。从背包 <code>findItem</code> 得到槽位，再 <code>equipFromBag</code> / <code>unequipToBag</code>。属性加成请在脚本或 C++ <code>registerChangeHook</code> 里对接 <code>rpg</code> 模块，背包本身不依赖 RPG。</p>
+<h2>常见问题</h2>
+<ul>
+<li>未先 <code>registerItemsFromJson</code> / C++ <code>registerItem</code> 就 <code>addItem</code>，会放入 0 个。</li>
+<li><code>canAddItem</code> 表示能否放入**全部**请求数量；<code>addItem</code> 允许部分成功。</li>
+<li><code>maxWeight</code> / <code>maxVolume</code> 为 <code>&lt;=0</code> 时该维度不限制（仍受所选 <code>capacityPolicy</code> 约束）。</li>
+</ul>
+<h2>API 快查</h2>
+<ul>
+<li><code>addAcceptTag()</code>、<code>addItem()</code>、<code>addRejectTag()</code>、<code>addSlotAllowedTag()</code>、<code>addSlotTag()</code>、<code>canAddItem()</code>、<code>canAddItemReason()</code>、<code>clear()</code>、<code>clearAcceptTags()</code></li>
+<li><code>clearChangeEvents()</code>、<code>clearItemDefinitions()</code>、<code>clearRejectTags()</code>、<code>clearSlot()</code>、<code>clearSlotAllowedTags()</code>、<code>countItem()</code>、<code>defineSlot()</code>、<code><a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy()</a></code>、<code>equipFromBag()</code></li>
+<li><code>findItem()</code>、<code>findItemByTag()</code>、<code>getAcceptRule()</code>、<code>getAcceptTag()</code>、<code>getAcceptTagCount()</code>、<code>getCapacityPolicy()</code>、<code>getChangeEventAction()</code>、<code>getChangeEventBagId()</code>、<code>getChangeEventCount()</code></li>
+<li><code>getChangeEventEquipSlot()</code>、<code>getChangeEventItemId()</code>、<code>getChangeEventOtherBagId()</code>、<code>getChangeEventOtherSlot()</code>、<code>getChangeEventQuantity()</code>、<code>getChangeEventSlot()</code>、<code>getExtra()</code>、<code>getId()</code>、<code>getItemCategory()</code></li>
+<li><code>getItemDefinitionCount()</code>、<code>getItemDisplayName()</code>、<code>getItemEquipSlot()</code>、<code>getItemExtra()</code>、<code>getItemMaxStack()</code>、<code>getItemVolume()</code>、<code>getItemWeight()</code>、<code>getKind()</code>、<code>getMaxVolume()</code></li>
+<li><code>getMaxWeight()</code>、<code>getName()</code>、<code>getRejectTag()</code>、<code>getRejectTagCount()</code>、<code>getSlotCount()</code>、<code>getSlotDurability()</code>、<code>getSlotInstanceId()</code>、<code>getSlotItemId()</code>、<code>getSlotName()</code></li>
+<li><code>getSlotProp()</code>、<code>getSlotQuantity()</code>、<code>getStackRule()</code>、<code>getUsedSlotCount()</code>、<code>getUsedVolume()</code>、<code>getUsedWeight()</code>、<code>hasAcceptRule()</code>、<code>hasCapacityPolicy()</code>、<code>hasItemDefinition()</code></li>
+<li><code>hasSlot()</code>、<code>hasStackRule()</code>、<code>isSlotEmpty()</code>、<code>itemHasTag()</code>、<code>moveSlot()</code>、<code>newBag()</code>、<code>newEquipmentSet()</code>、<code>registerItemsFromJson()</code>、<code>removeAt()</code></li>
+<li><code>removeItem()</code>、<code>setAcceptRule()</code>、<code>setCapacityPolicy()</code>、<code>setExtra()</code>、<code>setId()</code>、<code>setKind()</code>、<code>setMaxVolume()</code>、<code>setMaxWeight()</code>、<code>setSlotCount()</code></li>
+<li><code>setSlotDurability()</code>、<code>setSlotProp()</code>、<code>setStackRule()</code>、<code>slotHasTag()</code>、<code>splitStack()</code>、<code>swapSlots()</code>、<code>transferItem()</code>、<code>transferSlot()</code>、<code>unequipToBag()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>将 <code>Bag</code> / <code>EquipmentSet</code> 保存在全局或实体状态中，不要每帧 <code>newBag</code>。</li>
+<li>浮点重量/体积在脚本侧为 <code>float</code>。</li>
+<li>自定义接纳/容量/堆叠回调只能在 C++ 注册；脚本通过策略名字符串选用。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/inventory/"><code>src/modules/inventory/</code></a> <br  />
+ <b>设计文档：</b> `docs/dev/背包系统设计.md` <br  />
+ <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>inventory</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

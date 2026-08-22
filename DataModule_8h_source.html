@@ -1,0 +1,288 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/data/DataModule.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5f3cda9c86f9ccc1b89531476dd8cb5c.html">data</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DataModule.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DataModule_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CompressedData_8h.html">CompressedData.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Compressor_8h.html">Compressor.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="HashFunction_8h.html">HashFunction.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="DataView_8h.html">DataView.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="ByteData_8h.html">ByteData.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="JsonDocument_8h.html">JsonDocument.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="XmlDocument_8h.html">XmlDocument.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790">   20</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790">ContainerType</a></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873">   22</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873">CONTAINER_DATA</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03">   23</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03">CONTAINER_STRING</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732">CONTAINER_MAX_ENUM</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732">   25</a></span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>CompressedData *<a class="code hl_function" href="namespaceeve_1_1data.html#a457cedb68714d4cb60fd3bb3810f64ca">compress</a>(std::string format, <span class="keyword">const</span> <span class="keywordtype">char</span> *rawbytes, <span class="keywordtype">size_t</span> rawsize, <span class="keywordtype">int</span> level = -1);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keywordtype">char</span> *<a class="code hl_function" href="namespaceeve_1_1data.html#a627fde537f02a56846d0c025896c4ae0">decompress</a>(CompressedData *data, <span class="keywordtype">size_t</span> &amp;decompressedsize);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keywordtype">char</span> *<a class="code hl_function" href="namespaceeve_1_1data.html#a627fde537f02a56846d0c025896c4ae0">decompress</a>(std::string format, <span class="keyword">const</span> <span class="keywordtype">char</span> *cbytes, <span class="keywordtype">size_t</span> compressedsize, <span class="keywordtype">size_t</span> &amp;rawsize);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keywordtype">char</span> *<a class="code hl_function" href="namespaceeve_1_1data.html#a0c87650a45564a608303fbe8b1b489a8">encode</a>(std::string format, <span class="keyword">const</span> <span class="keywordtype">char</span> *src, <span class="keywordtype">size_t</span> srclen, <span class="keywordtype">size_t</span> &amp;dstlen, <span class="keywordtype">size_t</span> linelen = 0);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keywordtype">char</span> *<a class="code hl_function" href="namespaceeve_1_1data.html#a6803aa09ea28b695c3bd8b7dc1b11890">decode</a>(std::string format, <span class="keyword">const</span> <span class="keywordtype">char</span> *src, <span class="keywordtype">size_t</span> srclen, <span class="keywordtype">size_t</span> &amp;dstlen);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>std::string <a class="code hl_function" href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">hash</a>(std::string function, <a class="code hl_class" href="classeve_1_1Data.html">Data</a> *input);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>std::string <a class="code hl_function" href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">hash</a>(std::string function, <span class="keyword">const</span> <span class="keywordtype">char</span> *input, uint64_t size);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">hash</a>(std::string function, <a class="code hl_class" href="classeve_1_1Data.html">Data</a> *input, HashFunction::Value &amp;output);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">hash</a>(std::string function, <span class="keyword">const</span> <span class="keywordtype">char</span> *input, uint64_t size, HashFunction::Value &amp;output);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="};">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1data_1_1DataModule.html">  100</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1data_1_1DataModule.html">DataModule</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>{</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1data_1_1DataModule.html#abf6809039e07f51d1e7a5739e697ed82">  103</a></span>    <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#abf6809039e07f51d1e7a5739e697ed82">Module_REG</a>(<a class="code hl_class" href="classeve_1_1data_1_1DataModule.html">DataModule</a>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a06aa4781c4803d6c4bc792600ec01c1e">DataModule</a>();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a0bb7d270b8ba19f87c2e0b1a07d097cf">~DataModule</a>();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_class" href="classeve_1_1data_1_1DataView.html">DataView</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a276ee3d21524b99a7c27df71a425336a">newDataView</a>(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *data, <span class="keywordtype">size_t</span> offset, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">ByteData</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a33695ff61f0b67d9006fb0c5e84cb4c3">newByteData</a>(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">ByteData</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a33695ff61f0b67d9006fb0c5e84cb4c3">newByteData</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> *<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">ByteData</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a33695ff61f0b67d9006fb0c5e84cb4c3">newByteData</a>(<span class="keywordtype">void</span> *<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>, <span class="keywordtype">size_t</span> size, <span class="keywordtype">bool</span> own);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_class" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#abfe2c52d8d2f7e16b7d68464ce43a8cb">newJsonDocument</a>();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a69cb92a460ff3bb63baa105153f76037">decodeJson</a>(<span class="keyword">const</span> std::string &amp;text);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_class" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a69cb92a460ff3bb63baa105153f76037">decodeJson</a>(<span class="keyword">const</span> std::string &amp;text, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a69cb92a460ff3bb63baa105153f76037">decodeJson</a>(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *data, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::string   <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#ad82feb3e130968cb80daad9f2796c797">encodeJson</a>(<a class="code hl_class" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> *doc, <span class="keywordtype">bool</span> pretty = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">ByteData</a> *    <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a23dafb819258380c627f0315245238d8">encodeJsonData</a>(<a class="code hl_class" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> *doc, <span class="keywordtype">bool</span> pretty = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <a class="code hl_class" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a8f8885ca54e4fc353d6984838054fdf2">newXmlDocument</a>();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_class" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a8aa29c99a0e7594d0793749652aebb79">decodeXml</a>(<span class="keyword">const</span> std::string &amp;text);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a8aa29c99a0e7594d0793749652aebb79">decodeXml</a>(<span class="keyword">const</span> std::string &amp;text, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_class" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> *<a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a8aa29c99a0e7594d0793749652aebb79">decodeXml</a>(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *data, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    std::string  <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a3cf4fe4837475513e44b69268f56084c">encodeXml</a>(<a class="code hl_class" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> *doc, <span class="keywordtype">bool</span> pretty = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_class" href="classeve_1_1data_1_1ByteData.html">ByteData</a> *   <a class="code hl_function" href="classeve_1_1data_1_1DataModule.html#a237564b239fa6efdf19a0d7432a8bfe7">encodeXmlData</a>(<a class="code hl_class" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a> *doc, <span class="keywordtype">bool</span> pretty = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}; <span class="comment">// DataModule</span></div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>} <span class="comment">// data</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>} <span class="comment">// eve</span></div>
+<div class="ttc" id="aByteData_8h_html"><div class="ttname"><a href="ByteData_8h.html">ByteData.h</a></div></div>
+<div class="ttc" id="aCompressedData_8h_html"><div class="ttname"><a href="CompressedData_8h.html">CompressedData.h</a></div></div>
+<div class="ttc" id="aCompressor_8h_html"><div class="ttname"><a href="Compressor_8h.html">Compressor.h</a></div></div>
+<div class="ttc" id="aDataView_8h_html"><div class="ttname"><a href="DataView_8h.html">DataView.h</a></div></div>
+<div class="ttc" id="aHashFunction_8h_html"><div class="ttname"><a href="HashFunction_8h.html">HashFunction.h</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aJsonDocument_8h_html"><div class="ttname"><a href="JsonDocument_8h.html">JsonDocument.h</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_a6f364afbe132c4ecfea48bde1b0618ba"><div class="ttname"><a href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a></div><div class="ttdeci">int d</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aXmlDocument_8h_html"><div class="ttname"><a href="XmlDocument_8h.html">XmlDocument.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Data_html"><div class="ttname"><a href="classeve_1_1Data.html">eve::Data</a></div><div class="ttdef"><b>Definition</b> <a href="Data_8h_source.html#l00008">Data.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1ByteData_html"><div class="ttname"><a href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a></div><div class="ttdoc">In-memory byte buffer implementing eve::Data (ref-counted).</div><div class="ttdef"><b>Definition</b> <a href="ByteData_8h_source.html#l00011">ByteData.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html">eve::data::DataModule</a></div><div class="ttdef"><b>Definition</b> <a href="DataModule_8h_source.html#l00100">DataModule.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a06aa4781c4803d6c4bc792600ec01c1e"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a06aa4781c4803d6c4bc792600ec01c1e">eve::data::DataModule::DataModule</a></div><div class="ttdeci">DataModule()</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00246">DataModule.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a0bb7d270b8ba19f87c2e0b1a07d097cf"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a0bb7d270b8ba19f87c2e0b1a07d097cf">eve::data::DataModule::~DataModule</a></div><div class="ttdeci">virtual ~DataModule()</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00250">DataModule.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a237564b239fa6efdf19a0d7432a8bfe7"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a237564b239fa6efdf19a0d7432a8bfe7">eve::data::DataModule::encodeXmlData</a></div><div class="ttdeci">ByteData * encodeXmlData(XmlDocument *doc, bool pretty=false)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00396">DataModule.cpp:396</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a23dafb819258380c627f0315245238d8"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a23dafb819258380c627f0315245238d8">eve::data::DataModule::encodeJsonData</a></div><div class="ttdeci">ByteData * encodeJsonData(JsonDocument *doc, bool pretty=false)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00329">DataModule.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a276ee3d21524b99a7c27df71a425336a"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a276ee3d21524b99a7c27df71a425336a">eve::data::DataModule::newDataView</a></div><div class="ttdeci">DataView * newDataView(Data *data, size_t offset, size_t size)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00254">DataModule.cpp:254</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a33695ff61f0b67d9006fb0c5e84cb4c3"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a33695ff61f0b67d9006fb0c5e84cb4c3">eve::data::DataModule::newByteData</a></div><div class="ttdeci">ByteData * newByteData(size_t size)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00259">DataModule.cpp:259</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a3cf4fe4837475513e44b69268f56084c"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a3cf4fe4837475513e44b69268f56084c">eve::data::DataModule::encodeXml</a></div><div class="ttdeci">std::string encodeXml(XmlDocument *doc, bool pretty=false)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00377">DataModule.cpp:377</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a69cb92a460ff3bb63baa105153f76037"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a69cb92a460ff3bb63baa105153f76037">eve::data::DataModule::decodeJson</a></div><div class="ttdeci">JsonDocument * decodeJson(const std::string &amp;text)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00295">DataModule.cpp:295</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a8aa29c99a0e7594d0793749652aebb79"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a8aa29c99a0e7594d0793749652aebb79">eve::data::DataModule::decodeXml</a></div><div class="ttdeci">XmlDocument * decodeXml(const std::string &amp;text)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00360">DataModule.cpp:360</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_a8f8885ca54e4fc353d6984838054fdf2"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#a8f8885ca54e4fc353d6984838054fdf2">eve::data::DataModule::newXmlDocument</a></div><div class="ttdeci">XmlDocument * newXmlDocument()</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00339">DataModule.cpp:339</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_abf6809039e07f51d1e7a5739e697ed82"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#abf6809039e07f51d1e7a5739e697ed82">eve::data::DataModule::Module_REG</a></div><div class="ttdeci">Module_REG(DataModule)</div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_abfe2c52d8d2f7e16b7d68464ce43a8cb"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#abfe2c52d8d2f7e16b7d68464ce43a8cb">eve::data::DataModule::newJsonDocument</a></div><div class="ttdeci">JsonDocument * newJsonDocument()</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00274">DataModule.cpp:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataModule_html_ad82feb3e130968cb80daad9f2796c797"><div class="ttname"><a href="classeve_1_1data_1_1DataModule.html#ad82feb3e130968cb80daad9f2796c797">eve::data::DataModule::encodeJson</a></div><div class="ttdeci">std::string encodeJson(JsonDocument *doc, bool pretty=false)</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00312">DataModule.cpp:312</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1DataView_html"><div class="ttname"><a href="classeve_1_1data_1_1DataView.html">eve::data::DataView</a></div><div class="ttdoc">Contains a reference to a subsection of an existing Data object.</div><div class="ttdef"><b>Definition</b> <a href="DataView_8h_source.html#l00015">DataView.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1JsonDocument_html"><div class="ttname"><a href="classeve_1_1data_1_1JsonDocument.html">eve::data::JsonDocument</a></div><div class="ttdoc">Thin RAII wrapper over a Poco JSON value (object/array/scalar).</div><div class="ttdef"><b>Definition</b> <a href="JsonDocument_8h_source.html#l00011">JsonDocument.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1data_1_1XmlDocument_html"><div class="ttname"><a href="classeve_1_1data_1_1XmlDocument.html">eve::data::XmlDocument</a></div><div class="ttdoc">Thin RAII wrapper over a Poco XML DOM document.</div><div class="ttdef"><b>Definition</b> <a href="XmlDocument_8h_source.html#l00010">XmlDocument.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a0c87650a45564a608303fbe8b1b489a8"><div class="ttname"><a href="namespaceeve_1_1data.html#a0c87650a45564a608303fbe8b1b489a8">eve::data::encode</a></div><div class="ttdeci">char * encode(std::string format, const char *src, size_t srclen, size_t &amp;dstlen, size_t linelen)</div><div class="ttdoc">Encodes raw bytes (e.g. hex / base64) into a text buffer.</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00204">DataModule.cpp:204</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a457cedb68714d4cb60fd3bb3810f64ca"><div class="ttname"><a href="namespaceeve_1_1data.html#a457cedb68714d4cb60fd3bb3810f64ca">eve::data::compress</a></div><div class="ttdeci">CompressedData * compress(std::string format, const char *rawbytes, size_t rawsize, int level)</div><div class="ttdoc">Compresses a block of memory using the given compression format.</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00158">DataModule.cpp:158</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a627fde537f02a56846d0c025896c4ae0"><div class="ttname"><a href="namespaceeve_1_1data.html#a627fde537f02a56846d0c025896c4ae0">eve::data::decompress</a></div><div class="ttdeci">char * decompress(CompressedData *data, size_t &amp;decompressedsize)</div><div class="ttdoc">Decompresses existing compressed data into raw bytes.</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00183">DataModule.cpp:183</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a6803aa09ea28b695c3bd8b7dc1b11890"><div class="ttname"><a href="namespaceeve_1_1data.html#a6803aa09ea28b695c3bd8b7dc1b11890">eve::data::decode</a></div><div class="ttdeci">char * decode(std::string format, const char *src, size_t srclen, size_t &amp;dstlen)</div><div class="ttdoc">Decodes a text buffer (hex / base64) back into raw bytes.</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00212">DataModule.cpp:212</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a8ffa901ca36028108bc29f760a49d790"><div class="ttname"><a href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790">eve::data::ContainerType</a></div><div class="ttdeci">ContainerType</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8h_source.html#l00020">DataModule.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732"><div class="ttname"><a href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732">eve::data::CONTAINER_MAX_ENUM</a></div><div class="ttdeci">@ CONTAINER_MAX_ENUM</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8h_source.html#l00025">DataModule.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873"><div class="ttname"><a href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873">eve::data::CONTAINER_DATA</a></div><div class="ttdeci">@ CONTAINER_DATA</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8h_source.html#l00022">DataModule.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03"><div class="ttname"><a href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03">eve::data::CONTAINER_STRING</a></div><div class="ttdeci">@ CONTAINER_STRING</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8h_source.html#l00023">DataModule.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1data_html_ad61f925811a6e50d1826eb26ad724ff2"><div class="ttname"><a href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">eve::data::hash</a></div><div class="ttdeci">std::string hash(std::string function, Data *input)</div><div class="ttdoc">Hash the input, producing an set of bytes as output.</div><div class="ttdef"><b>Definition</b> <a href="DataModule_8cpp_source.html#l00220">DataModule.cpp:220</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

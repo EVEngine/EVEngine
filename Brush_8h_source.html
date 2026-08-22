@@ -1,0 +1,304 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/Brush.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Brush.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Brush_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="TileBuffer_8h.html">editor/TileBuffer.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1Brush.html">Brush</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#a4bef57c4683a6f407b2eb605cfbc82af">   16</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a4bef57c4683a6f407b2eb605cfbc82af">Brush</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a30a3a9b312e3e984b84ae927612a92f2">setTool</a>(<span class="keyword">const</span> std::string &amp;tool);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#af570dc3f11a3213c8952b9a7cfd5f62e">   19</a></span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#af570dc3f11a3213c8952b9a7cfd5f62e">getTool</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> tool_; }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a1e9b382d353c68ec0adea4f15c2446c5">setSize</a>(<span class="keywordtype">int</span> size);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#ac4c24c681f3165e4cc1dc76e565c118e">   22</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ac4c24c681f3165e4cc1dc76e565c118e">getSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> size_; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ac42b699338c09f7161a671b8a3603613">setShape</a>(<span class="keyword">const</span> std::string &amp;shape);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#ab173f164e6831e0fe741948935840eca">   25</a></span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ab173f164e6831e0fe741948935840eca">getShape</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> shape_; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a71897a6a1a6a935f1d892d09faaf057e">setTile</a>(<span class="keywordtype">int</span> gid);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#a97b3cdb1e216170d6114fe285d3e19d5">   28</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a97b3cdb1e216170d6114fe285d3e19d5">getTile</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> tile_; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a9933df62d5c77be14c7831777d98b47f">setEraseTile</a>(<span class="keywordtype">int</span> gid);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#a6bc9c4ba6142dda2993a44a74b239621">   31</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a6bc9c4ba6142dda2993a44a74b239621">getEraseTile</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> eraseTile_; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#aeda9539ca2f018e1e8d331a4c8fce86e">setStampSize</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#ab50586fd53ab621594c9e9b6af01017d">   34</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ab50586fd53ab621594c9e9b6af01017d">getStampWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> stampW_; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#af975ef7f49cfcec34be174e1a13fceb7">   35</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#af975ef7f49cfcec34be174e1a13fceb7">getStampHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> stampH_; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a46756ea3dcb83321a2a19414e0b5e2e3">setStampTile</a>(<span class="keywordtype">int</span> lx, <span class="keywordtype">int</span> ly, <span class="keywordtype">int</span> gid);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a9a9ed2e71e21e34f629181d87d5f90e8">getStampTile</a>(<span class="keywordtype">int</span> lx, <span class="keywordtype">int</span> ly) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ad617f42db96d03d5c39e04d9afa9bde6">clearStamp</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a5c20a4c667b1dba04b1728ce0f7d2758">paintAt</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a58196295f09296a34981a71959a4f171">eraseAt</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#adb381efea520213472452b9d37c7e44b">floodFill</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a42ac67a7f8ce4f9218734912617f3114">paintLine</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> x0, <span class="keywordtype">int</span> y0, <span class="keywordtype">int</span> x1, <span class="keywordtype">int</span> y1);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a6537d7cdaa517a5e097b5a149d2aa3d8">paintRect</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> x0, <span class="keywordtype">int</span> y0, <span class="keywordtype">int</span> x1, <span class="keywordtype">int</span> y1, <span class="keywordtype">bool</span> filled);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a445c1fddc9d5035bf597bb62e74fc94f">previewAt</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a770c69a35479c0f59d5ff1cec115c281">previewLine</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> x0, <span class="keywordtype">int</span> y0, <span class="keywordtype">int</span> x1, <span class="keywordtype">int</span> y1);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a5b12ce7369abe7b6696cf3a7f45b827e">previewRect</a>(<a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *buffer, <span class="keywordtype">int</span> x0, <span class="keywordtype">int</span> y0, <span class="keywordtype">int</span> x1, <span class="keywordtype">int</span> y1, <span class="keywordtype">bool</span> filled);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#a553688ea4584d88f9e982b2913d17571">   52</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a553688ea4584d88f9e982b2913d17571">getPreviewCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(preview_.size()); }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a0575090e6a717890a2f456ab24bc2c44">getPreviewX</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ad34953616dce560f055236519ef6d01c">getPreviewY</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a3cd953de6644657cb847fa9130d9cb54">getPreviewGid</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Brush.html#ade2ba59aadcc219be312cf18c95c66a9">   57</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ade2ba59aadcc219be312cf18c95c66a9">getChangeCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(changes_.size()); }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a966ffc5c479e5ce6f828f1212a155bbf">getChangeX</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#aafd84f0ef3c13648b0b19d76bf6dd428">getChangeY</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#ab50837347637046d465b496ff4346c40">getChangeOldGid</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1Brush.html#a90d590bea51da43af9981b3358b541e5">getChangeNewGid</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">struct </span>Cell {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordtype">int</span> gid = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordtype">int</span> oldGid = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    };</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> clearChanges();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> clearPreview();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span> collectBrushCells(<span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty, std::vector&lt;std::pair&lt;int, int&gt;&gt; &amp;out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> collectLineCells(<span class="keywordtype">int</span> x0, <span class="keywordtype">int</span> y0, <span class="keywordtype">int</span> x1, <span class="keywordtype">int</span> y1, std::vector&lt;std::pair&lt;int, int&gt;&gt; &amp;out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> collectRectCells(<span class="keywordtype">int</span> x0, <span class="keywordtype">int</span> y0, <span class="keywordtype">int</span> x1, <span class="keywordtype">int</span> y1, <span class="keywordtype">bool</span> filled,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                          std::vector&lt;std::pair&lt;int, int&gt;&gt; &amp;out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">int</span> applyCells(TileBuffer *buffer, <span class="keyword">const</span> std::vector&lt;std::pair&lt;int, int&gt;&gt; &amp;cells, <span class="keywordtype">int</span> gid);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">int</span> applyStamp(TileBuffer *buffer, <span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">int</span> previewCells(TileBuffer *buffer, <span class="keyword">const</span> std::vector&lt;std::pair&lt;int, int&gt;&gt; &amp;cells, <span class="keywordtype">int</span> gid);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">bool</span> validChange(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">bool</span> validPreview(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::string tool_ = <span class="stringliteral">&quot;paint&quot;</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    std::string shape_ = <span class="stringliteral">&quot;square&quot;</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">int</span> size_ = 1;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">int</span> tile_ = 1;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">int</span> eraseTile_ = 0;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">int</span> stampW_ = 0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">int</span> stampH_ = 0;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::vector&lt;int&gt; stamp_;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::vector&lt;Cell&gt; changes_;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::vector&lt;Cell&gt; preview_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a48083b65ac9a863566dc3e3fff09a5b4"><div class="ttname"><a href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00235">Grass.cpp:235</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a2474a5474cbff19523a51eb1de01cda4"><div class="ttname"><a href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00144">Pathfinder.cpp:144</a></div></div>
+<div class="ttc" id="aTileBuffer_8h_html"><div class="ttname"><a href="TileBuffer_8h.html">TileBuffer.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html">eve::editor::Brush</a></div><div class="ttdoc">Unity GridBrushBase-inspired tile brush. Operates on TileBuffer; exposes preview + change list for UI...</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00014">Brush.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a0575090e6a717890a2f456ab24bc2c44"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a0575090e6a717890a2f456ab24bc2c44">eve::editor::Brush::getPreviewX</a></div><div class="ttdeci">int getPreviewX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00304">Brush.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a1e9b382d353c68ec0adea4f15c2446c5"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a1e9b382d353c68ec0adea4f15c2446c5">eve::editor::Brush::setSize</a></div><div class="ttdeci">void setSize(int size)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00022">Brush.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a30a3a9b312e3e984b84ae927612a92f2"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a30a3a9b312e3e984b84ae927612a92f2">eve::editor::Brush::setTool</a></div><div class="ttdeci">void setTool(const std::string &amp;tool)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00014">Brush.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a3cd953de6644657cb847fa9130d9cb54"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a3cd953de6644657cb847fa9130d9cb54">eve::editor::Brush::getPreviewGid</a></div><div class="ttdeci">int getPreviewGid(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00312">Brush.cpp:312</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a42ac67a7f8ce4f9218734912617f3114"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a42ac67a7f8ce4f9218734912617f3114">eve::editor::Brush::paintLine</a></div><div class="ttdeci">int paintLine(TileBuffer *buffer, int x0, int y0, int x1, int y1)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00243">Brush.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a445c1fddc9d5035bf597bb62e74fc94f"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a445c1fddc9d5035bf597bb62e74fc94f">eve::editor::Brush::previewAt</a></div><div class="ttdeci">int previewAt(TileBuffer *buffer, int tx, int ty)</div><div class="ttdoc">Fill preview buffer without mutating target.</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00257">Brush.cpp:257</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a46756ea3dcb83321a2a19414e0b5e2e3"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a46756ea3dcb83321a2a19414e0b5e2e3">eve::editor::Brush::setStampTile</a></div><div class="ttdeci">void setStampTile(int lx, int ly, int gid)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00045">Brush.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a4bef57c4683a6f407b2eb605cfbc82af"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a4bef57c4683a6f407b2eb605cfbc82af">eve::editor::Brush::Brush</a></div><div class="ttdeci">Brush()</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a553688ea4584d88f9e982b2913d17571"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a553688ea4584d88f9e982b2913d17571">eve::editor::Brush::getPreviewCount</a></div><div class="ttdeci">int getPreviewCount() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00052">Brush.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a58196295f09296a34981a71959a4f171"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a58196295f09296a34981a71959a4f171">eve::editor::Brush::eraseAt</a></div><div class="ttdeci">int eraseAt(TileBuffer *buffer, int tx, int ty)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00201">Brush.cpp:201</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a5b12ce7369abe7b6696cf3a7f45b827e"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a5b12ce7369abe7b6696cf3a7f45b827e">eve::editor::Brush::previewRect</a></div><div class="ttdeci">int previewRect(TileBuffer *buffer, int x0, int y0, int x1, int y1, bool filled)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00290">Brush.cpp:290</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a5c20a4c667b1dba04b1728ce0f7d2758"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a5c20a4c667b1dba04b1728ce0f7d2758">eve::editor::Brush::paintAt</a></div><div class="ttdeci">int paintAt(TileBuffer *buffer, int tx, int ty)</div><div class="ttdoc">Apply current tool at / between cells. Returns cells changed.</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00192">Brush.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a6537d7cdaa517a5e097b5a149d2aa3d8"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a6537d7cdaa517a5e097b5a149d2aa3d8">eve::editor::Brush::paintRect</a></div><div class="ttdeci">int paintRect(TileBuffer *buffer, int x0, int y0, int x1, int y1, bool filled)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00250">Brush.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a6bc9c4ba6142dda2993a44a74b239621"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a6bc9c4ba6142dda2993a44a74b239621">eve::editor::Brush::getEraseTile</a></div><div class="ttdeci">int getEraseTile() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00031">Brush.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a71897a6a1a6a935f1d892d09faaf057e"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a71897a6a1a6a935f1d892d09faaf057e">eve::editor::Brush::setTile</a></div><div class="ttdeci">void setTile(int gid)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00034">Brush.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a770c69a35479c0f59d5ff1cec115c281"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a770c69a35479c0f59d5ff1cec115c281">eve::editor::Brush::previewLine</a></div><div class="ttdeci">int previewLine(TileBuffer *buffer, int x0, int y0, int x1, int y1)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00283">Brush.cpp:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a90d590bea51da43af9981b3358b541e5"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a90d590bea51da43af9981b3358b541e5">eve::editor::Brush::getChangeNewGid</a></div><div class="ttdeci">int getChangeNewGid(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00328">Brush.cpp:328</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a966ffc5c479e5ce6f828f1212a155bbf"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a966ffc5c479e5ce6f828f1212a155bbf">eve::editor::Brush::getChangeX</a></div><div class="ttdeci">int getChangeX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00316">Brush.cpp:316</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a97b3cdb1e216170d6114fe285d3e19d5"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a97b3cdb1e216170d6114fe285d3e19d5">eve::editor::Brush::getTile</a></div><div class="ttdeci">int getTile() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00028">Brush.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a9933df62d5c77be14c7831777d98b47f"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a9933df62d5c77be14c7831777d98b47f">eve::editor::Brush::setEraseTile</a></div><div class="ttdeci">void setEraseTile(int gid)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00036">Brush.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_a9a9ed2e71e21e34f629181d87d5f90e8"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#a9a9ed2e71e21e34f629181d87d5f90e8">eve::editor::Brush::getStampTile</a></div><div class="ttdeci">int getStampTile(int lx, int ly) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00052">Brush.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_aafd84f0ef3c13648b0b19d76bf6dd428"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#aafd84f0ef3c13648b0b19d76bf6dd428">eve::editor::Brush::getChangeY</a></div><div class="ttdeci">int getChangeY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00320">Brush.cpp:320</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ab173f164e6831e0fe741948935840eca"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ab173f164e6831e0fe741948935840eca">eve::editor::Brush::getShape</a></div><div class="ttdeci">std::string getShape() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00025">Brush.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ab50586fd53ab621594c9e9b6af01017d"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ab50586fd53ab621594c9e9b6af01017d">eve::editor::Brush::getStampWidth</a></div><div class="ttdeci">int getStampWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00034">Brush.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ab50837347637046d465b496ff4346c40"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ab50837347637046d465b496ff4346c40">eve::editor::Brush::getChangeOldGid</a></div><div class="ttdeci">int getChangeOldGid(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00324">Brush.cpp:324</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ac42b699338c09f7161a671b8a3603613"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ac42b699338c09f7161a671b8a3603613">eve::editor::Brush::setShape</a></div><div class="ttdeci">void setShape(const std::string &amp;shape)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00027">Brush.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ac4c24c681f3165e4cc1dc76e565c118e"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ac4c24c681f3165e4cc1dc76e565c118e">eve::editor::Brush::getSize</a></div><div class="ttdeci">int getSize() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00022">Brush.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ad34953616dce560f055236519ef6d01c"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ad34953616dce560f055236519ef6d01c">eve::editor::Brush::getPreviewY</a></div><div class="ttdeci">int getPreviewY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00308">Brush.cpp:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ad617f42db96d03d5c39e04d9afa9bde6"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ad617f42db96d03d5c39e04d9afa9bde6">eve::editor::Brush::clearStamp</a></div><div class="ttdeci">void clearStamp()</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00059">Brush.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_adb381efea520213472452b9d37c7e44b"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#adb381efea520213472452b9d37c7e44b">eve::editor::Brush::floodFill</a></div><div class="ttdeci">int floodFill(TileBuffer *buffer, int tx, int ty)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00207">Brush.cpp:207</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_ade2ba59aadcc219be312cf18c95c66a9"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#ade2ba59aadcc219be312cf18c95c66a9">eve::editor::Brush::getChangeCount</a></div><div class="ttdeci">int getChangeCount() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00057">Brush.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_aeda9539ca2f018e1e8d331a4c8fce86e"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#aeda9539ca2f018e1e8d331a4c8fce86e">eve::editor::Brush::setStampSize</a></div><div class="ttdeci">void setStampSize(int width, int height)</div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00038">Brush.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_af570dc3f11a3213c8952b9a7cfd5f62e"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#af570dc3f11a3213c8952b9a7cfd5f62e">eve::editor::Brush::getTool</a></div><div class="ttdeci">std::string getTool() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00019">Brush.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html_af975ef7f49cfcec34be174e1a13fceb7"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html#af975ef7f49cfcec34be174e1a13fceb7">eve::editor::Brush::getStampHeight</a></div><div class="ttdeci">int getStampHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00035">Brush.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TileBuffer_html"><div class="ttname"><a href="classeve_1_1editor_1_1TileBuffer.html">eve::editor::TileBuffer</a></div><div class="ttdoc">Independent GID grid for map brushes (no hard dependency on map.TileLayer).</div><div class="ttdef"><b>Definition</b> <a href="TileBuffer_8h_source.html#l00009">TileBuffer.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00010">Brush.cpp:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

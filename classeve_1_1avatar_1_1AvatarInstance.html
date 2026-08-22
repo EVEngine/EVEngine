@@ -1,0 +1,1896 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::avatar::AvatarInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar.html">avatar</a></li><li class="navelem"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1avatar_1_1AvatarInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::avatar::AvatarInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Unified avatar instance. Kind is a string: "image" | "live2d" | "vroid". Script-facing API avoids overloads; kind-specific methods no-op / return false when unsupported.  
+ <a href="classeve_1_1avatar_1_1AvatarInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a4d1d2ea862d510b7e4a8916de2d24618" id="r_a4d1d2ea862d510b7e4a8916de2d24618"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4d1d2ea862d510b7e4a8916de2d24618">DestroyHook</a> = std::function&lt; void(<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> *)&gt;</td></tr>
+<tr class="memdesc:a4d1d2ea862d510b7e4a8916de2d24618"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback fired exactly once, when the instance is destroyed.  <br /></td></tr>
+<tr class="separator:a4d1d2ea862d510b7e4a8916de2d24618"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abff02505a65c2f89074bbe821eb98775" id="r_abff02505a65c2f89074bbe821eb98775"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#abff02505a65c2f89074bbe821eb98775">AvatarInstance</a> (std::string <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>)</td></tr>
+<tr class="separator:abff02505a65c2f89074bbe821eb98775"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b98a50383b805046801f42adaf2ff0" id="r_a49b98a50383b805046801f42adaf2ff0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a49b98a50383b805046801f42adaf2ff0">~AvatarInstance</a> ()</td></tr>
+<tr class="separator:a49b98a50383b805046801f42adaf2ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7e19a17ec4ab0846d89b77345a3bfa4" id="r_aa7e19a17ec4ab0846d89b77345a3bfa4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aa7e19a17ec4ab0846d89b77345a3bfa4">AvatarInstance</a> (const <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:aa7e19a17ec4ab0846d89b77345a3bfa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33ccf35c15a55c13768d648d30635e29" id="r_a33ccf35c15a55c13768d648d30635e29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a33ccf35c15a55c13768d648d30635e29">operator=</a> (const <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a33ccf35c15a55c13768d648d30635e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59ebadf686653d931d2a3bfc8aa145fd" id="r_a59ebadf686653d931d2a3bfc8aa145fd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a59ebadf686653d931d2a3bfc8aa145fd">getKind</a> () const</td></tr>
+<tr class="separator:a59ebadf686653d931d2a3bfc8aa145fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8f80c914bc37df51d16d0d86dd36d64" id="r_ab8f80c914bc37df51d16d0d86dd36d64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab8f80c914bc37df51d16d0d86dd36d64">setPosition</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="separator:ab8f80c914bc37df51d16d0d86dd36d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e32d8b0ca315f17dd26cf68e5fd1dcd" id="r_a2e32d8b0ca315f17dd26cf68e5fd1dcd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a2e32d8b0ca315f17dd26cf68e5fd1dcd">getX</a> () const</td></tr>
+<tr class="separator:a2e32d8b0ca315f17dd26cf68e5fd1dcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a753a3e0ad1d0699a9bc0176712d2f5dd" id="r_a753a3e0ad1d0699a9bc0176712d2f5dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a753a3e0ad1d0699a9bc0176712d2f5dd">getY</a> () const</td></tr>
+<tr class="separator:a753a3e0ad1d0699a9bc0176712d2f5dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a016c9b4dd2c8eabbce0f101d502913ce" id="r_a016c9b4dd2c8eabbce0f101d502913ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a016c9b4dd2c8eabbce0f101d502913ce">setScale</a> (float sx, float sy)</td></tr>
+<tr class="separator:a016c9b4dd2c8eabbce0f101d502913ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bea0354361bd5a2283e8cd617370f8f" id="r_a0bea0354361bd5a2283e8cd617370f8f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a0bea0354361bd5a2283e8cd617370f8f">getScaleX</a> () const</td></tr>
+<tr class="separator:a0bea0354361bd5a2283e8cd617370f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ed58ba1b517fa031d879015e65bb8b7" id="r_a8ed58ba1b517fa031d879015e65bb8b7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a8ed58ba1b517fa031d879015e65bb8b7">getScaleY</a> () const</td></tr>
+<tr class="separator:a8ed58ba1b517fa031d879015e65bb8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7221e1f43fc2d011faffd6f9bf5b730e" id="r_a7221e1f43fc2d011faffd6f9bf5b730e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a7221e1f43fc2d011faffd6f9bf5b730e">setVisible</a> (bool visible)</td></tr>
+<tr class="separator:a7221e1f43fc2d011faffd6f9bf5b730e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f2dfd59bb9171d3464aa8d82ee6afb2" id="r_a1f2dfd59bb9171d3464aa8d82ee6afb2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a1f2dfd59bb9171d3464aa8d82ee6afb2">isVisible</a> () const</td></tr>
+<tr class="separator:a1f2dfd59bb9171d3464aa8d82ee6afb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a143eb08026ee6a72c8a465208160c7cb" id="r_a143eb08026ee6a72c8a465208160c7cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a143eb08026ee6a72c8a465208160c7cb">setLayer</a> (int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:a143eb08026ee6a72c8a465208160c7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af76adbcd1f94da86c629ab3d6f218a3c" id="r_af76adbcd1f94da86c629ab3d6f218a3c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#af76adbcd1f94da86c629ab3d6f218a3c">getLayer</a> () const</td></tr>
+<tr class="separator:af76adbcd1f94da86c629ab3d6f218a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a043bfecc9cb83967798d6b0701540cc2" id="r_a043bfecc9cb83967798d6b0701540cc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a043bfecc9cb83967798d6b0701540cc2">setExpression</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a043bfecc9cb83967798d6b0701540cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bf9e3fefcf5f8b1e3691dce68989ab4" id="r_a3bf9e3fefcf5f8b1e3691dce68989ab4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a3bf9e3fefcf5f8b1e3691dce68989ab4">getExpression</a> () const</td></tr>
+<tr class="separator:a3bf9e3fefcf5f8b1e3691dce68989ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfd276ba49fb68db25a0c7bddf107e6c" id="r_abfd276ba49fb68db25a0c7bddf107e6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#abfd276ba49fb68db25a0c7bddf107e6c">setMotion</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:abfd276ba49fb68db25a0c7bddf107e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b91a967a1863ded03ae75ff2e187410" id="r_a2b91a967a1863ded03ae75ff2e187410"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a2b91a967a1863ded03ae75ff2e187410">getMotion</a> () const</td></tr>
+<tr class="separator:a2b91a967a1863ded03ae75ff2e187410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2637446c8011bf02d319b7cee41ea92" id="r_aa2637446c8011bf02d319b7cee41ea92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aa2637446c8011bf02d319b7cee41ea92">setParameter</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:aa2637446c8011bf02d319b7cee41ea92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20f14b18b0f618951e3fa90dafc53ea4" id="r_a20f14b18b0f618951e3fa90dafc53ea4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a20f14b18b0f618951e3fa90dafc53ea4">getParameter</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="separator:a20f14b18b0f618951e3fa90dafc53ea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6fbd8c5cfe9d4cd57c5a6e283ce6555" id="r_af6fbd8c5cfe9d4cd57c5a6e283ce6555"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#af6fbd8c5cfe9d4cd57c5a6e283ce6555">hasParameter</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="separator:af6fbd8c5cfe9d4cd57c5a6e283ce6555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac784fc0cc844be5d849a5726df143089" id="r_ac784fc0cc844be5d849a5726df143089"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac784fc0cc844be5d849a5726df143089">getParameterCount</a> () const</td></tr>
+<tr class="separator:ac784fc0cc844be5d849a5726df143089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55c91973048bdfff7ee21b3dabbf4e7b" id="r_a55c91973048bdfff7ee21b3dabbf4e7b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a55c91973048bdfff7ee21b3dabbf4e7b">getParameterName</a> (int index) const</td></tr>
+<tr class="separator:a55c91973048bdfff7ee21b3dabbf4e7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c4495232c20baf8654c3348f574e84" id="r_a73c4495232c20baf8654c3348f574e84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a73c4495232c20baf8654c3348f574e84">update</a> (float dt)</td></tr>
+<tr class="separator:a73c4495232c20baf8654c3348f574e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fec85d5fb424513129676f8359d0314" id="r_a1fec85d5fb424513129676f8359d0314"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a1fec85d5fb424513129676f8359d0314">sync</a> ()</td></tr>
+<tr class="memdesc:a1fec85d5fb424513129676f8359d0314"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push image / live2d layers into ECS or draw queues.  <br /></td></tr>
+<tr class="separator:a1fec85d5fb424513129676f8359d0314"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd1dd0ff0bf32e1200bd36b5c94355c6" id="r_acd1dd0ff0bf32e1200bd36b5c94355c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#acd1dd0ff0bf32e1200bd36b5c94355c6">release</a> ()</td></tr>
+<tr class="separator:acd1dd0ff0bf32e1200bd36b5c94355c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e35a365aa95c9be79116b3c6fa50af4" id="r_a9e35a365aa95c9be79116b3c6fa50af4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e35a365aa95c9be79116b3c6fa50af4">addDestroyHook</a> (<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4d1d2ea862d510b7e4a8916de2d24618">DestroyHook</a> hook)</td></tr>
+<tr class="memdesc:a9e35a365aa95c9be79116b3c6fa50af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a destruction hook; returns an id usable with <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a5d9d912ca7e857ac99dcc81635d72a11" title="Remove a previously registered destruction hook.">removeDestroyHook()</a>.  <br /></td></tr>
+<tr class="separator:a9e35a365aa95c9be79116b3c6fa50af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d9d912ca7e857ac99dcc81635d72a11" id="r_a5d9d912ca7e857ac99dcc81635d72a11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a5d9d912ca7e857ac99dcc81635d72a11">removeDestroyHook</a> (size_t <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a5d9d912ca7e857ac99dcc81635d72a11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a previously registered destruction hook.  <br /></td></tr>
+<tr class="separator:a5d9d912ca7e857ac99dcc81635d72a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad648894137102eeb5ba5238b57a075dc" id="r_ad648894137102eeb5ba5238b57a075dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ad648894137102eeb5ba5238b57a075dc">addLayer</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture, int zIndex)</td></tr>
+<tr class="separator:ad648894137102eeb5ba5238b57a075dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfad8015c5e01429d542593fb856aa1c" id="r_acfad8015c5e01429d542593fb856aa1c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#acfad8015c5e01429d542593fb856aa1c">setLayerTexture</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="separator:acfad8015c5e01429d542593fb856aa1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af018ded4bdf33a24d1c5b799cfa876c4" id="r_af018ded4bdf33a24d1c5b799cfa876c4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#af018ded4bdf33a24d1c5b799cfa876c4">setLayerVisible</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, bool visible)</td></tr>
+<tr class="separator:af018ded4bdf33a24d1c5b799cfa876c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0998d9559839288eb2e2659b9c476b3e" id="r_a0998d9559839288eb2e2659b9c476b3e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a0998d9559839288eb2e2659b9c476b3e">setLayerOffset</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, float ox, float oy)</td></tr>
+<tr class="separator:a0998d9559839288eb2e2659b9c476b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09128ba0f35f64547e12c0706929eecb" id="r_a09128ba0f35f64547e12c0706929eecb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a09128ba0f35f64547e12c0706929eecb">setLayerColor</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="separator:a09128ba0f35f64547e12c0706929eecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5fb2737384ba712fa6ef8e8bd2f07a3" id="r_ac5fb2737384ba712fa6ef8e8bd2f07a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac5fb2737384ba712fa6ef8e8bd2f07a3">setLayerZ</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, int zIndex)</td></tr>
+<tr class="separator:ac5fb2737384ba712fa6ef8e8bd2f07a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae43e9615e6ff36db3f4f8a35919a8c3a" id="r_ae43e9615e6ff36db3f4f8a35919a8c3a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ae43e9615e6ff36db3f4f8a35919a8c3a">setLayerSize</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:ae43e9615e6ff36db3f4f8a35919a8c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8337ffa5f222114e2d6a0b59a409dd9d" id="r_a8337ffa5f222114e2d6a0b59a409dd9d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a8337ffa5f222114e2d6a0b59a409dd9d">getLayerCount</a> () const</td></tr>
+<tr class="separator:a8337ffa5f222114e2d6a0b59a409dd9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad6041826972cae7d4f499c0f8b0b1d6" id="r_aad6041826972cae7d4f499c0f8b0b1d6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aad6041826972cae7d4f499c0f8b0b1d6">getLayerName</a> (int index) const</td></tr>
+<tr class="separator:aad6041826972cae7d4f499c0f8b0b1d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba0d0b853087e0d00c7451753a8991c" id="r_a4ba0d0b853087e0d00c7451753a8991c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4ba0d0b853087e0d00c7451753a8991c">hasLayer</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="separator:a4ba0d0b853087e0d00c7451753a8991c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb45d6c0abcd42d1ae87c54c9a480468" id="r_afb45d6c0abcd42d1ae87c54c9a480468"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#afb45d6c0abcd42d1ae87c54c9a480468">defineExpression</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;spec)</td></tr>
+<tr class="memdesc:afb45d6c0abcd42d1ae87c54c9a480468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spec: "eyes=1;mouth=smile;blush=0" (semicolon-separated name=value).  <br /></td></tr>
+<tr class="separator:afb45d6c0abcd42d1ae87c54c9a480468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f97b1295c5a8f09b842ead0995aa59e" id="r_a4f97b1295c5a8f09b842ead0995aa59e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4f97b1295c5a8f09b842ead0995aa59e">applyExpression</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a4f97b1295c5a8f09b842ead0995aa59e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5f0a1a5a22b4deacf3d4974da8c2648" id="r_ac5f0a1a5a22b4deacf3d4974da8c2648"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac5f0a1a5a22b4deacf3d4974da8c2648">loadLive2DModel</a> (const std::string &amp;path)</td></tr>
+<tr class="separator:ac5f0a1a5a22b4deacf3d4974da8c2648"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae28db068a0ff6bc01d4e00a6f6421f25" id="r_ae28db068a0ff6bc01d4e00a6f6421f25"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ae28db068a0ff6bc01d4e00a6f6421f25">getLive2DBackendName</a> () const</td></tr>
+<tr class="separator:ae28db068a0ff6bc01d4e00a6f6421f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7909aa281954019d3a8241d899872a9" id="r_ab7909aa281954019d3a8241d899872a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab7909aa281954019d3a8241d899872a9">hasLive2DBackend</a> () const</td></tr>
+<tr class="separator:ab7909aa281954019d3a8241d899872a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81bd812fa257dd41d6cdaef23a555d5f" id="r_a81bd812fa257dd41d6cdaef23a555d5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a81bd812fa257dd41d6cdaef23a555d5f">loadVroidModelPath</a> (const std::string &amp;path)</td></tr>
+<tr class="separator:a81bd812fa257dd41d6cdaef23a555d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a884deb21f24d06e30dd23a1eb7c1cecc" id="r_a884deb21f24d06e30dd23a1eb7c1cecc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a884deb21f24d06e30dd23a1eb7c1cecc">bindVroidModelData</a> (<a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *data)</td></tr>
+<tr class="separator:a884deb21f24d06e30dd23a1eb7c1cecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e5ddb402ae236bb7482ee99370628d1" id="r_a9e5ddb402ae236bb7482ee99370628d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e5ddb402ae236bb7482ee99370628d1">loadMorphNamesFromModel</a> (int meshIndex=0)</td></tr>
+<tr class="memdesc:a9e5ddb402ae236bb7482ee99370628d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register morph target names from ModelData as parameters (weights default 0).  <br /></td></tr>
+<tr class="separator:a9e5ddb402ae236bb7482ee99370628d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a896d4f9baa63aa39c0c9a9f8d383d6d0" id="r_a896d4f9baa63aa39c0c9a9f8d383d6d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a896d4f9baa63aa39c0c9a9f8d383d6d0">setMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</td></tr>
+<tr class="separator:a896d4f9baa63aa39c0c9a9f8d383d6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1d17b587c047c842f4f5fff13f8019f" id="r_ab1d17b587c047c842f4f5fff13f8019f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab1d17b587c047c842f4f5fff13f8019f">setTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="separator:ab1d17b587c047c842f4f5fff13f8019f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff78f9cbbb9dc104555b0b45ac48a305" id="r_aff78f9cbbb9dc104555b0b45ac48a305"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aff78f9cbbb9dc104555b0b45ac48a305">setPosition3D</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:aff78f9cbbb9dc104555b0b45ac48a305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac09efbbf665038a862abd4419e58bdd0" id="r_ac09efbbf665038a862abd4419e58bdd0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac09efbbf665038a862abd4419e58bdd0">setRotation3D</a> (float yaw, float pitch, float roll)</td></tr>
+<tr class="separator:ac09efbbf665038a862abd4419e58bdd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5bee5cfadfcf466ad3d587affb3f69d" id="r_ae5bee5cfadfcf466ad3d587affb3f69d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ae5bee5cfadfcf466ad3d587affb3f69d">setScale3D</a> (float sx, float sy, float sz)</td></tr>
+<tr class="separator:ae5bee5cfadfcf466ad3d587affb3f69d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff74ceefab02e105522b076d85e247b3" id="r_aff74ceefab02e105522b076d85e247b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aff74ceefab02e105522b076d85e247b3">getRenderable3D</a> () const</td></tr>
+<tr class="separator:aff74ceefab02e105522b076d85e247b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6114dce5c385da34267b265dd1d36743" id="r_a6114dce5c385da34267b265dd1d36743"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a6114dce5c385da34267b265dd1d36743">getBoundMesh</a> () const</td></tr>
+<tr class="separator:a6114dce5c385da34267b265dd1d36743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9b7b517c5dd3ae5d30f24e2aec36e5" id="r_a3a9b7b517c5dd3ae5d30f24e2aec36e5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a3a9b7b517c5dd3ae5d30f24e2aec36e5">getVroidModelPath</a> () const</td></tr>
+<tr class="separator:a3a9b7b517c5dd3ae5d30f24e2aec36e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab01811fe83a450dd1404638f7938465f" id="r_ab01811fe83a450dd1404638f7938465f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab01811fe83a450dd1404638f7938465f">bakeMorphs</a> ()</td></tr>
+<tr class="memdesc:ab01811fe83a450dd1404638f7938465f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push parameter weights onto Mesh morphs and bake GPU verts when possible.  <br /></td></tr>
+<tr class="separator:ab01811fe83a450dd1404638f7938465f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4933a95e6a6a90bae949a8d7ae44373d" id="r_a4933a95e6a6a90bae949a8d7ae44373d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4933a95e6a6a90bae949a8d7ae44373d">bindTween</a> (<a class="el" href="classeve_1_1animation_1_1Tween.html">animation::Tween</a> *tween)</td></tr>
+<tr class="memdesc:a4933a95e6a6a90bae949a8d7ae44373d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drive x/y/sx/sy and matching parameters from a Tween each <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a73c4495232c20baf8654c3348f574e84">update()</a>.  <br /></td></tr>
+<tr class="separator:a4933a95e6a6a90bae949a8d7ae44373d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e9b1ed844567744d03418198c4ecf36" id="r_a8e9b1ed844567744d03418198c4ecf36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a8e9b1ed844567744d03418198c4ecf36">unbindTween</a> ()</td></tr>
+<tr class="separator:a8e9b1ed844567744d03418198c4ecf36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac23d66920fde198c2ab2e434442b5d7c" id="r_ac23d66920fde198c2ab2e434442b5d7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1Tween.html">animation::Tween</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac23d66920fde198c2ab2e434442b5d7c">getBoundTween</a> () const</td></tr>
+<tr class="separator:ac23d66920fde198c2ab2e434442b5d7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Unified avatar instance. Kind is a string: "image" | "live2d" | "vroid". Script-facing API avoids overloads; kind-specific methods no-op / return false when unsupported. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00053">53</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a4d1d2ea862d510b7e4a8916de2d24618" name="a4d1d2ea862d510b7e4a8916de2d24618"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d1d2ea862d510b7e4a8916de2d24618">&#9670;&#160;</a></span>DestroyHook</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4d1d2ea862d510b7e4a8916de2d24618">eve::avatar::AvatarInstance::DestroyHook</a> =  std::function&lt;void(<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> *)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback fired exactly once, when the instance is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abff02505a65c2f89074bbe821eb98775" name="abff02505a65c2f89074bbe821eb98775"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abff02505a65c2f89074bbe821eb98775">&#9670;&#160;</a></span>AvatarInstance() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar::AvatarInstance::AvatarInstance </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49b98a50383b805046801f42adaf2ff0" name="a49b98a50383b805046801f42adaf2ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b98a50383b805046801f42adaf2ff0">&#9670;&#160;</a></span>~AvatarInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar::AvatarInstance::~AvatarInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarInstance_8cpp_source.html#l00056">release()</a>.</p>
+
+</div>
+</div>
+<a id="aa7e19a17ec4ab0846d89b77345a3bfa4" name="aa7e19a17ec4ab0846d89b77345a3bfa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7e19a17ec4ab0846d89b77345a3bfa4">&#9670;&#160;</a></span>AvatarInstance() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar::AvatarInstance::AvatarInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9e35a365aa95c9be79116b3c6fa50af4" name="a9e35a365aa95c9be79116b3c6fa50af4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e35a365aa95c9be79116b3c6fa50af4">&#9670;&#160;</a></span>addDestroyHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::avatar::AvatarInstance::addDestroyHook </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4d1d2ea862d510b7e4a8916de2d24618">DestroyHook</a>&#160;</td>
+          <td class="paramname"><em>hook</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a destruction hook; returns an id usable with <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a5d9d912ca7e857ac99dcc81635d72a11" title="Remove a previously registered destruction hook.">removeDestroyHook()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01074">eve::dialogue::Dialogue::bindAvatar()</a>.</p>
+
+</div>
+</div>
+<a id="ad648894137102eeb5ba5238b57a075dc" name="ad648894137102eeb5ba5238b57a075dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad648894137102eeb5ba5238b57a075dc">&#9670;&#160;</a></span>addLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::addLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00027">eve::graphics::Texture::getHeight()</a>, <a class="el" href="Texture_8h_source.html#l00026">eve::graphics::Texture::getWidth()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a4f97b1295c5a8f09b842ead0995aa59e" name="a4f97b1295c5a8f09b842ead0995aa59e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f97b1295c5a8f09b842ead0995aa59e">&#9670;&#160;</a></span>applyExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::applyExpression </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00115">setExpression()</a>.</p>
+
+</div>
+</div>
+<a id="ab01811fe83a450dd1404638f7938465f" name="ab01811fe83a450dd1404638f7938465f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab01811fe83a450dd1404638f7938465f">&#9670;&#160;</a></span>bakeMorphs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::bakeMorphs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push parameter weights onto Mesh morphs and bake GPU verts when possible. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00517">517</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Mesh_8h_source.html#l00065">eve::graphics::Mesh::isMorphDirty()</a>.</p>
+
+</div>
+</div>
+<a id="a4933a95e6a6a90bae949a8d7ae44373d" name="a4933a95e6a6a90bae949a8d7ae44373d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4933a95e6a6a90bae949a8d7ae44373d">&#9670;&#160;</a></span>bindTween()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::bindTween </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1Tween.html">animation::Tween</a> *&#160;</td>
+          <td class="paramname"><em>tween</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drive x/y/sx/sy and matching parameters from a Tween each <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a73c4495232c20baf8654c3348f574e84">update()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a884deb21f24d06e30dd23a1eb7c1cecc" name="a884deb21f24d06e30dd23a1eb7c1cecc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a884deb21f24d06e30dd23a1eb7c1cecc">&#9670;&#160;</a></span>bindVroidModelData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::bindVroidModelData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l00455">loadMorphNamesFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="afb45d6c0abcd42d1ae87c54c9a480468" name="afb45d6c0abcd42d1ae87c54c9a480468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb45d6c0abcd42d1ae87c54c9a480468">&#9670;&#160;</a></span>defineExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::defineExpression </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>spec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spec: "eyes=1;mouth=smile;blush=0" (semicolon-separated name=value). </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a6114dce5c385da34267b265dd1d36743" name="a6114dce5c385da34267b265dd1d36743"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6114dce5c385da34267b265dd1d36743">&#9670;&#160;</a></span>getBoundMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::avatar::AvatarInstance::getBoundMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac23d66920fde198c2ab2e434442b5d7c" name="ac23d66920fde198c2ab2e434442b5d7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac23d66920fde198c2ab2e434442b5d7c">&#9670;&#160;</a></span>getBoundTween()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1Tween.html">animation::Tween</a> * eve::avatar::AvatarInstance::getBoundTween </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3bf9e3fefcf5f8b1e3691dce68989ab4" name="a3bf9e3fefcf5f8b1e3691dce68989ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bf9e3fefcf5f8b1e3691dce68989ab4">&#9670;&#160;</a></span>getExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getExpression </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a59ebadf686653d931d2a3bfc8aa145fd" name="a59ebadf686653d931d2a3bfc8aa145fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59ebadf686653d931d2a3bfc8aa145fd">&#9670;&#160;</a></span>getKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af76adbcd1f94da86c629ab3d6f218a3c" name="af76adbcd1f94da86c629ab3d6f218a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af76adbcd1f94da86c629ab3d6f218a3c">&#9670;&#160;</a></span>getLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar::AvatarInstance::getLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8337ffa5f222114e2d6a0b59a409dd9d" name="a8337ffa5f222114e2d6a0b59a409dd9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8337ffa5f222114e2d6a0b59a409dd9d">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar::AvatarInstance::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad6041826972cae7d4f499c0f8b0b1d6" name="aad6041826972cae7d4f499c0f8b0b1d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad6041826972cae7d4f499c0f8b0b1d6">&#9670;&#160;</a></span>getLayerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getLayerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae28db068a0ff6bc01d4e00a6f6421f25" name="ae28db068a0ff6bc01d4e00a6f6421f25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae28db068a0ff6bc01d4e00a6f6421f25">&#9670;&#160;</a></span>getLive2DBackendName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getLive2DBackendName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00433">433</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Avatar_8cpp_source.html#l00076">eve::avatar::Avatar::getLive2DBackendName()</a> , 以及 <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#a70f926f9be6529acf770595c31c9237b">eve::avatar::ILive2DBackend::getName()</a>.</p>
+
+</div>
+</div>
+<a id="a2b91a967a1863ded03ae75ff2e187410" name="a2b91a967a1863ded03ae75ff2e187410"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b91a967a1863ded03ae75ff2e187410">&#9670;&#160;</a></span>getMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getMotion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20f14b18b0f618951e3fa90dafc53ea4" name="a20f14b18b0f618951e3fa90dafc53ea4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20f14b18b0f618951e3fa90dafc53ea4">&#9670;&#160;</a></span>getParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::AvatarInstance::getParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#aba2616c974ed5d24678728d76d05ae16">eve::avatar::ILive2DBackend::getParameter()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ac784fc0cc844be5d849a5726df143089" name="ac784fc0cc844be5d849a5726df143089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac784fc0cc844be5d849a5726df143089">&#9670;&#160;</a></span>getParameterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar::AvatarInstance::getParameterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55c91973048bdfff7ee21b3dabbf4e7b" name="a55c91973048bdfff7ee21b3dabbf4e7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c91973048bdfff7ee21b3dabbf4e7b">&#9670;&#160;</a></span>getParameterName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getParameterName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff74ceefab02e105522b076d85e247b3" name="aff74ceefab02e105522b076d85e247b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff74ceefab02e105522b076d85e247b3">&#9670;&#160;</a></span>getRenderable3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * eve::avatar::AvatarInstance::getRenderable3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0bea0354361bd5a2283e8cd617370f8f" name="a0bea0354361bd5a2283e8cd617370f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bea0354361bd5a2283e8cd617370f8f">&#9670;&#160;</a></span>getScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::AvatarInstance::getScaleX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ed58ba1b517fa031d879015e65bb8b7" name="a8ed58ba1b517fa031d879015e65bb8b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ed58ba1b517fa031d879015e65bb8b7">&#9670;&#160;</a></span>getScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::AvatarInstance::getScaleY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a9b7b517c5dd3ae5d30f24e2aec36e5" name="a3a9b7b517c5dd3ae5d30f24e2aec36e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a9b7b517c5dd3ae5d30f24e2aec36e5">&#9670;&#160;</a></span>getVroidModelPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar::AvatarInstance::getVroidModelPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e32d8b0ca315f17dd26cf68e5fd1dcd" name="a2e32d8b0ca315f17dd26cf68e5fd1dcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e32d8b0ca315f17dd26cf68e5fd1dcd">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::AvatarInstance::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a753a3e0ad1d0699a9bc0176712d2f5dd" name="a753a3e0ad1d0699a9bc0176712d2f5dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a753a3e0ad1d0699a9bc0176712d2f5dd">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar::AvatarInstance::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ba0d0b853087e0d00c7451753a8991c" name="a4ba0d0b853087e0d00c7451753a8991c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba0d0b853087e0d00c7451753a8991c">&#9670;&#160;</a></span>hasLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::hasLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ab7909aa281954019d3a8241d899872a9" name="ab7909aa281954019d3a8241d899872a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7909aa281954019d3a8241d899872a9">&#9670;&#160;</a></span>hasLive2DBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::hasLive2DBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Avatar_8cpp_source.html#l00069">eve::avatar::Avatar::live2DBackendFactory()</a>.</p>
+
+</div>
+</div>
+<a id="af6fbd8c5cfe9d4cd57c5a6e283ce6555" name="af6fbd8c5cfe9d4cd57c5a6e283ce6555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6fbd8c5cfe9d4cd57c5a6e283ce6555">&#9670;&#160;</a></span>hasParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::hasParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00455">loadMorphNamesFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="a1f2dfd59bb9171d3464aa8d82ee6afb2" name="a1f2dfd59bb9171d3464aa8d82ee6afb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f2dfd59bb9171d3464aa8d82ee6afb2">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a> 第 <a class="el" href="AvatarInstance_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5f0a1a5a22b4deacf3d4974da8c2648" name="ac5f0a1a5a22b4deacf3d4974da8c2648"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5f0a1a5a22b4deacf3d4974da8c2648">&#9670;&#160;</a></span>loadLive2DModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::loadLive2DModel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00426">426</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Avatar_8cpp_source.html#l00071">eve::avatar::Avatar::createLive2DBackend()</a> , 以及 <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#aba3ad979c7ff509da9ce04b6e7da629f">eve::avatar::ILive2DBackend::loadModel()</a>.</p>
+
+</div>
+</div>
+<a id="a9e5ddb402ae236bb7482ee99370628d1" name="a9e5ddb402ae236bb7482ee99370628d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e5ddb402ae236bb7482ee99370628d1">&#9670;&#160;</a></span>loadMorphNamesFromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar::AvatarInstance::loadMorphNamesFromModel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshIndex</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register morph target names from ModelData as parameters (weights default 0). </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00455">455</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelData_8cpp_source.html#l00274">eve::model3d::ModelData::getMorphTargetCount()</a>, <a class="el" href="ModelData_8cpp_source.html#l00280">eve::model3d::ModelData::getMorphTargetName()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00174">hasParameter()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00448">bindVroidModelData()</a>.</p>
+
+</div>
+</div>
+<a id="a81bd812fa257dd41d6cdaef23a555d5f" name="a81bd812fa257dd41d6cdaef23a555d5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81bd812fa257dd41d6cdaef23a555d5f">&#9670;&#160;</a></span>loadVroidModelPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::loadVroidModelPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33ccf35c15a55c13768d648d30635e29" name="a33ccf35c15a55c13768d648d30635e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33ccf35c15a55c13768d648d30635e29">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp; eve::avatar::AvatarInstance::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd1dd0ff0bf32e1200bd36b5c94355c6" name="acd1dd0ff0bf32e1200bd36b5c94355c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd1dd0ff0bf32e1200bd36b5c94355c6">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00054">~AvatarInstance()</a>.</p>
+
+</div>
+</div>
+<a id="a5d9d912ca7e857ac99dcc81635d72a11" name="a5d9d912ca7e857ac99dcc81635d72a11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d9d912ca7e857ac99dcc81635d72a11">&#9670;&#160;</a></span>removeDestroyHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::removeDestroyHook </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a previously registered destruction hook. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a043bfecc9cb83967798d6b0701540cc2" name="a043bfecc9cb83967798d6b0701540cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a043bfecc9cb83967798d6b0701540cc2">&#9670;&#160;</a></span>setExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setExpression </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarInstance_8cpp_source.html#l00371">applyExpression()</a>, <a class="el" href="Avatar_8cpp_source.html#l00071">eve::avatar::Avatar::createLive2DBackend()</a>, <a class="el" href="Mesh_8cpp_source.html#l00105">eve::graphics::Mesh::getMorphCount()</a>, <a class="el" href="Mesh_8cpp_source.html#l00107">eve::graphics::Mesh::getMorphName()</a>, <a class="el" href="Mesh_8h_source.html#l00067">eve::graphics::Mesh::hasMorphData()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#af1f6dad173b01314ea5bc13d7d5371e3">eve::avatar::ILive2DBackend::setExpression()</a>.</p>
+
+</div>
+</div>
+<a id="a143eb08026ee6a72c8a465208160c7cb" name="a143eb08026ee6a72c8a465208160c7cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a143eb08026ee6a72c8a465208160c7cb">&#9670;&#160;</a></span>setLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a09128ba0f35f64547e12c0706929eecb" name="a09128ba0f35f64547e12c0706929eecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09128ba0f35f64547e12c0706929eecb">&#9670;&#160;</a></span>setLayerColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::setLayerColor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a0998d9559839288eb2e2659b9c476b3e" name="a0998d9559839288eb2e2659b9c476b3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0998d9559839288eb2e2659b9c476b3e">&#9670;&#160;</a></span>setLayerOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::setLayerOffset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ae43e9615e6ff36db3f4f8a35919a8c3a" name="ae43e9615e6ff36db3f4f8a35919a8c3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae43e9615e6ff36db3f4f8a35919a8c3a">&#9670;&#160;</a></span>setLayerSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::setLayerSize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="acfad8015c5e01429d542593fb856aa1c" name="acfad8015c5e01429d542593fb856aa1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfad8015c5e01429d542593fb856aa1c">&#9670;&#160;</a></span>setLayerTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::setLayerTexture </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00027">eve::graphics::Texture::getHeight()</a>, <a class="el" href="Texture_8h_source.html#l00026">eve::graphics::Texture::getWidth()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="af018ded4bdf33a24d1c5b799cfa876c4" name="af018ded4bdf33a24d1c5b799cfa876c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af018ded4bdf33a24d1c5b799cfa876c4">&#9670;&#160;</a></span>setLayerVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::setLayerVisible </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ac5fb2737384ba712fa6ef8e8bd2f07a3" name="ac5fb2737384ba712fa6ef8e8bd2f07a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5fb2737384ba712fa6ef8e8bd2f07a3">&#9670;&#160;</a></span>setLayerZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar::AvatarInstance::setLayerZ </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a896d4f9baa63aa39c0c9a9f8d383d6d0" name="a896d4f9baa63aa39c0c9a9f8d383d6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a896d4f9baa63aa39c0c9a9f8d383d6d0">&#9670;&#160;</a></span>setMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00527">mesh</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00250">eve::graphics::Renderable3D::setMesh()</a>.</p>
+
+</div>
+</div>
+<a id="abfd276ba49fb68db25a0c7bddf107e6c" name="abfd276ba49fb68db25a0c7bddf107e6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfd276ba49fb68db25a0c7bddf107e6c">&#9670;&#160;</a></span>setMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setMotion </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Avatar_8cpp_source.html#l00071">eve::avatar::Avatar::createLive2DBackend()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#a97ca69f9bec72992f49ed2f0e8491f79">eve::avatar::ILive2DBackend::setMotion()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l00148">setParameter()</a>.</p>
+
+</div>
+</div>
+<a id="aa2637446c8011bf02d319b7cee41ea92" name="aa2637446c8011bf02d319b7cee41ea92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2637446c8011bf02d319b7cee41ea92">&#9670;&#160;</a></span>setParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Avatar_8cpp_source.html#l00071">eve::avatar::Avatar::createLive2DBackend()</a>, <a class="el" href="Mesh_8cpp_source.html#l00112">eve::graphics::Mesh::hasMorph()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="Mesh_8cpp_source.html#l00116">eve::graphics::Mesh::setMorphWeight()</a>, <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#a0a783f443ae860344d7b074ce5d2bb50">eve::avatar::ILive2DBackend::setParameter()</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00139">setMotion()</a>.</p>
+
+</div>
+</div>
+<a id="ab8f80c914bc37df51d16d0d86dd36d64" name="ab8f80c914bc37df51d16d0d86dd36d64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8f80c914bc37df51d16d0d86dd36d64">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="aff78f9cbbb9dc104555b0b45ac48a305" name="aff78f9cbbb9dc104555b0b45ac48a305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff78f9cbbb9dc104555b0b45ac48a305">&#9670;&#160;</a></span>setPosition3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setPosition3D </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00489">489</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="ac09efbbf665038a862abd4419e58bdd0" name="ac09efbbf665038a862abd4419e58bdd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac09efbbf665038a862abd4419e58bdd0">&#9670;&#160;</a></span>setRotation3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setRotation3D </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roll</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00495">495</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a016c9b4dd2c8eabbce0f101d502913ce" name="a016c9b4dd2c8eabbce0f101d502913ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a016c9b4dd2c8eabbce0f101d502913ce">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5bee5cfadfcf466ad3d587affb3f69d" name="ae5bee5cfadfcf466ad3d587affb3f69d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5bee5cfadfcf466ad3d587affb3f69d">&#9670;&#160;</a></span>setScale3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setScale3D </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00501">501</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1d17b587c047c842f4f5fff13f8019f" name="ab1d17b587c047c842f4f5fff13f8019f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d17b587c047c842f4f5fff13f8019f">&#9670;&#160;</a></span>setTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00483">483</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00252">eve::graphics::Renderable3D::setTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a7221e1f43fc2d011faffd6f9bf5b730e" name="a7221e1f43fc2d011faffd6f9bf5b730e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7221e1f43fc2d011faffd6f9bf5b730e">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1fec85d5fb424513129676f8359d0314" name="a1fec85d5fb424513129676f8359d0314"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fec85d5fb424513129676f8359d0314">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::sync </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push image / live2d layers into ECS or draw queues. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e9b1ed844567744d03418198c4ecf36" name="a8e9b1ed844567744d03418198c4ecf36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e9b1ed844567744d03418198c4ecf36">&#9670;&#160;</a></span>unbindTween()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::unbindTween </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73c4495232c20baf8654c3348f574e84" name="a73c4495232c20baf8654c3348f574e84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c4495232c20baf8654c3348f574e84">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar::AvatarInstance::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a> 第 <a class="el" href="AvatarInstance_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Avatar_8cpp_source.html#l00071">eve::avatar::Avatar::createLive2DBackend()</a> , 以及 <a class="el" href="classeve_1_1avatar_1_1ILive2DBackend.html#a19de815a803a766758c836312d025433">eve::avatar::ILive2DBackend::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/avatar/<a class="el" href="AvatarInstance_8h_source.html">AvatarInstance.h</a></li>
+<li>src/modules/avatar/<a class="el" href="AvatarInstance_8cpp_source.html">AvatarInstance.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

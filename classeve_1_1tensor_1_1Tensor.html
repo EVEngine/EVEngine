@@ -1,0 +1,3370 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::Tensor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1tensor_1_1Tensor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::Tensor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>float32 / int32 tensor (rank 1–6), row-major. Eager: owns a buffer. Symbolic: node in a <a class="el" href="classeve_1_1tensor_1_1Func.html" title="Trace builder — TF2 tf.function analogue (tf.func in scripts). While active, TF ops record into this ...">Func</a> graph (no buffer until run).  
+ <a href="classeve_1_1tensor_1_1Tensor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Tensor_8h_source.html">Tensor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7e42c3f58549695b26c42efbdc854ee3" id="r_a7e42c3f58549695b26c42efbdc854ee3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor</a> ()=default</td></tr>
+<tr class="separator:a7e42c3f58549695b26c42efbdc854ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7549844894da978e6b49130e259a41d" id="r_ae7549844894da978e6b49130e259a41d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae7549844894da978e6b49130e259a41d">Tensor</a> (const int *dims, int rank)</td></tr>
+<tr class="memdesc:ae7549844894da978e6b49130e259a41d"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 dims[0..rank) 创建 eager 张量。  <br /></td></tr>
+<tr class="separator:ae7549844894da978e6b49130e259a41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512523497d23d147f3266e024ba9b8d2" id="r_a512523497d23d147f3266e024ba9b8d2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a512523497d23d147f3266e024ba9b8d2">Tensor</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> <a class="el" href="classeve_1_1tensor_1_1Tensor.html#add634cfae737caa7105d8ec6715ac151">dtype</a>, const int *dims, int rank)</td></tr>
+<tr class="separator:a512523497d23d147f3266e024ba9b8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac057e6c6a100d8ae57d42c95d18be2f3" id="r_ac057e6c6a100d8ae57d42c95d18be2f3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ac057e6c6a100d8ae57d42c95d18be2f3">Tensor</a> (int d0)</td></tr>
+<tr class="memdesc:ac057e6c6a100d8ae57d42c95d18be2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">按秩创建全零 eager 张量。  <br /></td></tr>
+<tr class="separator:ac057e6c6a100d8ae57d42c95d18be2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a726cb0cce6b5d833d02ee975ce811e" id="r_a0a726cb0cce6b5d833d02ee975ce811e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0a726cb0cce6b5d833d02ee975ce811e">Tensor</a> (int d0, int d1)</td></tr>
+<tr class="separator:a0a726cb0cce6b5d833d02ee975ce811e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab70bcdda2ccade8dcbe39bf92aa432fa" id="r_ab70bcdda2ccade8dcbe39bf92aa432fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab70bcdda2ccade8dcbe39bf92aa432fa">Tensor</a> (int d0, int d1, int d2)</td></tr>
+<tr class="separator:ab70bcdda2ccade8dcbe39bf92aa432fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5cdf4718a587af355bd4c9b12d4f409" id="r_af5cdf4718a587af355bd4c9b12d4f409"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af5cdf4718a587af355bd4c9b12d4f409">Tensor</a> (int d0, int d1, int d2, int d3)</td></tr>
+<tr class="separator:af5cdf4718a587af355bd4c9b12d4f409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36587eb15af178dfb66f9d466e1af689" id="r_a36587eb15af178dfb66f9d466e1af689"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a36587eb15af178dfb66f9d466e1af689">Tensor</a> (int d0, int d1, int d2, int d3, int d4)</td></tr>
+<tr class="separator:a36587eb15af178dfb66f9d466e1af689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2626b1699fd3820f950f2edc45a56ae7" id="r_a2626b1699fd3820f950f2edc45a56ae7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a2626b1699fd3820f950f2edc45a56ae7">Tensor</a> (int d0, int d1, int d2, int d3, int d4, int d5)</td></tr>
+<tr class="separator:a2626b1699fd3820f950f2edc45a56ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2dc8f124088595d64072b562a91313d" id="r_aa2dc8f124088595d64072b562a91313d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa2dc8f124088595d64072b562a91313d">isSymbolic</a> () const</td></tr>
+<tr class="separator:aa2dc8f124088595d64072b562a91313d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7505a476f19ffbed83e5aac6ccc76e5" id="r_ad7505a476f19ffbed83e5aac6ccc76e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad7505a476f19ffbed83e5aac6ccc76e5">isEager</a> () const</td></tr>
+<tr class="separator:ad7505a476f19ffbed83e5aac6ccc76e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4f1152df59b03cc297a14da4a232aa6" id="r_aa4f1152df59b03cc297a14da4a232aa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa4f1152df59b03cc297a14da4a232aa6">graph</a> () const</td></tr>
+<tr class="separator:aa4f1152df59b03cc297a14da4a232aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83b6dcca51dbb15c5b192ca970a94255" id="r_a83b6dcca51dbb15c5b192ca970a94255"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a83b6dcca51dbb15c5b192ca970a94255">nodeId</a> () const</td></tr>
+<tr class="separator:a83b6dcca51dbb15c5b192ca970a94255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafe479d6adb7594bca8244a836588e45" id="r_aafe479d6adb7594bca8244a836588e45"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aafe479d6adb7594bca8244a836588e45">getRank</a> () const</td></tr>
+<tr class="separator:aafe479d6adb7594bca8244a836588e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bca6083957c306a9968a25640b01260" id="r_a5bca6083957c306a9968a25640b01260"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a5bca6083957c306a9968a25640b01260">getSize</a> () const</td></tr>
+<tr class="separator:a5bca6083957c306a9968a25640b01260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab12434034bee1e389323562526a041bf" id="r_ab12434034bee1e389323562526a041bf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab12434034bee1e389323562526a041bf">getDim</a> (int axis) const</td></tr>
+<tr class="separator:ab12434034bee1e389323562526a041bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa49bf33209d1345413dc5c5f63fd3b86" id="r_aa49bf33209d1345413dc5c5f63fd3b86"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa49bf33209d1345413dc5c5f63fd3b86">getDim0</a> () const</td></tr>
+<tr class="separator:aa49bf33209d1345413dc5c5f63fd3b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa468a725a9d6235cf9c86e155f7597d4" id="r_aa468a725a9d6235cf9c86e155f7597d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa468a725a9d6235cf9c86e155f7597d4">getDim1</a> () const</td></tr>
+<tr class="separator:aa468a725a9d6235cf9c86e155f7597d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412334bb321abdb222781840d568005a" id="r_a412334bb321abdb222781840d568005a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a412334bb321abdb222781840d568005a">getDim2</a> () const</td></tr>
+<tr class="separator:a412334bb321abdb222781840d568005a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5074ab98efe4bf84d3ebad94c90a3087" id="r_a5074ab98efe4bf84d3ebad94c90a3087"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a5074ab98efe4bf84d3ebad94c90a3087">getDim3</a> () const</td></tr>
+<tr class="separator:a5074ab98efe4bf84d3ebad94c90a3087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f99127143b98611c77e17884b4b8c13" id="r_a1f99127143b98611c77e17884b4b8c13"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a1f99127143b98611c77e17884b4b8c13">getDim4</a> () const</td></tr>
+<tr class="separator:a1f99127143b98611c77e17884b4b8c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed7de3629b529992b932ee1e1bcea53" id="r_aeed7de3629b529992b932ee1e1bcea53"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aeed7de3629b529992b932ee1e1bcea53">getDim5</a> () const</td></tr>
+<tr class="separator:aeed7de3629b529992b932ee1e1bcea53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55a6b12e626a591aea56919bc6d7734f" id="r_a55a6b12e626a591aea56919bc6d7734f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a55a6b12e626a591aea56919bc6d7734f">getDevice</a> () const</td></tr>
+<tr class="separator:a55a6b12e626a591aea56919bc6d7734f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a152ba4a9cc55962c40b3444b71c9b4dc" id="r_a152ba4a9cc55962c40b3444b71c9b4dc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a152ba4a9cc55962c40b3444b71c9b4dc">getDtype</a> () const</td></tr>
+<tr class="separator:a152ba4a9cc55962c40b3444b71c9b4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add634cfae737caa7105d8ec6715ac151" id="r_add634cfae737caa7105d8ec6715ac151"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#add634cfae737caa7105d8ec6715ac151">dtype</a> () const</td></tr>
+<tr class="separator:add634cfae737caa7105d8ec6715ac151"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae107afe64888fd81c72a6a1d4d45824e" id="r_ae107afe64888fd81c72a6a1d4d45824e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae107afe64888fd81c72a6a1d4d45824e">setDtype</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> <a class="el" href="classeve_1_1tensor_1_1Tensor.html#add634cfae737caa7105d8ec6715ac151">dtype</a>)</td></tr>
+<tr class="separator:ae107afe64888fd81c72a6a1d4d45824e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26cc92b5c9ef9dabe9fc8d9d18814704" id="r_a26cc92b5c9ef9dabe9fc8d9d18814704"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a26cc92b5c9ef9dabe9fc8d9d18814704">isQuantized</a> () const</td></tr>
+<tr class="separator:a26cc92b5c9ef9dabe9fc8d9d18814704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50a0097649a31f4db508be5a92d7e3b5" id="r_a50a0097649a31f4db508be5a92d7e3b5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a50a0097649a31f4db508be5a92d7e3b5">dequantized</a> () const</td></tr>
+<tr class="separator:a50a0097649a31f4db508be5a92d7e3b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b00c0c94d365cfba98b207346d19fe" id="r_a07b00c0c94d365cfba98b207346d19fe"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a07b00c0c94d365cfba98b207346d19fe">qScales</a> () const</td></tr>
+<tr class="separator:a07b00c0c94d365cfba98b207346d19fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a237a9d0670731bfd262979d456b9b55f" id="r_a237a9d0670731bfd262979d456b9b55f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a237a9d0670731bfd262979d456b9b55f">qGroup</a> () const</td></tr>
+<tr class="separator:a237a9d0670731bfd262979d456b9b55f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52653f75f30b535ae64dfbf97a41879d" id="r_a52653f75f30b535ae64dfbf97a41879d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a52653f75f30b535ae64dfbf97a41879d">qBytes</a> () const</td></tr>
+<tr class="separator:a52653f75f30b535ae64dfbf97a41879d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb5cc31f9e99c4cc237b0d136dd69763" id="r_abb5cc31f9e99c4cc237b0d136dd69763"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#abb5cc31f9e99c4cc237b0d136dd69763">get</a> (int flatIndex) const</td></tr>
+<tr class="separator:abb5cc31f9e99c4cc237b0d136dd69763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab398364ba40e0c3f7f98742699b8aff2" id="r_ab398364ba40e0c3f7f98742699b8aff2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab398364ba40e0c3f7f98742699b8aff2">set</a> (int flatIndex, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:ab398364ba40e0c3f7f98742699b8aff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44d3dfef6a445eb37f95a48580669d69" id="r_a44d3dfef6a445eb37f95a48580669d69"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a44d3dfef6a445eb37f95a48580669d69">get1</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>) const</td></tr>
+<tr class="separator:a44d3dfef6a445eb37f95a48580669d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab07f6745a1514094867d4532e67919a9" id="r_ab07f6745a1514094867d4532e67919a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab07f6745a1514094867d4532e67919a9">set1</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:ab07f6745a1514094867d4532e67919a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9944967bf58a50edf5f4aeec6d8f0b15" id="r_a9944967bf58a50edf5f4aeec6d8f0b15"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a9944967bf58a50edf5f4aeec6d8f0b15">get2</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>) const</td></tr>
+<tr class="separator:a9944967bf58a50edf5f4aeec6d8f0b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ae09e70e78b4110ebb782addb77242" id="r_ad5ae09e70e78b4110ebb782addb77242"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad5ae09e70e78b4110ebb782addb77242">set2</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:ad5ae09e70e78b4110ebb782addb77242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f857d6901be86cb804b556273060569" id="r_a3f857d6901be86cb804b556273060569"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3f857d6901be86cb804b556273060569">get3</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>) const</td></tr>
+<tr class="separator:a3f857d6901be86cb804b556273060569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc296e35ae4abfc4d4bae99162db3ca" id="r_a2bc296e35ae4abfc4d4bae99162db3ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a2bc296e35ae4abfc4d4bae99162db3ca">set3</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:a2bc296e35ae4abfc4d4bae99162db3ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf439620d1f785a2333ece3bb2a24f2" id="r_a4cf439620d1f785a2333ece3bb2a24f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a4cf439620d1f785a2333ece3bb2a24f2">get4</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, int i3) const</td></tr>
+<tr class="separator:a4cf439620d1f785a2333ece3bb2a24f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7f672c9600576a62f7dc0281339b832" id="r_ab7f672c9600576a62f7dc0281339b832"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab7f672c9600576a62f7dc0281339b832">set4</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, int i3, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:ab7f672c9600576a62f7dc0281339b832"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f41c9b37ccc38e5f011258a12865ea" id="r_a63f41c9b37ccc38e5f011258a12865ea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a63f41c9b37ccc38e5f011258a12865ea">get5</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, int i3, int i4) const</td></tr>
+<tr class="separator:a63f41c9b37ccc38e5f011258a12865ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af903c2b425b9fa9560dfed3e159cb739" id="r_af903c2b425b9fa9560dfed3e159cb739"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af903c2b425b9fa9560dfed3e159cb739">set5</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, int i3, int i4, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:af903c2b425b9fa9560dfed3e159cb739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84d954c44b28e7667333708a9fede2e9" id="r_a84d954c44b28e7667333708a9fede2e9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a84d954c44b28e7667333708a9fede2e9">get6</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, int i3, int i4, int i5) const</td></tr>
+<tr class="separator:a84d954c44b28e7667333708a9fede2e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8127a53e61f352d410384d0867b2641" id="r_af8127a53e61f352d410384d0867b2641"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af8127a53e61f352d410384d0867b2641">set6</a> (int <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, int <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, int <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>, int i3, int i4, int i5, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:af8127a53e61f352d410384d0867b2641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28923e1b6386f5957916431003815bd7" id="r_a28923e1b6386f5957916431003815bd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a28923e1b6386f5957916431003815bd7">fill</a> (float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:a28923e1b6386f5957916431003815bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a43947e9ff6722833d9b02d51f5ea55" id="r_a2a43947e9ff6722833d9b02d51f5ea55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a2a43947e9ff6722833d9b02d51f5ea55">copyFrom</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other)</td></tr>
+<tr class="separator:a2a43947e9ff6722833d9b02d51f5ea55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab47a290679a1a86925371c6e61f9d0e4" id="r_ab47a290679a1a86925371c6e61f9d0e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab47a290679a1a86925371c6e61f9d0e4">clone</a> () const</td></tr>
+<tr class="separator:ab47a290679a1a86925371c6e61f9d0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29dfb90436b834098192ab60647a916b" id="r_a29dfb90436b834098192ab60647a916b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a29dfb90436b834098192ab60647a916b">add</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other) const</td></tr>
+<tr class="memdesc:a29dfb90436b834098192ab60647a916b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eager 逐元素运算（符号张量会抛异常）。  <br /></td></tr>
+<tr class="separator:a29dfb90436b834098192ab60647a916b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e7849a3e004ee25205057c88ed3c8cd" id="r_a0e7849a3e004ee25205057c88ed3c8cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0e7849a3e004ee25205057c88ed3c8cd">sub</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other) const</td></tr>
+<tr class="separator:a0e7849a3e004ee25205057c88ed3c8cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f5b58d19b2a50bb177c300784b19117" id="r_a8f5b58d19b2a50bb177c300784b19117"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a8f5b58d19b2a50bb177c300784b19117">multiply</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other) const</td></tr>
+<tr class="separator:a8f5b58d19b2a50bb177c300784b19117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0652c58a276956d6e179c7f8cd66ae0" id="r_ac0652c58a276956d6e179c7f8cd66ae0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ac0652c58a276956d6e179c7f8cd66ae0">div</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other) const</td></tr>
+<tr class="separator:ac0652c58a276956d6e179c7f8cd66ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0a8669fb1743fc7e0100f0980873a5d" id="r_af0a8669fb1743fc7e0100f0980873a5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af0a8669fb1743fc7e0100f0980873a5d">addScalar</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) const</td></tr>
+<tr class="separator:af0a8669fb1743fc7e0100f0980873a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0ea602247d4c02a36b9f789ea18c02" id="r_aac0ea602247d4c02a36b9f789ea18c02"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aac0ea602247d4c02a36b9f789ea18c02">subScalar</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) const</td></tr>
+<tr class="separator:aac0ea602247d4c02a36b9f789ea18c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0665aa0e34adebf1ae34877e9a4d2b9a" id="r_a0665aa0e34adebf1ae34877e9a4d2b9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0665aa0e34adebf1ae34877e9a4d2b9a">mulScalar</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) const</td></tr>
+<tr class="separator:a0665aa0e34adebf1ae34877e9a4d2b9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b71753d940b1f727a7c26834a81e203" id="r_a8b71753d940b1f727a7c26834a81e203"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a8b71753d940b1f727a7c26834a81e203">divScalar</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) const</td></tr>
+<tr class="separator:a8b71753d940b1f727a7c26834a81e203"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67f5d2c3d231a325f57864e70fd804d5" id="r_a67f5d2c3d231a325f57864e70fd804d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a67f5d2c3d231a325f57864e70fd804d5">neg</a> () const</td></tr>
+<tr class="separator:a67f5d2c3d231a325f57864e70fd804d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5209a25d37f28fe82c30a59bd9d04c3e" id="r_a5209a25d37f28fe82c30a59bd9d04c3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a5209a25d37f28fe82c30a59bd9d04c3e">abs</a> () const</td></tr>
+<tr class="separator:a5209a25d37f28fe82c30a59bd9d04c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeeb718bf682e4c61c182a4f143e4129" id="r_abeeb718bf682e4c61c182a4f143e4129"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#abeeb718bf682e4c61c182a4f143e4129">sqrt</a> () const</td></tr>
+<tr class="separator:abeeb718bf682e4c61c182a4f143e4129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840095b6a773e45c2e9c095510ca3429" id="r_a840095b6a773e45c2e9c095510ca3429"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a840095b6a773e45c2e9c095510ca3429">exp</a> () const</td></tr>
+<tr class="separator:a840095b6a773e45c2e9c095510ca3429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373977da4987d6b6f4f34a8209759226" id="r_a373977da4987d6b6f4f34a8209759226"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a373977da4987d6b6f4f34a8209759226">log</a> () const</td></tr>
+<tr class="separator:a373977da4987d6b6f4f34a8209759226"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19efec2a8020545c59d9a3960f3fb174" id="r_a19efec2a8020545c59d9a3960f3fb174"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a19efec2a8020545c59d9a3960f3fb174">sin</a> () const</td></tr>
+<tr class="separator:a19efec2a8020545c59d9a3960f3fb174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff77a6e807281da0330c01fa0722ebea" id="r_aff77a6e807281da0330c01fa0722ebea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aff77a6e807281da0330c01fa0722ebea">cos</a> () const</td></tr>
+<tr class="separator:aff77a6e807281da0330c01fa0722ebea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02d839d9b15be37aeee202b9e7930f22" id="r_a02d839d9b15be37aeee202b9e7930f22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a02d839d9b15be37aeee202b9e7930f22">tanh</a> () const</td></tr>
+<tr class="separator:a02d839d9b15be37aeee202b9e7930f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f1f0ff6763de707e91594b8175e99d4" id="r_a6f1f0ff6763de707e91594b8175e99d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a6f1f0ff6763de707e91594b8175e99d4">relu</a> () const</td></tr>
+<tr class="separator:a6f1f0ff6763de707e91594b8175e99d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eefa7ac429084a902f522e6923b073a" id="r_a4eefa7ac429084a902f522e6923b073a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a4eefa7ac429084a902f522e6923b073a">sigmoid</a> () const</td></tr>
+<tr class="separator:a4eefa7ac429084a902f522e6923b073a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84418543e13d10893e16246a4d18d4d6" id="r_a84418543e13d10893e16246a4d18d4d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a84418543e13d10893e16246a4d18d4d6">gelu</a> () const</td></tr>
+<tr class="separator:a84418543e13d10893e16246a4d18d4d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad706d131c64df4d4efb9546bfb7511cc" id="r_ad706d131c64df4d4efb9546bfb7511cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad706d131c64df4d4efb9546bfb7511cc">silu</a> () const</td></tr>
+<tr class="separator:ad706d131c64df4d4efb9546bfb7511cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5cb05876df18825a7baed97fe3c6d09" id="r_aa5cb05876df18825a7baed97fe3c6d09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa5cb05876df18825a7baed97fe3c6d09">powScalar</a> (float <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a840095b6a773e45c2e9c095510ca3429">exp</a>) const</td></tr>
+<tr class="separator:aa5cb05876df18825a7baed97fe3c6d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71bdf18657f4b2c8ff090c55bf968346" id="r_a71bdf18657f4b2c8ff090c55bf968346"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a71bdf18657f4b2c8ff090c55bf968346">clamp</a> (float lo, float hi) const</td></tr>
+<tr class="separator:a71bdf18657f4b2c8ff090c55bf968346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abec287f4ad9ea6d8ae457ac149604ade" id="r_abec287f4ad9ea6d8ae457ac149604ade"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#abec287f4ad9ea6d8ae457ac149604ade">maximumScalar</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) const</td></tr>
+<tr class="separator:abec287f4ad9ea6d8ae457ac149604ade"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee5de2d076312b44341a198a760377d0" id="r_aee5de2d076312b44341a198a760377d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aee5de2d076312b44341a198a760377d0">minimumScalar</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) const</td></tr>
+<tr class="separator:aee5de2d076312b44341a198a760377d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7e15eb3e9ec1807280aea89eaa51647" id="r_af7e15eb3e9ec1807280aea89eaa51647"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af7e15eb3e9ec1807280aea89eaa51647">addInPlace</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other)</td></tr>
+<tr class="memdesc:af7e15eb3e9ec1807280aea89eaa51647"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eager 原地运算。  <br /></td></tr>
+<tr class="separator:af7e15eb3e9ec1807280aea89eaa51647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb118cb8851befa3b3b9669e3b956e70" id="r_adb118cb8851befa3b3b9669e3b956e70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#adb118cb8851befa3b3b9669e3b956e70">multiplyInPlace</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other)</td></tr>
+<tr class="separator:adb118cb8851befa3b3b9669e3b956e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39475376ae9bc8c87c7944db36aeebf8" id="r_a39475376ae9bc8c87c7944db36aeebf8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a39475376ae9bc8c87c7944db36aeebf8">addScalarInPlace</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="separator:a39475376ae9bc8c87c7944db36aeebf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58d19413d343bf680f8ad6724b797712" id="r_a58d19413d343bf680f8ad6724b797712"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a58d19413d343bf680f8ad6724b797712">mulScalarInPlace</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="separator:a58d19413d343bf680f8ad6724b797712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade02ae8d647fc40c159956faca4ab207" id="r_ade02ae8d647fc40c159956faca4ab207"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ade02ae8d647fc40c159956faca4ab207">reluInPlace</a> ()</td></tr>
+<tr class="separator:ade02ae8d647fc40c159956faca4ab207"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15340c9e9f4901def6cf14e3bc937745" id="r_a15340c9e9f4901def6cf14e3bc937745"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a15340c9e9f4901def6cf14e3bc937745">reduceSum</a> () const</td></tr>
+<tr class="memdesc:a15340c9e9f4901def6cf14e3bc937745"><td class="mdescLeft">&#160;</td><td class="mdescRight">归约：求和 / 均值 / 最小 / 最大。  <br /></td></tr>
+<tr class="separator:a15340c9e9f4901def6cf14e3bc937745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2cdcce2b0e6253605b00a91c9f6d25b" id="r_af2cdcce2b0e6253605b00a91c9f6d25b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af2cdcce2b0e6253605b00a91c9f6d25b">reduceMean</a> () const</td></tr>
+<tr class="separator:af2cdcce2b0e6253605b00a91c9f6d25b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af98c21a1323549923272d664aee4b491" id="r_af98c21a1323549923272d664aee4b491"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af98c21a1323549923272d664aee4b491">reduceMin</a> () const</td></tr>
+<tr class="separator:af98c21a1323549923272d664aee4b491"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a331b0dae1089c1ffbe0f3c87c8d72752" id="r_a331b0dae1089c1ffbe0f3c87c8d72752"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a331b0dae1089c1ffbe0f3c87c8d72752">reduceMax</a> () const</td></tr>
+<tr class="separator:a331b0dae1089c1ffbe0f3c87c8d72752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eb9c2975d492aa2e67d89dca5d73a19" id="r_a7eb9c2975d492aa2e67d89dca5d73a19"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7eb9c2975d492aa2e67d89dca5d73a19">dot</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other) const</td></tr>
+<tr class="separator:a7eb9c2975d492aa2e67d89dca5d73a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae136a7a89f8c69f86e13b8d134530bcc" id="r_ae136a7a89f8c69f86e13b8d134530bcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae136a7a89f8c69f86e13b8d134530bcc">matmul</a> (const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *other) const</td></tr>
+<tr class="memdesc:ae136a7a89f8c69f86e13b8d134530bcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">矩阵乘法 / 转置 / 变形。  <br /></td></tr>
+<tr class="separator:ae136a7a89f8c69f86e13b8d134530bcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab30361ff50494f45329ffe1837d2c0df" id="r_ab30361ff50494f45329ffe1837d2c0df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab30361ff50494f45329ffe1837d2c0df">transpose</a> () const</td></tr>
+<tr class="separator:ab30361ff50494f45329ffe1837d2c0df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af60a5be3237e5672790a16e1093d8039" id="r_af60a5be3237e5672790a16e1093d8039"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af60a5be3237e5672790a16e1093d8039">permute</a> (const int *order, int rank) const</td></tr>
+<tr class="separator:af60a5be3237e5672790a16e1093d8039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6dc3ad8be571a6437c686a77aeef9a" id="r_a7e6dc3ad8be571a6437c686a77aeef9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e6dc3ad8be571a6437c686a77aeef9a">reshape1</a> (int d0) const</td></tr>
+<tr class="separator:a7e6dc3ad8be571a6437c686a77aeef9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68445856c25cd600bbb2375503e28277" id="r_a68445856c25cd600bbb2375503e28277"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a68445856c25cd600bbb2375503e28277">reshape2</a> (int d0, int d1) const</td></tr>
+<tr class="separator:a68445856c25cd600bbb2375503e28277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad62b138afed18d7716de465cf9d6bef1" id="r_ad62b138afed18d7716de465cf9d6bef1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad62b138afed18d7716de465cf9d6bef1">reshape3</a> (int d0, int d1, int d2) const</td></tr>
+<tr class="separator:ad62b138afed18d7716de465cf9d6bef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d61892c744f7dbab02401a6831bb9dd" id="r_a3d61892c744f7dbab02401a6831bb9dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3d61892c744f7dbab02401a6831bb9dd">reshape4</a> (int d0, int d1, int d2, int d3) const</td></tr>
+<tr class="separator:a3d61892c744f7dbab02401a6831bb9dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2d339d24cbdd9be2220452ac30e36b" id="r_a0a2d339d24cbdd9be2220452ac30e36b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0a2d339d24cbdd9be2220452ac30e36b">reshape5</a> (int d0, int d1, int d2, int d3, int d4) const</td></tr>
+<tr class="separator:a0a2d339d24cbdd9be2220452ac30e36b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a666cdcd491b877af5f300f7808049102" id="r_a666cdcd491b877af5f300f7808049102"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a666cdcd491b877af5f300f7808049102">reshape6</a> (int d0, int d1, int d2, int d3, int d4, int d5) const</td></tr>
+<tr class="separator:a666cdcd491b877af5f300f7808049102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0dc9ab974f1b0322bb216833fa54a9b" id="r_ae0dc9ab974f1b0322bb216833fa54a9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae0dc9ab974f1b0322bb216833fa54a9b">flatten</a> () const</td></tr>
+<tr class="separator:ae0dc9ab974f1b0322bb216833fa54a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e39958e55b64494e3dc033c372e1c47" id="r_a6e39958e55b64494e3dc033c372e1c47"><td class="memItemLeft" align="right" valign="top">float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a6e39958e55b64494e3dc033c372e1c47">data</a> ()</td></tr>
+<tr class="memdesc:a6e39958e55b64494e3dc033c372e1c47"><td class="mdescLeft">&#160;</td><td class="mdescRight">原始数据指针（eager）。  <br /></td></tr>
+<tr class="separator:a6e39958e55b64494e3dc033c372e1c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fea3703bde436c97142475dfb2b3233" id="r_a4fea3703bde436c97142475dfb2b3233"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a4fea3703bde436c97142475dfb2b3233">data</a> () const</td></tr>
+<tr class="separator:a4fea3703bde436c97142475dfb2b3233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f727627fff058140cf5e651e574379" id="r_a28f727627fff058140cf5e651e574379"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a28f727627fff058140cf5e651e574379">ensureEager</a> (const char *op) const</td></tr>
+<tr class="separator:a28f727627fff058140cf5e651e574379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad1f66feb46d090eba3296f529e5f083f" id="r_ad1f66feb46d090eba3296f529e5f083f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad1f66feb46d090eba3296f529e5f083f">makeSymbolic</a> (<a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> *<a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa4f1152df59b03cc297a14da4a232aa6">graph</a>, int <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a83b6dcca51dbb15c5b192ca970a94255">nodeId</a>, const int *dims, int rank)</td></tr>
+<tr class="memdesc:ad1f66feb46d090eba3296f529e5f083f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Symbolic handle into a graph node.  <br /></td></tr>
+<tr class="separator:ad1f66feb46d090eba3296f529e5f083f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6dbc3ed5e8b582ba39b1c61b4b6ea84" id="r_af6dbc3ed5e8b582ba39b1c61b4b6ea84"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af6dbc3ed5e8b582ba39b1c61b4b6ea84">product</a> (const int *dims, int rank)</td></tr>
+<tr class="separator:af6dbc3ed5e8b582ba39b1c61b4b6ea84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a3b5bcc40b612cd0923fe9f5853eb2295" id="r_a3b5bcc40b612cd0923fe9f5853eb2295"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3b5bcc40b612cd0923fe9f5853eb2295">kMaxRank</a> = 6</td></tr>
+<tr class="separator:a3b5bcc40b612cd0923fe9f5853eb2295"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a667aac9bd0ef4b4dd0041d0aeb7a32ad" id="r_a667aac9bd0ef4b4dd0041d0aeb7a32ad"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a667aac9bd0ef4b4dd0041d0aeb7a32ad">TF</a></td></tr>
+<tr class="separator:a667aac9bd0ef4b4dd0041d0aeb7a32ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87c6c86ed0896880400f89c8c88c3927" id="r_a87c6c86ed0896880400f89c8c88c3927"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a87c6c86ed0896880400f89c8c88c3927">Func</a></td></tr>
+<tr class="separator:a87c6c86ed0896880400f89c8c88c3927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d8cf84c1ac765a655425ab1429fa96" id="r_a34d8cf84c1ac765a655425ab1429fa96"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a34d8cf84c1ac765a655425ab1429fa96">CompiledFunction</a></td></tr>
+<tr class="separator:a34d8cf84c1ac765a655425ab1429fa96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab89afd724f1b07b1aaad6bdc61c47a" id="r_afab89afd724f1b07b1aaad6bdc61c47a"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#afab89afd724f1b07b1aaad6bdc61c47a">Graph</a></td></tr>
+<tr class="separator:afab89afd724f1b07b1aaad6bdc61c47a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>float32 / int32 tensor (rank 1–6), row-major. Eager: owns a buffer. Symbolic: node in a <a class="el" href="classeve_1_1tensor_1_1Func.html" title="Trace builder — TF2 tf.function analogue (tf.func in scripts). While active, TF ops record into this ...">Func</a> graph (no buffer until run). </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7e42c3f58549695b26c42efbdc854ee3" name="a7e42c3f58549695b26c42efbdc854ee3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e42c3f58549695b26c42efbdc854ee3">&#9670;&#160;</a></span>Tensor() <span class="overload">[1/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00326">addScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00392">clamp()</a>, <a class="el" href="Tensor_8cpp_source.html#l00281">clone()</a>, <a class="el" href="Tensor_8cpp_source.html#l00344">divScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00122">makeSymbolic()</a>, <a class="el" href="Tensor_8cpp_source.html#l00475">matmul()</a>, <a class="el" href="Tensor_8cpp_source.html#l00356">maximumScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00362">minimumScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00338">mulScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00545">permute()</a>, <a class="el" href="Tensor_8cpp_source.html#l00350">powScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00561">reshape1()</a>, <a class="el" href="Tensor_8cpp_source.html#l00569">reshape2()</a>, <a class="el" href="Tensor_8cpp_source.html#l00578">reshape3()</a>, <a class="el" href="Tensor_8cpp_source.html#l00587">reshape4()</a>, <a class="el" href="Tensor_8cpp_source.html#l00596">reshape5()</a>, <a class="el" href="Tensor_8cpp_source.html#l00605">reshape6()</a>, <a class="el" href="Tensor_8cpp_source.html#l00332">subScalar()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00528">transpose()</a>.</p>
+
+</div>
+</div>
+<a id="ae7549844894da978e6b49130e259a41d" name="ae7549844894da978e6b49130e259a41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7549844894da978e6b49130e259a41d">&#9670;&#160;</a></span>Tensor() <span class="overload">[2/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>dims</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>从 dims[0..rank) 创建 eager 张量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<a id="a512523497d23d147f3266e024ba9b8d2" name="a512523497d23d147f3266e024ba9b8d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512523497d23d147f3266e024ba9b8d2">&#9670;&#160;</a></span>Tensor() <span class="overload">[3/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dtype</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>dims</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8h_source.html#l00078">dtype()</a>.</p>
+
+</div>
+</div>
+<a id="ac057e6c6a100d8ae57d42c95d18be2f3" name="ac057e6c6a100d8ae57d42c95d18be2f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac057e6c6a100d8ae57d42c95d18be2f3">&#9670;&#160;</a></span>Tensor() <span class="overload">[4/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>按秩创建全零 eager 张量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<a id="a0a726cb0cce6b5d833d02ee975ce811e" name="a0a726cb0cce6b5d833d02ee975ce811e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a726cb0cce6b5d833d02ee975ce811e">&#9670;&#160;</a></span>Tensor() <span class="overload">[5/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<a id="ab70bcdda2ccade8dcbe39bf92aa432fa" name="ab70bcdda2ccade8dcbe39bf92aa432fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70bcdda2ccade8dcbe39bf92aa432fa">&#9670;&#160;</a></span>Tensor() <span class="overload">[6/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<a id="af5cdf4718a587af355bd4c9b12d4f409" name="af5cdf4718a587af355bd4c9b12d4f409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5cdf4718a587af355bd4c9b12d4f409">&#9670;&#160;</a></span>Tensor() <span class="overload">[7/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<a id="a36587eb15af178dfb66f9d466e1af689" name="a36587eb15af178dfb66f9d466e1af689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36587eb15af178dfb66f9d466e1af689">&#9670;&#160;</a></span>Tensor() <span class="overload">[8/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d4</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<a id="a2626b1699fd3820f950f2edc45a56ae7" name="a2626b1699fd3820f950f2edc45a56ae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2626b1699fd3820f950f2edc45a56ae7">&#9670;&#160;</a></span>Tensor() <span class="overload">[9/9]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tensor::Tensor::Tensor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d5</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5209a25d37f28fe82c30a59bd9d04c3e" name="a5209a25d37f28fe82c30a59bd9d04c3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5209a25d37f28fe82c30a59bd9d04c3e">&#9670;&#160;</a></span>abs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::abs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29dfb90436b834098192ab60647a916b" name="a29dfb90436b834098192ab60647a916b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29dfb90436b834098192ab60647a916b">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::add </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Eager 逐元素运算（符号张量会抛异常）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aec211f7c20af43e742bf2570c3cb84f9">eve::tensor::Add</a>.</p>
+
+</div>
+</div>
+<a id="af7e15eb3e9ec1807280aea89eaa51647" name="af7e15eb3e9ec1807280aea89eaa51647"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7e15eb3e9ec1807280aea89eaa51647">&#9670;&#160;</a></span>addInPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::addInPlace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Eager 原地运算。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>.</p>
+
+</div>
+</div>
+<a id="af0a8669fb1743fc7e0100f0980873a5d" name="af0a8669fb1743fc7e0100f0980873a5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0a8669fb1743fc7e0100f0980873a5d">&#9670;&#160;</a></span>addScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::addScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ace6129b1e2d848abb4e45baf22a998c9">eve::tensor::AddScalar</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="a39475376ae9bc8c87c7944db36aeebf8" name="a39475376ae9bc8c87c7944db36aeebf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39475376ae9bc8c87c7944db36aeebf8">&#9670;&#160;</a></span>addScalarInPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::addScalarInPlace </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+</div>
+</div>
+<a id="a71bdf18657f4b2c8ff090c55bf968346" name="a71bdf18657f4b2c8ff090c55bf968346"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71bdf18657f4b2c8ff090c55bf968346">&#9670;&#160;</a></span>clamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::clamp </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hi</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a08825280e3f8137556325061ba67ff8c">eve::tensor::Clamp</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="ab47a290679a1a86925371c6e61f9d0e4" name="ab47a290679a1a86925371c6e61f9d0e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab47a290679a1a86925371c6e61f9d0e4">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="a2a43947e9ff6722833d9b02d51f5ea55" name="a2a43947e9ff6722833d9b02d51f5ea55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a43947e9ff6722833d9b02d51f5ea55">&#9670;&#160;</a></span>copyFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::copyFrom </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>.</p>
+
+</div>
+</div>
+<a id="aff77a6e807281da0330c01fa0722ebea" name="aff77a6e807281da0330c01fa0722ebea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff77a6e807281da0330c01fa0722ebea">&#9670;&#160;</a></span>cos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::cos </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e39958e55b64494e3dc033c372e1c47" name="a6e39958e55b64494e3dc033c372e1c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e39958e55b64494e3dc033c372e1c47">&#9670;&#160;</a></span>data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float * eve::tensor::Tensor::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>原始数据指针（eager）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00538">eve::tensor::TF::conv1dBias()</a>, <a class="el" href="TF_8cpp_source.html#l00557">eve::tensor::TF::conv2dBias()</a>, <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>, <a class="el" href="TF_8cpp_source.html#l00492">eve::tensor::TF::layernormWB()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00765">eve::tensor::TF::sdpaMasked()</a>.</p>
+
+</div>
+</div>
+<a id="a4fea3703bde436c97142475dfb2b3233" name="a4fea3703bde436c97142475dfb2b3233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fea3703bde436c97142475dfb2b3233">&#9670;&#160;</a></span>data() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float * eve::tensor::Tensor::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>.</p>
+
+</div>
+</div>
+<a id="a50a0097649a31f4db508be5a92d7e3b5" name="a50a0097649a31f4db508be5a92d7e3b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50a0097649a31f4db508be5a92d7e3b5">&#9670;&#160;</a></span>dequantized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::tensor::Tensor::dequantized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Dequantize this tensor to float32 (eager only). </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00204">eve::tensor::q::dequantizeAll()</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="Tensor_8cpp_source.html#l00475">matmul()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00528">transpose()</a>.</p>
+
+</div>
+</div>
+<a id="ac0652c58a276956d6e179c7f8cd66ae0" name="ac0652c58a276956d6e179c7f8cd66ae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0652c58a276956d6e179c7f8cd66ae0">&#9670;&#160;</a></span>div()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::div </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0b914e196182d02615487e9793ecff3d">eve::tensor::Divide</a>.</p>
+
+</div>
+</div>
+<a id="a8b71753d940b1f727a7c26834a81e203" name="a8b71753d940b1f727a7c26834a81e203"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b71753d940b1f727a7c26834a81e203">&#9670;&#160;</a></span>divScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::divScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67abc3d852af704778d37f0b9e116ec138b">eve::tensor::DivScalar</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="a7eb9c2975d492aa2e67d89dca5d73a19" name="a7eb9c2975d492aa2e67d89dca5d73a19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eb9c2975d492aa2e67d89dca5d73a19">&#9670;&#160;</a></span>dot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00464">464</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>.</p>
+
+</div>
+</div>
+<a id="add634cfae737caa7105d8ec6715ac151" name="add634cfae737caa7105d8ec6715ac151"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add634cfae737caa7105d8ec6715ac151">&#9670;&#160;</a></span>dtype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> eve::tensor::Tensor::dtype </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8h_source.html#l00079">setDtype()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00096">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="a28f727627fff058140cf5e651e574379" name="a28f727627fff058140cf5e651e574379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f727627fff058140cf5e651e574379">&#9670;&#160;</a></span>ensureEager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::ensureEager </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>op</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00400">addInPlace()</a>, <a class="el" href="Tensor_8cpp_source.html#l00326">addScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00418">addScalarInPlace()</a>, <a class="el" href="Tensor_8cpp_source.html#l00392">clamp()</a>, <a class="el" href="Tensor_8cpp_source.html#l00281">clone()</a>, <a class="el" href="Tensor_8cpp_source.html#l00272">copyFrom()</a>, <a class="el" href="Tensor_8cpp_source.html#l00185">data()</a>, <a class="el" href="Tensor_8cpp_source.html#l00190">data()</a>, <a class="el" href="Tensor_8cpp_source.html#l00210">dequantized()</a>, <a class="el" href="Tensor_8cpp_source.html#l00344">divScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00464">dot()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>, <a class="el" href="Tensor_8cpp_source.html#l00267">fill()</a>, <a class="el" href="Tensor_8cpp_source.html#l00196">get()</a>, <a class="el" href="Tensor_8cpp_source.html#l00226">get2()</a>, <a class="el" href="Tensor_8cpp_source.html#l00234">get3()</a>, <a class="el" href="Tensor_8cpp_source.html#l00242">get4()</a>, <a class="el" href="Tensor_8cpp_source.html#l00250">get5()</a>, <a class="el" href="Tensor_8cpp_source.html#l00258">get6()</a>, <a class="el" href="Tensor_8cpp_source.html#l00475">matmul()</a>, <a class="el" href="Tensor_8cpp_source.html#l00356">maximumScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00362">minimumScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00338">mulScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00424">mulScalarInPlace()</a>, <a class="el" href="Tensor_8cpp_source.html#l00409">multiplyInPlace()</a>, <a class="el" href="Tensor_8cpp_source.html#l00545">permute()</a>, <a class="el" href="Tensor_8cpp_source.html#l00350">powScalar()</a>, <a class="el" href="Tensor_8cpp_source.html#l00456">reduceMax()</a>, <a class="el" href="Tensor_8cpp_source.html#l00448">reduceMin()</a>, <a class="el" href="Tensor_8cpp_source.html#l00437">reduceSum()</a>, <a class="el" href="Tensor_8cpp_source.html#l00430">reluInPlace()</a>, <a class="el" href="Tensor_8cpp_source.html#l00561">reshape1()</a>, <a class="el" href="Tensor_8cpp_source.html#l00569">reshape2()</a>, <a class="el" href="Tensor_8cpp_source.html#l00578">reshape3()</a>, <a class="el" href="Tensor_8cpp_source.html#l00587">reshape4()</a>, <a class="el" href="Tensor_8cpp_source.html#l00596">reshape5()</a>, <a class="el" href="Tensor_8cpp_source.html#l00605">reshape6()</a>, <a class="el" href="Tensor_8cpp_source.html#l00203">set()</a>, <a class="el" href="Tensor_8cpp_source.html#l00230">set2()</a>, <a class="el" href="Tensor_8cpp_source.html#l00238">set3()</a>, <a class="el" href="Tensor_8cpp_source.html#l00246">set4()</a>, <a class="el" href="Tensor_8cpp_source.html#l00254">set5()</a>, <a class="el" href="Tensor_8cpp_source.html#l00262">set6()</a>, <a class="el" href="Tensor_8cpp_source.html#l00332">subScalar()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00528">transpose()</a>.</p>
+
+</div>
+</div>
+<a id="a840095b6a773e45c2e9c095510ca3429" name="a840095b6a773e45c2e9c095510ca3429"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a840095b6a773e45c2e9c095510ca3429">&#9670;&#160;</a></span>exp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::exp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00350">powScalar()</a>.</p>
+
+</div>
+</div>
+<a id="a28923e1b6386f5957916431003815bd7" name="a28923e1b6386f5957916431003815bd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28923e1b6386f5957916431003815bd7">&#9670;&#160;</a></span>fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::fill </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="ae0dc9ab974f1b0322bb216833fa54a9b" name="ae0dc9ab974f1b0322bb216833fa54a9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0dc9ab974f1b0322bb216833fa54a9b">&#9670;&#160;</a></span>flatten()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::flatten </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00615">615</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00561">reshape1()</a>.</p>
+
+</div>
+</div>
+<a id="a84418543e13d10893e16246a4d18d4d6" name="a84418543e13d10893e16246a4d18d4d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84418543e13d10893e16246a4d18d4d6">&#9670;&#160;</a></span>gelu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::gelu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abb5cc31f9e99c4cc237b0d136dd69763" name="abb5cc31f9e99c4cc237b0d136dd69763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb5cc31f9e99c4cc237b0d136dd69763">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>flatIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00174">eve::tensor::q::dequantValue()</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00218">get1()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00435">eve::tensor::TF::where()</a>.</p>
+
+</div>
+</div>
+<a id="a44d3dfef6a445eb37f95a48580669d69" name="a44d3dfef6a445eb37f95a48580669d69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d3dfef6a445eb37f95a48580669d69">&#9670;&#160;</a></span>get1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get1 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00196">get()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>.</p>
+
+</div>
+</div>
+<a id="a9944967bf58a50edf5f4aeec6d8f0b15" name="a9944967bf58a50edf5f4aeec6d8f0b15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9944967bf58a50edf5f4aeec6d8f0b15">&#9670;&#160;</a></span>get2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00062">i1</a>.</p>
+
+</div>
+</div>
+<a id="a3f857d6901be86cb804b556273060569" name="a3f857d6901be86cb804b556273060569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f857d6901be86cb804b556273060569">&#9670;&#160;</a></span>get3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00062">i2</a>.</p>
+
+</div>
+</div>
+<a id="a4cf439620d1f785a2333ece3bb2a24f2" name="a4cf439620d1f785a2333ece3bb2a24f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf439620d1f785a2333ece3bb2a24f2">&#9670;&#160;</a></span>get4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get4 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i3</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00062">i2</a>.</p>
+
+</div>
+</div>
+<a id="a63f41c9b37ccc38e5f011258a12865ea" name="a63f41c9b37ccc38e5f011258a12865ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63f41c9b37ccc38e5f011258a12865ea">&#9670;&#160;</a></span>get5()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get5 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i4</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00062">i2</a>.</p>
+
+</div>
+</div>
+<a id="a84d954c44b28e7667333708a9fede2e9" name="a84d954c44b28e7667333708a9fede2e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84d954c44b28e7667333708a9fede2e9">&#9670;&#160;</a></span>get6()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::get6 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i5</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00062">i2</a>.</p>
+
+</div>
+</div>
+<a id="a55a6b12e626a591aea56919bc6d7734f" name="a55a6b12e626a591aea56919bc6d7734f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55a6b12e626a591aea56919bc6d7734f">&#9670;&#160;</a></span>getDevice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::Tensor::getDevice </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab12434034bee1e389323562526a041bf" name="ab12434034bee1e389323562526a041bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab12434034bee1e389323562526a041bf">&#9670;&#160;</a></span>getDim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="TF_8cpp_source.html#l00765">eve::tensor::TF::sdpaMasked()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00435">eve::tensor::TF::where()</a>.</p>
+
+</div>
+</div>
+<a id="aa49bf33209d1345413dc5c5f63fd3b86" name="aa49bf33209d1345413dc5c5f63fd3b86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa49bf33209d1345413dc5c5f63fd3b86">&#9670;&#160;</a></span>getDim0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim0 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa468a725a9d6235cf9c86e155f7597d4" name="aa468a725a9d6235cf9c86e155f7597d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa468a725a9d6235cf9c86e155f7597d4">&#9670;&#160;</a></span>getDim1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim1 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a412334bb321abdb222781840d568005a" name="a412334bb321abdb222781840d568005a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412334bb321abdb222781840d568005a">&#9670;&#160;</a></span>getDim2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim2 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5074ab98efe4bf84d3ebad94c90a3087" name="a5074ab98efe4bf84d3ebad94c90a3087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5074ab98efe4bf84d3ebad94c90a3087">&#9670;&#160;</a></span>getDim3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim3 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f99127143b98611c77e17884b4b8c13" name="a1f99127143b98611c77e17884b4b8c13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f99127143b98611c77e17884b4b8c13">&#9670;&#160;</a></span>getDim4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim4 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeed7de3629b529992b932ee1e1bcea53" name="aeed7de3629b529992b932ee1e1bcea53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeed7de3629b529992b932ee1e1bcea53">&#9670;&#160;</a></span>getDim5()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getDim5 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a152ba4a9cc55962c40b3444b71c9b4dc" name="a152ba4a9cc55962c40b3444b71c9b4dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a152ba4a9cc55962c40b3444b71c9b4dc">&#9670;&#160;</a></span>getDtype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::Tensor::getDtype </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00026">eve::tensor::dtypeName()</a>.</p>
+
+</div>
+</div>
+<a id="aafe479d6adb7594bca8244a836588e45" name="aafe479d6adb7594bca8244a836588e45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafe479d6adb7594bca8244a836588e45">&#9670;&#160;</a></span>getRank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getRank </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="TF_8cpp_source.html#l00765">eve::tensor::TF::sdpaMasked()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00435">eve::tensor::TF::where()</a>.</p>
+
+</div>
+</div>
+<a id="a5bca6083957c306a9968a25640b01260" name="a5bca6083957c306a9968a25640b01260"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bca6083957c306a9968a25640b01260">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00538">eve::tensor::TF::conv1dBias()</a>, <a class="el" href="TF_8cpp_source.html#l00557">eve::tensor::TF::conv2dBias()</a>, <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>, <a class="el" href="TF_8cpp_source.html#l00492">eve::tensor::TF::layernormWB()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00435">eve::tensor::TF::where()</a>.</p>
+
+</div>
+</div>
+<a id="aa4f1152df59b03cc297a14da4a232aa6" name="aa4f1152df59b03cc297a14da4a232aa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f1152df59b03cc297a14da4a232aa6">&#9670;&#160;</a></span>graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> * eve::tensor::Tensor::graph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00122">makeSymbolic()</a>.</p>
+
+</div>
+</div>
+<a id="ad7505a476f19ffbed83e5aac6ccc76e5" name="ad7505a476f19ffbed83e5aac6ccc76e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7505a476f19ffbed83e5aac6ccc76e5">&#9670;&#160;</a></span>isEager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::Tensor::isEager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a26cc92b5c9ef9dabe9fc8d9d18814704" name="a26cc92b5c9ef9dabe9fc8d9d18814704"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26cc92b5c9ef9dabe9fc8d9d18814704">&#9670;&#160;</a></span>isQuantized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::Tensor::isQuantized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True for packed weight-quantization dtypes (bytes_, qScales_). </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quant_8h_source.html#l00016">eve::tensor::q::isQuantDType()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00185">data()</a>, <a class="el" href="Tensor_8cpp_source.html#l00190">data()</a>, <a class="el" href="Tensor_8cpp_source.html#l00210">dequantized()</a>, <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>, <a class="el" href="Tensor_8cpp_source.html#l00196">get()</a>, <a class="el" href="Tensor_8cpp_source.html#l00475">matmul()</a>, <a class="el" href="Tensor_8cpp_source.html#l00545">permute()</a>, <a class="el" href="Tensor_8cpp_source.html#l00203">set()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00528">transpose()</a>.</p>
+
+</div>
+</div>
+<a id="aa2dc8f124088595d64072b562a91313d" name="aa2dc8f124088595d64072b562a91313d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2dc8f124088595d64072b562a91313d">&#9670;&#160;</a></span>isSymbolic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::Tensor::isSymbolic </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>.</p>
+
+</div>
+</div>
+<a id="a373977da4987d6b6f4f34a8209759226" name="a373977da4987d6b6f4f34a8209759226"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a373977da4987d6b6f4f34a8209759226">&#9670;&#160;</a></span>log()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::log </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1f66feb46d090eba3296f529e5f083f" name="ad1f66feb46d090eba3296f529e5f083f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1f66feb46d090eba3296f529e5f083f">&#9670;&#160;</a></span>makeSymbolic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::makeSymbolic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> *&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>dims</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Symbolic handle into a graph node. </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">eve::tensor::Float32</a>, <a class="el" href="Tensor_8h_source.html#l00064">graph()</a>, <a class="el" href="Tensor_8h_source.html#l00045">kMaxRank</a>, <a class="el" href="Tensor_8h_source.html#l00065">nodeId()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00197">eve::tensor::TF::eye()</a>.</p>
+
+</div>
+</div>
+<a id="ae136a7a89f8c69f86e13b8d134530bcc" name="ae136a7a89f8c69f86e13b8d134530bcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae136a7a89f8c69f86e13b8d134530bcc">&#9670;&#160;</a></span>matmul()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::matmul </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>矩阵乘法 / 转置 / 变形。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00475">475</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="Tensor_8cpp_source.html#l00210">dequantized()</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="abec287f4ad9ea6d8ae457ac149604ade" name="abec287f4ad9ea6d8ae457ac149604ade"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abec287f4ad9ea6d8ae457ac149604ade">&#9670;&#160;</a></span>maximumScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::maximumScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aadb57a2676130aaa1f163dfc1cf28b03">eve::tensor::MaximumScalar</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="aee5de2d076312b44341a198a760377d0" name="aee5de2d076312b44341a198a760377d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee5de2d076312b44341a198a760377d0">&#9670;&#160;</a></span>minimumScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::minimumScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a283d54c1e359e3b4bfb24276d43e56a5">eve::tensor::MinimumScalar</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="a0665aa0e34adebf1ae34877e9a4d2b9a" name="a0665aa0e34adebf1ae34877e9a4d2b9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0665aa0e34adebf1ae34877e9a4d2b9a">&#9670;&#160;</a></span>mulScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::mulScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a6883db414539f56dbc1407b2228e6059">eve::tensor::MulScalar</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="a58d19413d343bf680f8ad6724b797712" name="a58d19413d343bf680f8ad6724b797712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58d19413d343bf680f8ad6724b797712">&#9670;&#160;</a></span>mulScalarInPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::mulScalarInPlace </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+</div>
+</div>
+<a id="a8f5b58d19b2a50bb177c300784b19117" name="a8f5b58d19b2a50bb177c300784b19117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5b58d19b2a50bb177c300784b19117">&#9670;&#160;</a></span>multiply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::multiply </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ae257376d913f3b53cbb4a9b19d770648">eve::tensor::Multiply</a>.</p>
+
+</div>
+</div>
+<a id="adb118cb8851befa3b3b9669e3b956e70" name="adb118cb8851befa3b3b9669e3b956e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb118cb8851befa3b3b9669e3b956e70">&#9670;&#160;</a></span>multiplyInPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::multiplyInPlace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00409">409</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>.</p>
+
+</div>
+</div>
+<a id="a67f5d2c3d231a325f57864e70fd804d5" name="a67f5d2c3d231a325f57864e70fd804d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67f5d2c3d231a325f57864e70fd804d5">&#9670;&#160;</a></span>neg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::neg </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a83b6dcca51dbb15c5b192ca970a94255" name="a83b6dcca51dbb15c5b192ca970a94255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83b6dcca51dbb15c5b192ca970a94255">&#9670;&#160;</a></span>nodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::nodeId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00122">makeSymbolic()</a>.</p>
+
+</div>
+</div>
+<a id="af60a5be3237e5672790a16e1093d8039" name="af60a5be3237e5672790a16e1093d8039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af60a5be3237e5672790a16e1093d8039">&#9670;&#160;</a></span>permute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::permute </td>
+          <td>(</td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00545">545</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>, <a class="el" href="Tensor_8h_source.html#l00045">kMaxRank</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00382">eve::tensor::kernels::permute()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00528">transpose()</a>.</p>
+
+</div>
+</div>
+<a id="aa5cb05876df18825a7baed97fe3c6d09" name="aa5cb05876df18825a7baed97fe3c6d09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5cb05876df18825a7baed97fe3c6d09">&#9670;&#160;</a></span>powScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::powScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>exp</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a840095b6a773e45c2e9c095510ca3429">exp()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a4bd340e52e2630d3645e89d045b5bc9e">eve::tensor::PowScalar</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="af6dbc3ed5e8b582ba39b1c61b4b6ea84" name="af6dbc3ed5e8b582ba39b1c61b4b6ea84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6dbc3ed5e8b582ba39b1c61b4b6ea84">&#9670;&#160;</a></span>product()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::product </td>
+          <td>(</td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>dims</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rank</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a52653f75f30b535ae64dfbf97a41879d" name="a52653f75f30b535ae64dfbf97a41879d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52653f75f30b535ae64dfbf97a41879d">&#9670;&#160;</a></span>qBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; uint8_t &gt; &amp; eve::tensor::Tensor::qBytes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>.</p>
+
+</div>
+</div>
+<a id="a237a9d0670731bfd262979d456b9b55f" name="a237a9d0670731bfd262979d456b9b55f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a237a9d0670731bfd262979d456b9b55f">&#9670;&#160;</a></span>qGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::Tensor::qGroup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>.</p>
+
+</div>
+</div>
+<a id="a07b00c0c94d365cfba98b207346d19fe" name="a07b00c0c94d365cfba98b207346d19fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07b00c0c94d365cfba98b207346d19fe">&#9670;&#160;</a></span>qScales()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::tensor::Tensor::qScales </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Per-group scale vector + group size for quantized tensors. </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00129">eve::tensor::Func::ensureNode()</a>.</p>
+
+</div>
+</div>
+<a id="a331b0dae1089c1ffbe0f3c87c8d72752" name="a331b0dae1089c1ffbe0f3c87c8d72752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a331b0dae1089c1ffbe0f3c87c8d72752">&#9670;&#160;</a></span>reduceMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::reduceMax </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>.</p>
+
+</div>
+</div>
+<a id="af2cdcce2b0e6253605b00a91c9f6d25b" name="af2cdcce2b0e6253605b00a91c9f6d25b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2cdcce2b0e6253605b00a91c9f6d25b">&#9670;&#160;</a></span>reduceMean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::reduceMean </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00437">reduceSum()</a>.</p>
+
+</div>
+</div>
+<a id="af98c21a1323549923272d664aee4b491" name="af98c21a1323549923272d664aee4b491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af98c21a1323549923272d664aee4b491">&#9670;&#160;</a></span>reduceMin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::reduceMin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>.</p>
+
+</div>
+</div>
+<a id="a15340c9e9f4901def6cf14e3bc937745" name="a15340c9e9f4901def6cf14e3bc937745"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15340c9e9f4901def6cf14e3bc937745">&#9670;&#160;</a></span>reduceSum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::Tensor::reduceSum </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>归约：求和 / 均值 / 最小 / 最大。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00444">reduceMean()</a>.</p>
+
+</div>
+</div>
+<a id="a6f1f0ff6763de707e91594b8175e99d4" name="a6f1f0ff6763de707e91594b8175e99d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f1f0ff6763de707e91594b8175e99d4">&#9670;&#160;</a></span>relu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::relu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ade02ae8d647fc40c159956faca4ab207" name="ade02ae8d647fc40c159956faca4ab207"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade02ae8d647fc40c159956faca4ab207">&#9670;&#160;</a></span>reluInPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::reluInPlace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>.</p>
+
+</div>
+</div>
+<a id="a7e6dc3ad8be571a6437c686a77aeef9a" name="a7e6dc3ad8be571a6437c686a77aeef9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6dc3ad8be571a6437c686a77aeef9a">&#9670;&#160;</a></span>reshape1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::reshape1 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00561">561</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00615">flatten()</a>.</p>
+
+</div>
+</div>
+<a id="a68445856c25cd600bbb2375503e28277" name="a68445856c25cd600bbb2375503e28277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68445856c25cd600bbb2375503e28277">&#9670;&#160;</a></span>reshape2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::reshape2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00569">569</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="ad62b138afed18d7716de465cf9d6bef1" name="ad62b138afed18d7716de465cf9d6bef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad62b138afed18d7716de465cf9d6bef1">&#9670;&#160;</a></span>reshape3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::reshape3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00578">578</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="a3d61892c744f7dbab02401a6831bb9dd" name="a3d61892c744f7dbab02401a6831bb9dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d61892c744f7dbab02401a6831bb9dd">&#9670;&#160;</a></span>reshape4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::reshape4 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00587">587</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="a0a2d339d24cbdd9be2220452ac30e36b" name="a0a2d339d24cbdd9be2220452ac30e36b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2d339d24cbdd9be2220452ac30e36b">&#9670;&#160;</a></span>reshape5()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::reshape5 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d4</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00596">596</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="a666cdcd491b877af5f300f7808049102" name="a666cdcd491b877af5f300f7808049102"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a666cdcd491b877af5f300f7808049102">&#9670;&#160;</a></span>reshape6()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::reshape6 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>d5</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00605">605</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<a id="ab398364ba40e0c3f7f98742699b8aff2" name="ab398364ba40e0c3f7f98742699b8aff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab398364ba40e0c3f7f98742699b8aff2">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>flatIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tensor_8cpp_source.html#l00222">set1()</a>.</p>
+
+</div>
+</div>
+<a id="ab07f6745a1514094867d4532e67919a9" name="ab07f6745a1514094867d4532e67919a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab07f6745a1514094867d4532e67919a9">&#9670;&#160;</a></span>set1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set1 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Tensor_8cpp_source.html#l00203">set()</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="ad5ae09e70e78b4110ebb782addb77242" name="ad5ae09e70e78b4110ebb782addb77242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ae09e70e78b4110ebb782addb77242">&#9670;&#160;</a></span>set2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set2 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="a2bc296e35ae4abfc4d4bae99162db3ca" name="a2bc296e35ae4abfc4d4bae99162db3ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bc296e35ae4abfc4d4bae99162db3ca">&#9670;&#160;</a></span>set3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set3 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i2</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="ab7f672c9600576a62f7dc0281339b832" name="ab7f672c9600576a62f7dc0281339b832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7f672c9600576a62f7dc0281339b832">&#9670;&#160;</a></span>set4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set4 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i2</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="af903c2b425b9fa9560dfed3e159cb739" name="af903c2b425b9fa9560dfed3e159cb739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af903c2b425b9fa9560dfed3e159cb739">&#9670;&#160;</a></span>set5()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set5 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i2</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="af8127a53e61f352d410384d0867b2641" name="af8127a53e61f352d410384d0867b2641"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8127a53e61f352d410384d0867b2641">&#9670;&#160;</a></span>set6()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::set6 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i5</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i1</a>, <a class="el" href="Grass_8cpp_source.html#l00062">i2</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="ae107afe64888fd81c72a6a1d4d45824e" name="ae107afe64888fd81c72a6a1d4d45824e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae107afe64888fd81c72a6a1d4d45824e">&#9670;&#160;</a></span>setDtype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::Tensor::setDtype </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dtype</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8h_source.html#l00078">dtype()</a>.</p>
+
+</div>
+</div>
+<a id="a4eefa7ac429084a902f522e6923b073a" name="a4eefa7ac429084a902f522e6923b073a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eefa7ac429084a902f522e6923b073a">&#9670;&#160;</a></span>sigmoid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::sigmoid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad706d131c64df4d4efb9546bfb7511cc" name="ad706d131c64df4d4efb9546bfb7511cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad706d131c64df4d4efb9546bfb7511cc">&#9670;&#160;</a></span>silu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::silu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19efec2a8020545c59d9a3960f3fb174" name="a19efec2a8020545c59d9a3960f3fb174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19efec2a8020545c59d9a3960f3fb174">&#9670;&#160;</a></span>sin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::sin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abeeb718bf682e4c61c182a4f143e4129" name="abeeb718bf682e4c61c182a4f143e4129"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeeb718bf682e4c61c182a4f143e4129">&#9670;&#160;</a></span>sqrt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::sqrt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0e7849a3e004ee25205057c88ed3c8cd" name="a0e7849a3e004ee25205057c88ed3c8cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e7849a3e004ee25205057c88ed3c8cd">&#9670;&#160;</a></span>sub()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::sub </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67ae80155eceb940c89e2de63ad05868db2">eve::tensor::Sub</a>.</p>
+
+</div>
+</div>
+<a id="aac0ea602247d4c02a36b9f789ea18c02" name="aac0ea602247d4c02a36b9f789ea18c02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0ea602247d4c02a36b9f789ea18c02">&#9670;&#160;</a></span>subScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::subScalar </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aa6aa7f5bc2dc2a8b501e416226911756">eve::tensor::SubScalar</a>, <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="a02d839d9b15be37aeee202b9e7930f22" name="a02d839d9b15be37aeee202b9e7930f22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02d839d9b15be37aeee202b9e7930f22">&#9670;&#160;</a></span>tanh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::tanh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab30361ff50494f45329ffe1837d2c0df" name="ab30361ff50494f45329ffe1837d2c0df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab30361ff50494f45329ffe1837d2c0df">&#9670;&#160;</a></span>transpose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a> * eve::tensor::Tensor::transpose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a> 第 <a class="el" href="Tensor_8cpp_source.html#l00528">528</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tensor_8cpp_source.html#l00210">dequantized()</a>, <a class="el" href="Tensor_8cpp_source.html#l00136">ensureEager()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="Tensor_8h_source.html#l00082">isQuantized()</a>, <a class="el" href="Tensor_8cpp_source.html#l00545">permute()</a> , 以及 <a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a34d8cf84c1ac765a655425ab1429fa96" name="a34d8cf84c1ac765a655425ab1429fa96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d8cf84c1ac765a655425ab1429fa96">&#9670;&#160;</a></span>CompiledFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1tensor_1_1CompiledFunction.html">CompiledFunction</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87c6c86ed0896880400f89c8c88c3927" name="a87c6c86ed0896880400f89c8c88c3927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87c6c86ed0896880400f89c8c88c3927">&#9670;&#160;</a></span>Func</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1tensor_1_1Func.html">Func</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afab89afd724f1b07b1aaad6bdc61c47a" name="afab89afd724f1b07b1aaad6bdc61c47a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afab89afd724f1b07b1aaad6bdc61c47a">&#9670;&#160;</a></span>Graph</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a667aac9bd0ef4b4dd0041d0aeb7a32ad" name="a667aac9bd0ef4b4dd0041d0aeb7a32ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a667aac9bd0ef4b4dd0041d0aeb7a32ad">&#9670;&#160;</a></span>TF</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3b5bcc40b612cd0923fe9f5853eb2295" name="a3b5bcc40b612cd0923fe9f5853eb2295"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b5bcc40b612cd0923fe9f5853eb2295">&#9670;&#160;</a></span>kMaxRank</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::tensor::Tensor::kMaxRank = 6</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tensor_8h_source.html">Tensor.h</a> 第 <a class="el" href="Tensor_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TF_8cpp_source.html#l00733">eve::tensor::TF::argmax()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00136">eve::tensor::kernels::binaryOp()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00120">eve::tensor::kernels::broadcastShape()</a>, <a class="el" href="TF_8cpp_source.html#l00748">eve::tensor::TF::cast()</a>, <a class="el" href="TF_8cpp_source.html#l00597">eve::tensor::TF::embedding()</a>, <a class="el" href="Graph_8cpp_source.html#l00496">eve::tensor::Func::emitArgMax()</a>, <a class="el" href="Graph_8cpp_source.html#l00177">eve::tensor::Func::emitBinary()</a>, <a class="el" href="Graph_8cpp_source.html#l00418">eve::tensor::Func::emitConcat()</a>, <a class="el" href="Graph_8cpp_source.html#l00400">eve::tensor::Func::emitEmbedding()</a>, <a class="el" href="Graph_8cpp_source.html#l00241">eve::tensor::Func::emitPermute()</a>, <a class="el" href="Graph_8cpp_source.html#l00470">eve::tensor::Func::emitReduce()</a>, <a class="el" href="Graph_8cpp_source.html#l00452">eve::tensor::Func::emitSlice()</a>, <a class="el" href="TF_8cpp_source.html#l00479">eve::tensor::TF::layernorm()</a>, <a class="el" href="TF_8cpp_source.html#l00492">eve::tensor::TF::layernormWB()</a>, <a class="el" href="TF_8cpp_source.html#l00467">eve::tensor::TF::logSoftmax()</a>, <a class="el" href="Tensor_8cpp_source.html#l00122">makeSymbolic()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00382">eve::tensor::kernels::permute()</a>, <a class="el" href="Tensor_8cpp_source.html#l00545">permute()</a>, <a class="el" href="TF_8cpp_source.html#l00507">eve::tensor::TF::rmsnorm()</a>, <a class="el" href="TF_8cpp_source.html#l00520">eve::tensor::TF::rmsnormW()</a>, <a class="el" href="TF_8cpp_source.html#l00689">eve::tensor::TF::slice()</a>, <a class="el" href="TF_8cpp_source.html#l00455">eve::tensor::TF::softmax()</a> , 以及 <a class="el" href="TF_8cpp_source.html#l00435">eve::tensor::TF::where()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/tensor/<a class="el" href="Tensor_8h_source.html">Tensor.h</a></li>
+<li>src/modules/tensor/<a class="el" href="Tensor_8cpp_source.html">Tensor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

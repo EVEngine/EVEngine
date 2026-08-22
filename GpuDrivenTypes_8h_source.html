@@ -1,0 +1,313 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/GpuDrivenTypes.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GpuDrivenTypes.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GpuDrivenTypes_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">   17</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a> = 0xFFFFFFFFu;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a0a7c4c7cc5c0951520b4b58a62fb3847">   18</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a0a7c4c7cc5c0951520b4b58a62fb3847">kMaxGpuDrivenTextures</a> = 1024;  <span class="comment">// sampler2D array slots (desktop limit)</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a02580469648c8c27665771f77ca73cf2">   19</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a02580469648c8c27665771f77ca73cf2">kMaxGpuDrivenCubemaps</a> = 64;    <span class="comment">// samplerCube array slots</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuMeshRecord.html">GpuMeshRecord</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#aaecd72f7b7a03816e1d62db02be6d5a3">   23</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#aaecd72f7b7a03816e1d62db02be6d5a3">boundsCenterRadius</a>;  <span class="comment">// model-space bounding sphere (xyz = center, w = radius)</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#ae02cc17b32c181b3e79cd32f69cd00c5">   24</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#ae02cc17b32c181b3e79cd32f69cd00c5">vertexOffset</a> = 0;     <span class="comment">// offset into pooled vertex buffer (vertex count)</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a9721819b3c7bdffffd24088c3349d9a0">   25</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a9721819b3c7bdffffd24088c3349d9a0">vertexCount</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a79c9cf1807015b6d3aa1fb56076429db">   26</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a79c9cf1807015b6d3aa1fb56076429db">indexOffset</a> = 0;      <span class="comment">// offset into pooled index buffer (index count)</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#afe15e3091d5f90007d62151fc4110cbc">   27</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#afe15e3091d5f90007d62151fc4110cbc">indexCount</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a397f5d1089e76b887a3e0a721f66bca7">   28</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a397f5d1089e76b887a3e0a721f66bca7">indexType</a> = 1;        <span class="comment">// 0 = u16, 1 = u32</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a354a8b3cbe695ce63ffc9e3772d48c3a">   29</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a354a8b3cbe695ce63ffc9e3772d48c3a">firstIndex</a> = 0;       <span class="comment">// VkDrawIndexedIndirectCommand.firstIndex</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3c1069db3c3922ff5cfd75bd1ce0c1d3">   30</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3c1069db3c3922ff5cfd75bd1ce0c1d3">vertexBase</a> = 0;       <span class="comment">// VkDrawIndexedIndirectCommand.vertexOffset</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a4fd3336eb7036d52ce145dfb9740d437">   31</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a4fd3336eb7036d52ce145dfb9740d437">lodGroupId</a> = <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a>;  <span class="comment">// stage 2: LOD chain table index</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#ab52d3b237c8171d0890c773f8194478d">   32</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#ab52d3b237c8171d0890c773f8194478d">vgAssetId</a> = <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a>;   <span class="comment">// stage 3: virtual-geometry asset</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a6851579e064c85c469b302565ac4cbc7">   33</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a6851579e064c85c469b302565ac4cbc7">pad1</a> = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a23e07bf5429510b649751cf48f19bdef">   34</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a23e07bf5429510b649751cf48f19bdef">pad2</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3d6db71b2c03e1ea2f58c10c7dfa3510">   35</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3d6db71b2c03e1ea2f58c10c7dfa3510">pad3</a> = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1GpuMeshRecord.html">GpuMeshRecord</a>) == 64, <span class="stringliteral">&quot;GpuMeshRecord must be 64B (std430 16B aligned)&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html">   40</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuMaterialRecord.html">GpuMaterialRecord</a> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#aacbf74a8109af1994e60c9d04fc899dd">   41</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#aacbf74a8109af1994e60c9d04fc899dd">tint</a>;       <span class="comment">// rgba</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a86326c3d0c9317929e9789eb91f7522a">   42</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a86326c3d0c9317929e9789eb91f7522a">pbr</a>;        <span class="comment">// x = metallic, y = roughness, z = receiveShadow, w = receiveLight</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a3f621f5708c79aa558ee49c20a1b66b8">   43</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a3f621f5708c79aa558ee49c20a1b66b8">texBomb</a>;    <span class="comment">// x = cellScale, y = strength, z = rotAmount</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a7278f0d6ecb57ac22c06f2f687ff25a0">   44</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a7278f0d6ecb57ac22c06f2f687ff25a0">parallax</a>;   <span class="comment">// x = scale, y = minLayers, z = maxLayers</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#aeb9d918e6ed4712a96dbc2dcfd7e28ca">   45</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#aeb9d918e6ed4712a96dbc2dcfd7e28ca">textureSlots</a>[4];  <span class="comment">// xyzw = albedo / normal / height / env bindless slots</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a491ea41bb932e236025fc74d1d6e1d34">   46</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a491ea41bb932e236025fc74d1d6e1d34">shadingModel</a> = 0; <span class="comment">// 0 = pbr, 1 = unlit, 2 = hair, 3 = custom</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#ad132a6ff4af18ffa68dd87889f781e67">   47</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#ad132a6ff4af18ffa68dd87889f781e67">flags</a> = 0;        <span class="comment">// bit0 castShadow, bit1 castOcclusion</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a6c2ceca2e6ac6a9f43b263e23c17a063">   48</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a6c2ceca2e6ac6a9f43b263e23c17a063">pad0</a> = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a3908964600780eab61abe9ec3e6283a6">   49</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a3908964600780eab61abe9ec3e6283a6">pad1</a> = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>};</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1GpuMaterialRecord.html">GpuMaterialRecord</a>) == 96, <span class="stringliteral">&quot;GpuMaterialRecord must be 96B (std430 16B aligned)&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuInstance.html">   54</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuInstance.html">GpuInstance</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuInstance.html#a9e24157b6fab69d0452171ad1119646b">   55</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuInstance.html#a9e24157b6fab69d0452171ad1119646b">model</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuInstance.html#aed875d5beb9f90560b7cf999bb37e33b">   56</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuInstance.html#aed875d5beb9f90560b7cf999bb37e33b">meshId</a> = <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a>;      <span class="comment">// -&gt; GpuMeshRecord table</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuInstance.html#a0abef69e4b4de46bfb98093f21d73b92">   57</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuInstance.html#a0abef69e4b4de46bfb98093f21d73b92">materialId</a> = <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a>;  <span class="comment">// -&gt; GpuMaterialRecord table</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuInstance.html#aba56b9afa5edb872a962999b52c5c91b">   58</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuInstance.html#aba56b9afa5edb872a962999b52c5c91b">flags</a> = 0;                           <span class="comment">// bit0 castShadow, bit1 receiveShadow, bit2 castOcclusion</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuInstance.html#a23132e5c89ba47ac5b43df0a60806a55">   59</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuInstance.html#a23132e5c89ba47ac5b43df0a60806a55">lodGroupId</a> = <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a>;  <span class="comment">// stage 2</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1GpuInstance.html">GpuInstance</a>) == 80, <span class="stringliteral">&quot;GpuInstance must be 80B (std430)&quot;</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuIndirectCommand.html">   64</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuIndirectCommand.html">GpuIndirectCommand</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa5b3d26311b4fd4cf24fe6557503e10e">   65</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa5b3d26311b4fd4cf24fe6557503e10e">indexCount</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa70a41e6dc93a51e34cda130468c90b4">   66</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa70a41e6dc93a51e34cda130468c90b4">instanceCount</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a246097a84d5866a66bb1c59bf0d09fe6">   67</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a246097a84d5866a66bb1c59bf0d09fe6">firstIndex</a> = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a6d9f5edc154d4b6271a96d52a5b9e009">   68</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a6d9f5edc154d4b6271a96d52a5b9e009">vertexOffset</a> = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a8834a2d60f456772ed6aa7e390b0920d">   69</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a8834a2d60f456772ed6aa7e390b0920d">firstInstance</a> = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1GpuIndirectCommand.html">GpuIndirectCommand</a>) == 20, <span class="stringliteral">&quot;GpuIndirectCommand must match VkDrawIndexedIndirectCommand (20B)&quot;</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgCluster.html">   75</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuVgCluster.html">GpuVgCluster</a> {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgCluster.html#a54ba8c982582195f6a942c9c72ceb750">   76</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgCluster.html#a54ba8c982582195f6a942c9c72ceb750">u0</a>[4];  <span class="comment">// bounds: f32(cx), f32(cy), f32(cz), f32(r)</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgCluster.html#a2ccd02610bf67aaa8fbe4c1ccd6c4902">   77</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgCluster.html#a2ccd02610bf67aaa8fbe4c1ccd6c4902">u1</a>[4];  <span class="comment">// triStart, triCount, lodLevel, parent</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgCluster.html#a21e296581e4deb5ab28e11fa7454e0ce">   78</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgCluster.html#a21e296581e4deb5ab28e11fa7454e0ce">u2</a>[4];  <span class="comment">// f32(errorR), f32(errorRScreen), childCount, 0</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgCluster.html#aaf1f92c9f0d9c7c675af93b97bd8eaab">   79</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgCluster.html#aaf1f92c9f0d9c7c675af93b97bd8eaab">u3</a>[4];  <span class="comment">// children[4]</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>};</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1GpuVgCluster.html">GpuVgCluster</a>) == 64, <span class="stringliteral">&quot;GpuVgCluster must be 64B (4 x uvec4)&quot;</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="};">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html">   85</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html">GpuVgAssetUpload</a> {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a2d44c2b29dd3b19179c1732602543523">   86</a></span>    <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a2d44c2b29dd3b19179c1732602543523">positions</a> = <span class="keyword">nullptr</span>;      <span class="comment">// xyz packed, 3 * vertexCount</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a0a03cfcfb21435e50aeae97039cda1d1">   87</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a0a03cfcfb21435e50aeae97039cda1d1">vertexCount</a> = 0;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#aa21a9629d24c6ad4d6233ee9b1051d9c">   88</a></span>    <span class="keyword">const</span> <span class="keywordtype">float</span> *<a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#aa21a9629d24c6ad4d6233ee9b1051d9c">normals</a> = <span class="keyword">nullptr</span>;        <span class="comment">// optional xyz packed</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a55887df3f92a5d603883cf3714e945f4">   89</a></span>    <span class="keyword">const</span> std::uint32_t *<a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a55887df3f92a5d603883cf3714e945f4">triangles</a> = <span class="keyword">nullptr</span>;  <span class="comment">// global triangle stream (indices)</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#af75ca7595913d24e6ca82da87ff8da99">   90</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#af75ca7595913d24e6ca82da87ff8da99">triangleCount</a> = 0;                 <span class="comment">// index count (multiple of 3)</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a6f5b57350fc00f48620a08feb778d141">   91</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1GpuVgCluster.html">GpuVgCluster</a> *<a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a6f5b57350fc00f48620a08feb778d141">clusters</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a7124a49269458a7372c822a4f2289d35">   92</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a7124a49269458a7372c822a4f2289d35">clusterCount</a> = 0;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>};</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a02580469648c8c27665771f77ca73cf2"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a02580469648c8c27665771f77ca73cf2">eve::graphics::kMaxGpuDrivenCubemaps</a></div><div class="ttdeci">constexpr uint32_t kMaxGpuDrivenCubemaps</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00019">GpuDrivenTypes.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a0a7c4c7cc5c0951520b4b58a62fb3847"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a0a7c4c7cc5c0951520b4b58a62fb3847">eve::graphics::kMaxGpuDrivenTextures</a></div><div class="ttdeci">constexpr uint32_t kMaxGpuDrivenTextures</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00018">GpuDrivenTypes.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a9ec544d01912754ed851d4d0a0aa97a9"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">eve::graphics::kInvalidGpuDrivenSlot</a></div><div class="ttdeci">constexpr uint32_t kInvalidGpuDrivenSlot</div><div class="ttdoc">GPU-driven rendering shared constants + std430 GPU layouts.</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00017">GpuDrivenTypes.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuIndirectCommand_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuIndirectCommand.html">eve::graphics::GpuIndirectCommand</a></div><div class="ttdoc">Indirect draw command; layout identical to VkDrawIndexedIndirectCommand.</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00064">GpuDrivenTypes.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuIndirectCommand_html_a246097a84d5866a66bb1c59bf0d09fe6"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a246097a84d5866a66bb1c59bf0d09fe6">eve::graphics::GpuIndirectCommand::firstIndex</a></div><div class="ttdeci">uint32_t firstIndex</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00067">GpuDrivenTypes.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuIndirectCommand_html_a6d9f5edc154d4b6271a96d52a5b9e009"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a6d9f5edc154d4b6271a96d52a5b9e009">eve::graphics::GpuIndirectCommand::vertexOffset</a></div><div class="ttdeci">uint32_t vertexOffset</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00068">GpuDrivenTypes.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuIndirectCommand_html_a8834a2d60f456772ed6aa7e390b0920d"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuIndirectCommand.html#a8834a2d60f456772ed6aa7e390b0920d">eve::graphics::GpuIndirectCommand::firstInstance</a></div><div class="ttdeci">uint32_t firstInstance</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00069">GpuDrivenTypes.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuIndirectCommand_html_aa5b3d26311b4fd4cf24fe6557503e10e"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa5b3d26311b4fd4cf24fe6557503e10e">eve::graphics::GpuIndirectCommand::indexCount</a></div><div class="ttdeci">uint32_t indexCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00065">GpuDrivenTypes.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuIndirectCommand_html_aa70a41e6dc93a51e34cda130468c90b4"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuIndirectCommand.html#aa70a41e6dc93a51e34cda130468c90b4">eve::graphics::GpuIndirectCommand::instanceCount</a></div><div class="ttdeci">uint32_t instanceCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00066">GpuDrivenTypes.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuInstance_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuInstance.html">eve::graphics::GpuInstance</a></div><div class="ttdoc">Per-instance GPU record (std430). Mirrors GLSL GpuInstance.</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00054">GpuDrivenTypes.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuInstance_html_a0abef69e4b4de46bfb98093f21d73b92"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuInstance.html#a0abef69e4b4de46bfb98093f21d73b92">eve::graphics::GpuInstance::materialId</a></div><div class="ttdeci">uint32_t materialId</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00057">GpuDrivenTypes.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuInstance_html_a23132e5c89ba47ac5b43df0a60806a55"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuInstance.html#a23132e5c89ba47ac5b43df0a60806a55">eve::graphics::GpuInstance::lodGroupId</a></div><div class="ttdeci">uint32_t lodGroupId</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00059">GpuDrivenTypes.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuInstance_html_a9e24157b6fab69d0452171ad1119646b"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuInstance.html#a9e24157b6fab69d0452171ad1119646b">eve::graphics::GpuInstance::model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00055">GpuDrivenTypes.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuInstance_html_aba56b9afa5edb872a962999b52c5c91b"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuInstance.html#aba56b9afa5edb872a962999b52c5c91b">eve::graphics::GpuInstance::flags</a></div><div class="ttdeci">uint32_t flags</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00058">GpuDrivenTypes.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuInstance_html_aed875d5beb9f90560b7cf999bb37e33b"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuInstance.html#aed875d5beb9f90560b7cf999bb37e33b">eve::graphics::GpuInstance::meshId</a></div><div class="ttdeci">uint32_t meshId</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00056">GpuDrivenTypes.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html">eve::graphics::GpuMaterialRecord</a></div><div class="ttdoc">GPU material table record (std430). Mirrors GLSL GpuMaterialRecord.</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00040">GpuDrivenTypes.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_a3908964600780eab61abe9ec3e6283a6"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a3908964600780eab61abe9ec3e6283a6">eve::graphics::GpuMaterialRecord::pad1</a></div><div class="ttdeci">uint32_t pad1</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00049">GpuDrivenTypes.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_a3f621f5708c79aa558ee49c20a1b66b8"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a3f621f5708c79aa558ee49c20a1b66b8">eve::graphics::GpuMaterialRecord::texBomb</a></div><div class="ttdeci">glm::vec4 texBomb</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00043">GpuDrivenTypes.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_a491ea41bb932e236025fc74d1d6e1d34"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a491ea41bb932e236025fc74d1d6e1d34">eve::graphics::GpuMaterialRecord::shadingModel</a></div><div class="ttdeci">uint32_t shadingModel</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00046">GpuDrivenTypes.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_a6c2ceca2e6ac6a9f43b263e23c17a063"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a6c2ceca2e6ac6a9f43b263e23c17a063">eve::graphics::GpuMaterialRecord::pad0</a></div><div class="ttdeci">uint32_t pad0</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00048">GpuDrivenTypes.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_a7278f0d6ecb57ac22c06f2f687ff25a0"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a7278f0d6ecb57ac22c06f2f687ff25a0">eve::graphics::GpuMaterialRecord::parallax</a></div><div class="ttdeci">glm::vec4 parallax</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00044">GpuDrivenTypes.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_a86326c3d0c9317929e9789eb91f7522a"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#a86326c3d0c9317929e9789eb91f7522a">eve::graphics::GpuMaterialRecord::pbr</a></div><div class="ttdeci">glm::vec4 pbr</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00042">GpuDrivenTypes.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_aacbf74a8109af1994e60c9d04fc899dd"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#aacbf74a8109af1994e60c9d04fc899dd">eve::graphics::GpuMaterialRecord::tint</a></div><div class="ttdeci">glm::vec4 tint</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00041">GpuDrivenTypes.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_ad132a6ff4af18ffa68dd87889f781e67"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#ad132a6ff4af18ffa68dd87889f781e67">eve::graphics::GpuMaterialRecord::flags</a></div><div class="ttdeci">uint32_t flags</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00047">GpuDrivenTypes.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMaterialRecord_html_aeb9d918e6ed4712a96dbc2dcfd7e28ca"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMaterialRecord.html#aeb9d918e6ed4712a96dbc2dcfd7e28ca">eve::graphics::GpuMaterialRecord::textureSlots</a></div><div class="ttdeci">uint32_t textureSlots[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00045">GpuDrivenTypes.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html">eve::graphics::GpuMeshRecord</a></div><div class="ttdoc">GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00022">GpuDrivenTypes.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a23e07bf5429510b649751cf48f19bdef"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a23e07bf5429510b649751cf48f19bdef">eve::graphics::GpuMeshRecord::pad2</a></div><div class="ttdeci">uint32_t pad2</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00034">GpuDrivenTypes.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a354a8b3cbe695ce63ffc9e3772d48c3a"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a354a8b3cbe695ce63ffc9e3772d48c3a">eve::graphics::GpuMeshRecord::firstIndex</a></div><div class="ttdeci">uint32_t firstIndex</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00029">GpuDrivenTypes.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a397f5d1089e76b887a3e0a721f66bca7"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a397f5d1089e76b887a3e0a721f66bca7">eve::graphics::GpuMeshRecord::indexType</a></div><div class="ttdeci">uint32_t indexType</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00028">GpuDrivenTypes.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a3c1069db3c3922ff5cfd75bd1ce0c1d3"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3c1069db3c3922ff5cfd75bd1ce0c1d3">eve::graphics::GpuMeshRecord::vertexBase</a></div><div class="ttdeci">uint32_t vertexBase</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00030">GpuDrivenTypes.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a3d6db71b2c03e1ea2f58c10c7dfa3510"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3d6db71b2c03e1ea2f58c10c7dfa3510">eve::graphics::GpuMeshRecord::pad3</a></div><div class="ttdeci">uint32_t pad3</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00035">GpuDrivenTypes.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a4fd3336eb7036d52ce145dfb9740d437"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a4fd3336eb7036d52ce145dfb9740d437">eve::graphics::GpuMeshRecord::lodGroupId</a></div><div class="ttdeci">uint32_t lodGroupId</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00031">GpuDrivenTypes.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a6851579e064c85c469b302565ac4cbc7"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a6851579e064c85c469b302565ac4cbc7">eve::graphics::GpuMeshRecord::pad1</a></div><div class="ttdeci">uint32_t pad1</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00033">GpuDrivenTypes.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a79c9cf1807015b6d3aa1fb56076429db"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a79c9cf1807015b6d3aa1fb56076429db">eve::graphics::GpuMeshRecord::indexOffset</a></div><div class="ttdeci">uint32_t indexOffset</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00026">GpuDrivenTypes.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_a9721819b3c7bdffffd24088c3349d9a0"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#a9721819b3c7bdffffd24088c3349d9a0">eve::graphics::GpuMeshRecord::vertexCount</a></div><div class="ttdeci">uint32_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00025">GpuDrivenTypes.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_aaecd72f7b7a03816e1d62db02be6d5a3"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#aaecd72f7b7a03816e1d62db02be6d5a3">eve::graphics::GpuMeshRecord::boundsCenterRadius</a></div><div class="ttdeci">glm::vec4 boundsCenterRadius</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00023">GpuDrivenTypes.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_ab52d3b237c8171d0890c773f8194478d"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#ab52d3b237c8171d0890c773f8194478d">eve::graphics::GpuMeshRecord::vgAssetId</a></div><div class="ttdeci">uint32_t vgAssetId</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00032">GpuDrivenTypes.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_ae02cc17b32c181b3e79cd32f69cd00c5"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#ae02cc17b32c181b3e79cd32f69cd00c5">eve::graphics::GpuMeshRecord::vertexOffset</a></div><div class="ttdeci">uint32_t vertexOffset</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00024">GpuDrivenTypes.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuMeshRecord_html_afe15e3091d5f90007d62151fc4110cbc"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuMeshRecord.html#afe15e3091d5f90007d62151fc4110cbc">eve::graphics::GpuMeshRecord::indexCount</a></div><div class="ttdeci">uint32_t indexCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00027">GpuDrivenTypes.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html">eve::graphics::GpuVgAssetUpload</a></div><div class="ttdoc">Neutral GPU upload for one virtual-geometry asset. Raw arrays so the graphics module does not depend ...</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00085">GpuDrivenTypes.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_a0a03cfcfb21435e50aeae97039cda1d1"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a0a03cfcfb21435e50aeae97039cda1d1">eve::graphics::GpuVgAssetUpload::vertexCount</a></div><div class="ttdeci">int vertexCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00087">GpuDrivenTypes.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_a2d44c2b29dd3b19179c1732602543523"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a2d44c2b29dd3b19179c1732602543523">eve::graphics::GpuVgAssetUpload::positions</a></div><div class="ttdeci">const float * positions</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00086">GpuDrivenTypes.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_a55887df3f92a5d603883cf3714e945f4"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a55887df3f92a5d603883cf3714e945f4">eve::graphics::GpuVgAssetUpload::triangles</a></div><div class="ttdeci">const std::uint32_t * triangles</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00089">GpuDrivenTypes.h:89</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_a6f5b57350fc00f48620a08feb778d141"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a6f5b57350fc00f48620a08feb778d141">eve::graphics::GpuVgAssetUpload::clusters</a></div><div class="ttdeci">const GpuVgCluster * clusters</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00091">GpuDrivenTypes.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_a7124a49269458a7372c822a4f2289d35"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#a7124a49269458a7372c822a4f2289d35">eve::graphics::GpuVgAssetUpload::clusterCount</a></div><div class="ttdeci">int clusterCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00092">GpuDrivenTypes.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_aa21a9629d24c6ad4d6233ee9b1051d9c"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#aa21a9629d24c6ad4d6233ee9b1051d9c">eve::graphics::GpuVgAssetUpload::normals</a></div><div class="ttdeci">const float * normals</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00088">GpuDrivenTypes.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgAssetUpload_html_af75ca7595913d24e6ca82da87ff8da99"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgAssetUpload.html#af75ca7595913d24e6ca82da87ff8da99">eve::graphics::GpuVgAssetUpload::triangleCount</a></div><div class="ttdeci">int triangleCount</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00090">GpuDrivenTypes.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgCluster_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgCluster.html">eve::graphics::GpuVgCluster</a></div><div class="ttdoc">GPU-packed cluster node (std430, 4 x uvec4). Mirrors the virtualgeometry module's VgGpuCluster layout...</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00075">GpuDrivenTypes.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgCluster_html_a21e296581e4deb5ab28e11fa7454e0ce"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgCluster.html#a21e296581e4deb5ab28e11fa7454e0ce">eve::graphics::GpuVgCluster::u2</a></div><div class="ttdeci">std::uint32_t u2[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00078">GpuDrivenTypes.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgCluster_html_a2ccd02610bf67aaa8fbe4c1ccd6c4902"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgCluster.html#a2ccd02610bf67aaa8fbe4c1ccd6c4902">eve::graphics::GpuVgCluster::u1</a></div><div class="ttdeci">std::uint32_t u1[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00077">GpuDrivenTypes.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgCluster_html_a54ba8c982582195f6a942c9c72ceb750"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgCluster.html#a54ba8c982582195f6a942c9c72ceb750">eve::graphics::GpuVgCluster::u0</a></div><div class="ttdeci">std::uint32_t u0[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00076">GpuDrivenTypes.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuVgCluster_html_aaf1f92c9f0d9c7c675af93b97bd8eaab"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuVgCluster.html#aaf1f92c9f0d9c7c675af93b97bd8eaab">eve::graphics::GpuVgCluster::u3</a></div><div class="ttdeci">std::uint32_t u3[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuDrivenTypes_8h_source.html#l00079">GpuDrivenTypes.h:79</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

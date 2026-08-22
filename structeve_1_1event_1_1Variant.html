@@ -1,0 +1,447 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::event::Variant结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1event.html">event</a></li><li class="navelem"><a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1event_1_1Variant-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::event::Variant结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Event_8h_source.html">Event.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a55b6f1e870bf85b26e379b1b647a633a" id="r_a55b6f1e870bf85b26e379b1b647a633a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633a">Type</a> { <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa4da8b7eb2c3f2007cf8238334401ef51">Nil</a>
+, <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa1686a6c336b71b36d77354cea19a8b52">Int</a>
+, <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa27118326006d3829667a400ad23d5d98">String</a>
+, <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa165d3d525f6d0cbd55e42cc3058cafcc">Ptr</a>
+ }</td></tr>
+<tr class="separator:a55b6f1e870bf85b26e379b1b647a633a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:adf2863c9453528d4681e823285cfdbe0" id="r_adf2863c9453528d4681e823285cfdbe0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#adf2863c9453528d4681e823285cfdbe0">makeNil</a> ()</td></tr>
+<tr class="memdesc:adf2863c9453528d4681e823285cfdbe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a nil variant.  <br /></td></tr>
+<tr class="separator:adf2863c9453528d4681e823285cfdbe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a7ffed30f77a10c19aa82f5047d95af" id="r_a7a7ffed30f77a10c19aa82f5047d95af"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#a7a7ffed30f77a10c19aa82f5047d95af">makeInt</a> (int64_t <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a7a7ffed30f77a10c19aa82f5047d95af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an integer variant.  <br /></td></tr>
+<tr class="separator:a7a7ffed30f77a10c19aa82f5047d95af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab6aaeb677ce2bcfa907fe80cfc0c31a" id="r_aab6aaeb677ce2bcfa907fe80cfc0c31a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#aab6aaeb677ce2bcfa907fe80cfc0c31a">makeString</a> (std::string <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:aab6aaeb677ce2bcfa907fe80cfc0c31a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a string variant (takes ownership of the value).  <br /></td></tr>
+<tr class="separator:aab6aaeb677ce2bcfa907fe80cfc0c31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a468d845471754a87f599154e3c73795c" id="r_a468d845471754a87f599154e3c73795c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#a468d845471754a87f599154e3c73795c">makePtr</a> (void *<a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a468d845471754a87f599154e3c73795c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a pointer variant (borrowed, not owned).  <br /></td></tr>
+<tr class="separator:a468d845471754a87f599154e3c73795c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:acb0bc19e118fab2b67ed762e406f3bd9" id="r_acb0bc19e118fab2b67ed762e406f3bd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633a">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#acb0bc19e118fab2b67ed762e406f3bd9">type</a> = <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa4da8b7eb2c3f2007cf8238334401ef51">Type::Nil</a></td></tr>
+<tr class="separator:acb0bc19e118fab2b67ed762e406f3bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76c3f0d07f8a504f8af8f6e78080793a" id="r_a76c3f0d07f8a504f8af8f6e78080793a"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#a76c3f0d07f8a504f8af8f6e78080793a">i</a> = 0</td></tr>
+<tr class="separator:a76c3f0d07f8a504f8af8f6e78080793a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31270abdbdf1e17dbf1a8f9aaf5b3a00" id="r_a31270abdbdf1e17dbf1a8f9aaf5b3a00"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#a31270abdbdf1e17dbf1a8f9aaf5b3a00">s</a></td></tr>
+<tr class="separator:a31270abdbdf1e17dbf1a8f9aaf5b3a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c13fdaa378fe84621953038f8b6b7a9" id="r_a5c13fdaa378fe84621953038f8b6b7a9"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1event_1_1Variant.html#a5c13fdaa378fe84621953038f8b6b7a9">p</a> = nullptr</td></tr>
+<tr class="separator:a5c13fdaa378fe84621953038f8b6b7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a55b6f1e870bf85b26e379b1b647a633a" name="a55b6f1e870bf85b26e379b1b647a633a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55b6f1e870bf85b26e379b1b647a633a">&#9670;&#160;</a></span>Type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633a">eve::event::Variant::Type</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a55b6f1e870bf85b26e379b1b647a633aa4da8b7eb2c3f2007cf8238334401ef51" name="a55b6f1e870bf85b26e379b1b647a633aa4da8b7eb2c3f2007cf8238334401ef51"></a>Nil&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a55b6f1e870bf85b26e379b1b647a633aa1686a6c336b71b36d77354cea19a8b52" name="a55b6f1e870bf85b26e379b1b647a633aa1686a6c336b71b36d77354cea19a8b52"></a>Int&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a55b6f1e870bf85b26e379b1b647a633aa27118326006d3829667a400ad23d5d98" name="a55b6f1e870bf85b26e379b1b647a633aa27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a55b6f1e870bf85b26e379b1b647a633aa165d3d525f6d0cbd55e42cc3058cafcc" name="a55b6f1e870bf85b26e379b1b647a633aa165d3d525f6d0cbd55e42cc3058cafcc"></a>Ptr&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7a7ffed30f77a10c19aa82f5047d95af" name="a7a7ffed30f77a10c19aa82f5047d95af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a7ffed30f77a10c19aa82f5047d95af">&#9670;&#160;</a></span>makeInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a> eve::event::Variant::makeInt </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an integer variant. </p>
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa1686a6c336b71b36d77354cea19a8b52">Int</a>, <a class="el" href="Event_8h_source.html#l00021">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l00121">eve::physics::World3D::emitContactEvents()</a>, <a class="el" href="World_8cpp_source.html#l00284">eve::physics::World::onBeginContact()</a> , 以及 <a class="el" href="World_8cpp_source.html#l00300">eve::physics::World::onEndContact()</a>.</p>
+
+</div>
+</div>
+<a id="adf2863c9453528d4681e823285cfdbe0" name="adf2863c9453528d4681e823285cfdbe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf2863c9453528d4681e823285cfdbe0">&#9670;&#160;</a></span>makeNil()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a> eve::event::Variant::makeNil </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs a nil variant. </p>
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a468d845471754a87f599154e3c73795c" name="a468d845471754a87f599154e3c73795c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a468d845471754a87f599154e3c73795c">&#9670;&#160;</a></span>makePtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a> eve::event::Variant::makePtr </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs a pointer variant (borrowed, not owned). </p>
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa165d3d525f6d0cbd55e42cc3058cafcc">Ptr</a>, <a class="el" href="Event_8h_source.html#l00021">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="aab6aaeb677ce2bcfa907fe80cfc0c31a" name="aab6aaeb677ce2bcfa907fe80cfc0c31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab6aaeb677ce2bcfa907fe80cfc0c31a">&#9670;&#160;</a></span>makeString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1event_1_1Variant.html">Variant</a> eve::event::Variant::makeString </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs a string variant (takes ownership of the value). </p>
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa27118326006d3829667a400ad23d5d98">String</a>, <a class="el" href="Event_8h_source.html#l00021">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Event_8cpp_source.html#l00042">eve::event::Event::pushData()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a76c3f0d07f8a504f8af8f6e78080793a" name="a76c3f0d07f8a504f8af8f6e78080793a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76c3f0d07f8a504f8af8f6e78080793a">&#9670;&#160;</a></span>i</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::event::Variant::i = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c13fdaa378fe84621953038f8b6b7a9" name="a5c13fdaa378fe84621953038f8b6b7a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c13fdaa378fe84621953038f8b6b7a9">&#9670;&#160;</a></span>p</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* eve::event::Variant::p = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31270abdbdf1e17dbf1a8f9aaf5b3a00" name="a31270abdbdf1e17dbf1a8f9aaf5b3a00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31270abdbdf1e17dbf1a8f9aaf5b3a00">&#9670;&#160;</a></span>s</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::event::Variant::s</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb0bc19e118fab2b67ed762e406f3bd9" name="acb0bc19e118fab2b67ed762e406f3bd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb0bc19e118fab2b67ed762e406f3bd9">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633a">Type</a> eve::event::Variant::type = <a class="el" href="structeve_1_1event_1_1Variant.html#a55b6f1e870bf85b26e379b1b647a633aa4da8b7eb2c3f2007cf8238334401ef51">Type::Nil</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Event_8h_source.html">Event.h</a> 第 <a class="el" href="Event_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Event_8h_source.html#l00029">makeInt()</a>, <a class="el" href="Event_8h_source.html#l00043">makePtr()</a> , 以及 <a class="el" href="Event_8h_source.html#l00036">makeString()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/event/<a class="el" href="Event_8h_source.html">Event.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

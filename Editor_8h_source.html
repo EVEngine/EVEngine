@@ -1,0 +1,254 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/Editor.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Editor.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Editor_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>graphics {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#ifdef EVENGINE_HAS_PROCGEN</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>procgen {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Heightmap;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}  <span class="comment">// namespace eve</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>TransformGizmo;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>GizmoManager;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>TileBuffer;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>Brush;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>EditorToolbar;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span>EditorInspector;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>EditorDock;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span>EditorHistory;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Editor.html">   35</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1Editor.html">Editor</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Editor.html#a0734edc1e3f23ae45a4271283e58973a">   37</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a0734edc1e3f23ae45a4271283e58973a">Module_REG</a>(<a class="code hl_class" href="classeve_1_1editor_1_1Editor.html">Editor</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Editor.html#aaca19de3910c5f4fe433ab878ca5acc6">   38</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#aaca19de3910c5f4fe433ab878ca5acc6">Editor</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1Editor.html#a02d1f675e0ef0e376081ad7b7d82b58e">   39</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a02d1f675e0ef0e376081ad7b7d82b58e">~Editor</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1editor_1_1TransformGizmo.html">TransformGizmo</a> *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a3ceaa40622f172b9d69c6a4e15aca686">newGizmo</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classeve_1_1editor_1_1GizmoManager.html">GizmoManager</a>   *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a0a57cc605f2f6168e3edc64e13a00f3c">newGizmoManager</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_class" href="classeve_1_1editor_1_1TileBuffer.html">TileBuffer</a> *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a14033a495cd34df8f300f8f65ad9408b">newTileBuffer</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_class" href="classeve_1_1editor_1_1Brush.html">Brush</a>      *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a45b6dffa3ed61ba7e720903127406356">newBrush</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorToolbar.html">EditorToolbar</a>   *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a61af2a6088882fee9c58afa880c37da7">newToolbar</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorInspector.html">EditorInspector</a> *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a9eb638125126c0115600fb82633d5a29">newInspector</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorDock.html">EditorDock</a>      *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#aa6f9c8f111dc3ae470b27ea131a75d12">newDock</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorHistory.html">EditorHistory</a>   *<a class="code hl_function" href="classeve_1_1editor_1_1Editor.html#a39e332dc0c63f630b750c89694a421ba">newHistory</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#ifdef EVENGINE_HAS_PROCGEN</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *newHeightmapMesh(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *hm, <span class="keywordtype">float</span> cellSize, <span class="keywordtype">float</span> heightScale);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span> updateHeightmapMesh(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                             <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *hm, <span class="keywordtype">float</span> cellSize, <span class="keywordtype">float</span> heightScale);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>};</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a48083b65ac9a863566dc3e3fff09a5b4"><div class="ttname"><a href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00235">Grass.cpp:235</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a2474a5474cbff19523a51eb1de01cda4"><div class="ttname"><a href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00144">Pathfinder.cpp:144</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00527">RenderSystem3D.cpp:527</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Brush_html"><div class="ttname"><a href="classeve_1_1editor_1_1Brush.html">eve::editor::Brush</a></div><div class="ttdoc">Unity GridBrushBase-inspired tile brush. Operates on TileBuffer; exposes preview + change list for UI...</div><div class="ttdef"><b>Definition</b> <a href="Brush_8h_source.html#l00014">Brush.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorDock_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorDock.html">eve::editor::EditorDock</a></div><div class="ttdoc">Simple editor chrome regions: left / right / top / bottom / center.</div><div class="ttdef"><b>Definition</b> <a href="EditorDock_8h_source.html#l00009">EditorDock.h:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHistory_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHistory.html">eve::editor::EditorHistory</a></div><div class="ttdoc">Undo/redo stack: opaque string actions + optional tile change groups that can apply directly to a Til...</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8h_source.html#l00014">EditorHistory.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorInspector_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorInspector.html">eve::editor::EditorInspector</a></div><div class="ttdoc">Property sheet descriptors + values (host renders via ui).</div><div class="ttdef"><b>Definition</b> <a href="EditorInspector_8h_source.html#l00009">EditorInspector.h:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorToolbar_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorToolbar.html">eve::editor::EditorToolbar</a></div><div class="ttdoc">Tool strip state for assembling editor chrome with ui.</div><div class="ttdef"><b>Definition</b> <a href="EditorToolbar_8h_source.html#l00009">EditorToolbar.h:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></div><div class="ttdoc">Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();</div><div class="ttdef"><b>Definition</b> <a href="Editor_8h_source.html#l00035">Editor.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a02d1f675e0ef0e376081ad7b7d82b58e"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a02d1f675e0ef0e376081ad7b7d82b58e">eve::editor::Editor::~Editor</a></div><div class="ttdeci">~Editor() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a0734edc1e3f23ae45a4271283e58973a"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a0734edc1e3f23ae45a4271283e58973a">eve::editor::Editor::Module_REG</a></div><div class="ttdeci">Module_REG(Editor)</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a0a57cc605f2f6168e3edc64e13a00f3c"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a0a57cc605f2f6168e3edc64e13a00f3c">eve::editor::Editor::newGizmoManager</a></div><div class="ttdeci">GizmoManager * newGizmoManager()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00095">Editor.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a14033a495cd34df8f300f8f65ad9408b"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a14033a495cd34df8f300f8f65ad9408b">eve::editor::Editor::newTileBuffer</a></div><div class="ttdeci">TileBuffer * newTileBuffer(int width, int height)</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00097">Editor.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a39e332dc0c63f630b750c89694a421ba"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a39e332dc0c63f630b750c89694a421ba">eve::editor::Editor::newHistory</a></div><div class="ttdeci">EditorHistory * newHistory()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00107">Editor.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a3ceaa40622f172b9d69c6a4e15aca686"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a3ceaa40622f172b9d69c6a4e15aca686">eve::editor::Editor::newGizmo</a></div><div class="ttdeci">TransformGizmo * newGizmo()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00093">Editor.cpp:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a45b6dffa3ed61ba7e720903127406356"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a45b6dffa3ed61ba7e720903127406356">eve::editor::Editor::newBrush</a></div><div class="ttdeci">Brush * newBrush()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00099">Editor.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a61af2a6088882fee9c58afa880c37da7"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a61af2a6088882fee9c58afa880c37da7">eve::editor::Editor::newToolbar</a></div><div class="ttdeci">EditorToolbar * newToolbar()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00101">Editor.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_a9eb638125126c0115600fb82633d5a29"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#a9eb638125126c0115600fb82633d5a29">eve::editor::Editor::newInspector</a></div><div class="ttdeci">EditorInspector * newInspector()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00103">Editor.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_aa6f9c8f111dc3ae470b27ea131a75d12"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#aa6f9c8f111dc3ae470b27ea131a75d12">eve::editor::Editor::newDock</a></div><div class="ttdeci">EditorDock * newDock()</div><div class="ttdef"><b>Definition</b> <a href="Editor_8cpp_source.html#l00105">Editor.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html_aaca19de3910c5f4fe433ab878ca5acc6"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html#aaca19de3910c5f4fe433ab878ca5acc6">eve::editor::Editor::Editor</a></div><div class="ttdeci">Editor()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GizmoManager_html"><div class="ttname"><a href="classeve_1_1editor_1_1GizmoManager.html">eve::editor::GizmoManager</a></div><div class="ttdoc">Babylon.js-style manager: toggles which transform modes are enabled and routes pick/drag to the owned...</div><div class="ttdef"><b>Definition</b> <a href="GizmoManager_8h_source.html#l00013">GizmoManager.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TileBuffer_html"><div class="ttname"><a href="classeve_1_1editor_1_1TileBuffer.html">eve::editor::TileBuffer</a></div><div class="ttdoc">Independent GID grid for map brushes (no hard dependency on map.TileLayer).</div><div class="ttdef"><b>Definition</b> <a href="TileBuffer_8h_source.html#l00009">TileBuffer.h:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></div><div class="ttdoc">3D transform gizmo (Three.js TransformControls + ImGuizmo style). Owns TRS + optional local bounds; i...</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00016">TransformGizmo.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00018">Mesh.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00019">Heightmap.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00010">Brush.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

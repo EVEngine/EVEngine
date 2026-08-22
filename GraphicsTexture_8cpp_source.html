@@ -1,0 +1,567 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsTexture.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GraphicsTexture.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GraphicsTexture_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Vulkan backend implementation — texture creation, upload and reload.</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Split out of Graphics2D.cpp (pure move; shared helpers live in</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// GraphicsInternal.h). Keep the include list tight: the embedded shader</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// .inc arrays are unused here and would trip -Wunused-const-variable under</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// strict-warning CI builds.</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="vulkan_2Graphics_8h.html">graphics/vulkan/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="GraphicsInternal_8h.html">graphics/vulkan/GraphicsInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Image_8h.html">image/Image.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="ImageData_8h.html">image/ImageData.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;zeroerr/assert.h&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keywordtype">void</span> Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (!gpu || !gpu-&gt;descriptorSet || !gpu-&gt;sampler) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    vk::ImageView <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a> = gpu-&gt;imageView();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    vkb::UnboundSet unbound = vkb::UnboundSet::reopenAfterIdle(gpu-&gt;descriptorSet);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    vkb::DescriptorSetUpdater updater;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    updater.beginDescriptorSet(unbound)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        .image(vkb::SampledImage::forLaterSample(gpu-&gt;sampler, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>))</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        .image(vkb::SampledImage::forLaterSample(gpu-&gt;sampler, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>))</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        .update(device.instance);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    gpu-&gt;descriptorSet = std::move(unbound).publish();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">   40</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">Graphics::newTexture</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, <span class="keyword">const</span> uint8_t *rgba, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> info;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureSampler.html#a1192d3984205fc47d56c7f24242d468a">repeatU</a> = <a class="code hl_variable" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureSampler.html#ab5ddbb7c817007b6dbe5b81ebd4b7c85">repeatV</a> = <a class="code hl_variable" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">newTexture</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, rgba, info);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aba39f87e25735cb4414c1b31f860edbe">   47</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">Graphics::newTexture</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, <span class="keyword">const</span> uint8_t *rgba, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;rawInfo) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    ASSERT(initialized);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    ASSERT_GT(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, 0);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    ASSERT_GT(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 0);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    ASSERT(rgba != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (!initialized) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTexture: graphics not initialized&quot;</span>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt;= 0 || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt;= 0 || !rgba) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTexture: invalid args&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> info = normalizeTextureInfo(rawInfo);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> uint32_t mipLevels =</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#a47dae46835d163795ec44025be683fa3">generateMipmaps</a> ? uint32_t(<a class="code hl_function" href="namespaceeve_1_1graphics.html#a92e5fbb888c47126b1e423b381542816">mipmapCountForSize</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)) : 1u;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">auto</span> gpu = std::make_unique&lt;GpuTexture&gt;();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    gpu-&gt;width = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    gpu-&gt;height = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    gpu-&gt;isCube = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    gpu-&gt;mipLevels = mipLevels;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    gpu-&gt;samplerState = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    gpu-&gt;image = vkb::TextureImage2D(device, uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>), uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>), mipLevels);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::vector&lt;uint8_t&gt; bytes =</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        (mipLevels &gt; 1) ? buildMipChain2D(rgba, uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>), uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>), mipLevels)</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                        : std::vector&lt;uint8_t&gt;(rgba, rgba + <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>) * <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) * 4);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    gpu-&gt;image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    gpu-&gt;sampler = createVkSampler(info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>, mipLevels);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">auto</span> sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    gpu-&gt;descriptorSet = vkb::BoundSet{sets[0]};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    writeCombinedImageDescriptor(gpu.get());</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    registerBindlessTexture2D(gpu.get());</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">auto</span> tex = std::make_unique&lt;Texture&gt;();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    tex-&gt;width = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    tex-&gt;height = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    tex-&gt;pixelWidth = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    tex-&gt;pixelHeight = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    tex-&gt;mipmapCount = int(mipLevels);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    tex-&gt;sampler = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    tex-&gt;gpuHandle = gpu.get();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *raw = tex.get();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    ownedTextures.push_back(std::move(tex));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    ownedGpuTextures.push_back(std::move(gpu));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">return</span> raw;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abd88c442ee3a22c5f991e48b9109754a">   95</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abd88c442ee3a22c5f991e48b9109754a">Graphics::newCubemap</a>(<span class="keywordtype">int</span> faceSize, <span class="keyword">const</span> uint8_t *rgbaFaces) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="comment">// IBL shaders use textureLod(roughness * 5); generate mips by default.</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abd88c442ee3a22c5f991e48b9109754a">newCubemap</a>(faceSize, rgbaFaces, <a class="code hl_function" href="structeve_1_1graphics_1_1TextureCreateInfo.html#a5e58c19db4f70b09bb8fa25f10ab56c6">TextureCreateInfo::withMipmaps</a>(<span class="keyword">false</span>));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abdcd52f1d00a9039b596d8e4fc7c4f1f">  100</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abd88c442ee3a22c5f991e48b9109754a">Graphics::newCubemap</a>(<span class="keywordtype">int</span> faceSize, <span class="keyword">const</span> uint8_t *rgbaFaces,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;rawInfo) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    ASSERT(initialized);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    ASSERT_GT(faceSize, 0);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    ASSERT(rgbaFaces != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (!initialized) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newCubemap: graphics not initialized&quot;</span>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (faceSize &lt;= 0 || !rgbaFaces) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newCubemap: invalid args&quot;</span>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> info = normalizeTextureInfo(rawInfo);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureSampler.html#a1192d3984205fc47d56c7f24242d468a">repeatU</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureSampler.html#ab5ddbb7c817007b6dbe5b81ebd4b7c85">repeatV</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureSampler.html#a25a093ae770656a211e41121c0ee0a15">repeatW</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">const</span> uint32_t mipLevels =</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#a47dae46835d163795ec44025be683fa3">generateMipmaps</a> ? uint32_t(<a class="code hl_function" href="namespaceeve_1_1graphics.html#a92e5fbb888c47126b1e423b381542816">mipmapCountForSize</a>(faceSize, faceSize)) : 1u;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> faceBytes = size_t(faceSize) * size_t(faceSize) * 4u;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">auto</span> gpu = std::make_unique&lt;GpuTexture&gt;();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    gpu-&gt;width = faceSize;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    gpu-&gt;height = faceSize;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    gpu-&gt;isCube = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    gpu-&gt;mipLevels = mipLevels;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    gpu-&gt;samplerState = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    gpu-&gt;cubeImage = vkb::TextureImageCube(device, device.physical_device.memory_properties,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                                           uint32_t(faceSize), uint32_t(faceSize), mipLevels);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    std::vector&lt;uint8_t&gt; bytes =</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        (mipLevels &gt; 1) ? buildMipChainCube(rgbaFaces, uint32_t(faceSize), mipLevels)</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                        : std::vector&lt;uint8_t&gt;(rgbaFaces, rgbaFaces + faceBytes * 6u);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    gpu-&gt;cubeImage.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    gpu-&gt;sampler = createVkSampler(info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>, mipLevels);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="comment">// Cubemap sampled via mesh3d descriptor sets — no 2D texSetLayout binding required here.</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    registerBindlessTextureCube(gpu.get());</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">auto</span> tex = std::make_unique&lt;Texture&gt;();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    tex-&gt;width = faceSize;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    tex-&gt;height = faceSize;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    tex-&gt;pixelWidth = faceSize;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    tex-&gt;pixelHeight = faceSize;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    tex-&gt;layers = 6;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    tex-&gt;mipmapCount = int(mipLevels);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    tex-&gt;sampler = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    tex-&gt;gpuHandle = gpu.get();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *raw = tex.get();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    ownedTextures.push_back(std::move(tex));</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    ownedGpuTextures.push_back(std::move(gpu));</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">return</span> raw;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}</div>
+</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a4a227778994b2fad67bf53127321538c">  150</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">Graphics::newTexture</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data) {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    ASSERT(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTexture: null ImageData&quot;</span>);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getFormat() != <span class="stringliteral">&quot;RGBA8&quot;</span>)</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTexture: only RGBA8 ImageData supported for now&quot;</span>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">newTexture</a>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getWidth(), <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getHeight(),</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                      <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>uint8_t *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData()));</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>}</div>
+</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="foldopen" id="foldopen00159" data-start="{" data-end="}">
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af689a46073c2df83d605fafffb9964e8">  159</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">Graphics::newTexture</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;info) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    ASSERT(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTexture: null ImageData&quot;</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getFormat() != <span class="stringliteral">&quot;RGBA8&quot;</span>)</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTexture: only RGBA8 ImageData supported for now&quot;</span>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">newTexture</a>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getWidth(), <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getHeight(),</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                      <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>uint8_t *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData()), info);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="foldopen" id="foldopen00169" data-start="{" data-end="}">
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aa072f4ed971f1d3fdae318643dd6ad40">  169</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aa072f4ed971f1d3fdae318643dd6ad40">Graphics::setTextureSampler</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> &amp;sampler) {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> (!texture || !texture-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a> || !initialized) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;owned : ownedGpuTextures) {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">if</span> (owned.get() != texture-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="comment">// In-flight frames may still be sampling the old sampler / descriptor.</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">waitForSharedGpuResources</a>();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">if</span> (owned-&gt;sampler) device-&gt;destroySampler(owned-&gt;sampler);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        owned-&gt;samplerState = sampler;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        owned-&gt;sampler = createVkSampler(sampler, owned-&gt;mipLevels);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        texture-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#af385d374ed6c1fb791a536862dd5d393">sampler</a> = sampler;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">if</span> (!owned-&gt;isCube) writeCombinedImageDescriptor(owned.get());</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        invalidateTextureBindings();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="foldopen" id="foldopen00185" data-start="{" data-end="}">
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#adce0b464a5a0734fb168fd6b342262ef">  185</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#adce0b464a5a0734fb168fd6b342262ef">Graphics::releaseTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">if</span> (!texture || !texture-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="comment">// Renderer-owned fallback textures must never be released by callers.</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">if</span> (texture == whiteTexture || texture == flatNormalTexture ||</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        texture == flatNormalTexture3D || texture == defaultEnvCubemap)</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keyword">auto</span> *gpu = <span class="keyword">static_cast&lt;</span><a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html">GpuTexture</a> *<span class="keyword">&gt;</span>(texture-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a>);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keyword">auto</span> gpuIt = std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                              [&amp;](<span class="keyword">const</span> std::unique_ptr&lt;GpuTexture&gt; &amp;g) {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                                  return g.get() == gpu;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                              });</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">if</span> (gpuIt == ownedGpuTextures.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">auto</span> texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                              [&amp;](<span class="keyword">const</span> std::unique_ptr&lt;Texture&gt; &amp;t) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                                  return t.get() == texture;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                              });</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (texIt == ownedTextures.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="comment">// Path-cached textures must leave the hot-reload cache once released.</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = texturesByPath.begin(); it != texturesByPath.end();) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keywordflow">if</span> (it-&gt;second == texture)</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            it = texturesByPath.erase(it);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            ++it;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="comment">// In-flight frames may still sample the image / sampler; drain first.</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">waitForSharedGpuResources</a>();</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    unregisterBindlessTexture(gpu);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> ((*gpuIt)-&gt;sampler) device-&gt;destroySampler((*gpuIt)-&gt;sampler);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    texture-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    ownedGpuTextures.erase(gpuIt);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="comment">// Transfer the CPU facade to the caller instead of destroying it.</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    (void)texIt-&gt;release();</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    ownedTextures.erase(texIt);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>}</div>
+</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="foldopen" id="foldopen00225" data-start="{" data-end="}">
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a88e590c3f33710d42f5b045d31a19487">  225</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a88e590c3f33710d42f5b045d31a19487">Graphics::replaceTexturePixels</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *tex, <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data) {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">if</span> (!tex || !<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getFormat() != <span class="stringliteral">&quot;RGBA8&quot;</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getWidth();</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getHeight();</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keyword">const</span> <span class="keyword">auto</span> *rgba = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>uint8_t *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData());</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt;= 0 || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt;= 0 || !rgba) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> info;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a> = tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#af385d374ed6c1fb791a536862dd5d393">sampler</a>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#a47dae46835d163795ec44025be683fa3">generateMipmaps</a> = tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a6e9fd3b6e952596b6809ae9c72022142">mipmapCount</a> &gt; 1;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    info = normalizeTextureInfo(info);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keyword">const</span> uint32_t mipLevels =</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#a47dae46835d163795ec44025be683fa3">generateMipmaps</a> ? uint32_t(<a class="code hl_function" href="namespaceeve_1_1graphics.html#a92e5fbb888c47126b1e423b381542816">mipmapCountForSize</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)) : 1u;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">auto</span> gpu = std::make_unique&lt;GpuTexture&gt;();</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    gpu-&gt;width = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    gpu-&gt;height = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    gpu-&gt;isCube = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    gpu-&gt;mipLevels = mipLevels;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    gpu-&gt;samplerState = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    gpu-&gt;image = vkb::TextureImage2D(device, uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>), uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>), mipLevels);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    std::vector&lt;uint8_t&gt; bytes =</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        (mipLevels &gt; 1) ? buildMipChain2D(rgba, uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>), uint32_t(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>), mipLevels)</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                        : std::vector&lt;uint8_t&gt;(rgba, rgba + <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>) * <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) * 4);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    gpu-&gt;image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    gpu-&gt;sampler = createVkSampler(info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>, mipLevels);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keyword">auto</span> sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    gpu-&gt;descriptorSet = vkb::BoundSet{sets[0]};</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    writeCombinedImageDescriptor(gpu.get());</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    registerBindlessTexture2D(gpu.get());</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="keywordtype">void</span> *oldHandle = tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a>;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;owned : ownedGpuTextures) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">if</span> (owned.get() != oldHandle) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="comment">// Destroying the old image/sampler while an in-flight frame still</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="comment">// samples it is a typical TDR. Drain first, then drop cached sets.</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">waitForSharedGpuResources</a>();</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        unregisterBindlessTexture(<span class="keyword">static_cast&lt;</span><a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html">GpuTexture</a> *<span class="keyword">&gt;</span>(oldHandle));</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="keywordflow">if</span> (owned-&gt;sampler) device-&gt;destroySampler(owned-&gt;sampler);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        owned = std::move(gpu);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a> = owned.get();</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a6c974b9f53e1f5c350432300a71367dc">width</a> = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#ad215629d80497f8815785a178ad519eb">height</a> = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a7ac59c481ffebf2085b88435c0ca34fa">pixelWidth</a> = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a36de1a5934b9bc9ef3b0d73b7e7cd302">pixelHeight</a> = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a6e9fd3b6e952596b6809ae9c72022142">mipmapCount</a> = int(mipLevels);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#af385d374ed6c1fb791a536862dd5d393">sampler</a> = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        registerBindlessTexture2D(owned.get());</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        invalidateTextureBindings();</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    }</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="comment">// Texture not in owned list — attach as new ownership.</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a> = gpu.get();</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    registerBindlessTexture2D(<span class="keyword">static_cast&lt;</span><a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html">GpuTexture</a> *<span class="keyword">&gt;</span>(tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a>));</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a6c974b9f53e1f5c350432300a71367dc">width</a> = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#ad215629d80497f8815785a178ad519eb">height</a> = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a7ac59c481ffebf2085b88435c0ca34fa">pixelWidth</a> = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a36de1a5934b9bc9ef3b0d73b7e7cd302">pixelHeight</a> = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#a6e9fd3b6e952596b6809ae9c72022142">mipmapCount</a> = int(mipLevels);</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    tex-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Texture.html#af385d374ed6c1fb791a536862dd5d393">sampler</a> = info.<a class="code hl_variable" href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">sampler</a>;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    ownedGpuTextures.push_back(std::move(gpu));</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>}</div>
+</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="foldopen" id="foldopen00294" data-start="{" data-end="}">
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aca7740a60d138ac4d8cc8dfb7ac72e7d">  294</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aca7740a60d138ac4d8cc8dfb7ac72e7d">Graphics::newTextureFromFile</a>(<span class="keyword">const</span> std::string &amp;filename) {</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    ASSERT(!filename.empty());</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordflow">if</span> (filename.empty()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTextureFromFile: empty filename&quot;</span>);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keyword">const</span> std::string key = normalizeTexPath(filename);</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keyword">auto</span> *imgMod = image::Image::create();</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <a class="code hl_class" href="classeve_1_1ref.html">eve::ref&lt;image::ImageData&gt;</a> <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>(imgMod-&gt;newImageDataFromFile(filename));</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keyword">auto</span> it = texturesByPath.find(key);</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keywordflow">if</span> (it != texturesByPath.end() &amp;&amp; it-&gt;second) {</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a88e590c3f33710d42f5b045d31a19487">replaceTexturePixels</a>(it-&gt;second, <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>.get()))</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;newTextureFromFile: reload failed &#39;%s&#39;&quot;</span>, filename.c_str());</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">return</span> it-&gt;second;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    }</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *tex = <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">newTexture</a>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>.get());</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    texturesByPath[key] = tex;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keywordflow">return</span> tex;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>}</div>
+</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="foldopen" id="foldopen00314" data-start="{" data-end="}">
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a593a3ca253788d0c1e0f79ce0ad3677a">  314</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a593a3ca253788d0c1e0f79ce0ad3677a">Graphics::reloadTextureFromFile</a>(<span class="keyword">const</span> std::string &amp;filename) {</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keywordflow">if</span> (filename.empty()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="keyword">const</span> std::string key = normalizeTexPath(filename);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keyword">auto</span> it = texturesByPath.find(key);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keywordflow">if</span> (it == texturesByPath.end() || !it-&gt;second) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <span class="keyword">auto</span> *imgMod = image::Image::create();</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <a class="code hl_class" href="classeve_1_1ref.html">eve::ref&lt;image::ImageData&gt;</a> cached(imgMod-&gt;newImageDataFromFile(filename));</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> = cached.<a class="code hl_function" href="classeve_1_1ref.html#aaa7febc1050343e5bfa2f30c74c163dc">get</a>();</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    }</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a88e590c3f33710d42f5b045d31a19487">replaceTexturePixels</a>(it-&gt;second, <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>}</div>
+</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>}  <span class="comment">// namespace eve::graphics::vulkan</span></div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html"><div class="ttname"><a href="GraphicsInternal_8h.html">GraphicsInternal.h</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aImageData_8h_html"><div class="ttname"><a href="ImageData_8h.html">ImageData.h</a></div></div>
+<div class="ttc" id="aImage_8h_html"><div class="ttname"><a href="Image_8h.html">Image.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ada05f6cebac471a16afe32603db72cd2"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00485">RenderSystem3D.cpp:485</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a03f092ee0f36aa0f2fc311a44f72b7e8"><div class="ttname"><a href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a></div><div class="ttdeci">bool repeatV</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00128">SceneLoader.cpp:128</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a814b9636d707902b5b8d57d3f8c4c60c"><div class="ttname"><a href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a></div><div class="ttdeci">bool repeatU</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00127">SceneLoader.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00017">Texture.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_a36de1a5934b9bc9ef3b0d73b7e7cd302"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#a36de1a5934b9bc9ef3b0d73b7e7cd302">eve::graphics::Texture::pixelHeight</a></div><div class="ttdeci">int pixelHeight</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00042">Texture.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_a6c974b9f53e1f5c350432300a71367dc"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#a6c974b9f53e1f5c350432300a71367dc">eve::graphics::Texture::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00036">Texture.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_a6e9fd3b6e952596b6809ae9c72022142"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#a6e9fd3b6e952596b6809ae9c72022142">eve::graphics::Texture::mipmapCount</a></div><div class="ttdeci">int mipmapCount</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00040">Texture.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_a7ac59c481ffebf2085b88435c0ca34fa"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#a7ac59c481ffebf2085b88435c0ca34fa">eve::graphics::Texture::pixelWidth</a></div><div class="ttdeci">int pixelWidth</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00041">Texture.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_a8b10e44e09a2cf465a7e890d14943556"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">eve::graphics::Texture::gpuHandle</a></div><div class="ttdeci">void * gpuHandle</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00034">Texture.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_ad215629d80497f8815785a178ad519eb"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#ad215629d80497f8815785a178ad519eb">eve::graphics::Texture::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00037">Texture.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_af385d374ed6c1fb791a536862dd5d393"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#af385d374ed6c1fb791a536862dd5d393">eve::graphics::Texture::sampler</a></div><div class="ttdeci">TextureSampler sampler</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00043">Texture.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a550f581f81038f420c7895742faae96e"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">eve::graphics::vulkan::Graphics::waitForSharedGpuResources</a></div><div class="ttdeci">void waitForSharedGpuResources()</div><div class="ttdoc">Block until all in-flight GPU work (all frames) has completed.</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8cpp_source.html#l00471">Graphics.cpp:471</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a593a3ca253788d0c1e0f79ce0ad3677a"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a593a3ca253788d0c1e0f79ce0ad3677a">eve::graphics::vulkan::Graphics::reloadTextureFromFile</a></div><div class="ttdeci">bool reloadTextureFromFile(const std::string &amp;filename) override</div><div class="ttdoc">Reload a path-cached texture from disk in place (pointer stable). False if unbound.</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00314">GraphicsTexture.cpp:314</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a88e590c3f33710d42f5b045d31a19487"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a88e590c3f33710d42f5b045d31a19487">eve::graphics::vulkan::Graphics::replaceTexturePixels</a></div><div class="ttdeci">bool replaceTexturePixels(Texture *tex, image::ImageData *data)</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00225">GraphicsTexture.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_aa072f4ed971f1d3fdae318643dd6ad40"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aa072f4ed971f1d3fdae318643dd6ad40">eve::graphics::vulkan::Graphics::setTextureSampler</a></div><div class="ttdeci">void setTextureSampler(Texture *texture, const TextureSampler &amp;sampler) override</div><div class="ttdoc">Recreate the sampler for an existing texture (keeps image / mip chain). No-op when texture is null or...</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00169">GraphicsTexture.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_abd88c442ee3a22c5f991e48b9109754a"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#abd88c442ee3a22c5f991e48b9109754a">eve::graphics::vulkan::Graphics::newCubemap</a></div><div class="ttdeci">Texture * newCubemap(int faceSize, const uint8_t *rgbaFaces) override</div><div class="ttdoc">Create an RGBA8 cubemap from 6 faces packed as +X,-X,+Y,-Y,+Z,-Z (each faceSize×faceSize,...</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00095">GraphicsTexture.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_aca7740a60d138ac4d8cc8dfb7ac72e7d"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aca7740a60d138ac4d8cc8dfb7ac72e7d">eve::graphics::vulkan::Graphics::newTextureFromFile</a></div><div class="ttdeci">Texture * newTextureFromFile(const std::string &amp;filename) override</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00294">GraphicsTexture.cpp:294</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_adce0b464a5a0734fb168fd6b342262ef"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#adce0b464a5a0734fb168fd6b342262ef">eve::graphics::vulkan::Graphics::releaseTexture</a></div><div class="ttdeci">bool releaseTexture(Texture *texture) override</div><div class="ttdoc">Eagerly releases a texture created by this Graphics.</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00185">GraphicsTexture.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_aeae5d5185f73e0f656fbdf04e04a0c46"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeae5d5185f73e0f656fbdf04e04a0c46">eve::graphics::vulkan::Graphics::newTexture</a></div><div class="ttdeci">Texture * newTexture(int width, int height, const uint8_t *rgba, bool repeatU=false, bool repeatV=false) override</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTexture_8cpp_source.html#l00040">GraphicsTexture.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00025">ImageData.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1ref_html"><div class="ttname"><a href="classeve_1_1ref.html">eve::ref</a></div><div class="ttdoc">ref is a smart pointer that automatically calls ref() and unref() on the object. Type T must be a sub...</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00054">Object.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1ref_html_aaa7febc1050343e5bfa2f30c74c163dc"><div class="ttname"><a href="classeve_1_1ref.html#aaa7febc1050343e5bfa2f30c74c163dc">eve::ref::get</a></div><div class="ttdeci">T * get()</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00094">Object.h:94</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1vulkan_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></div><div class="ttdef"><b>Definition</b> <a href="VulkanSequence_8h_source.html#l00008">VulkanSequence.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a92e5fbb888c47126b1e423b381542816"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a92e5fbb888c47126b1e423b381542816">eve::graphics::mipmapCountForSize</a></div><div class="ttdeci">int mipmapCountForSize(int width, int height)</div><div class="ttdoc">Full mip chain count for a 2D image (including base level).</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00119">TextureSampler.h:119</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureCreateInfo_html"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureCreateInfo.html">eve::graphics::TextureCreateInfo</a></div><div class="ttdoc">Options for Graphics::newTexture / newCubemap. When generateMipmaps is true and sampler....</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00104">TextureSampler.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureCreateInfo_html_a47dae46835d163795ec44025be683fa3"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureCreateInfo.html#a47dae46835d163795ec44025be683fa3">eve::graphics::TextureCreateInfo::generateMipmaps</a></div><div class="ttdeci">bool generateMipmaps</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00106">TextureSampler.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureCreateInfo_html_a5e58c19db4f70b09bb8fa25f10ab56c6"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureCreateInfo.html#a5e58c19db4f70b09bb8fa25f10ab56c6">eve::graphics::TextureCreateInfo::withMipmaps</a></div><div class="ttdeci">static TextureCreateInfo withMipmaps(bool aniso=true, float maxAniso=16.f)</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00110">TextureSampler.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureCreateInfo_html_aea8fac28256b05e820174c97a476661f"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureCreateInfo.html#aea8fac28256b05e820174c97a476661f">eve::graphics::TextureCreateInfo::sampler</a></div><div class="ttdeci">TextureSampler sampler</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00105">TextureSampler.h:105</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureSampler_html"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureSampler.html">eve::graphics::TextureSampler</a></div><div class="ttdoc">Sampler state for a Texture (filter, wrap, mip LOD, anisotropy). Defaults match historical engine beh...</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00027">TextureSampler.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureSampler_html_a1192d3984205fc47d56c7f24242d468a"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureSampler.html#a1192d3984205fc47d56c7f24242d468a">eve::graphics::TextureSampler::repeatU</a></div><div class="ttdeci">bool repeatU</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00031">TextureSampler.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureSampler_html_a25a093ae770656a211e41121c0ee0a15"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureSampler.html#a25a093ae770656a211e41121c0ee0a15">eve::graphics::TextureSampler::repeatW</a></div><div class="ttdeci">bool repeatW</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00033">TextureSampler.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureSampler_html_ab5ddbb7c817007b6dbe5b81ebd4b7c85"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureSampler.html#ab5ddbb7c817007b6dbe5b81ebd4b7c85">eve::graphics::TextureSampler::repeatV</a></div><div class="ttdeci">bool repeatV</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00032">TextureSampler.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuTexture_html"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html">eve::graphics::vulkan::GpuTexture</a></div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00128">Graphics.h:128</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8h_html"><div class="ttname"><a href="vulkan_2Graphics_8h.html">Graphics.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

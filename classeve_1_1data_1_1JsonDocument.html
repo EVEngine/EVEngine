@@ -1,0 +1,531 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::data::JsonDocument类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1data.html">data</a></li><li class="navelem"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1data_1_1JsonDocument-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::data::JsonDocument类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Thin RAII wrapper over a <a class="el" href="namespacePoco.html">Poco</a> JSON value (object/array/scalar).  
+ <a href="classeve_1_1data_1_1JsonDocument.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="JsonDocument_8h_source.html">JsonDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2429cdda57d31302de81f552722970b7" id="r_a2429cdda57d31302de81f552722970b7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a2429cdda57d31302de81f552722970b7">JsonDocument</a> ()</td></tr>
+<tr class="memdesc:a2429cdda57d31302de81f552722970b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty document.  <br /></td></tr>
+<tr class="separator:a2429cdda57d31302de81f552722970b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b6a0146da1e2c13e737c544cf327dc5" id="r_a9b6a0146da1e2c13e737c544cf327dc5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a9b6a0146da1e2c13e737c544cf327dc5">JsonDocument</a> (Poco::Dynamic::Var <a class="el" href="classeve_1_1data_1_1JsonDocument.html#acf8b7548c9b3a5369c3dc1b60b3d29de">root</a>)</td></tr>
+<tr class="memdesc:a9b6a0146da1e2c13e737c544cf327dc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes ownership of an existing <a class="el" href="namespacePoco.html">Poco</a> JSON root value.  <br /></td></tr>
+<tr class="separator:a9b6a0146da1e2c13e737c544cf327dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25b801344cb367760b3b0ee176107ee3" id="r_a25b801344cb367760b3b0ee176107ee3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a25b801344cb367760b3b0ee176107ee3">JsonDocument</a> (<a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a25b801344cb367760b3b0ee176107ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04518cfd3af28ee72b8c846328fa9807" id="r_a04518cfd3af28ee72b8c846328fa9807"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a04518cfd3af28ee72b8c846328fa9807">operator=</a> (<a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a04518cfd3af28ee72b8c846328fa9807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d5edeca3877ecc340bfd341ce45e241" id="r_a4d5edeca3877ecc340bfd341ce45e241"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a4d5edeca3877ecc340bfd341ce45e241">JsonDocument</a> (const <a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;)=delete</td></tr>
+<tr class="separator:a4d5edeca3877ecc340bfd341ce45e241"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36b2ff3e77f3943351e458a5f5cf8196" id="r_a36b2ff3e77f3943351e458a5f5cf8196"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a36b2ff3e77f3943351e458a5f5cf8196">~JsonDocument</a> ()=default</td></tr>
+<tr class="separator:a36b2ff3e77f3943351e458a5f5cf8196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b43fd4194df578622dfd4f2a638e7bd" id="r_a0b43fd4194df578622dfd4f2a638e7bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a0b43fd4194df578622dfd4f2a638e7bd">empty</a> () const</td></tr>
+<tr class="memdesc:a0b43fd4194df578622dfd4f2a638e7bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the root value is empty.  <br /></td></tr>
+<tr class="separator:a0b43fd4194df578622dfd4f2a638e7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c0f3ff4da751bdcb2a57fa94a747f1" id="r_aa6c0f3ff4da751bdcb2a57fa94a747f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#aa6c0f3ff4da751bdcb2a57fa94a747f1">isObject</a> () const</td></tr>
+<tr class="memdesc:aa6c0f3ff4da751bdcb2a57fa94a747f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root type predicates.  <br /></td></tr>
+<tr class="separator:aa6c0f3ff4da751bdcb2a57fa94a747f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4cca75620cbd92ae057fc05d0056b61" id="r_ab4cca75620cbd92ae057fc05d0056b61"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#ab4cca75620cbd92ae057fc05d0056b61">isArray</a> () const</td></tr>
+<tr class="separator:ab4cca75620cbd92ae057fc05d0056b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf8b7548c9b3a5369c3dc1b60b3d29de" id="r_acf8b7548c9b3a5369c3dc1b60b3d29de"><td class="memItemLeft" align="right" valign="top">Poco::Dynamic::Var &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#acf8b7548c9b3a5369c3dc1b60b3d29de">root</a> ()</td></tr>
+<tr class="memdesc:acf8b7548c9b3a5369c3dc1b60b3d29de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Underlying <a class="el" href="namespacePoco.html">Poco</a> dynamic value.  <br /></td></tr>
+<tr class="separator:acf8b7548c9b3a5369c3dc1b60b3d29de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6443ac5c1154313da5e0f98d5869ba8a" id="r_a6443ac5c1154313da5e0f98d5869ba8a"><td class="memItemLeft" align="right" valign="top">const Poco::Dynamic::Var &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a6443ac5c1154313da5e0f98d5869ba8a">root</a> () const</td></tr>
+<tr class="separator:a6443ac5c1154313da5e0f98d5869ba8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adecacb53740f7b54d35b4f4681c95334" id="r_adecacb53740f7b54d35b4f4681c95334"><td class="memItemLeft" align="right" valign="top">Poco::JSON::Object::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#adecacb53740f7b54d35b4f4681c95334">object</a> ()</td></tr>
+<tr class="memdesc:adecacb53740f7b54d35b4f4681c95334"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root as JSON object/array (may be null when the type differs).  <br /></td></tr>
+<tr class="separator:adecacb53740f7b54d35b4f4681c95334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b40438ce6fbdd08b8be3aadb2d76744" id="r_a2b40438ce6fbdd08b8be3aadb2d76744"><td class="memItemLeft" align="right" valign="top">Poco::JSON::Array::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html#a2b40438ce6fbdd08b8be3aadb2d76744">array</a> ()</td></tr>
+<tr class="separator:a2b40438ce6fbdd08b8be3aadb2d76744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Thin RAII wrapper over a <a class="el" href="namespacePoco.html">Poco</a> JSON value (object/array/scalar). </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8h_source.html">JsonDocument.h</a> 第 <a class="el" href="JsonDocument_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2429cdda57d31302de81f552722970b7" name="a2429cdda57d31302de81f552722970b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2429cdda57d31302de81f552722970b7">&#9670;&#160;</a></span>JsonDocument() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::JsonDocument::JsonDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an empty document. </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00006">6</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b6a0146da1e2c13e737c544cf327dc5" name="a9b6a0146da1e2c13e737c544cf327dc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b6a0146da1e2c13e737c544cf327dc5">&#9670;&#160;</a></span>JsonDocument() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::JsonDocument::JsonDocument </td>
+          <td>(</td>
+          <td class="paramtype">Poco::Dynamic::Var&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Takes ownership of an existing <a class="el" href="namespacePoco.html">Poco</a> JSON root value. </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a25b801344cb367760b3b0ee176107ee3" name="a25b801344cb367760b3b0ee176107ee3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25b801344cb367760b3b0ee176107ee3">&#9670;&#160;</a></span>JsonDocument() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::JsonDocument::JsonDocument </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d5edeca3877ecc340bfd341ce45e241" name="a4d5edeca3877ecc340bfd341ce45e241"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d5edeca3877ecc340bfd341ce45e241">&#9670;&#160;</a></span>JsonDocument() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::JsonDocument::JsonDocument </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a36b2ff3e77f3943351e458a5f5cf8196" name="a36b2ff3e77f3943351e458a5f5cf8196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36b2ff3e77f3943351e458a5f5cf8196">&#9670;&#160;</a></span>~JsonDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::JsonDocument::~JsonDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2b40438ce6fbdd08b8be3aadb2d76744" name="a2b40438ce6fbdd08b8be3aadb2d76744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b40438ce6fbdd08b8be3aadb2d76744">&#9670;&#160;</a></span>array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::JSON::Array::Ptr eve::data::JsonDocument::array </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JsonDocument_8cpp_source.html#l00017">isArray()</a>.</p>
+
+</div>
+</div>
+<a id="a0b43fd4194df578622dfd4f2a638e7bd" name="a0b43fd4194df578622dfd4f2a638e7bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b43fd4194df578622dfd4f2a638e7bd">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::data::JsonDocument::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when the root value is empty. </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab4cca75620cbd92ae057fc05d0056b61" name="ab4cca75620cbd92ae057fc05d0056b61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4cca75620cbd92ae057fc05d0056b61">&#9670;&#160;</a></span>isArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::data::JsonDocument::isArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonDocument_8cpp_source.html#l00027">array()</a>.</p>
+
+</div>
+</div>
+<a id="aa6c0f3ff4da751bdcb2a57fa94a747f1" name="aa6c0f3ff4da751bdcb2a57fa94a747f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c0f3ff4da751bdcb2a57fa94a747f1">&#9670;&#160;</a></span>isObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::data::JsonDocument::isObject </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Root type predicates. </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleConfig_8cpp_source.html#l00175">eve::particles::applyConfigDocument()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00578">eve::map::applyConfigDocument()</a> , 以及 <a class="el" href="JsonDocument_8cpp_source.html#l00022">object()</a>.</p>
+
+</div>
+</div>
+<a id="adecacb53740f7b54d35b4f4681c95334" name="adecacb53740f7b54d35b4f4681c95334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adecacb53740f7b54d35b4f4681c95334">&#9670;&#160;</a></span>object()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::JSON::Object::Ptr eve::data::JsonDocument::object </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Root as JSON object/array (may be null when the type differs). </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JsonDocument_8cpp_source.html#l00015">isObject()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleConfig_8cpp_source.html#l00175">eve::particles::applyConfigDocument()</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00578">eve::map::applyConfigDocument()</a>.</p>
+
+</div>
+</div>
+<a id="a04518cfd3af28ee72b8c846328fa9807" name="a04518cfd3af28ee72b8c846328fa9807"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04518cfd3af28ee72b8c846328fa9807">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp; eve::data::JsonDocument::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acf8b7548c9b3a5369c3dc1b60b3d29de" name="acf8b7548c9b3a5369c3dc1b60b3d29de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8b7548c9b3a5369c3dc1b60b3d29de">&#9670;&#160;</a></span>root() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::Dynamic::Var &amp; eve::data::JsonDocument::root </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Underlying <a class="el" href="namespacePoco.html">Poco</a> dynamic value. </p>
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DataModule_8cpp_source.html#l00312">eve::data::DataModule::encodeJson()</a>.</p>
+
+</div>
+</div>
+<a id="a6443ac5c1154313da5e0f98d5869ba8a" name="a6443ac5c1154313da5e0f98d5869ba8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6443ac5c1154313da5e0f98d5869ba8a">&#9670;&#160;</a></span>root() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Poco::Dynamic::Var &amp; eve::data::JsonDocument::root </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a> 第 <a class="el" href="JsonDocument_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/data/<a class="el" href="JsonDocument_8h_source.html">JsonDocument.h</a></li>
+<li>src/modules/data/<a class="el" href="JsonDocument_8cpp_source.html">JsonDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

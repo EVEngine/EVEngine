@@ -1,0 +1,832 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::AiPanel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1dev_1_1AiPanel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::AiPanel类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>In-engine AI / MCP session surface for DevTools.  
+ <a href="classeve_1_1dev_1_1AiPanel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AiPanel_8hpp_source.html">AiPanel.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:accf082e0f6bb10bbde021177aacc4699" id="r_accf082e0f6bb10bbde021177aacc4699"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">ImGuiDrawer</a> = void(*)(<a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;panel)</td></tr>
+<tr class="separator:accf082e0f6bb10bbde021177aacc4699"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1c540b26400fb596b702c73a98df1827" id="r_a1c540b26400fb596b702c73a98df1827"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a1c540b26400fb596b702c73a98df1827">AiPanel</a> (const <a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;)=delete</td></tr>
+<tr class="separator:a1c540b26400fb596b702c73a98df1827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff0bd65e660b11c7ba36abb68dc9402b" id="r_aff0bd65e660b11c7ba36abb68dc9402b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#aff0bd65e660b11c7ba36abb68dc9402b">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;)=delete</td></tr>
+<tr class="separator:aff0bd65e660b11c7ba36abb68dc9402b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d7fcc6adfeb3d727930c4aab6bc9c7" id="r_a17d7fcc6adfeb3d727930c4aab6bc9c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a17d7fcc6adfeb3d727930c4aab6bc9c7">setVisible</a> (bool on)</td></tr>
+<tr class="separator:a17d7fcc6adfeb3d727930c4aab6bc9c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9cc36e2c724e0f78cbd3fdcdb5e6c65" id="r_ae9cc36e2c724e0f78cbd3fdcdb5e6c65"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">isVisible</a> () const</td></tr>
+<tr class="separator:ae9cc36e2c724e0f78cbd3fdcdb5e6c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cb09dfc45e53ce06b67b1e45ddaec6a" id="r_a9cb09dfc45e53ce06b67b1e45ddaec6a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a9cb09dfc45e53ce06b67b1e45ddaec6a">toggleVisible</a> ()</td></tr>
+<tr class="separator:a9cb09dfc45e53ce06b67b1e45ddaec6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a607fd68317c5537366d68d08fd2976a3" id="r_a607fd68317c5537366d68d08fd2976a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a607fd68317c5537366d68d08fd2976a3">setMcpPort</a> (int port)</td></tr>
+<tr class="separator:a607fd68317c5537366d68d08fd2976a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdfa21d2c9a84adf9faaa2c5676b8193" id="r_abdfa21d2c9a84adf9faaa2c5676b8193"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#abdfa21d2c9a84adf9faaa2c5676b8193">mcpPort</a> () const</td></tr>
+<tr class="separator:abdfa21d2c9a84adf9faaa2c5676b8193"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab15693acc507d46fa27896a845d693a" id="r_aab15693acc507d46fa27896a845d693a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#aab15693acc507d46fa27896a845d693a">setMcpConnected</a> (bool on)</td></tr>
+<tr class="separator:aab15693acc507d46fa27896a845d693a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b29a1de53a3b6d4dc2eb7629471beab" id="r_a9b29a1de53a3b6d4dc2eb7629471beab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a9b29a1de53a3b6d4dc2eb7629471beab">mcpConnected</a> () const</td></tr>
+<tr class="separator:a9b29a1de53a3b6d4dc2eb7629471beab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae10d96e5f0bc2691c18ebe16f46ccc48" id="r_ae10d96e5f0bc2691c18ebe16f46ccc48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#ae10d96e5f0bc2691c18ebe16f46ccc48">setClientName</a> (std::string <a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ae10d96e5f0bc2691c18ebe16f46ccc48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53243f2bcf7bcf701237aa296c4afff8" id="r_a53243f2bcf7bcf701237aa296c4afff8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a53243f2bcf7bcf701237aa296c4afff8">clientName</a> () const</td></tr>
+<tr class="separator:a53243f2bcf7bcf701237aa296c4afff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438fde9360952c04bd448d2f36382920" id="r_a438fde9360952c04bd448d2f36382920"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a438fde9360952c04bd448d2f36382920">clearLog</a> ()</td></tr>
+<tr class="separator:a438fde9360952c04bd448d2f36382920"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6257830f27afb5c81b6a11b192884526" id="r_a6257830f27afb5c81b6a11b192884526"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a6257830f27afb5c81b6a11b192884526">addLog</a> (std::string <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, std::string <a class="el" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, std::string detail={})</td></tr>
+<tr class="separator:a6257830f27afb5c81b6a11b192884526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00fbdebea6437eab878a8d7fd39473e2" id="r_a00fbdebea6437eab878a8d7fd39473e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a00fbdebea6437eab878a8d7fd39473e2">addNote</a> (std::string text)</td></tr>
+<tr class="separator:a00fbdebea6437eab878a8d7fd39473e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58a5968a0259d78b8d22dd508b166993" id="r_a58a5968a0259d78b8d22dd508b166993"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1dev_1_1AiLogEntry.html">AiLogEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a58a5968a0259d78b8d22dd508b166993">recentLog</a> (size_t max=64) const</td></tr>
+<tr class="separator:a58a5968a0259d78b8d22dd508b166993"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47cce5be54f52c2ea1fef39ebf7c55a3" id="r_a47cce5be54f52c2ea1fef39ebf7c55a3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a47cce5be54f52c2ea1fef39ebf7c55a3">formatLog</a> (size_t max=64) const</td></tr>
+<tr class="separator:a47cce5be54f52c2ea1fef39ebf7c55a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3673630aa1ad385a214b3359081a0a50" id="r_a3673630aa1ad385a214b3359081a0a50"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a3673630aa1ad385a214b3359081a0a50">statusLine</a> () const</td></tr>
+<tr class="memdesc:a3673630aa1ad385a214b3359081a0a50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact status line for overlays / MCP resources.  <br /></td></tr>
+<tr class="separator:a3673630aa1ad385a214b3359081a0a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada7ea3eea2930065026169bcf4164ed5" id="r_ada7ea3eea2930065026169bcf4164ed5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#ada7ea3eea2930065026169bcf4164ed5">drawImGui</a> ()</td></tr>
+<tr class="memdesc:ada7ea3eea2930065026169bcf4164ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional <a class="el" href="namespaceImGui.html">ImGui</a> draw hook. Default no-op: in-engine AI status is exposed via MCP / <code>eve.dev.ai</code>. <a class="el" href="namespaceImGui.html">ImGui</a> drawing is registered by the host so EVDevTools does not need to include imgui.h.  <br /></td></tr>
+<tr class="separator:ada7ea3eea2930065026169bcf4164ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab13f648274c2682773242585f217dae7" id="r_ab13f648274c2682773242585f217dae7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#ab13f648274c2682773242585f217dae7">setMaxEntries</a> (size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:ab13f648274c2682773242585f217dae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a81850250f0f6ebdff9f7cad7fc5ab6" id="r_a6a81850250f0f6ebdff9f7cad7fc5ab6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a6a81850250f0f6ebdff9f7cad7fc5ab6">maxEntries</a> () const</td></tr>
+<tr class="separator:a6a81850250f0f6ebdff9f7cad7fc5ab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa003e9bdb1a0a8ed9319e648ce3911d2" id="r_aa003e9bdb1a0a8ed9319e648ce3911d2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#aa003e9bdb1a0a8ed9319e648ce3911d2">instance</a> ()</td></tr>
+<tr class="separator:aa003e9bdb1a0a8ed9319e648ce3911d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad998a2a783dbbb7ba462d47bb09c65e2" id="r_ad998a2a783dbbb7ba462d47bb09c65e2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#ad998a2a783dbbb7ba462d47bb09c65e2">setImGuiDrawer</a> (<a class="el" href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">ImGuiDrawer</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:ad998a2a783dbbb7ba462d47bb09c65e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c" id="r_a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#a92fdba2769d69e2b01328eaf13fe7c1c">Immortal</a></td></tr>
+<tr class="separator:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>In-engine AI / MCP session surface for DevTools. </p>
+<p>Records recent MCP tool calls and free-form notes so humans (<a class="el" href="namespaceImGui.html">ImGui</a> panel / script API) and agents (MCP resource <code>eve://ai-session</code>) share one log. Drawing is optional — <code><a class="el" href="classeve_1_1dev_1_1AiPanel.html#ada7ea3eea2930065026169bcf4164ed5" title="Optional ImGui draw hook. Default no-op: in-engine AI status is exposed via MCP / eve....">drawImGui()</a></code> is a no-op when imgui is unavailable. </p>
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8hpp_source.html">AiPanel.hpp</a> 第 <a class="el" href="AiPanel_8hpp_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="accf082e0f6bb10bbde021177aacc4699" name="accf082e0f6bb10bbde021177aacc4699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf082e0f6bb10bbde021177aacc4699">&#9670;&#160;</a></span>ImGuiDrawer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">eve::dev::AiPanel::ImGuiDrawer</a> =  void (*)(<a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a>&amp; panel)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8hpp_source.html">AiPanel.hpp</a> 第 <a class="el" href="AiPanel_8hpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1c540b26400fb596b702c73a98df1827" name="a1c540b26400fb596b702c73a98df1827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c540b26400fb596b702c73a98df1827">&#9670;&#160;</a></span>AiPanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::AiPanel::AiPanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6257830f27afb5c81b6a11b192884526" name="a6257830f27afb5c81b6a11b192884526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6257830f27afb5c81b6a11b192884526">&#9670;&#160;</a></span>addLog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::addLog </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>detail</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8hpp_source.html#l00017">eve::dev::AiLogEntry::detail</a>, <a class="el" href="AiPanel_8hpp_source.html#l00015">eve::dev::AiLogEntry::kind</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>, <a class="el" href="AiPanel_8hpp_source.html#l00014">eve::dev::AiLogEntry::timestamp</a>, <a class="el" href="AiPanel_8hpp_source.html#l00016">eve::dev::AiLogEntry::title</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00451">title</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AiPanel_8cpp_source.html#l00095">addNote()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l01554">eve::dev::McpServer::listen()</a>.</p>
+
+</div>
+</div>
+<a id="a00fbdebea6437eab878a8d7fd39473e2" name="a00fbdebea6437eab878a8d7fd39473e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00fbdebea6437eab878a8d7fd39473e2">&#9670;&#160;</a></span>addNote()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::addNote </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8cpp_source.html#l00084">addLog()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a438fde9360952c04bd448d2f36382920" name="a438fde9360952c04bd448d2f36382920"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438fde9360952c04bd448d2f36382920">&#9670;&#160;</a></span>clearLog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::clearLog </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a53243f2bcf7bcf701237aa296c4afff8" name="a53243f2bcf7bcf701237aa296c4afff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53243f2bcf7bcf701237aa296c4afff8">&#9670;&#160;</a></span>clientName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::AiPanel::clientName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ada7ea3eea2930065026169bcf4164ed5" name="ada7ea3eea2930065026169bcf4164ed5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada7ea3eea2930065026169bcf4164ed5">&#9670;&#160;</a></span>drawImGui()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::drawImGui </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional <a class="el" href="namespaceImGui.html">ImGui</a> draw hook. Default no-op: in-engine AI status is exposed via MCP / <code>eve.dev.ai</code>. <a class="el" href="namespaceImGui.html">ImGui</a> drawing is registered by the host so EVDevTools does not need to include imgui.h. </p>
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00201">eve::dev::DevTool::drawAiPanel()</a>.</p>
+
+</div>
+</div>
+<a id="a47cce5be54f52c2ea1fef39ebf7c55a3" name="a47cce5be54f52c2ea1fef39ebf7c55a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47cce5be54f52c2ea1fef39ebf7c55a3">&#9670;&#160;</a></span>formatLog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::AiPanel::formatLog </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>max</em> = <code>64</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8cpp_source.html#l00097">recentLog()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="aa003e9bdb1a0a8ed9319e648ce3911d2" name="aa003e9bdb1a0a8ed9319e648ce3911d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa003e9bdb1a0a8ed9319e648ce3911d2">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp; eve::dev::AiPanel::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Immortal_8hpp_source.html#l00021">eve::dev::Immortal&lt; T &gt;::get()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00192">eve::dev::DevTool::ai()</a>, <a class="el" href="DevTool_8cpp_source.html#l00201">eve::dev::DevTool::drawAiPanel()</a>, <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l01554">eve::dev::McpServer::listen()</a>.</p>
+
+</div>
+</div>
+<a id="ae9cc36e2c724e0f78cbd3fdcdb5e6c65" name="ae9cc36e2c724e0f78cbd3fdcdb5e6c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::AiPanel::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="AiPanel_8cpp_source.html#l00047">toggleVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a6a81850250f0f6ebdff9f7cad7fc5ab6" name="a6a81850250f0f6ebdff9f7cad7fc5ab6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a81850250f0f6ebdff9f7cad7fc5ab6">&#9670;&#160;</a></span>maxEntries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::dev::AiPanel::maxEntries </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8hpp_source.html">AiPanel.hpp</a> 第 <a class="el" href="AiPanel_8hpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b29a1de53a3b6d4dc2eb7629471beab" name="a9b29a1de53a3b6d4dc2eb7629471beab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b29a1de53a3b6d4dc2eb7629471beab">&#9670;&#160;</a></span>mcpConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::AiPanel::mcpConnected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="abdfa21d2c9a84adf9faaa2c5676b8193" name="abdfa21d2c9a84adf9faaa2c5676b8193"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdfa21d2c9a84adf9faaa2c5676b8193">&#9670;&#160;</a></span>mcpPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::AiPanel::mcpPort </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="aff0bd65e660b11c7ba36abb68dc9402b" name="aff0bd65e660b11c7ba36abb68dc9402b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff0bd65e660b11c7ba36abb68dc9402b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp; eve::dev::AiPanel::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1AiPanel.html">AiPanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a58a5968a0259d78b8d22dd508b166993" name="a58a5968a0259d78b8d22dd508b166993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58a5968a0259d78b8d22dd508b166993">&#9670;&#160;</a></span>recentLog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1dev_1_1AiLogEntry.html">AiLogEntry</a> &gt; eve::dev::AiPanel::recentLog </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>max</em> = <code>64</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AiPanel_8cpp_source.html#l00106">formatLog()</a>.</p>
+
+</div>
+</div>
+<a id="ae10d96e5f0bc2691c18ebe16f46ccc48" name="ae10d96e5f0bc2691c18ebe16f46ccc48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae10d96e5f0bc2691c18ebe16f46ccc48">&#9670;&#160;</a></span>setClientName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::setClientName </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ad998a2a783dbbb7ba462d47bb09c65e2" name="ad998a2a783dbbb7ba462d47bb09c65e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad998a2a783dbbb7ba462d47bb09c65e2">&#9670;&#160;</a></span>setImGuiDrawer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::setImGuiDrawer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dev_1_1AiPanel.html#accf082e0f6bb10bbde021177aacc4699">ImGuiDrawer</a>&#160;</td>
+          <td class="paramname"><em>fn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>.</p>
+
+</div>
+</div>
+<a id="ab13f648274c2682773242585f217dae7" name="ab13f648274c2682773242585f217dae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab13f648274c2682773242585f217dae7">&#9670;&#160;</a></span>setMaxEntries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::setMaxEntries </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+</div>
+</div>
+<a id="aab15693acc507d46fa27896a845d693a" name="aab15693acc507d46fa27896a845d693a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab15693acc507d46fa27896a845d693a">&#9670;&#160;</a></span>setMcpConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::setMcpConnected </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="McpServer_8cpp_source.html#l01554">eve::dev::McpServer::listen()</a>.</p>
+
+</div>
+</div>
+<a id="a607fd68317c5537366d68d08fd2976a3" name="a607fd68317c5537366d68d08fd2976a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a607fd68317c5537366d68d08fd2976a3">&#9670;&#160;</a></span>setMcpPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::setMcpPort </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>port</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="McpServer_8cpp_source.html#l01554">eve::dev::McpServer::listen()</a>.</p>
+
+</div>
+</div>
+<a id="a17d7fcc6adfeb3d727930c4aab6bc9c7" name="a17d7fcc6adfeb3d727930c4aab6bc9c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d7fcc6adfeb3d727930c4aab6bc9c7">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="AiPanel_8cpp_source.html#l00047">toggleVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a3673630aa1ad385a214b3359081a0a50" name="a3673630aa1ad385a214b3359081a0a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3673630aa1ad385a214b3359081a0a50">&#9670;&#160;</a></span>statusLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::AiPanel::statusLine </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compact status line for overlays / MCP resources. </p>
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a9cb09dfc45e53ce06b67b1e45ddaec6a" name="a9cb09dfc45e53ce06b67b1e45ddaec6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cb09dfc45e53ce06b67b1e45ddaec6a">&#9670;&#160;</a></span>toggleVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::AiPanel::toggleVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a> 第 <a class="el" href="AiPanel_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8cpp_source.html#l00042">isVisible()</a> , 以及 <a class="el" href="AiPanel_8cpp_source.html#l00037">setVisible()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00205">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a92fdba2769d69e2b01328eaf13fe7c1c" name="a92fdba2769d69e2b01328eaf13fe7c1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92fdba2769d69e2b01328eaf13fe7c1c">&#9670;&#160;</a></span>Immortal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend struct <a class="el" href="structeve_1_1dev_1_1Immortal.html">Immortal</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AiPanel_8hpp_source.html">AiPanel.hpp</a> 第 <a class="el" href="AiPanel_8hpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="AiPanel_8hpp_source.html">AiPanel.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="AiPanel_8cpp_source.html">AiPanel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

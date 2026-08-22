@@ -1,0 +1,1038 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::thread::JobSystemThreadPool类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1thread.html">thread</a></li><li class="navelem"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1thread_1_1JobSystemThreadPool-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::thread::JobSystemThreadPool类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Default <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> backend: a dependency-aware scheduler over the existing <a class="el" href="classeve_1_1thread_1_1ThreadPool.html" title="Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...">ThreadPool</a> worker pool.  
+ <a href="classeve_1_1thread_1_1JobSystemThreadPool.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="JobSystemThreadPool_8h_source.html">JobSystemThreadPool.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::thread::JobSystemThreadPool 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1thread_1_1JobSystemThreadPool.png" usemap="#eve::thread::JobSystemThreadPool_map" alt=""/>
+  <map id="eve::thread::JobSystemThreadPool_map" name="eve::thread::JobSystemThreadPool_map">
+<area href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena." alt="eve::thread::JobSystem" shape="rect" coords="0,0,207,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1thread_1_1JobSystemThreadPool_1_1State.html">State</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a68e0d1afd4cebb8746799ce088b4ddc7" id="r_a68e0d1afd4cebb8746799ce088b4ddc7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a68e0d1afd4cebb8746799ce088b4ddc7">JobSystemThreadPool</a> (int workerCount)</td></tr>
+<tr class="separator:a68e0d1afd4cebb8746799ce088b4ddc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfee9b8d537c670dc6e97814a493c5c9" id="r_abfee9b8d537c670dc6e97814a493c5c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#abfee9b8d537c670dc6e97814a493c5c9">~JobSystemThreadPool</a> () override</td></tr>
+<tr class="separator:abfee9b8d537c670dc6e97814a493c5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51bc3c60d77597ad0d7a8cee7f9c1180" id="r_a51bc3c60d77597ad0d7a8cee7f9c1180"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a51bc3c60d77597ad0d7a8cee7f9c1180">JobSystemThreadPool</a> (const <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a> &amp;)=delete</td></tr>
+<tr class="separator:a51bc3c60d77597ad0d7a8cee7f9c1180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1926ec69f8342bfb00af6db453386d4b" id="r_a1926ec69f8342bfb00af6db453386d4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a1926ec69f8342bfb00af6db453386d4b">operator=</a> (const <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a> &amp;)=delete</td></tr>
+<tr class="separator:a1926ec69f8342bfb00af6db453386d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a890bbd0a25b70a8b0720323a162df678" id="r_a890bbd0a25b70a8b0720323a162df678"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a890bbd0a25b70a8b0720323a162df678">getWorkerCount</a> () const override</td></tr>
+<tr class="memdesc:a890bbd0a25b70a8b0720323a162df678"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of scheduler worker threads.  <br /></td></tr>
+<tr class="separator:a890bbd0a25b70a8b0720323a162df678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab13c0699b81ff767a7e385c741f54ddd" id="r_ab13c0699b81ff767a7e385c741f54ddd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#ab13c0699b81ff767a7e385c741f54ddd">isRunning</a> () const override</td></tr>
+<tr class="memdesc:ab13c0699b81ff767a7e385c741f54ddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the system is still accepting new jobs.  <br /></td></tr>
+<tr class="separator:ab13c0699b81ff767a7e385c741f54ddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f04f6ccae219d61761e3a25c810e184" id="r_a5f04f6ccae219d61761e3a25c810e184"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a5f04f6ccae219d61761e3a25c810e184">getPendingCount</a> () const override</td></tr>
+<tr class="memdesc:a5f04f6ccae219d61761e3a25c810e184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of ready jobs waiting for a worker (approximate).  <br /></td></tr>
+<tr class="separator:a5f04f6ccae219d61761e3a25c810e184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8088d8d41f15fecc20e0f6f5006c5b60" id="r_a8088d8d41f15fecc20e0f6f5006c5b60"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a8088d8d41f15fecc20e0f6f5006c5b60">getOutstandingCount</a> () const override</td></tr>
+<tr class="memdesc:a8088d8d41f15fecc20e0f6f5006c5b60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of scheduled jobs that have not finished (approximate).  <br /></td></tr>
+<tr class="separator:a8088d8d41f15fecc20e0f6f5006c5b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92ff1479a25b72063b9fd2e955b703f6" id="r_a92ff1479a25b72063b9fd2e955b703f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a92ff1479a25b72063b9fd2e955b703f6">submit</a> (<a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) override</td></tr>
+<tr class="memdesc:a92ff1479a25b72063b9fd2e955b703f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a job and schedule it immediately.  <br /></td></tr>
+<tr class="separator:a92ff1479a25b72063b9fd2e955b703f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05b4eff6d144af753aa8fd0749839aac" id="r_a05b4eff6d144af753aa8fd0749839aac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a05b4eff6d144af753aa8fd0749839aac">createJob</a> (<a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) override</td></tr>
+<tr class="memdesc:a05b4eff6d144af753aa8fd0749839aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a paused job (dependencies can be wired, then <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a97bcf853eb4953a3fbbff35c987d6f49" title="Kick a paused job so it can run.">schedule()</a>).  <br /></td></tr>
+<tr class="separator:a05b4eff6d144af753aa8fd0749839aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97bcf853eb4953a3fbbff35c987d6f49" id="r_a97bcf853eb4953a3fbbff35c987d6f49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a97bcf853eb4953a3fbbff35c987d6f49">schedule</a> (<a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *job) override</td></tr>
+<tr class="memdesc:a97bcf853eb4953a3fbbff35c987d6f49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Kick a paused job so it can run.  <br /></td></tr>
+<tr class="separator:a97bcf853eb4953a3fbbff35c987d6f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13234c5325380c272106d2b14891d2e6" id="r_a13234c5325380c272106d2b14891d2e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a13234c5325380c272106d2b14891d2e6">parallelFor</a> (int first, int last, <a class="el" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a> <a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, int chunk=1) override</td></tr>
+<tr class="memdesc:a13234c5325380c272106d2b14891d2e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run body over [first, last) in parallel.  <br /></td></tr>
+<tr class="separator:a13234c5325380c272106d2b14891d2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c48daea48063c56831b00715826d046" id="r_a5c48daea48063c56831b00715826d046"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a5c48daea48063c56831b00715826d046">createTaskGroup</a> () override</td></tr>
+<tr class="memdesc:a5c48daea48063c56831b00715826d046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a fork/join task group.  <br /></td></tr>
+<tr class="separator:a5c48daea48063c56831b00715826d046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef68346c12bae931ec9e4f4aeda11e5" id="r_a0ef68346c12bae931ec9e4f4aeda11e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a0ef68346c12bae931ec9e4f4aeda11e5">submitFrame</a> (<a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) override</td></tr>
+<tr class="memdesc:a0ef68346c12bae931ec9e4f4aeda11e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a frame-scoped job and schedule it immediately.  <br /></td></tr>
+<tr class="separator:a0ef68346c12bae931ec9e4f4aeda11e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17ed22b112cd769248e45cf4cd645a5" id="r_ae17ed22b112cd769248e45cf4cd645a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#ae17ed22b112cd769248e45cf4cd645a5">createFrameJob</a> (<a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a> <a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>) override</td></tr>
+<tr class="memdesc:ae17ed22b112cd769248e45cf4cd645a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a paused frame-scoped job.  <br /></td></tr>
+<tr class="separator:ae17ed22b112cd769248e45cf4cd645a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40b1773b7545416f2a4f778cc48727a9" id="r_a40b1773b7545416f2a4f778cc48727a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a40b1773b7545416f2a4f778cc48727a9">parallelForFrame</a> (int first, int last, <a class="el" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a> <a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, int chunk=1) override</td></tr>
+<tr class="memdesc:a40b1773b7545416f2a4f778cc48727a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame-scoped parallel_for; see <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a13234c5325380c272106d2b14891d2e6" title="Run body over [first, last) in parallel.">parallelFor()</a>.  <br /></td></tr>
+<tr class="separator:a40b1773b7545416f2a4f778cc48727a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa38c85209b5a3fe388964b743cc6c43e" id="r_aa38c85209b5a3fe388964b743cc6c43e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#aa38c85209b5a3fe388964b743cc6c43e">createFrameTaskGroup</a> () override</td></tr>
+<tr class="memdesc:aa38c85209b5a3fe388964b743cc6c43e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a fork/join task group whose children are frame-scoped.  <br /></td></tr>
+<tr class="separator:aa38c85209b5a3fe388964b743cc6c43e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa77dac8dad4c1e1c2be106a09cfd9e7" id="r_afa77dac8dad4c1e1c2be106a09cfd9e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#afa77dac8dad4c1e1c2be106a09cfd9e7">beginFrame</a> () override</td></tr>
+<tr class="memdesc:afa77dac8dad4c1e1c2be106a09cfd9e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a new frame: join leftover frame jobs and recycle the arena.  <br /></td></tr>
+<tr class="separator:afa77dac8dad4c1e1c2be106a09cfd9e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8a47bbd5bbe35f44c09f7cfb2bcf94" id="r_a0e8a47bbd5bbe35f44c09f7cfb2bcf94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a0e8a47bbd5bbe35f44c09f7cfb2bcf94">endFrame</a> () override</td></tr>
+<tr class="memdesc:a0e8a47bbd5bbe35f44c09f7cfb2bcf94"><td class="mdescLeft">&#160;</td><td class="mdescRight">End the frame: join outstanding frame jobs and recycle the arena.  <br /></td></tr>
+<tr class="separator:a0e8a47bbd5bbe35f44c09f7cfb2bcf94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72bfc003546b8d4608a252928f48b156" id="r_a72bfc003546b8d4608a252928f48b156"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a72bfc003546b8d4608a252928f48b156">waitAll</a> () override</td></tr>
+<tr class="memdesc:a72bfc003546b8d4608a252928f48b156"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block until every scheduled job has finished.  <br /></td></tr>
+<tr class="separator:a72bfc003546b8d4608a252928f48b156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9649687ecf64fcd42139318ce9d6098e" id="r_a9649687ecf64fcd42139318ce9d6098e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a9649687ecf64fcd42139318ce9d6098e">stop</a> () override</td></tr>
+<tr class="memdesc:a9649687ecf64fcd42139318ce9d6098e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop accepting work and join workers. Idempotent.  <br /></td></tr>
+<tr class="separator:a9649687ecf64fcd42139318ce9d6098e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1thread_1_1JobSystem"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1thread_1_1JobSystem')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1thread_1_1JobSystem.html">eve::thread::JobSystem</a></td></tr>
+<tr class="memitem:a89a978d30d2ac3e4ab3e4477231e325d inherit pub_methods_classeve_1_1thread_1_1JobSystem" id="r_a89a978d30d2ac3e4ab3e4477231e325d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1thread_1_1JobSystem.html#a89a978d30d2ac3e4ab3e4477231e325d">~JobSystem</a> ()=default</td></tr>
+<tr class="separator:a89a978d30d2ac3e4ab3e4477231e325d inherit pub_methods_classeve_1_1thread_1_1JobSystem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Default <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a> backend: a dependency-aware scheduler over the existing <a class="el" href="classeve_1_1thread_1_1ThreadPool.html" title="Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...">ThreadPool</a> worker pool. </p>
+<p>The <a class="el" href="classeve_1_1thread_1_1ThreadPool.html" title="Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...">ThreadPool</a> keeps its FIFO + CV worker model unchanged; this class uses it purely as the worker-thread provider. <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a> scheduling (dependencies, ready queue, fork/join help-execution, per-frame arena) lives here, so replacing the backend with TBB does not touch any engine code that uses <a class="el" href="classeve_1_1thread_1_1JobSystem.html" title="Abstract job scheduler: dependencies, parallel_for, task_group, arena.">JobSystem</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8h_source.html">JobSystemThreadPool.h</a> 第 <a class="el" href="JobSystemThreadPool_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a68e0d1afd4cebb8746799ce088b4ddc7" name="a68e0d1afd4cebb8746799ce088b4ddc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68e0d1afd4cebb8746799ce088b4ddc7">&#9670;&#160;</a></span>JobSystemThreadPool() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::thread::JobSystemThreadPool::JobSystemThreadPool </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>workerCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00157">state</a>.</p>
+
+</div>
+</div>
+<a id="abfee9b8d537c670dc6e97814a493c5c9" name="abfee9b8d537c670dc6e97814a493c5c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfee9b8d537c670dc6e97814a493c5c9">&#9670;&#160;</a></span>~JobSystemThreadPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::thread::JobSystemThreadPool::~JobSystemThreadPool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00542">542</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51bc3c60d77597ad0d7a8cee7f9c1180" name="a51bc3c60d77597ad0d7a8cee7f9c1180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51bc3c60d77597ad0d7a8cee7f9c1180">&#9670;&#160;</a></span>JobSystemThreadPool() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::thread::JobSystemThreadPool::JobSystemThreadPool </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="afa77dac8dad4c1e1c2be106a09cfd9e7" name="afa77dac8dad4c1e1c2be106a09cfd9e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa77dac8dad4c1e1c2be106a09cfd9e7">&#9670;&#160;</a></span>beginFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::thread::JobSystemThreadPool::beginFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start a new frame: join leftover frame jobs and recycle the arena. </p>
+<p>All frame-scoped handles from the previous frame become invalid. Call once per frame before submitting frame jobs. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a291556ba71f1454339bea75579436ab2">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00660">660</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae17ed22b112cd769248e45cf4cd645a5" name="ae17ed22b112cd769248e45cf4cd645a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae17ed22b112cd769248e45cf4cd645a5">&#9670;&#160;</a></span>createFrameJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> * eve::thread::JobSystemThreadPool::createFrameJob </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a>&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a paused frame-scoped job. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">body</td><td>Work to run on a worker. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Arena-allocated <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a>; do not delete, valid until next <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#afa77dac8dad4c1e1c2be106a09cfd9e7" title="Start a new frame: join leftover frame jobs and recycle the arena.">beginFrame()</a>. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#abf1f440a6b8dcdb74f81dfbcdc45d9f9">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00643">643</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="aa38c85209b5a3fe388964b743cc6c43e" name="aa38c85209b5a3fe388964b743cc6c43e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa38c85209b5a3fe388964b743cc6c43e">&#9670;&#160;</a></span>createFrameTaskGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> * eve::thread::JobSystemThreadPool::createFrameTaskGroup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a fork/join task group whose children are frame-scoped. </p>
+<dl class="section return"><dt>返回</dt><dd>Arena-allocated <a class="el" href="classeve_1_1thread_1_1TaskGroup.html" title="Fork/join group: fork() spawns scheduled children, wait() joins them.">TaskGroup</a>; do not delete, valid until next <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#afa77dac8dad4c1e1c2be106a09cfd9e7" title="Start a new frame: join leftover frame jobs and recycle the arena.">beginFrame()</a>. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a8041c27e9e68076c79ee8a147149669c">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00652">652</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00122">group</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00090">ptr</a>.</p>
+
+</div>
+</div>
+<a id="a05b4eff6d144af753aa8fd0749839aac" name="a05b4eff6d144af753aa8fd0749839aac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05b4eff6d144af753aa8fd0749839aac">&#9670;&#160;</a></span>createJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> * eve::thread::JobSystemThreadPool::createJob </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a>&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a paused job (dependencies can be wired, then <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a97bcf853eb4953a3fbbff35c987d6f49" title="Kick a paused job so it can run.">schedule()</a>). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">body</td><td>Work to run on a worker; may be empty to create a pure join/dependency node that just gates downstream jobs. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Heap-allocated <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a>; delete once finished. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a13fc80151174e1e32b955bba941d8cc2">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00604">604</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="a5c48daea48063c56831b00715826d046" name="a5c48daea48063c56831b00715826d046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c48daea48063c56831b00715826d046">&#9670;&#160;</a></span>createTaskGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1TaskGroup.html">TaskGroup</a> * eve::thread::JobSystemThreadPool::createTaskGroup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a fork/join task group. </p>
+<dl class="section return"><dt>返回</dt><dd>Heap-allocated <a class="el" href="classeve_1_1thread_1_1TaskGroup.html" title="Fork/join group: fork() spawns scheduled children, wait() joins them.">TaskGroup</a>; delete once joined. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a729e694c30bc1d8f526b816ea83c9142">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00626">626</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e8a47bbd5bbe35f44c09f7cfb2bcf94" name="a0e8a47bbd5bbe35f44c09f7cfb2bcf94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e8a47bbd5bbe35f44c09f7cfb2bcf94">&#9670;&#160;</a></span>endFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::thread::JobSystemThreadPool::endFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>End the frame: join outstanding frame jobs and recycle the arena. </p>
+<p>Blocks until every frame-scoped job finished, so results are safe to consume (e.g. before swapping GPU buffers). Idempotent with <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#afa77dac8dad4c1e1c2be106a09cfd9e7" title="Start a new frame: join leftover frame jobs and recycle the arena.">beginFrame()</a>. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#aed2e9bef87b01a0d2a5ca4397a26e5d5">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00664">664</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8088d8d41f15fecc20e0f6f5006c5b60" name="a8088d8d41f15fecc20e0f6f5006c5b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8088d8d41f15fecc20e0f6f5006c5b60">&#9670;&#160;</a></span>getOutstandingCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::thread::JobSystemThreadPool::getOutstandingCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of scheduled jobs that have not finished (approximate). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a257724575a399d95d952b3f4efba468b">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00586">586</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f04f6ccae219d61761e3a25c810e184" name="a5f04f6ccae219d61761e3a25c810e184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f04f6ccae219d61761e3a25c810e184">&#9670;&#160;</a></span>getPendingCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::thread::JobSystemThreadPool::getPendingCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of ready jobs waiting for a worker (approximate). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a671277445120321daff598528a66af4e">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00581">581</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a890bbd0a25b70a8b0720323a162df678" name="a890bbd0a25b70a8b0720323a162df678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a890bbd0a25b70a8b0720323a162df678">&#9670;&#160;</a></span>getWorkerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::thread::JobSystemThreadPool::getWorkerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of scheduler worker threads. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a537f7662a917c4ed5f3778f7e81237c4">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00572">572</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab13c0699b81ff767a7e385c741f54ddd" name="ab13c0699b81ff767a7e385c741f54ddd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab13c0699b81ff767a7e385c741f54ddd">&#9670;&#160;</a></span>isRunning()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::thread::JobSystemThreadPool::isRunning </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the system is still accepting new jobs. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#adf34e6f35de830e30851118cc7e8c58d">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00576">576</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1926ec69f8342bfb00af6db453386d4b" name="a1926ec69f8342bfb00af6db453386d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1926ec69f8342bfb00af6db453386d4b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a> &amp; eve::thread::JobSystemThreadPool::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html">JobSystemThreadPool</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13234c5325380c272106d2b14891d2e6" name="a13234c5325380c272106d2b14891d2e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13234c5325380c272106d2b14891d2e6">&#9670;&#160;</a></span>parallelFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> * eve::thread::JobSystemThreadPool::parallelFor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>last</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a>&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunk</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run body over [first, last) in parallel. </p>
+<p>The range is statically split into ceil((last-first)/chunk) child jobs; the returned job represents the whole loop and finishes when every child is done. chunk &lt;= 0 picks an automatic chunk targeting ~4 tasks per worker.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">first</td><td>First index (inclusive). </td></tr>
+    <tr><td class="paramname">last</td><td>One past the last index (exclusive). </td></tr>
+    <tr><td class="paramname">body</td><td>Called on a worker for each subrange [first, last). </td></tr>
+    <tr><td class="paramname">chunk</td><td>Subrange size per child task (default 1). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Heap-allocated loop <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a>; wait() on it joins the loop. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#aee60de9ecb2e622f4d9748ff1be14031">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00622">622</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="a40b1773b7545416f2a4f778cc48727a9" name="a40b1773b7545416f2a4f778cc48727a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40b1773b7545416f2a4f778cc48727a9">&#9670;&#160;</a></span>parallelForFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> * eve::thread::JobSystemThreadPool::parallelForFrame </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>last</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1thread.html#a14691c1abafc5bfafee50439d04baa07">ParallelForBody</a>&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunk</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Frame-scoped parallel_for; see <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a13234c5325380c272106d2b14891d2e6" title="Run body over [first, last) in parallel.">parallelFor()</a>. </p>
+<dl class="section return"><dt>返回</dt><dd>Arena-allocated loop <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a>; do not delete. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a0e55afcd9a2666ac95c486ff1171aa87">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00648">648</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="a97bcf853eb4953a3fbbff35c987d6f49" name="a97bcf853eb4953a3fbbff35c987d6f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97bcf853eb4953a3fbbff35c987d6f49">&#9670;&#160;</a></span>schedule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::thread::JobSystemThreadPool::schedule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> *&#160;</td>
+          <td class="paramname"><em>job</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Kick a paused job so it can run. </p>
+<p>A job with no pending dependencies becomes ready immediately; a job with dependencies runs when its last predecessor finishes. Throws when the system is stopped or the job was already scheduled.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">job</td><td><a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a> previously returned by <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#a05b4eff6d144af753aa8fd0749839aac" title="Create a paused job (dependencies can be wired, then schedule()).">createJob()</a>/createFrameJob(). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a43455a77fec2ad114ec53b6f2baaa9a7">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00609">609</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00013">impl</a>.</p>
+
+</div>
+</div>
+<a id="a9649687ecf64fcd42139318ce9d6098e" name="a9649687ecf64fcd42139318ce9d6098e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9649687ecf64fcd42139318ce9d6098e">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::thread::JobSystemThreadPool::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stop accepting work and join workers. Idempotent. </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html">eve::Exception</a></td><td>when called from one of this system's workers. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#abcfdb2c858d3a220fab9eb2440c245b1">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00688">688</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92ff1479a25b72063b9fd2e955b703f6" name="a92ff1479a25b72063b9fd2e955b703f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92ff1479a25b72063b9fd2e955b703f6">&#9670;&#160;</a></span>submit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> * eve::thread::JobSystemThreadPool::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a>&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a job and schedule it immediately. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">body</td><td>Work to run on a worker; may be empty to create a pure join/dependency node that just gates downstream jobs. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Heap-allocated <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a>; delete once finished. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#a5687f6d3ee6fd39273ffa6f889031608">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00591">591</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="a0ef68346c12bae931ec9e4f4aeda11e5" name="a0ef68346c12bae931ec9e4f4aeda11e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef68346c12bae931ec9e4f4aeda11e5">&#9670;&#160;</a></span>submitFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1thread_1_1Job.html">Job</a> * eve::thread::JobSystemThreadPool::submitFrame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1thread.html#a72440c2fdea246250a70fe10068a3843">JobFunc</a>&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a frame-scoped job and schedule it immediately. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">body</td><td>Work to run on a worker. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Arena-allocated <a class="el" href="classeve_1_1thread_1_1Job.html" title="Handle to a single job inside a JobSystem.">Job</a>; do not delete, valid until next <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#afa77dac8dad4c1e1c2be106a09cfd9e7" title="Start a new frame: join leftover frame jobs and recycle the arena.">beginFrame()</a>. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#afc4bbc6b7bb48b5261e04bed65339426">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00630">630</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>.</p>
+
+</div>
+</div>
+<a id="a72bfc003546b8d4608a252928f48b156" name="a72bfc003546b8d4608a252928f48b156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72bfc003546b8d4608a252928f48b156">&#9670;&#160;</a></span>waitAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::thread::JobSystemThreadPool::waitAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Block until every scheduled job has finished. </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html">eve::Exception</a></td><td>when called from one of this system's workers. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>实现了 <a class="el" href="classeve_1_1thread_1_1JobSystem.html#aacb783a78198cca676f037d16364086f">eve::thread::JobSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00668">668</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00157">state</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/thread/<a class="el" href="JobSystemThreadPool_8h_source.html">JobSystemThreadPool.h</a></li>
+<li>src/modules/thread/<a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

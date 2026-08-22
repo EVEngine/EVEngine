@@ -1,0 +1,268 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/Effect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Effect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Effect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// 效果系统：数据驱动的 Effect &quot;定义/模板&quot;（类似 GAS 的 GameplayEffect）。</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">//</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// 一个 EffectDefinition 描述&quot;施加后会发生什么&quot;，本身不含运行时状态；</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// 施加到具体 actor 后由 StatusSystem 产生 StatusInstance（见 StatusTypes.h）。</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">//</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// 灵活性/可定制点：</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//  - 完全数据驱动：C++ 侧 registerEffect() 或脚本侧 loadFromJson() 均可定义新效果，</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//    无需修改引擎代码；effect id、属性名、tag、op 全部是字符串。</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">//  - durationPolicy / stackPolicy 同样是字符串，方便未来扩展新策略而不破坏 ABI；</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//    未知 stackPolicy 可走 StatusSystem::registerStackPolicy 注册的自定义策略。</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//  - period &gt; 0 的周期效果不会自动改属性，而是产生 tick 事件交给上层处理，</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//    从而可以让周期伤害/治疗完整走 Settlement 结算流水线（见 Settlement.h）。</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">//  - extra 字段是任意 string→string 自定义数据（图标、VFX、脚本钩子名……），</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//    无需为每个新效果特性修改引擎结构体。</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectModifierSpec.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1EffectModifierSpec.html">EffectModifierSpec</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectModifierSpec.html#ab68a23fa11e199c6a78a60ed1f937a80">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectModifierSpec.html#ab68a23fa11e199c6a78a60ed1f937a80">attribute</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectModifierSpec.html#a961a23a678dba91d1f1ffe7aa684a1a9">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectModifierSpec.html#a961a23a678dba91d1f1ffe7aa684a1a9">op</a> = <span class="stringliteral">&quot;add&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectModifierSpec.html#aa898c8f312d5783d3d4547b50b4bc0e5">   28</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectModifierSpec.html#aa898c8f312d5783d3d4547b50b4bc0e5">value</a> = 0.0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectModifierSpec.html#a8f190b20245ac6aff7ce4e4285b12f10">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectModifierSpec.html#a8f190b20245ac6aff7ce4e4285b12f10">priority</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1EffectDefinition.html">EffectDefinition</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#a271361a13b86ba4f635db271e7a4f4e1">   33</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#a271361a13b86ba4f635db271e7a4f4e1">id</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#a491d510917e48a6dc26546697c6b854a">   36</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#a491d510917e48a6dc26546697c6b854a">durationPolicy</a> = <span class="stringliteral">&quot;instant&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#a0554607e8b9b9b7f19dd6a13b2357bb4">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#a0554607e8b9b9b7f19dd6a13b2357bb4">duration</a> = 0.f;  </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#a097a4eaba316804b9d47def85b4ec0d4">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#a097a4eaba316804b9d47def85b4ec0d4">period</a> = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#abe7550c6144dfd38cf3f92b5e00c5d59">   46</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#abe7550c6144dfd38cf3f92b5e00c5d59">stackPolicy</a> = <span class="stringliteral">&quot;none&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#a74a26ae557d473be955f2fc9b28cfdd6">   47</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#a74a26ae557d473be955f2fc9b28cfdd6">maxStacks</a> = 1;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#acc96a93875c44a43bdd2fa4e797eece8">   50</a></span>    std::vector&lt;EffectModifierSpec&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#acc96a93875c44a43bdd2fa4e797eece8">modifiers</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#aa69791704d0cca94a2404b384c025716">   52</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#aa69791704d0cca94a2404b384c025716">tags</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EffectDefinition.html#a7003b028d93222fb0903b6c3d4e92c50">   55</a></span>    std::unordered_map&lt;std::string, std::string&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1EffectDefinition.html#a7003b028d93222fb0903b6c3d4e92c50">extra</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1rpg_1_1EffectDefinition.html#ab41566f3a4be74c51e929ba2312e083d">hasTag</a>(<span class="keyword">const</span> std::string &amp;tag) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::string <a class="code hl_function" href="structeve_1_1rpg_1_1EffectDefinition.html#a18f7eefae3c53c5bc0aadd6dfb77d6e3">getExtra</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;fallback = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1EffectRegistry.html">   62</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1EffectRegistry.html">EffectRegistry</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EffectRegistry.html#aae091f864efe3fb2a2b33994a7d25574">registerEffect</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1EffectDefinition.html">EffectDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1EffectDefinition.html">EffectDefinition</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1EffectRegistry.html#a86619abf29ca6fdaa4a41402eaad47f8">find</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EffectRegistry.html#a0e40f1d17d19a93d1981ea30201064ec">remove</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EffectRegistry.html#a379c1c39edb063c6888114cf479199fa">clear</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EffectRegistry.html#a94de44acb5b1ffa4a59b970bc42de173">count</a>();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EffectRegistry.html#a55bf2b37d8e8d7a71720a396a75bc85d">loadFromJson</a>(<span class="keyword">const</span> std::string &amp;json, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, EffectDefinition&gt; &amp;table();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html">eve::rpg::EffectRegistry</a></div><div class="ttdoc">全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00062">Effect.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html_a0e40f1d17d19a93d1981ea30201064ec"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html#a0e40f1d17d19a93d1981ea30201064ec">eve::rpg::EffectRegistry::remove</a></div><div class="ttdeci">static bool remove(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00036">Effect.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html_a379c1c39edb063c6888114cf479199fa"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html#a379c1c39edb063c6888114cf479199fa">eve::rpg::EffectRegistry::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00038">Effect.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html_a55bf2b37d8e8d7a71720a396a75bc85d"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html#a55bf2b37d8e8d7a71720a396a75bc85d">eve::rpg::EffectRegistry::loadFromJson</a></div><div class="ttdeci">static int loadFromJson(const std::string &amp;json, std::string *error=nullptr)</div><div class="ttdoc">从 JSON 数组批量注册效果定义，返回成功注册的数量。 每个元素形如： { &quot;id&quot;: &quot;poison&quot;, &quot;durationPolicy&quot;: &quot;duration&quot;,...</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00071">Effect.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html_a86619abf29ca6fdaa4a41402eaad47f8"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html#a86619abf29ca6fdaa4a41402eaad47f8">eve::rpg::EffectRegistry::find</a></div><div class="ttdeci">static const EffectDefinition * find(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00030">Effect.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html_a94de44acb5b1ffa4a59b970bc42de173"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html#a94de44acb5b1ffa4a59b970bc42de173">eve::rpg::EffectRegistry::count</a></div><div class="ttdeci">static int count()</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00040">Effect.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EffectRegistry_html_aae091f864efe3fb2a2b33994a7d25574"><div class="ttname"><a href="classeve_1_1rpg_1_1EffectRegistry.html#aae091f864efe3fb2a2b33994a7d25574">eve::rpg::EffectRegistry::registerEffect</a></div><div class="ttdeci">static void registerEffect(const EffectDefinition &amp;def)</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00025">Effect.cpp:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00007">AttributeSystem.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html">eve::rpg::EffectDefinition</a></div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00032">Effect.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a0554607e8b9b9b7f19dd6a13b2357bb4"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a0554607e8b9b9b7f19dd6a13b2357bb4">eve::rpg::EffectDefinition::duration</a></div><div class="ttdeci">float duration</div><div class="ttdoc">durationPolicy == &quot;duration&quot; 时使用（秒）</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00037">Effect.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a097a4eaba316804b9d47def85b4ec0d4"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a097a4eaba316804b9d47def85b4ec0d4">eve::rpg::EffectDefinition::period</a></div><div class="ttdeci">float period</div><div class="ttdoc">&gt; 0 时为周期效果：每隔 period 秒产生一次 StatusTickEvent。</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00040">Effect.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a18f7eefae3c53c5bc0aadd6dfb77d6e3"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a18f7eefae3c53c5bc0aadd6dfb77d6e3">eve::rpg::EffectDefinition::getExtra</a></div><div class="ttdeci">std::string getExtra(const std::string &amp;key, const std::string &amp;fallback={}) const</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00015">Effect.cpp:15</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a271361a13b86ba4f635db271e7a4f4e1"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a271361a13b86ba4f635db271e7a4f4e1">eve::rpg::EffectDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00033">Effect.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a491d510917e48a6dc26546697c6b854a"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a491d510917e48a6dc26546697c6b854a">eve::rpg::EffectDefinition::durationPolicy</a></div><div class="ttdeci">std::string durationPolicy</div><div class="ttdoc">&quot;instant&quot; | &quot;duration&quot; | &quot;infinite&quot;（未知值按 &quot;instant&quot; 处理）。</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00036">Effect.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a7003b028d93222fb0903b6c3d4e92c50"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a7003b028d93222fb0903b6c3d4e92c50">eve::rpg::EffectDefinition::extra</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::string &gt; extra</div><div class="ttdoc">游戏自定义附加数据（图标路径、特效名、脚本钩子……）。</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00055">Effect.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_a74a26ae557d473be955f2fc9b28cfdd6"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#a74a26ae557d473be955f2fc9b28cfdd6">eve::rpg::EffectDefinition::maxStacks</a></div><div class="ttdeci">int maxStacks</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00047">Effect.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_aa69791704d0cca94a2404b384c025716"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#aa69791704d0cca94a2404b384c025716">eve::rpg::EffectDefinition::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00052">Effect.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_ab41566f3a4be74c51e929ba2312e083d"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#ab41566f3a4be74c51e929ba2312e083d">eve::rpg::EffectDefinition::hasTag</a></div><div class="ttdeci">bool hasTag(const std::string &amp;tag) const</div><div class="ttdef"><b>Definition</b> <a href="Effect_8cpp_source.html#l00011">Effect.cpp:11</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_abe7550c6144dfd38cf3f92b5e00c5d59"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#abe7550c6144dfd38cf3f92b5e00c5d59">eve::rpg::EffectDefinition::stackPolicy</a></div><div class="ttdeci">std::string stackPolicy</div><div class="ttdoc">&quot;none&quot; | &quot;refresh&quot; | &quot;extend&quot; | &quot;stack&quot;，或 StatusSystem::registerStackPolicy 注册的名字。 未知且未注册时按 &quot;none&quot; 处理...</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00046">Effect.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html_acc96a93875c44a43bdd2fa4e797eece8"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html#acc96a93875c44a43bdd2fa4e797eece8">eve::rpg::EffectDefinition::modifiers</a></div><div class="ttdeci">std::vector&lt; EffectModifierSpec &gt; modifiers</div><div class="ttdoc">durationPolicy 为 duration/infinite 且 period&lt;=0 时，apply 会直接写入这些修改器。</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00050">Effect.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectModifierSpec_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectModifierSpec.html">eve::rpg::EffectModifierSpec</a></div><div class="ttdoc">效果里携带的一条属性修改规格（应用到 AttributeSystem::addModifier）。</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00025">Effect.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectModifierSpec_html_a8f190b20245ac6aff7ce4e4285b12f10"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectModifierSpec.html#a8f190b20245ac6aff7ce4e4285b12f10">eve::rpg::EffectModifierSpec::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00029">Effect.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectModifierSpec_html_a961a23a678dba91d1f1ffe7aa684a1a9"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectModifierSpec.html#a961a23a678dba91d1f1ffe7aa684a1a9">eve::rpg::EffectModifierSpec::op</a></div><div class="ttdeci">std::string op</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00027">Effect.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectModifierSpec_html_aa898c8f312d5783d3d4547b50b4bc0e5"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectModifierSpec.html#aa898c8f312d5783d3d4547b50b4bc0e5">eve::rpg::EffectModifierSpec::value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00028">Effect.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectModifierSpec_html_ab68a23fa11e199c6a78a60ed1f937a80"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectModifierSpec.html#ab68a23fa11e199c6a78a60ed1f937a80">eve::rpg::EffectModifierSpec::attribute</a></div><div class="ttdeci">std::string attribute</div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00026">Effect.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

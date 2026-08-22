@@ -1,0 +1,808 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::PlacementSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1building_1_1PlacementSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::PlacementSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3321d5c5a6a34f980299b7eeeb6476e8" id="r_a3321d5c5a6a34f980299b7eeeb6476e8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a3321d5c5a6a34f980299b7eeeb6476e8">PlacementSession</a> ()</td></tr>
+<tr class="separator:a3321d5c5a6a34f980299b7eeeb6476e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9de66513223d732a85a5dae84760a06a" id="r_a9de66513223d732a85a5dae84760a06a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a9de66513223d732a85a5dae84760a06a">~PlacementSession</a> ()=default</td></tr>
+<tr class="separator:a9de66513223d732a85a5dae84760a06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021068f9847890151cfd96fc352a4869" id="r_a021068f9847890151cfd96fc352a4869"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a021068f9847890151cfd96fc352a4869">PlacementSession</a> (const <a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> &amp;)=delete</td></tr>
+<tr class="separator:a021068f9847890151cfd96fc352a4869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6e4207d5a22bd47371576cfbabbe6c4" id="r_aa6e4207d5a22bd47371576cfbabbe6c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#aa6e4207d5a22bd47371576cfbabbe6c4">operator=</a> (const <a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> &amp;)=delete</td></tr>
+<tr class="separator:aa6e4207d5a22bd47371576cfbabbe6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31240196ec67c057e6f71b0aca08e275" id="r_a31240196ec67c057e6f71b0aca08e275"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a31240196ec67c057e6f71b0aca08e275">destroy</a> ()</td></tr>
+<tr class="separator:a31240196ec67c057e6f71b0aca08e275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ddd8908924b52c1ac7bdccd6c816bdb" id="r_a3ddd8908924b52c1ac7bdccd6c816bdb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a3ddd8908924b52c1ac7bdccd6c816bdb">startPlacement</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a3ddd8908924b52c1ac7bdccd6c816bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0be9336d29ab99fdd6dd509d1ad13e3b" id="r_a0be9336d29ab99fdd6dd509d1ad13e3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a0be9336d29ab99fdd6dd509d1ad13e3b">stopPlacement</a> ()</td></tr>
+<tr class="separator:a0be9336d29ab99fdd6dd509d1ad13e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a271a7f9bfb53c1d395ff36ec493a8aba" id="r_a271a7f9bfb53c1d395ff36ec493a8aba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a271a7f9bfb53c1d395ff36ec493a8aba">isActive</a> () const</td></tr>
+<tr class="separator:a271a7f9bfb53c1d395ff36ec493a8aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e53bd768c782710294f610c11598604" id="r_a0e53bd768c782710294f610c11598604"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a0e53bd768c782710294f610c11598604">getWorld</a> () const</td></tr>
+<tr class="separator:a0e53bd768c782710294f610c11598604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89d528bd590a2305b035e678c56635fa" id="r_a89d528bd590a2305b035e678c56635fa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a89d528bd590a2305b035e678c56635fa">getBuildingId</a> () const</td></tr>
+<tr class="separator:a89d528bd590a2305b035e678c56635fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b22202ec5cf23170461d0637757724" id="r_aa9b22202ec5cf23170461d0637757724"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1building_1_1Ghost.html">Ghost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#aa9b22202ec5cf23170461d0637757724">getGhost</a> () const</td></tr>
+<tr class="separator:aa9b22202ec5cf23170461d0637757724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2812399bef9acdca5fac205223d3606b" id="r_a2812399bef9acdca5fac205223d3606b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a2812399bef9acdca5fac205223d3606b">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="separator:a2812399bef9acdca5fac205223d3606b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a366e53aa990b3904bafa9e15a62661de" id="r_a366e53aa990b3904bafa9e15a62661de"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a366e53aa990b3904bafa9e15a62661de">getMode</a> () const</td></tr>
+<tr class="separator:a366e53aa990b3904bafa9e15a62661de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a4f43abb123c139a63121da955ea766" id="r_a1a4f43abb123c139a63121da955ea766"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a1a4f43abb123c139a63121da955ea766">setRotationDeg</a> (float deg)</td></tr>
+<tr class="separator:a1a4f43abb123c139a63121da955ea766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1540d7bac1eb0cb37fb7ac6c97a44e9" id="r_ad1540d7bac1eb0cb37fb7ac6c97a44e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#ad1540d7bac1eb0cb37fb7ac6c97a44e9">rotateBy</a> (float deltaDeg)</td></tr>
+<tr class="separator:ad1540d7bac1eb0cb37fb7ac6c97a44e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03723f287a4aa3bc34d6f5341cb0e4da" id="r_a03723f287a4aa3bc34d6f5341cb0e4da"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a03723f287a4aa3bc34d6f5341cb0e4da">getRotationDeg</a> () const</td></tr>
+<tr class="separator:a03723f287a4aa3bc34d6f5341cb0e4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3fd59c917362ec784e02b2f6a021d82" id="r_ab3fd59c917362ec784e02b2f6a021d82"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#ab3fd59c917362ec784e02b2f6a021d82">updateFromWorld</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, float worldX, float worldY)</td></tr>
+<tr class="separator:ab3fd59c917362ec784e02b2f6a021d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ba203fa478a1fe7b9d4ca820b2dcac" id="r_a83ba203fa478a1fe7b9d4ca820b2dcac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a83ba203fa478a1fe7b9d4ca820b2dcac">updateFromWorld3D</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, float worldX, float worldY, float worldZ)</td></tr>
+<tr class="separator:a83ba203fa478a1fe7b9d4ca820b2dcac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae70c0435bc46892d90ef188b26528cf8" id="r_ae70c0435bc46892d90ef188b26528cf8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#ae70c0435bc46892d90ef188b26528cf8">updateFromSurface</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;surface, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="separator:ae70c0435bc46892d90ef188b26528cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71391787cd266bf640277a196345638a" id="r_a71391787cd266bf640277a196345638a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a71391787cd266bf640277a196345638a">isValid</a> () const</td></tr>
+<tr class="separator:a71391787cd266bf640277a196345638a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c4dc62387f99896276f0cf1b87b7cf" id="r_a72c4dc62387f99896276f0cf1b87b7cf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#a72c4dc62387f99896276f0cf1b87b7cf">getReason</a> () const</td></tr>
+<tr class="separator:a72c4dc62387f99896276f0cf1b87b7cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabc295b4a7dd34cf7f9730e42a9108f2" id="r_aabc295b4a7dd34cf7f9730e42a9108f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSession.html#aabc295b4a7dd34cf7f9730e42a9108f2">execute</a> ()</td></tr>
+<tr class="separator:aabc295b4a7dd34cf7f9730e42a9108f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a> 第 <a class="el" href="PlacementSession_8h_source.html#l00013">13</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3321d5c5a6a34f980299b7eeeb6476e8" name="a3321d5c5a6a34f980299b7eeeb6476e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3321d5c5a6a34f980299b7eeeb6476e8">&#9670;&#160;</a></span>PlacementSession() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::building::PlacementSession::PlacementSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9de66513223d732a85a5dae84760a06a" name="a9de66513223d732a85a5dae84760a06a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de66513223d732a85a5dae84760a06a">&#9670;&#160;</a></span>~PlacementSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::building::PlacementSession::~PlacementSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a021068f9847890151cfd96fc352a4869" name="a021068f9847890151cfd96fc352a4869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a021068f9847890151cfd96fc352a4869">&#9670;&#160;</a></span>PlacementSession() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::building::PlacementSession::PlacementSession </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a31240196ec67c057e6f71b0aca08e275" name="a31240196ec67c057e6f71b0aca08e275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31240196ec67c057e6f71b0aca08e275">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSession::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00007">eve::building::Ghost::destroy()</a>.</p>
+
+</div>
+</div>
+<a id="aabc295b4a7dd34cf7f9730e42a9108f2" name="aabc295b4a7dd34cf7f9730e42a9108f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabc295b4a7dd34cf7f9730e42a9108f2">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacementSession::execute </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>确认当前姿态： place -&gt; world.placeGhost(ghost)，成功返回 instanceId（0 = 失败）。 remove -&gt; 拆除鬼影所在格（默认通道）的建筑，返回被拆 instanceId（0 = 无）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8h_source.html#l00023">eve::building::Ghost::getCellX()</a>, <a class="el" href="Ghost_8h_source.html#l00024">eve::building::Ghost::getCellY()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00278">eve::building::PlacementWorld::getOccupant()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00417">eve::building::PlacementWorld::placeGhost()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00421">eve::building::PlacementWorld::removeBuilding()</a>.</p>
+
+</div>
+</div>
+<a id="a89d528bd590a2305b035e678c56635fa" name="a89d528bd590a2305b035e678c56635fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89d528bd590a2305b035e678c56635fa">&#9670;&#160;</a></span>getBuildingId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacementSession::getBuildingId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8h_source.html#l00020">eve::building::Ghost::getBuildingId()</a>.</p>
+
+</div>
+</div>
+<a id="aa9b22202ec5cf23170461d0637757724" name="aa9b22202ec5cf23170461d0637757724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b22202ec5cf23170461d0637757724">&#9670;&#160;</a></span>getGhost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1Ghost.html">Ghost</a> * eve::building::PlacementSession::getGhost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a> 第 <a class="el" href="PlacementSession_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a366e53aa990b3904bafa9e15a62661de" name="a366e53aa990b3904bafa9e15a62661de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a366e53aa990b3904bafa9e15a62661de">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacementSession::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a> 第 <a class="el" href="PlacementSession_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72c4dc62387f99896276f0cf1b87b7cf" name="a72c4dc62387f99896276f0cf1b87b7cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c4dc62387f99896276f0cf1b87b7cf">&#9670;&#160;</a></span>getReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacementSession::getReason </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8h_source.html#l00038">eve::building::Ghost::getReason()</a>.</p>
+
+</div>
+</div>
+<a id="a03723f287a4aa3bc34d6f5341cb0e4da" name="a03723f287a4aa3bc34d6f5341cb0e4da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03723f287a4aa3bc34d6f5341cb0e4da">&#9670;&#160;</a></span>getRotationDeg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacementSession::getRotationDeg </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8h_source.html#l00033">eve::building::Ghost::getRotationDeg()</a>.</p>
+
+</div>
+</div>
+<a id="a0e53bd768c782710294f610c11598604" name="a0e53bd768c782710294f610c11598604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e53bd768c782710294f610c11598604">&#9670;&#160;</a></span>getWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> * eve::building::PlacementSession::getWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a> 第 <a class="el" href="PlacementSession_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a271a7f9bfb53c1d395ff36ec493a8aba" name="a271a7f9bfb53c1d395ff36ec493a8aba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a271a7f9bfb53c1d395ff36ec493a8aba">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSession::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a> 第 <a class="el" href="PlacementSession_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71391787cd266bf640277a196345638a" name="a71391787cd266bf640277a196345638a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71391787cd266bf640277a196345638a">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSession::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8h_source.html#l00037">eve::building::Ghost::isValid()</a>.</p>
+
+</div>
+</div>
+<a id="aa6e4207d5a22bd47371576cfbabbe6c4" name="aa6e4207d5a22bd47371576cfbabbe6c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6e4207d5a22bd47371576cfbabbe6c4">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> &amp; eve::building::PlacementSession::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1540d7bac1eb0cb37fb7ac6c97a44e9" name="ad1540d7bac1eb0cb37fb7ac6c97a44e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1540d7bac1eb0cb37fb7ac6c97a44e9">&#9670;&#160;</a></span>rotateBy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSession::rotateBy </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaDeg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00041">eve::building::Ghost::rotateBy()</a>.</p>
+
+</div>
+</div>
+<a id="a2812399bef9acdca5fac205223d3606b" name="a2812399bef9acdca5fac205223d3606b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2812399bef9acdca5fac205223d3606b">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSession::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>交互模式："place" 放置 / "remove" 拆除（默认 place）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a4f43abb123c139a63121da955ea766" name="a1a4f43abb123c139a63121da955ea766"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a4f43abb123c139a63121da955ea766">&#9670;&#160;</a></span>setRotationDeg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSession::setRotationDeg </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00035">eve::building::Ghost::setRotationDeg()</a>.</p>
+
+</div>
+</div>
+<a id="a3ddd8908924b52c1ac7bdccd6c816bdb" name="a3ddd8908924b52c1ac7bdccd6c816bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ddd8908924b52c1ac7bdccd6c816bdb">&#9670;&#160;</a></span>startPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSession::startPlacement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00009">eve::building::Ghost::setBuildingId()</a>.</p>
+
+</div>
+</div>
+<a id="a0be9336d29ab99fdd6dd509d1ad13e3b" name="a0be9336d29ab99fdd6dd509d1ad13e3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0be9336d29ab99fdd6dd509d1ad13e3b">&#9670;&#160;</a></span>stopPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSession::stopPlacement </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae70c0435bc46892d90ef188b26528cf8" name="ae70c0435bc46892d90ef188b26528cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae70c0435bc46892d90ef188b26528cf8">&#9670;&#160;</a></span>updateFromSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSession::updateFromSurface </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>surface</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>通过注册表面（如 "plane"）刷新鬼影并校验。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00069">eve::building::Ghost::setFromSurface()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ab3fd59c917362ec784e02b2f6a021d82" name="ab3fd59c917362ec784e02b2f6a021d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3fd59c917362ec784e02b2f6a021d82">&#9670;&#160;</a></span>updateFromWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSession::updateFromWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>2D：世界坐标刷新鬼影并校验。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00045">eve::building::Ghost::setFromWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a83ba203fa478a1fe7b9d4ca820b2dcac" name="a83ba203fa478a1fe7b9d4ca820b2dcac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ba203fa478a1fe7b9d4ca820b2dcac">&#9670;&#160;</a></span>updateFromWorld3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSession::updateFromWorld3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>3D：真实世界坐标刷新鬼影并校验。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a> 第 <a class="el" href="PlacementSession_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Ghost_8cpp_source.html#l00057">eve::building::Ghost::setFromWorld3D()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/building/<a class="el" href="PlacementSession_8h_source.html">PlacementSession.h</a></li>
+<li>src/modules/building/<a class="el" href="PlacementSession_8cpp_source.html">PlacementSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

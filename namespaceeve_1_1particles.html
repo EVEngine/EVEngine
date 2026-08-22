@@ -1,0 +1,823 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::particles 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1particles.html">particles</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::particles 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ColorStop.html">ColorStop</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Color gradient stop at normalized lifetime t in [0, 1].  <a href="structeve_1_1particles_1_1ColorStop.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1CurvePoint.html">CurvePoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scalar curve point at normalized lifetime t in [0, 1].  <a href="structeve_1_1particles_1_1CurvePoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1Particle.html">Particle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single live particle (CPU simulation).  <a href="structeve_1_1particles_1_1Particle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleConfigSystem.html">ParticleConfigSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polls bound config files (Resource.path) and hot-reloads when modtime changes. Returns number of emitters reloaded.  <a href="classeve_1_1particles_1_1ParticleConfigSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multi-point scalar curve sampled with linear interpolation between points. Empty curve means "use the legacy two-point linear fallback".  <a href="classeve_1_1particles_1_1ParticleCurve.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECS emitter entity. Script configures components; <a class="el" href="classeve_1_1particles_1_1ParticleSimSystem.html" title="Advances all ParticleEmitter Sim components.">ParticleSimSystem</a> / <a class="el" href="classeve_1_1particles_1_1ParticleRenderSystem.html" title="Draws all visible ParticleEmitter entities via Graphics batch path.">ParticleRenderSystem</a> drive per-frame update &amp; draw.  <a href="classeve_1_1particles_1_1ParticleEmitter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleGradient.html">ParticleGradient</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multi-stop color gradient sampled with linear interpolation between stops. Stops are kept sorted by t. Empty gradient means "use the legacy
+colorStart/colorEnd two-point lerp".  <a href="classeve_1_1particles_1_1ParticleGradient.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleLightSystem.html">ParticleLightSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Syncs pooled Light2D entities with alive particles (emitters with lights.enabled).  <a href="classeve_1_1particles_1_1ParticleLightSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleRenderSystem.html">ParticleRenderSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws all visible <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html" title="ECS emitter entity. Script configures components; ParticleSimSystem / ParticleRenderSystem drive per-...">ParticleEmitter</a> entities via Graphics batch path.  <a href="classeve_1_1particles_1_1ParticleRenderSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1particles_1_1Particles.html" title="Particles module — factory + script binding. Per-frame: ParticleConfigSystem (hot reload) → ParticleS...">Particles</a> module — factory + script binding. Per-frame: <a class="el" href="classeve_1_1particles_1_1ParticleConfigSystem.html" title="Polls bound config files (Resource.path) and hot-reloads when modtime changes. Returns number of emit...">ParticleConfigSystem</a> (hot reload) → <a class="el" href="classeve_1_1particles_1_1ParticleSimSystem.html" title="Advances all ParticleEmitter Sim components.">ParticleSimSystem</a> → <a class="el" href="classeve_1_1particles_1_1ParticleRenderSystem.html" title="Draws all visible ParticleEmitter entities via Graphics batch path.">ParticleRenderSystem</a>. <a class="el" href="classeve_1_1Module.html">Module</a> <code>update</code>/<code>render</code> forward to Systems.  <a href="classeve_1_1particles_1_1Particles.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1ParticleSimSystem.html">ParticleSimSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances all <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html" title="ECS emitter entity. Script configures components; ParticleSimSystem / ParticleRenderSystem drive per-...">ParticleEmitter</a> Sim components.  <a href="classeve_1_1particles_1_1ParticleSimSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a4e90230bedf9bcfc9ec45ee6358c3623" id="r_a4e90230bedf9bcfc9ec45ee6358c3623"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a4e90230bedf9bcfc9ec45ee6358c3623">WorldCollisionFn</a> = bool(*)(float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float radius, float &amp;nx, float &amp;ny)</td></tr>
+<tr class="memdesc:a4e90230bedf9bcfc9ec45ee6358c3623"><td class="mdescLeft">&#160;</td><td class="mdescRight">World collision query used by emitters with worldCollision enabled.  <br /></td></tr>
+<tr class="separator:a4e90230bedf9bcfc9ec45ee6358c3623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:acb74c33316d1fecce3879c4c8c09ee2b" id="r_acb74c33316d1fecce3879c4c8c09ee2b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#acb74c33316d1fecce3879c4c8c09ee2b">applyConfigDocument</a> (<a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *emitter, <a class="el" href="classeve_1_1data_1_1JsonDocument.html">data::JsonDocument</a> *doc)</td></tr>
+<tr class="memdesc:acb74c33316d1fecce3879c4c8c09ee2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply particle JSON config onto an emitter (Config + Draw + Resource.texturePath). Does not change buffer size or clear live particles. Returns false on invalid / missing object root.  <br /></td></tr>
+<tr class="separator:acb74c33316d1fecce3879c4c8c09ee2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84a1f3b709abd8e0217a54e86a7e1b1d" id="r_a84a1f3b709abd8e0217a54e86a7e1b1d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a84a1f3b709abd8e0217a54e86a7e1b1d">applyConfigText</a> (<a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *emitter, const std::string &amp;json, std::string *<a class="el" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a84a1f3b709abd8e0217a54e86a7e1b1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse JSON text and apply.  <br /></td></tr>
+<tr class="separator:a84a1f3b709abd8e0217a54e86a7e1b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49f87166ee644f4781e85b231e830252" id="r_a49f87166ee644f4781e85b231e830252"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a49f87166ee644f4781e85b231e830252">loadConfigFile</a> (<a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *emitter, const std::string &amp;path, std::string *<a class="el" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a49f87166ee644f4781e85b231e830252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read path via Filesystem, apply, and bind Resource.path + modtime for hot reload. Returns false if file missing / invalid JSON.  <br /></td></tr>
+<tr class="separator:a49f87166ee644f4781e85b231e830252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a542980426994f48a1cb352b3e6c04a92" id="r_a542980426994f48a1cb352b3e6c04a92"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a542980426994f48a1cb352b3e6c04a92">reloadConfigFile</a> (<a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *emitter, std::string *<a class="el" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a542980426994f48a1cb352b3e6c04a92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-read Resource.path if set; updates modtime.  <br /></td></tr>
+<tr class="separator:a542980426994f48a1cb352b3e6c04a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c6693026b797da8e3e2fbd43300977e" id="r_a3c6693026b797da8e3e2fbd43300977e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a3c6693026b797da8e3e2fbd43300977e">setWorldCollisionResolver</a> (<a class="el" href="namespaceeve_1_1particles.html#a4e90230bedf9bcfc9ec45ee6358c3623">WorldCollisionFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:a3c6693026b797da8e3e2fbd43300977e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fa6e5d52472b3d82f58756bdb71d155" id="r_a8fa6e5d52472b3d82f58756bdb71d155"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1particles.html#a4e90230bedf9bcfc9ec45ee6358c3623">WorldCollisionFn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a8fa6e5d52472b3d82f58756bdb71d155">getWorldCollisionResolver</a> ()</td></tr>
+<tr class="separator:a8fa6e5d52472b3d82f58756bdb71d155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b1c9dc0b9e86f70d16a6249cdc5605" id="r_a32b1c9dc0b9e86f70d16a6249cdc5605"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a32b1c9dc0b9e86f70d16a6249cdc5605">spawnParticleAt</a> (<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;cfg, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;sim, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="separator:a32b1c9dc0b9e86f70d16a6249cdc5605"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a78bf74f40608ad3b90f41166b88163" id="r_a6a78bf74f40608ad3b90f41166b88163"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a6a78bf74f40608ad3b90f41166b88163">spawnParticle</a> (<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;cfg, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;sim)</td></tr>
+<tr class="separator:a6a78bf74f40608ad3b90f41166b88163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4fa77736fec4b5a5798916d1d81c57a" id="r_ac4fa77736fec4b5a5798916d1d81c57a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#ac4fa77736fec4b5a5798916d1d81c57a">sampleSkinSpawn</a> (<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1SkinSource.html">ParticleEmitter::SkinSource</a> &amp;skinSrc, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;sim, float &amp;outX, float &amp;outY)</td></tr>
+<tr class="separator:ac4fa77736fec4b5a5798916d1d81c57a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7817df01fe50db953ce73e4d881f60e" id="r_ad7817df01fe50db953ce73e4d881f60e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#ad7817df01fe50db953ce73e4d881f60e">syncEmitterSources</a> (<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;cfg, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;sim, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html">ParticleEmitter::Attach</a> &amp;attach, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1SkinSource.html">ParticleEmitter::SkinSource</a> &amp;skinSrc)</td></tr>
+<tr class="memdesc:ad7817df01fe50db953ce73e4d881f60e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource.  <br /></td></tr>
+<tr class="separator:ad7817df01fe50db953ce73e4d881f60e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a751a7c3b6ec30a55f2b9b21047bdbbf0" id="r_a751a7c3b6ec30a55f2b9b21047bdbbf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">stepEmitterSim</a> (<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;cfg, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;sim, float dt)</td></tr>
+<tr class="separator:a751a7c3b6ec30a55f2b9b21047bdbbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13de5d274c822e8c23d375df0d00b80a" id="r_a13de5d274c822e8c23d375df0d00b80a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a13de5d274c822e8c23d375df0d00b80a">stepEmitterSimGpu</a> (<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;cfg, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;sim, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1GpuSim.html">ParticleEmitter::GpuSim</a> &amp;gpu, float dt)</td></tr>
+<tr class="memdesc:a13de5d274c822e8c23d375df0d00b80a"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-accelerated integration step; false = unavailable, caller falls back to CPU.  <br /></td></tr>
+<tr class="separator:a13de5d274c822e8c23d375df0d00b80a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f78471551d1b4a4b858c4fa80945cdb" id="r_a7f78471551d1b4a4b858c4fa80945cdb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a7f78471551d1b4a4b858c4fa80945cdb">Module_IMPL</a> (<a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a>, new <a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a>())</td></tr>
+<tr class="separator:a7f78471551d1b4a4b858c4fa80945cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa4471bf04f9a7186f18a032ef873b09" id="r_aaa4471bf04f9a7186f18a032ef873b09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#aaa4471bf04f9a7186f18a032ef873b09">registerParticlesCapabilities</a> ()</td></tr>
+<tr class="separator:aaa4471bf04f9a7186f18a032ef873b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a130b7e778528b77e9fcb683e0d625aa2" id="r_a130b7e778528b77e9fcb683e0d625aa2"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html#a130b7e778528b77e9fcb683e0d625aa2">kParticleGpuKernel</a></td></tr>
+<tr class="memdesc:a130b7e778528b77e9fcb683e0d625aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">GLSL compute kernel for GPU-accelerated particle integration.  <br /></td></tr>
+<tr class="separator:a130b7e778528b77e9fcb683e0d625aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a4e90230bedf9bcfc9ec45ee6358c3623" name="a4e90230bedf9bcfc9ec45ee6358c3623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e90230bedf9bcfc9ec45ee6358c3623">&#9670;&#160;</a></span>WorldCollisionFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1particles.html#a4e90230bedf9bcfc9ec45ee6358c3623">eve::particles::WorldCollisionFn</a> = typedef bool (*)(float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float radius, float &amp;nx, float &amp;ny)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World collision query used by emitters with worldCollision enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00475">475</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="acb74c33316d1fecce3879c4c8c09ee2b" name="acb74c33316d1fecce3879c4c8c09ee2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb74c33316d1fecce3879c4c8c09ee2b">&#9670;&#160;</a></span>applyConfigDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::applyConfigDocument </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td>
+          <td class="paramname"><em>emitter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">data::JsonDocument</a> *&#160;</td>
+          <td class="paramname"><em>doc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply particle JSON config onto an emitter (Config + Draw + Resource.texturePath). Does not change buffer size or clear live particles. Returns false on invalid / missing object root. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleConfig_8cpp_source.html">ParticleConfig.cpp</a> 第 <a class="el" href="ParticleConfig_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01026">eve::particles::ParticleEmitter::addBurst()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01132">eve::particles::ParticleEmitter::addForceField()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01298">eve::particles::ParticleEmitter::applyPreset()</a>, <a class="el" href="Grass_8cpp_source.html#l00063">area</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01031">eve::particles::ParticleEmitter::clearBursts()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01192">eve::particles::ParticleEmitter::clearColorGradient()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01144">eve::particles::ParticleEmitter::clearForceFields()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01202">eve::particles::ParticleEmitter::clearRotationCurve()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01198">eve::particles::ParticleEmitter::clearSizeCurve()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01053">eve::particles::ParticleEmitter::clearVelocityCurve()</a>, <a class="el" href="Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00948">eve::particles::ParticleEmitter::getDirection()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00992">eve::particles::ParticleEmitter::getEmissionAreaX()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00993">eve::particles::ParticleEmitter::getEmissionAreaY()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00933">eve::particles::ParticleEmitter::getEmissionRate()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00945">eve::particles::ParticleEmitter::getEmitterLifetime()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01223">eve::particles::ParticleEmitter::getLayer()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01002">eve::particles::ParticleEmitter::getParticleHeight()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00942">eve::particles::ParticleEmitter::getParticleLifetimeMax()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00941">eve::particles::ParticleEmitter::getParticleLifetimeMin()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01001">eve::particles::ParticleEmitter::getParticleWidth()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01012">eve::particles::ParticleEmitter::getSizeVariation()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00953">eve::particles::ParticleEmitter::getSpread()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00926">eve::particles::ParticleEmitter::getX()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00927">eve::particles::ParticleEmitter::getY()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="JsonDocument_8cpp_source.html#l00015">eve::data::JsonDocument::isObject()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01226">eve::particles::ParticleEmitter::isVisible()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="JsonDocument_8cpp_source.html#l00022">eve::data::JsonDocument::object()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01163">eve::particles::ParticleEmitter::setBlendMode()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01082">eve::particles::ParticleEmitter::setCollision()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01093">eve::particles::ParticleEmitter::setCollisionBounds()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01212">eve::particles::ParticleEmitter::setColorEnd()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01208">eve::particles::ParticleEmitter::setColorStart()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01045">eve::particles::ParticleEmitter::setDamping()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00947">eve::particles::ParticleEmitter::setDirection()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00981">eve::particles::ParticleEmitter::setEmissionArea()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00929">eve::particles::ParticleEmitter::setEmissionRate()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00944">eve::particles::ParticleEmitter::setEmitterLifetime()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01184">eve::particles::ParticleEmitter::setFlipbook()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01075">eve::particles::ParticleEmitter::setGpuSimulation()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01039">eve::particles::ParticleEmitter::setGravity()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01059">eve::particles::ParticleEmitter::setInheritVelocity()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01222">eve::particles::ParticleEmitter::setLayer()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01149">eve::particles::ParticleEmitter::setLights()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01049">eve::particles::ParticleEmitter::setLimitVelocity()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00961">eve::particles::ParticleEmitter::setLinearAcceleration()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01116">eve::particles::ParticleEmitter::setMaxDeltaTime()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01068">eve::particles::ParticleEmitter::setNoise()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01111">eve::particles::ParticleEmitter::setOverflowMode()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00935">eve::particles::ParticleEmitter::setParticleLifetime()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00995">eve::particles::ParticleEmitter::setParticleSize()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00919">eve::particles::ParticleEmitter::setPosition()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01033">eve::particles::ParticleEmitter::setPrewarm()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00969">eve::particles::ParticleEmitter::setRadialAcceleration()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01105">eve::particles::ParticleEmitter::setRenderMode()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01064">eve::particles::ParticleEmitter::setSimulationSpace()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01004">eve::particles::ParticleEmitter::setSizes()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01009">eve::particles::ParticleEmitter::setSizeVariation()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00955">eve::particles::ParticleEmitter::setSpeed()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01014">eve::particles::ParticleEmitter::setSpin()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00950">eve::particles::ParticleEmitter::setSpread()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01020">eve::particles::ParticleEmitter::setStartRotation()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00975">eve::particles::ParticleEmitter::setTangentialAcceleration()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01225">eve::particles::ParticleEmitter::setVisible()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01103">eve::particles::ParticleEmitter::setWorldCollision()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01228">eve::particles::ParticleEmitter::start()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleConfig_8cpp_source.html#l00531">applyConfigText()</a>.</p>
+
+</div>
+</div>
+<a id="a84a1f3b709abd8e0217a54e86a7e1b1d" name="a84a1f3b709abd8e0217a54e86a7e1b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84a1f3b709abd8e0217a54e86a7e1b1d">&#9670;&#160;</a></span>applyConfigText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::applyConfigText </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td>
+          <td class="paramname"><em>emitter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse JSON text and apply. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleConfig_8cpp_source.html">ParticleConfig.cpp</a> 第 <a class="el" href="ParticleConfig_8cpp_source.html#l00531">531</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleConfig_8cpp_source.html#l00175">applyConfigDocument()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01353">eve::particles::ParticleEmitter::applyConfig()</a> , 以及 <a class="el" href="ParticleConfig_8cpp_source.html#l00546">loadConfigFile()</a>.</p>
+
+</div>
+</div>
+<a id="a8fa6e5d52472b3d82f58756bdb71d155" name="a8fa6e5d52472b3d82f58756bdb71d155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fa6e5d52472b3d82f58756bdb71d155">&#9670;&#160;</a></span>getWorldCollisionResolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1particles.html#a4e90230bedf9bcfc9ec45ee6358c3623">WorldCollisionFn</a> eve::particles::getWorldCollisionResolver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a49f87166ee644f4781e85b231e830252" name="a49f87166ee644f4781e85b231e830252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49f87166ee644f4781e85b231e830252">&#9670;&#160;</a></span>loadConfigFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::loadConfigFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td>
+          <td class="paramname"><em>emitter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read path via Filesystem, apply, and bind Resource.path + modtime for hot reload. Returns false if file missing / invalid JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleConfig_8cpp_source.html">ParticleConfig.cpp</a> 第 <a class="el" href="ParticleConfig_8cpp_source.html#l00546">546</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleConfig_8cpp_source.html#l00531">applyConfigText()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01357">eve::particles::ParticleEmitter::loadConfig()</a>, <a class="el" href="Particles_8cpp_source.html#l00047">eve::particles::Particles::newEmitterFromFile()</a> , 以及 <a class="el" href="ParticleConfig_8cpp_source.html#l00579">reloadConfigFile()</a>.</p>
+
+</div>
+</div>
+<a id="a7f78471551d1b4a4b858c4fa80945cdb" name="a7f78471551d1b4a4b858c4fa80945cdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f78471551d1b4a4b858c4fa80945cdb">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::particles::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Particles</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa4471bf04f9a7186f18a032ef873b09" name="aaa4471bf04f9a7186f18a032ef873b09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa4471bf04f9a7186f18a032ef873b09">&#9670;&#160;</a></span>registerParticlesCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::registerParticlesCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticlesCapabilities_8cpp_source.html">ParticlesCapabilities.cpp</a> 第 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00013">impl</a> , 以及 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Particles_8cpp_source.html#l00020">eve::particles::Particles::Particles()</a>.</p>
+
+</div>
+</div>
+<a id="a542980426994f48a1cb352b3e6c04a92" name="a542980426994f48a1cb352b3e6c04a92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a542980426994f48a1cb352b3e6c04a92">&#9670;&#160;</a></span>reloadConfigFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::reloadConfigFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td>
+          <td class="paramname"><em>emitter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-read Resource.path if set; updates modtime. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleConfig_8cpp_source.html">ParticleConfig.cpp</a> 第 <a class="el" href="ParticleConfig_8cpp_source.html#l00579">579</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a> , 以及 <a class="el" href="ParticleConfig_8cpp_source.html#l00546">loadConfigFile()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleSystem_8cpp_source.html#l00236">eve::particles::ParticleConfigSystem::poll()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l01361">eve::particles::ParticleEmitter::reloadConfig()</a>.</p>
+
+</div>
+</div>
+<a id="ac4fa77736fec4b5a5798916d1d81c57a" name="ac4fa77736fec4b5a5798916d1d81c57a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4fa77736fec4b5a5798916d1d81c57a">&#9670;&#160;</a></span>sampleSkinSpawn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::sampleSkinSpawn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1SkinSource.html">ParticleEmitter::SkinSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>skinSrc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>outX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>outY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEmitter_8h_source.html#l00273">eve::particles::ParticleEmitter::SkinSource::candidates</a>, <a class="el" href="AnimSkin_8cpp_source.html#l00266">eve::animation::AnimSkin::getSkinnedPositionX()</a>, <a class="el" href="AnimSkin_8cpp_source.html#l00271">eve::animation::AnimSkin::getSkinnedPositionY()</a>, <a class="el" href="AnimSkin_8cpp_source.html#l00276">eve::animation::AnimSkin::getSkinnedPositionZ()</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00269">eve::particles::ParticleEmitter::SkinSource::plane</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00207">eve::particles::ParticleEmitter::Sim::rng</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00270">eve::particles::ParticleEmitter::SkinSource::scale</a> , 以及 <a class="el" href="ParticleEmitter_8h_source.html#l00263">eve::particles::ParticleEmitter::SkinSource::skin</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01523">eve::particles::ParticleEmitter::emitFromSkin()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">spawnParticle()</a>.</p>
+
+</div>
+</div>
+<a id="a3c6693026b797da8e3e2fbd43300977e" name="a3c6693026b797da8e3e2fbd43300977e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c6693026b797da8e3e2fbd43300977e">&#9670;&#160;</a></span>setWorldCollisionResolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::setWorldCollisionResolver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1particles.html#a4e90230bedf9bcfc9ec45ee6358c3623">WorldCollisionFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>.</p>
+
+</div>
+</div>
+<a id="a6a78bf74f40608ad3b90f41166b88163" name="a6a78bf74f40608ad3b90f41166b88163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a78bf74f40608ad3b90f41166b88163">&#9670;&#160;</a></span>spawnParticle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::spawnParticle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEmitter_8h_source.html#l00193">eve::particles::ParticleEmitter::Config::entity</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00351">sampleSkinSpawn()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00324">spawnParticleAt()</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00084">eve::particles::ParticleEmitter::Config::x</a> , 以及 <a class="el" href="ParticleEmitter_8h_source.html#l00085">eve::particles::ParticleEmitter::Config::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01277">eve::particles::ParticleEmitter::emit()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a32b1c9dc0b9e86f70d16a6249cdc5605" name="a32b1c9dc0b9e86f70d16a6249cdc5605"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32b1c9dc0b9e86f70d16a6249cdc5605">&#9670;&#160;</a></span>spawnParticleAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::spawnParticleAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEmitter_8h_source.html#l00198">eve::particles::ParticleEmitter::Sim::alive</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00197">eve::particles::ParticleEmitter::Sim::particles</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00084">eve::particles::ParticleEmitter::Config::x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01523">eve::particles::ParticleEmitter::emitFromSkin()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">spawnParticle()</a>.</p>
+
+</div>
+</div>
+<a id="a751a7c3b6ec30a55f2b9b21047bdbbf0" name="a751a7c3b6ec30a55f2b9b21047bdbbf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a751a7c3b6ec30a55f2b9b21047bdbbf0">&#9670;&#160;</a></span>stepEmitterSim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::stepEmitterSim </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEmitter_8h_source.html#l00201">eve::particles::ParticleEmitter::Sim::active</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00198">eve::particles::ParticleEmitter::Sim::alive</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00130">eve::particles::ParticleEmitter::Config::boundsMaxX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00131">eve::particles::ParticleEmitter::Config::boundsMaxY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00128">eve::particles::ParticleEmitter::Config::boundsMinX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00129">eve::particles::ParticleEmitter::Config::boundsMinY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00145">eve::particles::ParticleEmitter::Config::bursts</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00127">eve::particles::ParticleEmitter::Config::collisionBoundsEnabled</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00126">eve::particles::ParticleEmitter::Config::collisionLifetimeLoss</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00123">eve::particles::ParticleEmitter::Config::collisionMode</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00124">eve::particles::ParticleEmitter::Config::collisionRadius</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00125">eve::particles::ParticleEmitter::Config::collisionRestitution</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00109">eve::particles::ParticleEmitter::Config::damping</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00086">eve::particles::ParticleEmitter::Config::emissionRate</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00199">eve::particles::ParticleEmitter::Sim::emitAccum</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00200">eve::particles::ParticleEmitter::Sim::emitterAge</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00089">eve::particles::ParticleEmitter::Config::emitterLife</a>, <a class="el" href="ParticleCurve_8h_source.html#l00098">eve::particles::ParticleCurve::empty()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00154">eve::particles::ParticleEmitter::Config::forceFields</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00178">eve::particles::ParticleEmitter::Config::frameRate</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00322">getWorldCollisionResolver()</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00106">eve::particles::ParticleEmitter::Config::gravityX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00107">eve::particles::ParticleEmitter::Config::gravityY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00203">eve::particles::ParticleEmitter::Sim::hasLastPos</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00115">eve::particles::ParticleEmitter::Config::inheritVelocity</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00204">eve::particles::ParticleEmitter::Sim::lastX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00205">eve::particles::ParticleEmitter::Sim::lastY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00111">eve::particles::ParticleEmitter::Config::limitVelocity</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00140">eve::particles::ParticleEmitter::Config::maxDeltaTime</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00120">eve::particles::ParticleEmitter::Config::noiseFrequency</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00121">eve::particles::ParticleEmitter::Config::noiseSpeed</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00119">eve::particles::ParticleEmitter::Config::noiseStrength</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00138">eve::particles::ParticleEmitter::Config::overflowMode</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00206">eve::particles::ParticleEmitter::Sim::overflowWarned</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00099">eve::particles::ParticleEmitter::Config::particleH</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00197">eve::particles::ParticleEmitter::Sim::particles</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00098">eve::particles::ParticleEmitter::Config::particleW</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00202">eve::particles::ParticleEmitter::Sim::paused</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="ParticleCurve_8h_source.html#l00103">eve::particles::ParticleCurve::sample()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00117">eve::particles::ParticleEmitter::Config::simSpace</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">spawnParticle()</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00113">eve::particles::ParticleEmitter::Config::velocityCurve</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00049">eve::particles::Particle::vx</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00050">eve::particles::Particle::vy</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00133">eve::particles::ParticleEmitter::Config::worldCollision</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00084">eve::particles::ParticleEmitter::Config::x</a> , 以及 <a class="el" href="ParticleEmitter_8h_source.html#l00085">eve::particles::ParticleEmitter::Config::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01228">eve::particles::ParticleEmitter::start()</a> , 以及 <a class="el" href="ParticleSystem_8cpp_source.html#l00143">eve::particles::ParticleSimSystem::update()</a>.</p>
+
+</div>
+</div>
+<a id="a13de5d274c822e8c23d375df0d00b80a" name="a13de5d274c822e8c23d375df0d00b80a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13de5d274c822e8c23d375df0d00b80a">&#9670;&#160;</a></span>stepEmitterSimGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::stepEmitterSimGpu </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1GpuSim.html">ParticleEmitter::GpuSim</a> &amp;&#160;</td>
+          <td class="paramname"><em>gpu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>GPU-accelerated integration step; false = unavailable, caller falls back to CPU. </p>
+<p>GPU-accelerated variant of stepEmitterSim. The per-particle integration loop runs in a compute shader; spawning / death compaction / collision stay on the CPU. Returns false when the GPU path is unavailable — the caller then falls back to stepEmitterSim. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">691</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEmitter_8h_source.html#l00201">eve::particles::ParticleEmitter::Sim::active</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00198">eve::particles::ParticleEmitter::Sim::alive</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00130">eve::particles::ParticleEmitter::Config::boundsMaxX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00131">eve::particles::ParticleEmitter::Config::boundsMaxY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00128">eve::particles::ParticleEmitter::Config::boundsMinX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00129">eve::particles::ParticleEmitter::Config::boundsMinY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00288">eve::particles::ParticleEmitter::GpuSim::buffer</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00145">eve::particles::ParticleEmitter::Config::bursts</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00127">eve::particles::ParticleEmitter::Config::collisionBoundsEnabled</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00126">eve::particles::ParticleEmitter::Config::collisionLifetimeLoss</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00123">eve::particles::ParticleEmitter::Config::collisionMode</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00124">eve::particles::ParticleEmitter::Config::collisionRadius</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00125">eve::particles::ParticleEmitter::Config::collisionRestitution</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00109">eve::particles::ParticleEmitter::Config::damping</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00086">eve::particles::ParticleEmitter::Config::emissionRate</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00199">eve::particles::ParticleEmitter::Sim::emitAccum</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00200">eve::particles::ParticleEmitter::Sim::emitterAge</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00089">eve::particles::ParticleEmitter::Config::emitterLife</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00287">eve::particles::ParticleEmitter::GpuSim::failed</a>, <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00178">eve::particles::ParticleEmitter::Config::frameRate</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00322">getWorldCollisionResolver()</a>, <a class="el" href="GpuBackend_8cpp_source.html#l00055">gpgpu</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00106">eve::particles::ParticleEmitter::Config::gravityX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00107">eve::particles::ParticleEmitter::Config::gravityY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00203">eve::particles::ParticleEmitter::Sim::hasLastPos</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00115">eve::particles::ParticleEmitter::Config::inheritVelocity</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00286">eve::particles::ParticleEmitter::GpuSim::initialized</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00204">eve::particles::ParticleEmitter::Sim::lastX</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00205">eve::particles::ParticleEmitter::Sim::lastY</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00111">eve::particles::ParticleEmitter::Config::limitVelocity</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00140">eve::particles::ParticleEmitter::Config::maxDeltaTime</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00289">eve::particles::ParticleEmitter::GpuSim::mirror</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00120">eve::particles::ParticleEmitter::Config::noiseFrequency</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00121">eve::particles::ParticleEmitter::Config::noiseSpeed</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00119">eve::particles::ParticleEmitter::Config::noiseStrength</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00138">eve::particles::ParticleEmitter::Config::overflowMode</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00206">eve::particles::ParticleEmitter::Sim::overflowWarned</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00099">eve::particles::ParticleEmitter::Config::particleH</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00197">eve::particles::ParticleEmitter::Sim::particles</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00098">eve::particles::ParticleEmitter::Config::particleW</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00202">eve::particles::ParticleEmitter::Sim::paused</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00122">scale</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00529">shader</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00117">eve::particles::ParticleEmitter::Config::simSpace</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">spawnParticle()</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00049">eve::particles::Particle::vx</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00050">eve::particles::Particle::vy</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00133">eve::particles::ParticleEmitter::Config::worldCollision</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00084">eve::particles::ParticleEmitter::Config::x</a> , 以及 <a class="el" href="ParticleEmitter_8h_source.html#l00085">eve::particles::ParticleEmitter::Config::y</a>.</p>
+
+</div>
+</div>
+<a id="ad7817df01fe50db953ce73e4d881f60e" name="ad7817df01fe50db953ce73e4d881f60e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7817df01fe50db953ce73e4d881f60e">&#9670;&#160;</a></span>syncEmitterSources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::syncEmitterSources </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>cfg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html">ParticleEmitter::Attach</a> &amp;&#160;</td>
+          <td class="paramname"><em>attach</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1SkinSource.html">ParticleEmitter::SkinSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>skinSrc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8cpp_source.html">ParticleEmitter.cpp</a> 第 <a class="el" href="ParticleEmitter_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bbaec87f160004d9d71b60c42d3fbe201e9">eve::particles::ParticleEmitter::Attach::AnimPose</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00255">eve::particles::ParticleEmitter::Attach::enabled</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00271">eve::particles::ParticleEmitter::SkinSource::enabled</a>, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba4b0771d52a9b1132ee6179939d27340b">eve::particles::ParticleEmitter::Attach::Ik2D</a>, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba37eb0740cec54d0a92a3578d21d1366f">eve::particles::ParticleEmitter::Attach::Ik3D</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00241">eve::particles::ParticleEmitter::Attach::kind</a>, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba6adf97f83acf6453d4a6a4b1070f3754">eve::particles::ParticleEmitter::Attach::None</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00264">eve::particles::ParticleEmitter::SkinSource::pose</a>, <a class="el" href="ParticleEmitter_8h_source.html#l00263">eve::particles::ParticleEmitter::SkinSource::skin</a> , 以及 <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba299a20601891812eff26320b63f3b4fe">eve::particles::ParticleEmitter::Attach::Spine</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01476">eve::particles::ParticleEmitter::syncAttach()</a> , 以及 <a class="el" href="ParticleSystem_8cpp_source.html#l00143">eve::particles::ParticleSimSystem::update()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a130b7e778528b77e9fcb683e0d625aa2" name="a130b7e778528b77e9fcb683e0d625aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a130b7e778528b77e9fcb683e0d625aa2">&#9670;&#160;</a></span>kParticleGpuKernel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::particles::kParticleGpuKernel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>GLSL compute kernel for GPU-accelerated particle integration. </p>
+<p><a class="el" href="structeve_1_1particles_1_1Particle.html" title="Single live particle (CPU simulation).">Particle</a> layout: 16 floats per particle. [0] x, [1] y, [2] vx, [3] vy, [4] life, [5] lifetime, [6] size, [7] rot, [8] spin, [9] frame, [10] radial, [11] tangential, [12] ax0, [13] ay0, [14] noisePhase, [15] pad</p>
+<p>Push constants (float[32]): [0] aliveCount, [1] dt, [2] emitterX, [3] emitterY, [4] gravityX, [5] gravityY, [6] damping, [7] limitVelocity, [8] noiseStrength, [9] noiseFrequency, [10] noiseSpeed, [11] time, [12] frameRate</p>
+<p>Compile with glslc (Vulkan SDK) — the engine also compiles this at runtime via Gpgpu::newShader when the first GPU emitter initializes. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleGpuKernel_8h_source.html">ParticleGpuKernel.h</a> 第 <a class="el" href="ParticleGpuKernel_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

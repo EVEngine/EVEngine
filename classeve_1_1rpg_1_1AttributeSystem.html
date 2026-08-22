@@ -1,0 +1,733 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::AttributeSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html">AttributeSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1AttributeSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::AttributeSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>面向 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> 的属性操作静态入口。数据本身存放在 <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Attributes.html" title="属性表：任意字符串 -&gt; AttributeValue（base + modifiers）。">RPGActor::Attributes</a> 组件里， 这里只是围绕组件的一组无状态操作函数（+ 一张全局自定义 op 表）。  
+ <a href="classeve_1_1rpg_1_1AttributeSystem.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AttributeSystem_8h_source.html">AttributeSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad010e56312071ad2f9df7de04060419c" id="r_ad010e56312071ad2f9df7de04060419c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#ad010e56312071ad2f9df7de04060419c">customOps</a> ()</td></tr>
+<tr class="memdesc:ad010e56312071ad2f9df7de04060419c"><td class="mdescLeft">&#160;</td><td class="mdescRight">全局自定义 op 注册表（进程生命周期内有效）。  <br /></td></tr>
+<tr class="separator:ad010e56312071ad2f9df7de04060419c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21578c411e87c032930fae8dc8e6d2d6" id="r_a21578c411e87c032930fae8dc8e6d2d6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a21578c411e87c032930fae8dc8e6d2d6">setBase</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute, double <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="memdesc:a21578c411e87c032930fae8dc8e6d2d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置基础值（不存在则创建该属性）。  <br /></td></tr>
+<tr class="separator:a21578c411e87c032930fae8dc8e6d2d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c7d3e52f64a1a891fcc6716ab2efe1" id="r_a82c7d3e52f64a1a891fcc6716ab2efe1"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a82c7d3e52f64a1a891fcc6716ab2efe1">getBase</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute)</td></tr>
+<tr class="separator:a82c7d3e52f64a1a891fcc6716ab2efe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c09b96e7fb8fb1a1ce28783587a60f6" id="r_a7c09b96e7fb8fb1a1ce28783587a60f6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a7c09b96e7fb8fb1a1ce28783587a60f6">modifyBase</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute, double delta)</td></tr>
+<tr class="memdesc:a7c09b96e7fb8fb1a1ce28783587a60f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">增量修改基础值（如自然回蓝、升级加点）。  <br /></td></tr>
+<tr class="separator:a7c09b96e7fb8fb1a1ce28783587a60f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52254caa070789bd7a126b253434ce09" id="r_a52254caa070789bd7a126b253434ce09"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a52254caa070789bd7a126b253434ce09">hasAttribute</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute)</td></tr>
+<tr class="separator:a52254caa070789bd7a126b253434ce09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e7a955ec9471a662c903af65009ab19" id="r_a0e7a955ec9471a662c903af65009ab19"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a0e7a955ec9471a662c903af65009ab19">addModifier</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute, const std::string &amp;source, const std::string &amp;op, double <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:a0e7a955ec9471a662c903af65009ab19"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加一条修改器，返回自动生成的唯一 id（用于之后精确移除）。 空字符串 id 表示失败（actor 为空）。  <br /></td></tr>
+<tr class="separator:a0e7a955ec9471a662c903af65009ab19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cd4b45531e633712e962347488d6094" id="r_a3cd4b45531e633712e962347488d6094"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a3cd4b45531e633712e962347488d6094">removeModifier</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute, const std::string &amp;modifierId)</td></tr>
+<tr class="memdesc:a3cd4b45531e633712e962347488d6094"><td class="mdescLeft">&#160;</td><td class="mdescRight">按 id 精确移除；返回是否命中。  <br /></td></tr>
+<tr class="separator:a3cd4b45531e633712e962347488d6094"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac641437e7ac1e6f2a4dbea6fe45a89f1" id="r_ac641437e7ac1e6f2a4dbea6fe45a89f1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#ac641437e7ac1e6f2a4dbea6fe45a89f1">removeModifiersBySource</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute, const std::string &amp;source)</td></tr>
+<tr class="memdesc:ac641437e7ac1e6f2a4dbea6fe45a89f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">按来源标签批量移除某个属性上的修改器；返回移除数量。  <br /></td></tr>
+<tr class="separator:ac641437e7ac1e6f2a4dbea6fe45a89f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a915a390fd15a11fcd9c5f37b3565ae0a" id="r_a915a390fd15a11fcd9c5f37b3565ae0a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a915a390fd15a11fcd9c5f37b3565ae0a">removeAllModifiersBySource</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;source)</td></tr>
+<tr class="memdesc:a915a390fd15a11fcd9c5f37b3565ae0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">按来源标签批量移除该 actor 所有属性上的修改器；返回移除数量。  <br /></td></tr>
+<tr class="separator:a915a390fd15a11fcd9c5f37b3565ae0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a01c83f54dde5b50a033301bbfb3e5" id="r_ab5a01c83f54dde5b50a033301bbfb3e5"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#ab5a01c83f54dde5b50a033301bbfb3e5">getFinal</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute)</td></tr>
+<tr class="memdesc:ab5a01c83f54dde5b50a033301bbfb3e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">计算并返回最终值（内部带缓存，属性未变化时不会重复计算）。  <br /></td></tr>
+<tr class="separator:ab5a01c83f54dde5b50a033301bbfb3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81965ceed43cda35e7b15e26c5a979e3" id="r_a81965ceed43cda35e7b15e26c5a979e3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a81965ceed43cda35e7b15e26c5a979e3">invalidate</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;attribute)</td></tr>
+<tr class="memdesc:a81965ceed43cda35e7b15e26c5a979e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">标记某个属性需要在下次 getFinal 时重新计算（内部使用；一般不需要手动调用）。  <br /></td></tr>
+<tr class="separator:a81965ceed43cda35e7b15e26c5a979e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>面向 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> 的属性操作静态入口。数据本身存放在 <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Attributes.html" title="属性表：任意字符串 -&gt; AttributeValue（base + modifiers）。">RPGActor::Attributes</a> 组件里， 这里只是围绕组件的一组无状态操作函数（+ 一张全局自定义 op 表）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8h_source.html">AttributeSystem.h</a> 第 <a class="el" href="AttributeSystem_8h_source.html#l00039">39</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a0e7a955ec9471a662c903af65009ab19" name="a0e7a955ec9471a662c903af65009ab19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e7a955ec9471a662c903af65009ab19">&#9670;&#160;</a></span>addModifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::AttributeSystem::addModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>添加一条修改器，返回自动生成的唯一 id（用于之后精确移除）。 空字符串 id 表示失败（actor 为空）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTypes_8h_source.html#l00031">eve::rpg::AttributeModifier::id</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="AttributeTypes_8h_source.html#l00033">eve::rpg::AttributeModifier::op</a>, <a class="el" href="Capability_8cpp_source.html#l00014">priority</a>, <a class="el" href="AttributeTypes_8h_source.html#l00035">eve::rpg::AttributeModifier::priority</a>, <a class="el" href="AttributeTypes_8h_source.html#l00032">eve::rpg::AttributeModifier::source</a>, <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a> , 以及 <a class="el" href="AttributeTypes_8h_source.html#l00034">eve::rpg::AttributeModifier::value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00066">eve::rpg::RPGActor::addAttributeModifier()</a>.</p>
+
+</div>
+</div>
+<a id="ad010e56312071ad2f9df7de04060419c" name="ad010e56312071ad2f9df7de04060419c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad010e56312071ad2f9df7de04060419c">&#9670;&#160;</a></span>customOps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a> &amp; eve::rpg::AttributeSystem::customOps </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>全局自定义 op 注册表（进程生命周期内有效）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00168">getFinal()</a>.</p>
+
+</div>
+</div>
+<a id="a82c7d3e52f64a1a891fcc6716ab2efe1" name="a82c7d3e52f64a1a891fcc6716ab2efe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c7d3e52f64a1a891fcc6716ab2efe1">&#9670;&#160;</a></span>getBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::AttributeSystem::getBase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00054">eve::rpg::RPGActor::getBaseAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="ab5a01c83f54dde5b50a033301bbfb3e5" name="ab5a01c83f54dde5b50a033301bbfb3e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5a01c83f54dde5b50a033301bbfb3e5">&#9670;&#160;</a></span>getFinal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::AttributeSystem::getFinal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>计算并返回最终值（内部带缓存，属性未变化时不会重复计算）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00021">eve::rpg::computeAttributeValue()</a> , 以及 <a class="el" href="AttributeSystem_8cpp_source.html#l00065">customOps()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00084">eve::rpg::RPGActor::getFinalAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="a52254caa070789bd7a126b253434ce09" name="a52254caa070789bd7a126b253434ce09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52254caa070789bd7a126b253434ce09">&#9670;&#160;</a></span>hasAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::AttributeSystem::hasAttribute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00062">eve::rpg::RPGActor::hasAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="a81965ceed43cda35e7b15e26c5a979e3" name="a81965ceed43cda35e7b15e26c5a979e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81965ceed43cda35e7b15e26c5a979e3">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::AttributeSystem::invalidate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>标记某个属性需要在下次 getFinal 时重新计算（内部使用；一般不需要手动调用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+</div>
+</div>
+<a id="a7c09b96e7fb8fb1a1ce28783587a60f6" name="a7c09b96e7fb8fb1a1ce28783587a60f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c09b96e7fb8fb1a1ce28783587a60f6">&#9670;&#160;</a></span>modifyBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::AttributeSystem::modifyBase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>增量修改基础值（如自然回蓝、升级加点）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00118">eve::rpg::StatusSystem::apply()</a> , 以及 <a class="el" href="RPGActor_8cpp_source.html#l00058">eve::rpg::RPGActor::modifyBaseAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="a915a390fd15a11fcd9c5f37b3565ae0a" name="a915a390fd15a11fcd9c5f37b3565ae0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a915a390fd15a11fcd9c5f37b3565ae0a">&#9670;&#160;</a></span>removeAllModifiersBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::AttributeSystem::removeAllModifiersBySource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>按来源标签批量移除该 actor 所有属性上的修改器；返回移除数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00462">removed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00080">eve::rpg::RPGActor::removeAllAttributeModifiersBySource()</a>.</p>
+
+</div>
+</div>
+<a id="a3cd4b45531e633712e962347488d6094" name="a3cd4b45531e633712e962347488d6094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cd4b45531e633712e962347488d6094">&#9670;&#160;</a></span>removeModifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::AttributeSystem::removeModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>modifierId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>按 id 精确移除；返回是否命中。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00071">eve::rpg::RPGActor::removeAttributeModifier()</a>.</p>
+
+</div>
+</div>
+<a id="ac641437e7ac1e6f2a4dbea6fe45a89f1" name="ac641437e7ac1e6f2a4dbea6fe45a89f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac641437e7ac1e6f2a4dbea6fe45a89f1">&#9670;&#160;</a></span>removeModifiersBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::AttributeSystem::removeModifiersBySource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>按来源标签批量移除某个属性上的修改器；返回移除数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="EditorHost_8cpp_source.html#l00462">removed</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00075">eve::rpg::RPGActor::removeAttributeModifiersBySource()</a>.</p>
+
+</div>
+</div>
+<a id="a21578c411e87c032930fae8dc8e6d2d6" name="a21578c411e87c032930fae8dc8e6d2d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21578c411e87c032930fae8dc8e6d2d6">&#9670;&#160;</a></span>setBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::AttributeSystem::setBase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>设置基础值（不存在则创建该属性）。 </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00050">eve::rpg::RPGActor::setBaseAttribute()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="AttributeSystem_8h_source.html">AttributeSystem.h</a></li>
+<li>src/modules/rpg/<a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

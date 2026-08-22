@@ -1,0 +1,668 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimImporter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html">AnimImporter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1AnimImporter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimImporter类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Import <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html" title="3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...">AnimSkeleton</a> / <a class="el" href="classeve_1_1animation_1_1AnimClip.html" title="Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.">AnimClip</a> from an Assimp scene (FBX/glTF/etc), or from compact <code>.eva</code> text fixtures derived from those assets.  
+ <a href="classeve_1_1animation_1_1AnimImporter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimImporter_8h_source.html">AnimImporter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ac1a8c1b7760fca8090c2bd9514be7bc4" id="r_ac1a8c1b7760fca8090c2bd9514be7bc4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#ac1a8c1b7760fca8090c2bd9514be7bc4">loadSkeleton</a> (const aiScene *scene)</td></tr>
+<tr class="memdesc:ac1a8c1b7760fca8090c2bd9514be7bc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build skeleton from the scene node hierarchy (depth-first).  <br /></td></tr>
+<tr class="separator:ac1a8c1b7760fca8090c2bd9514be7bc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35e93f373229f84ff5b8152a63f4af6f" id="r_a35e93f373229f84ff5b8152a63f4af6f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a35e93f373229f84ff5b8152a63f4af6f">loadClip</a> (const aiScene *scene, const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton, int animIndex=0)</td></tr>
+<tr class="memdesc:a35e93f373229f84ff5b8152a63f4af6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load clip by index; maps node-name channels onto skeleton bones.  <br /></td></tr>
+<tr class="separator:a35e93f373229f84ff5b8152a63f4af6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0282bce2154dca2342e567328aefda24" id="r_a0282bce2154dca2342e567328aefda24"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a0282bce2154dca2342e567328aefda24">loadSkeletonFromModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="memdesc:a0282bce2154dca2342e567328aefda24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: ModelData wrappers (implemented in <a class="el" href="AnimImporterModel_8cpp.html">AnimImporterModel.cpp</a>).  <br /></td></tr>
+<tr class="separator:a0282bce2154dca2342e567328aefda24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0656a3301404f803bf90fb579699fa7b" id="r_a0656a3301404f803bf90fb579699fa7b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a0656a3301404f803bf90fb579699fa7b">loadClipFromModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton, int animIndex=0)</td></tr>
+<tr class="separator:a0656a3301404f803bf90fb579699fa7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39c85a089a547e51c2e2f5cc94957428" id="r_a39c85a089a547e51c2e2f5cc94957428"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a39c85a089a547e51c2e2f5cc94957428">getAnimationCountFromModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="separator:a39c85a089a547e51c2e2f5cc94957428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a079f85d1a24a7bd803eba6104199572d" id="r_a079f85d1a24a7bd803eba6104199572d"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a079f85d1a24a7bd803eba6104199572d">getAnimationNameFromModel</a> (const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, int animIndex)</td></tr>
+<tr class="separator:a079f85d1a24a7bd803eba6104199572d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00fa170f92b4263379f4e6707d73c4be" id="r_a00fa170f92b4263379f4e6707d73c4be"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a00fa170f92b4263379f4e6707d73c4be">getAnimationCount</a> (const aiScene *scene)</td></tr>
+<tr class="separator:a00fa170f92b4263379f4e6707d73c4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f360c059185004229b0ec0886c4835f" id="r_a7f360c059185004229b0ec0886c4835f"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a7f360c059185004229b0ec0886c4835f">getAnimationName</a> (const aiScene *scene, int animIndex)</td></tr>
+<tr class="separator:a7f360c059185004229b0ec0886c4835f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8501bb4ad20b5b78f1398ca811cf87bc" id="r_a8501bb4ad20b5b78f1398ca811cf87bc"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a8501bb4ad20b5b78f1398ca811cf87bc">exportEva</a> (const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton, const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *clip)</td></tr>
+<tr class="memdesc:a8501bb4ad20b5b78f1398ca811cf87bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize skeleton + clip to a compact text format (no mesh). Used to ship Mixamo-derived test fixtures without redistributing skins.  <br /></td></tr>
+<tr class="separator:a8501bb4ad20b5b78f1398ca811cf87bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6d783a5edd9c83953ac358e62419850" id="r_ac6d783a5edd9c83953ac358e62419850"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#ac6d783a5edd9c83953ac358e62419850">importEva</a> (const std::string &amp;text, <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> **skeletonOut, <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> **clipOut)</td></tr>
+<tr class="memdesc:ac6d783a5edd9c83953ac358e62419850"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load skeleton+clip from exportEva text (new'd; caller owns).  <br /></td></tr>
+<tr class="separator:ac6d783a5edd9c83953ac358e62419850"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a364581a9242413b17e95e7ac15a1848e" id="r_a364581a9242413b17e95e7ac15a1848e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a364581a9242413b17e95e7ac15a1848e">importEvaFile</a> (const std::string &amp;path, <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> **skeletonOut, <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> **clipOut)</td></tr>
+<tr class="memdesc:a364581a9242413b17e95e7ac15a1848e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load from <code>.eva</code> file path.  <br /></td></tr>
+<tr class="separator:a364581a9242413b17e95e7ac15a1848e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Import <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html" title="3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...">AnimSkeleton</a> / <a class="el" href="classeve_1_1animation_1_1AnimClip.html" title="Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.">AnimClip</a> from an Assimp scene (FBX/glTF/etc), or from compact <code>.eva</code> text fixtures derived from those assets. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8h_source.html">AnimImporter.h</a> 第 <a class="el" href="AnimImporter_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a8501bb4ad20b5b78f1398ca811cf87bc" name="a8501bb4ad20b5b78f1398ca811cf87bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8501bb4ad20b5b78f1398ca811cf87bc">&#9670;&#160;</a></span>exportEva()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimImporter::exportEva </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td>
+          <td class="paramname"><em>clip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Serialize skeleton + clip to a compact text format (no mesh). Used to ship Mixamo-derived test fixtures without redistributing skins. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00075">eve::animation::AnimSkeleton::getBindPositionX()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00079">eve::animation::AnimSkeleton::getBindPositionY()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00083">eve::animation::AnimSkeleton::getBindPositionZ()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00099">eve::animation::AnimSkeleton::getBindRotationW()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00087">eve::animation::AnimSkeleton::getBindRotationX()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00091">eve::animation::AnimSkeleton::getBindRotationY()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00095">eve::animation::AnimSkeleton::getBindRotationZ()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00103">eve::animation::AnimSkeleton::getBindScaleX()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00107">eve::animation::AnimSkeleton::getBindScaleY()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00111">eve::animation::AnimSkeleton::getBindScaleZ()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00032">eve::animation::AnimSkeleton::getBoneName()</a>, <a class="el" href="AnimClip_8h_source.html#l00029">eve::animation::AnimClip::getDuration()</a>, <a class="el" href="AnimClip_8h_source.html#l00032">eve::animation::AnimClip::getLoop()</a>, <a class="el" href="AnimClip_8h_source.html#l00026">eve::animation::AnimClip::getName()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00044">eve::animation::AnimSkeleton::getParent()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00076">eve::animation::AnimClip::getPositionKeyCount()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00099">eve::animation::AnimClip::getPositionKeyTime()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00103">eve::animation::AnimClip::getPositionKeyX()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00107">eve::animation::AnimClip::getPositionKeyY()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00111">eve::animation::AnimClip::getPositionKeyZ()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00081">eve::animation::AnimClip::getRotationKeyCount()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00116">eve::animation::AnimClip::getRotationKeyTime()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00132">eve::animation::AnimClip::getRotationKeyW()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00120">eve::animation::AnimClip::getRotationKeyX()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00124">eve::animation::AnimClip::getRotationKeyY()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00128">eve::animation::AnimClip::getRotationKeyZ()</a>, <a class="el" href="AnimClip_8h_source.html#l00036">eve::animation::AnimClip::getSampleRate()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00086">eve::animation::AnimClip::getScaleKeyCount()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00137">eve::animation::AnimClip::getScaleKeyTime()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00141">eve::animation::AnimClip::getScaleKeyX()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00145">eve::animation::AnimClip::getScaleKeyY()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00149">eve::animation::AnimClip::getScaleKeyZ()</a>.</p>
+
+</div>
+</div>
+<a id="a00fa170f92b4263379f4e6707d73c4be" name="a00fa170f92b4263379f4e6707d73c4be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00fa170f92b4263379f4e6707d73c4be">&#9670;&#160;</a></span>getAnimationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimImporter::getAnimationCount </td>
+          <td>(</td>
+          <td class="paramtype">const aiScene *&#160;</td>
+          <td class="paramname"><em>scene</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimImporterModel_8cpp_source.html#l00019">getAnimationCountFromModel()</a>, <a class="el" href="AnimImporter_8cpp_source.html#l00130">getAnimationName()</a> , 以及 <a class="el" href="AnimImporter_8cpp_source.html#l00086">loadClip()</a>.</p>
+
+</div>
+</div>
+<a id="a39c85a089a547e51c2e2f5cc94957428" name="a39c85a089a547e51c2e2f5cc94957428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39c85a089a547e51c2e2f5cc94957428">&#9670;&#160;</a></span>getAnimationCountFromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimImporter::getAnimationCountFromModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimImporterModel_8cpp_source.html">AnimImporterModel.cpp</a> 第 <a class="el" href="AnimImporterModel_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimImporter_8cpp_source.html#l00125">getAnimationCount()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>.</p>
+
+</div>
+</div>
+<a id="a7f360c059185004229b0ec0886c4835f" name="a7f360c059185004229b0ec0886c4835f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f360c059185004229b0ec0886c4835f">&#9670;&#160;</a></span>getAnimationName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimImporter::getAnimationName </td>
+          <td>(</td>
+          <td class="paramtype">const aiScene *&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>animIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="AnimImporter_8cpp_source.html#l00125">getAnimationCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimImporterModel_8cpp_source.html#l00023">getAnimationNameFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="a079f85d1a24a7bd803eba6104199572d" name="a079f85d1a24a7bd803eba6104199572d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a079f85d1a24a7bd803eba6104199572d">&#9670;&#160;</a></span>getAnimationNameFromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimImporter::getAnimationNameFromModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>animIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimImporterModel_8cpp_source.html">AnimImporterModel.cpp</a> 第 <a class="el" href="AnimImporterModel_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimImporter_8cpp_source.html#l00130">getAnimationName()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>.</p>
+
+</div>
+</div>
+<a id="ac6d783a5edd9c83953ac358e62419850" name="ac6d783a5edd9c83953ac358e62419850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6d783a5edd9c83953ac358e62419850">&#9670;&#160;</a></span>importEva()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimImporter::importEva </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> **&#160;</td>
+          <td class="paramname"><em>skeletonOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> **&#160;</td>
+          <td class="paramname"><em>clipOut</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load skeleton+clip from exportEva text (new'd; caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00035">eve::animation::AnimClip::addPositionKey()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00045">eve::animation::AnimClip::addRotationKey()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00066">eve::animation::AnimClip::addScaleKey()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>, <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00175">parent</a>, <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>, <a class="el" href="AnimClip_8cpp_source.html#l00018">eve::animation::AnimClip::setDuration()</a>, <a class="el" href="AnimClip_8h_source.html#l00031">eve::animation::AnimClip::setLoop()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00023">eve::animation::AnimClip::setSampleRate()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimImporter_8cpp_source.html#l00275">importEvaFile()</a>.</p>
+
+</div>
+</div>
+<a id="a364581a9242413b17e95e7ac15a1848e" name="a364581a9242413b17e95e7ac15a1848e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a364581a9242413b17e95e7ac15a1848e">&#9670;&#160;</a></span>importEvaFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimImporter::importEvaFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> **&#160;</td>
+          <td class="paramname"><em>skeletonOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> **&#160;</td>
+          <td class="paramname"><em>clipOut</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load from <code>.eva</code> file path. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimImporter_8cpp_source.html#l00179">importEva()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00195">eve::animation::Animation::newClipFromEvaFile()</a>, <a class="el" href="Animation_8cpp_source.html#l00187">eve::animation::Animation::newSkeletonFromEvaFile()</a> , 以及 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00085">eve::animation::AnimClipRegistry::reloadPath()</a>.</p>
+
+</div>
+</div>
+<a id="a35e93f373229f84ff5b8152a63f4af6f" name="a35e93f373229f84ff5b8152a63f4af6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35e93f373229f84ff5b8152a63f4af6f">&#9670;&#160;</a></span>loadClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> * eve::animation::AnimImporter::loadClip </td>
+          <td>(</td>
+          <td class="paramtype">const aiScene *&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>animIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load clip by index; maps node-name channels onto skeleton bones. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00037">eve::animation::AnimSkeleton::findBone()</a>, <a class="el" href="AnimImporter_8cpp_source.html#l00125">getAnimationCount()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00018">eve::animation::AnimClip::setDuration()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimImporterModel_8cpp_source.html#l00013">loadClipFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="a0656a3301404f803bf90fb579699fa7b" name="a0656a3301404f803bf90fb579699fa7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0656a3301404f803bf90fb579699fa7b">&#9670;&#160;</a></span>loadClipFromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> * eve::animation::AnimImporter::loadClipFromModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>animIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimImporterModel_8cpp_source.html">AnimImporterModel.cpp</a> 第 <a class="el" href="AnimImporterModel_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimImporter_8cpp_source.html#l00086">loadClip()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00182">eve::animation::Animation::newClipFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="ac1a8c1b7760fca8090c2bd9514be7bc4" name="ac1a8c1b7760fca8090c2bd9514be7bc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1a8c1b7760fca8090c2bd9514be7bc4">&#9670;&#160;</a></span>loadSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::AnimImporter::loadSkeleton </td>
+          <td>(</td>
+          <td class="paramtype">const aiScene *&#160;</td>
+          <td class="paramname"><em>scene</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build skeleton from the scene node hierarchy (depth-first). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a> 第 <a class="el" href="AnimImporter_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimImporterModel_8cpp_source.html#l00008">loadSkeletonFromModel()</a>.</p>
+
+</div>
+</div>
+<a id="a0282bce2154dca2342e567328aefda24" name="a0282bce2154dca2342e567328aefda24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0282bce2154dca2342e567328aefda24">&#9670;&#160;</a></span>loadSkeletonFromModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::AnimImporter::loadSkeletonFromModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1model3d_1_1ModelData.html">model3d::ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convenience: ModelData wrappers (implemented in <a class="el" href="AnimImporterModel_8cpp.html">AnimImporterModel.cpp</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimImporterModel_8cpp_source.html">AnimImporterModel.cpp</a> 第 <a class="el" href="AnimImporterModel_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimImporter_8cpp_source.html#l00072">loadSkeleton()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00530">model</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00178">eve::animation::Animation::newSkeletonFromModel()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimImporter_8h_source.html">AnimImporter.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimImporter_8cpp_source.html">AnimImporter.cpp</a></li>
+<li>src/modules/animation/<a class="el" href="AnimImporterModel_8cpp_source.html">AnimImporterModel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/Procgen.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Procgen.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Procgen_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Grid2D_8h.html">procgen/Grid2D.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="OutputSpec_8h.html">procgen/OutputSpec.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Palette_8h.html">procgen/Palette.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Params_8h.html">procgen/Params.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Heightmap_8h.html">procgen/heightmap/Heightmap.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainSampler_8h.html">procgen/heightmap/TerrainSampler.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="CloudField_8h.html">procgen/texture/CloudField.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="CloudShadow_8h.html">procgen/texture/CloudShadow.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span>ImageData;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}  <span class="comment">// namespace eve::image</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">struct </span>PbrTextureSet;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Procgen.html">   37</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Procgen.html#a615800a1581d62bdcc3dc33626bb7f1e">   39</a></span>    <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a615800a1581d62bdcc3dc33626bb7f1e">Module_REG</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#acd93ae539b8439a115275e32b13d2d46">Procgen</a>();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Procgen.html#ab96239f5af465d542b6cc0f9488e1c1e">   41</a></span>    <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ab96239f5af465d542b6cc0f9488e1c1e">~Procgen</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a>     *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a5faf059c9026efabe740afff2c38dd1b">newParams</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a8891b918238e4f91be2945b4fe9ff753">newOutput</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a>     *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a7362757ebae35123a9b03cae116529d0">newGrid</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="comment">// --- Phase A: maps ---</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a29f276026d271090aa8b92cf12799cb6">generate</a>(<span class="keyword">const</span> std::string &amp;algorithmId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">bool</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a7f5cc8199cf4c7a0bf0948c2e436e04c">generateTo</a>(<span class="keyword">const</span> std::string &amp;algorithmId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params, <a class="code hl_class" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a> *output);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">bool</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a59e1b55719b4f2483adf7dc38c24ffc7">applyToLayer</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *grid, <span class="keyword">const</span> std::string &amp;palette, <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a4cb3c918be0d271d8d2a00b95a7ffed3">setPaletteGid</a>(<span class="keyword">const</span> std::string &amp;palette, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>, <span class="keywordtype">int</span> gid);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ab08f47ec0af87bf7b6238ed35623c532">getPaletteGid</a>(<span class="keyword">const</span> std::string &amp;palette, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#acc3133b1b59f7e9fcb77cc2a9e50a22a">getAlgorithmCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a6103224ff94a69ae0709724b951919a7">getAlgorithmId</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#aac363cb788ca907f296d01d145c913aa">hasAlgorithm</a>(<span class="keyword">const</span> std::string &amp;algorithmId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#af4fb96fe24c0917f9c77a9c202080187">autotileGrid</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *grid);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    uint32_t <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ace94eec17a5b27f86d99a97a98facaea">randomSeed</a>();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ae868898a3178f28eb2e29315a7180efe">lastError</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#add5cb7a808a094e1b8606440f16da4d6">gridToJson</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *grid) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">// --- Phase B: textures ---</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a5cd74cdf7bcd8cb47e4054834352eb28">generateImage</a>(<span class="keyword">const</span> std::string &amp;recipeId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a7f0683b067dd8b60383109b81e12c83a">generateNormalImage</a>(<span class="keyword">const</span> std::string &amp;recipeId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a5374163ade79ee3ec1f53e9944bd8d8f">generateTexture</a>(<span class="keyword">const</span> std::string &amp;recipeId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                       <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a094b742b7940bbb74fd74a0508e32ba1">getTextureRecipeCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#af28e425020b63ab02ade5a4c630f4af6">getTextureRecipeId</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a23d81d451721ff5dfeb9dafb06602924">hasTextureRecipe</a>(<span class="keyword">const</span> std::string &amp;recipeId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="comment">// --- Phase E: dynamic clouds + cloud shadows ---</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a0c8ab08cb79f89bb38697343b8d73f87">newCloudField</a>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a83996b74e0409ea61b5003020ecceb78">newCloudShadow</a>();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a444cfb8e6dc97415d506ba13f74e3b87">cloudCoverageAt</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *field, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <span class="keywordtype">float</span> time);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ab7835332143032aa93608d39d7323541">cloudShadowFactor</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *shadow, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, <span class="keywordtype">float</span> time);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a389c734e55661c3664cb98206dbb7971">sampleCloud</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *field, <span class="keywordtype">float</span> *out, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> x0, <span class="keywordtype">float</span> z0,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                     <span class="keywordtype">float</span> extent);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a4e64443b115ae0b8c5f160cee5b09e5b">sampleCloudShadow</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *shadow, <span class="keywordtype">float</span> *out, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> x0,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                           <span class="keywordtype">float</span> z0, <span class="keywordtype">float</span> extent);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#aea02da1582f4f2565dc634569811070e">generatePbrMaterial</a>(<span class="keyword">const</span> std::string &amp;recipeId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ac7a62ea843b681f26f968c36b1f8d945">getPbrRecipeCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ab5947339c1f3b7a89ee04e305b36305d">getPbrRecipeId</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a9f4be2549c6d4397ce03051df5e7212a">hasPbrRecipe</a>(<span class="keyword">const</span> std::string &amp;recipeId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="comment">// --- Mesh recipes (Marching Cubes, …) ---</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ae6f5f687a56b7fbb441248ce81e67bd3">buildMesh</a>(<span class="keyword">const</span> std::string &amp;recipeId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ad232fd35b13fd2f225b91757d4204f86">generateMesh</a>(<span class="keyword">const</span> std::string &amp;recipeId, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                                 <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#aa3431f3661c672d04ea9676ed5c7d3a1">getMeshRecipeCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::string <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a91d73e1c5bc62aa0dbe2ee3c46633727">getMeshRecipeId</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ad58e11f06d7d0d839f045d94cf90f07d">hasMeshRecipe</a>(<span class="keyword">const</span> std::string &amp;recipeId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="comment">// --- Phase D: terrain height sampling ---</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#af3c597df4ad0e6c6a4d31c8b57fc5d31">newTerrainSampler</a>();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a7024bd2666a1ad40f118c2a0a123c9ee">newHeightmap</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a64bfa661d8da013dacd0b5ce2f8c455a">generateHeightmap</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#a6493cc25abca3823a940a5150a201f21">heightmapToGrid</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *heightmap, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> *params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *out);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1Procgen.html#ad7d4c30c92653bcad13727bf7b96775a">  134</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1Procgen.html#ad7d4c30c92653bcad13727bf7b96775a">palettes</a>() { <span class="keywordflow">return</span> palettes_; }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">bool</span> runGenerate(<span class="keyword">const</span> std::string &amp;algorithmId, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a>                     palettes_;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keyword">mutable</span> std::string              lastError_;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; algorithmIdsCache_;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; textureRecipeIdsCache_;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; pbrRecipeIdsCache_;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; meshRecipeIdsCache_;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>};</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCloudField_8h_html"><div class="ttname"><a href="CloudField_8h.html">CloudField.h</a></div></div>
+<div class="ttc" id="aCloudShadow_8h_html"><div class="ttname"><a href="CloudShadow_8h.html">CloudShadow.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a48083b65ac9a863566dc3e3fff09a5b4"><div class="ttname"><a href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00235">Grass.cpp:235</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrid2D_8h_html"><div class="ttname"><a href="Grid2D_8h.html">Grid2D.h</a></div></div>
+<div class="ttc" id="aHeightmap_8h_html"><div class="ttname"><a href="Heightmap_8h.html">Heightmap.h</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aOutputSpec_8h_html"><div class="ttname"><a href="OutputSpec_8h.html">OutputSpec.h</a></div></div>
+<div class="ttc" id="aPalette_8h_html"><div class="ttname"><a href="Palette_8h.html">Palette.h</a></div></div>
+<div class="ttc" id="aParams_8h_html"><div class="ttname"><a href="Params_8h.html">Params.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a2474a5474cbff19523a51eb1de01cda4"><div class="ttname"><a href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00144">Pathfinder.cpp:144</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aTerrainSampler_8h_html"><div class="ttname"><a href="TerrainSampler_8h.html">TerrainSampler.h</a></div></div>
+<div class="ttc" id="aWfcSimple_8cpp_html_adb4a2bf208285ee38a22edc61cb92ed3"><div class="ttname"><a href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a></div><div class="ttdeci">uint32_t semantic</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00015">WfcSimple.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00018">Mesh.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00017">Texture.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00025">ImageData.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></div><div class="ttdoc">ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem batch-draws atlas ...</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00030">TileLayer.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html">eve::procgen::CloudField</a></div><div class="ttdoc">Deterministic, seamlessly-tiling, time-animated procedural cloud field.</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00017">CloudField.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudShadow_html"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudShadow.html">eve::procgen::CloudShadow</a></div><div class="ttdoc">Cloud shadows cast onto the ground plane.</div><div class="ttdef"><b>Definition</b> <a href="CloudShadow_8h_source.html#l00021">CloudShadow.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></div><div class="ttdoc">Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8h_source.html#l00016">Grid2D.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00019">Heightmap.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html">eve::procgen::MeshBuild</a></div><div class="ttdoc">CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8h_source.html#l00014">MeshBuild.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1OutputSpec_html"><div class="ttname"><a href="classeve_1_1procgen_1_1OutputSpec.html">eve::procgen::OutputSpec</a></div><div class="ttdoc">Configurable generation sink. target: &quot;grid&quot; | &quot;tilelayer&quot; | &quot;json&quot;</div><div class="ttdef"><b>Definition</b> <a href="OutputSpec_8h_source.html#l00015">OutputSpec.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PaletteTable_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PaletteTable.html">eve::procgen::PaletteTable</a></div><div class="ttdoc">Named palette: semantic name -&gt; tile GID. Unmapped semantics become GID 0.</div><div class="ttdef"><b>Definition</b> <a href="Palette_8h_source.html#l00016">Palette.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Generation parameters. Algorithm-specific keys live in values as strings (no overloads; typed setters...</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00013">Params.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html">eve::procgen::Procgen</a></div><div class="ttdoc">Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)....</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8h_source.html#l00037">Procgen.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a094b742b7940bbb74fd74a0508e32ba1"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a094b742b7940bbb74fd74a0508e32ba1">eve::procgen::Procgen::getTextureRecipeCount</a></div><div class="ttdeci">int getTextureRecipeCount() const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00210">Procgen.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a0c8ab08cb79f89bb38697343b8d73f87"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a0c8ab08cb79f89bb38697343b8d73f87">eve::procgen::Procgen::newCloudField</a></div><div class="ttdeci">CloudField * newCloudField()</div><div class="ttdoc">New deterministic, tiling, time-animated cloud field (caller owns).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00230">Procgen.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a23d81d451721ff5dfeb9dafb06602924"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a23d81d451721ff5dfeb9dafb06602924">eve::procgen::Procgen::hasTextureRecipe</a></div><div class="ttdeci">bool hasTextureRecipe(const std::string &amp;recipeId) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00225">Procgen.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a29f276026d271090aa8b92cf12799cb6"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a29f276026d271090aa8b92cf12799cb6">eve::procgen::Procgen::generate</a></div><div class="ttdeci">Grid2D * generate(const std::string &amp;algorithmId, Params *params)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00072">Procgen.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a389c734e55661c3664cb98206dbb7971"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a389c734e55661c3664cb98206dbb7971">eve::procgen::Procgen::sampleCloud</a></div><div class="ttdeci">void sampleCloud(CloudField *field, float *out, int w, int h, float time, float x0, float z0, float extent)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00252">Procgen.cpp:252</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a444cfb8e6dc97415d506ba13f74e3b87"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a444cfb8e6dc97415d506ba13f74e3b87">eve::procgen::Procgen::cloudCoverageAt</a></div><div class="ttdeci">float cloudCoverageAt(CloudField *field, float x, float z, float time)</div><div class="ttdoc">Cloud coverage at world (x, z) and time (via a CloudField).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00234">Procgen.cpp:234</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a4cb3c918be0d271d8d2a00b95a7ffed3"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a4cb3c918be0d271d8d2a00b95a7ffed3">eve::procgen::Procgen::setPaletteGid</a></div><div class="ttdeci">void setPaletteGid(const std::string &amp;palette, const std::string &amp;semantic, int gid)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00122">Procgen.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a4e64443b115ae0b8c5f160cee5b09e5b"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a4e64443b115ae0b8c5f160cee5b09e5b">eve::procgen::Procgen::sampleCloudShadow</a></div><div class="ttdeci">void sampleCloudShadow(CloudShadow *shadow, float *out, int w, int h, float time, float x0, float z0, float extent)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00262">Procgen.cpp:262</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a5374163ade79ee3ec1f53e9944bd8d8f"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a5374163ade79ee3ec1f53e9944bd8d8f">eve::procgen::Procgen::generateTexture</a></div><div class="ttdeci">graphics::Texture * generateTexture(const std::string &amp;recipeId, Params *params, graphics::Graphics *gfx)</div><div class="ttdoc">Upload recipe to GPU. repeatU/V follow params &quot;seamless&quot; (default on). Caller owns Texture*.</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00195">Procgen.cpp:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a59e1b55719b4f2483adf7dc38c24ffc7"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a59e1b55719b4f2483adf7dc38c24ffc7">eve::procgen::Procgen::applyToLayer</a></div><div class="ttdeci">bool applyToLayer(Grid2D *grid, const std::string &amp;palette, map::TileLayer *layer)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00113">Procgen.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a5cd74cdf7bcd8cb47e4054834352eb28"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a5cd74cdf7bcd8cb47e4054834352eb28">eve::procgen::Procgen::generateImage</a></div><div class="ttdeci">image::ImageData * generateImage(const std::string &amp;recipeId, Params *params)</div><div class="ttdoc">RGBA8 ImageData (caller owns). Pixel-friendly recipes: tex.soil/stone/marble/water/sky_cloud.</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00162">Procgen.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a5faf059c9026efabe740afff2c38dd1b"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a5faf059c9026efabe740afff2c38dd1b">eve::procgen::Procgen::newParams</a></div><div class="ttdeci">Params * newParams()</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00053">Procgen.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a6103224ff94a69ae0709724b951919a7"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a6103224ff94a69ae0709724b951919a7">eve::procgen::Procgen::getAlgorithmId</a></div><div class="ttdeci">std::string getAlgorithmId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00135">Procgen.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a615800a1581d62bdcc3dc33626bb7f1e"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a615800a1581d62bdcc3dc33626bb7f1e">eve::procgen::Procgen::Module_REG</a></div><div class="ttdeci">Module_REG(Procgen)</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a6493cc25abca3823a940a5150a201f21"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a6493cc25abca3823a940a5150a201f21">eve::procgen::Procgen::heightmapToGrid</a></div><div class="ttdeci">bool heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out)</div><div class="ttdoc">Classify a heightmap into a semantic Grid2D using params bands (waterMax…).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00371">Procgen.cpp:371</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a64bfa661d8da013dacd0b5ce2f8c455a"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a64bfa661d8da013dacd0b5ce2f8c455a">eve::procgen::Procgen::generateHeightmap</a></div><div class="ttdeci">Heightmap * generateHeightmap(Params *params)</div><div class="ttdoc">Build a sampler from params (seed/scale/octaves/…) and materialize it (caller owns).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00361">Procgen.cpp:361</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a7024bd2666a1ad40f118c2a0a123c9ee"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a7024bd2666a1ad40f118c2a0a123c9ee">eve::procgen::Procgen::newHeightmap</a></div><div class="ttdeci">Heightmap * newHeightmap(int width, int height)</div><div class="ttdoc">Empty in-memory heightmap (caller owns).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00357">Procgen.cpp:357</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a7362757ebae35123a9b03cae116529d0"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a7362757ebae35123a9b03cae116529d0">eve::procgen::Procgen::newGrid</a></div><div class="ttdeci">Grid2D * newGrid(int width, int height)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00056">Procgen.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a7f0683b067dd8b60383109b81e12c83a"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a7f0683b067dd8b60383109b81e12c83a">eve::procgen::Procgen::generateNormalImage</a></div><div class="ttdeci">image::ImageData * generateNormalImage(const std::string &amp;recipeId, Params *params)</div><div class="ttdoc">Normal map derived from albedo luminance (caller owns).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00175">Procgen.cpp:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a7f5cc8199cf4c7a0bf0948c2e436e04c"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a7f5cc8199cf4c7a0bf0948c2e436e04c">eve::procgen::Procgen::generateTo</a></div><div class="ttdeci">bool generateTo(const std::string &amp;algorithmId, Params *params, OutputSpec *output)</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00085">Procgen.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a83996b74e0409ea61b5003020ecceb78"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a83996b74e0409ea61b5003020ecceb78">eve::procgen::Procgen::newCloudShadow</a></div><div class="ttdeci">CloudShadow * newCloudShadow()</div><div class="ttdoc">New sun projection over a cloud field → ground shadows (caller owns).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00232">Procgen.cpp:232</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a8891b918238e4f91be2945b4fe9ff753"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a8891b918238e4f91be2945b4fe9ff753">eve::procgen::Procgen::newOutput</a></div><div class="ttdeci">OutputSpec * newOutput()</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00054">Procgen.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a91d73e1c5bc62aa0dbe2ee3c46633727"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a91d73e1c5bc62aa0dbe2ee3c46633727">eve::procgen::Procgen::getMeshRecipeId</a></div><div class="ttdeci">std::string getMeshRecipeId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00341">Procgen.cpp:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_a9f4be2549c6d4397ce03051df5e7212a"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#a9f4be2549c6d4397ce03051df5e7212a">eve::procgen::Procgen::hasPbrRecipe</a></div><div class="ttdeci">bool hasPbrRecipe(const std::string &amp;recipeId) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00299">Procgen.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_aa3431f3661c672d04ea9676ed5c7d3a1"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#aa3431f3661c672d04ea9676ed5c7d3a1">eve::procgen::Procgen::getMeshRecipeCount</a></div><div class="ttdeci">int getMeshRecipeCount() const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00335">Procgen.cpp:335</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_aac363cb788ca907f296d01d145c913aa"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#aac363cb788ca907f296d01d145c913aa">eve::procgen::Procgen::hasAlgorithm</a></div><div class="ttdeci">bool hasAlgorithm(const std::string &amp;algorithmId) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00141">Procgen.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ab08f47ec0af87bf7b6238ed35623c532"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ab08f47ec0af87bf7b6238ed35623c532">eve::procgen::Procgen::getPaletteGid</a></div><div class="ttdeci">int getPaletteGid(const std::string &amp;palette, const std::string &amp;semantic) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00126">Procgen.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ab5947339c1f3b7a89ee04e305b36305d"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ab5947339c1f3b7a89ee04e305b36305d">eve::procgen::Procgen::getPbrRecipeId</a></div><div class="ttdeci">std::string getPbrRecipeId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00290">Procgen.cpp:290</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ab7835332143032aa93608d39d7323541"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ab7835332143032aa93608d39d7323541">eve::procgen::Procgen::cloudShadowFactor</a></div><div class="ttdeci">float cloudShadowFactor(CloudShadow *shadow, float x, float z, float time)</div><div class="ttdoc">Light multiplier in [0,1] from a CloudShadow at world (x, z) and time.</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00243">Procgen.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ab96239f5af465d542b6cc0f9488e1c1e"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ab96239f5af465d542b6cc0f9488e1c1e">eve::procgen::Procgen::~Procgen</a></div><div class="ttdeci">~Procgen() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ac7a62ea843b681f26f968c36b1f8d945"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ac7a62ea843b681f26f968c36b1f8d945">eve::procgen::Procgen::getPbrRecipeCount</a></div><div class="ttdeci">int getPbrRecipeCount() const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00284">Procgen.cpp:284</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_acc3133b1b59f7e9fcb77cc2a9e50a22a"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#acc3133b1b59f7e9fcb77cc2a9e50a22a">eve::procgen::Procgen::getAlgorithmCount</a></div><div class="ttdeci">int getAlgorithmCount() const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00130">Procgen.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_acd93ae539b8439a115275e32b13d2d46"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#acd93ae539b8439a115275e32b13d2d46">eve::procgen::Procgen::Procgen</a></div><div class="ttdeci">Procgen()</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00028">Procgen.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ace94eec17a5b27f86d99a97a98facaea"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ace94eec17a5b27f86d99a97a98facaea">eve::procgen::Procgen::randomSeed</a></div><div class="ttdeci">uint32_t randomSeed()</div><div class="ttdoc">Fresh non-zero seed for regenerating a level.</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00153">Procgen.cpp:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ad232fd35b13fd2f225b91757d4204f86"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ad232fd35b13fd2f225b91757d4204f86">eve::procgen::Procgen::generateMesh</a></div><div class="ttdeci">graphics::Mesh * generateMesh(const std::string &amp;recipeId, Params *params, graphics::Graphics *gfx)</div><div class="ttdoc">Build + upload to GPU Mesh (owned by Graphics).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00320">Procgen.cpp:320</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ad58e11f06d7d0d839f045d94cf90f07d"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ad58e11f06d7d0d839f045d94cf90f07d">eve::procgen::Procgen::hasMeshRecipe</a></div><div class="ttdeci">bool hasMeshRecipe(const std::string &amp;recipeId) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00350">Procgen.cpp:350</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ad7d4c30c92653bcad13727bf7b96775a"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ad7d4c30c92653bcad13727bf7b96775a">eve::procgen::Procgen::palettes</a></div><div class="ttdeci">PaletteTable &amp; palettes()</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8h_source.html#l00134">Procgen.h:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_add5cb7a808a094e1b8606440f16da4d6"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#add5cb7a808a094e1b8606440f16da4d6">eve::procgen::Procgen::gridToJson</a></div><div class="ttdeci">std::string gridToJson(Grid2D *grid) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00157">Procgen.cpp:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ae6f5f687a56b7fbb441248ce81e67bd3"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ae6f5f687a56b7fbb441248ce81e67bd3">eve::procgen::Procgen::buildMesh</a></div><div class="ttdeci">MeshBuild * buildMesh(const std::string &amp;recipeId, Params *params)</div><div class="ttdoc">CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet.</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00304">Procgen.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_ae868898a3178f28eb2e29315a7180efe"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#ae868898a3178f28eb2e29315a7180efe">eve::procgen::Procgen::lastError</a></div><div class="ttdeci">std::string lastError() const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00155">Procgen.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_aea02da1582f4f2565dc634569811070e"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#aea02da1582f4f2565dc634569811070e">eve::procgen::Procgen::generatePbrMaterial</a></div><div class="ttdeci">PbrTextureSet * generatePbrMaterial(const std::string &amp;recipeId, Params *params)</div><div class="ttdoc">Full metallic-roughness PBR set (albedo/normal/roughness/metallic/height/ao) derived from a single di...</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00272">Procgen.cpp:272</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_af28e425020b63ab02ade5a4c630f4af6"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#af28e425020b63ab02ade5a4c630f4af6">eve::procgen::Procgen::getTextureRecipeId</a></div><div class="ttdeci">std::string getTextureRecipeId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00216">Procgen.cpp:216</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_af3c597df4ad0e6c6a4d31c8b57fc5d31"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#af3c597df4ad0e6c6a4d31c8b57fc5d31">eve::procgen::Procgen::newTerrainSampler</a></div><div class="ttdeci">TerrainSampler * newTerrainSampler()</div><div class="ttdoc">Sampling function over continuous map coordinates (caller owns).</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00355">Procgen.cpp:355</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Procgen_html_af4fb96fe24c0917f9c77a9c202080187"><div class="ttname"><a href="classeve_1_1procgen_1_1Procgen.html#af4fb96fe24c0917f9c77a9c202080187">eve::procgen::Procgen::autotileGrid</a></div><div class="ttdeci">bool autotileGrid(Grid2D *grid)</div><div class="ttdoc">Post-process a generated grid: fill each wall cell's detail with an 8-bit neighbour mask (autotile di...</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00145">Procgen.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainSampler_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></div><div class="ttdoc">Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).</div><div class="ttdef"><b>Definition</b> <a href="TerrainSampler_8h_source.html#l00027">TerrainSampler.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00017">AvatarInstance.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="BuiltinAlgorithms_8cpp_source.html#l00013">BuiltinAlgorithms.cpp:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrTextureSet_html"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrTextureSet.html">eve::procgen::PbrTextureSet</a></div><div class="ttdoc">Full metallic-roughness PBR map set. All maps are caller-owned; call destroy() (or delete each pointe...</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8h_source.html#l00024">PbrMaterial.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

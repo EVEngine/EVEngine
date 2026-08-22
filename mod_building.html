@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 建筑放置模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">建筑放置模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>建筑放置 — <code>building</code></h1>
+<p>面向策略 / RTS / 经营模拟（ETS）的建筑放置框架：数据驱动定义、格子占用世界、鬼影预览、 可插拔校验与吸附规则。设计见 建筑放置系统设计。</p>
+<p>可运行示例：<a href="../../../examples/building/"><code>examples/building</code></a>（<code>make building</code>）。</p>
+<h2>入口</h2>
+<div class="fragment"><div class="line">building &lt;- eve.Building();</div>
+<div class="line">building.registerBuildingsFromJson(jsonText);</div>
+<div class="line">local world = building.newWorld(64, 64, 32.0); // 宽、高、格子像素/世界单位</div>
+<div class="line">local ghost = building.newGhost();</div>
+</div><!-- fragment --><h2>最小示例</h2>
+<div class="fragment"><div class="line">building &lt;- eve.Building();</div>
+<div class="line">building.registerBuildingsFromJson(@&quot;</div>
+<div class="line">[</div>
+<div class="line">  {\&quot;id\&quot;:\&quot;house\&quot;,\&quot;displayName\&quot;:\&quot;House\&quot;,\&quot;footprintW\&quot;:2,\&quot;footprintH\&quot;:2,</div>
+<div class="line">   \&quot;tags\&quot;:[\&quot;house\&quot;],\&quot;cost\&quot;:{\&quot;wood\&quot;:20}},</div>
+<div class="line">  {\&quot;id\&quot;:\&quot;road\&quot;,\&quot;footprintW\&quot;:1,\&quot;footprintH\&quot;:1,\&quot;tags\&quot;:[\&quot;road\&quot;]}</div>
+<div class="line">]</div>
+<div class="line">&quot;);</div>
+<div class="line"> </div>
+<div class="line">world &lt;- building.newWorld(32, 32, 32.0);</div>
+<div class="line">world.setId(&quot;town&quot;);</div>
+<div class="line">world.fillTerrain(1);</div>
+<div class="line"> </div>
+<div class="line">ghost &lt;- building.newGhost();</div>
+<div class="line">ghost.setBuildingId(&quot;house&quot;);</div>
+<div class="line">ghost.setFromWorld(world, mouseX, mouseY); // 按定义 snapMode 吸附</div>
+<div class="line">if (ghost.validate(world)) {</div>
+<div class="line">    local id = world.placeGhost(ghost);</div>
+<div class="line">    print(&quot;placed &quot; + id + &quot;\n&quot;);</div>
+<div class="line">} else {</div>
+<div class="line">    print(&quot;cannot place: &quot; + ghost.getReason() + &quot;\n&quot;);</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2>任务导向示例</h2>
+<h3>1. 沿道路摆摊（邻接标签）</h3>
+<p>定义里设 <code>"requireAdjacentTag":"road"</code>，先铺 <code>road</code>，再放摊位；失败原因为 <code>adjacency_tag</code>。</p>
+<h3>2. 码头只能建在水域</h3>
+<p>地形语义由 <code>world.setTerrain(x,y,semantic)</code> 写入；定义 <code>"requireTerrain":[2]</code>。 陆地格会得到 <code>terrain_mismatch</code>。</p>
+<h3>3. 自定义“金币不足”校验（C++）</h3>
+<div class="fragment"><div class="line">PlacementSystem::registerValidateRule(<span class="stringliteral">&quot;needGold&quot;</span>,</div>
+<div class="line">    [](<span class="keyword">const</span> PlacementWorld&amp;, <span class="keyword">const</span> PlacementQuery&amp;, std::string* reason) {</div>
+<div class="line">        <span class="keywordflow">if</span> (playerGold &lt; 10) { <span class="keywordflow">if</span> (reason) *reason = <span class="stringliteral">&quot;not_enough_gold&quot;</span>; <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">    });</div>
+</div><!-- fragment --><p>建筑定义 <code>"validateRule":"needGold"</code>；脚本侧只需选用该规则名。</p>
+<h2>API 快查</h2>
+<h3><code>Building</code>（模块）</h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>registerBuildingsFromJson(json)</code>   </td><td class="markdownTableBodyNone">批量注册定义，返回成功数    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>clearBuildingDefinitions()</code>   </td><td class="markdownTableBodyNone">清空定义表    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getBuildingDefinitionCount()</code> / <code>hasBuildingDefinition(id)</code>   </td><td class="markdownTableBodyNone">查询    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>getBuildingDisplayName</code> / <code>Category</code> / <code>FootprintW</code> / <code>FootprintH</code>   </td><td class="markdownTableBodyNone">定义字段    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getBuildingSnapMode</code> / <code>RotationMode</code> / <code>ValidateRule</code>   </td><td class="markdownTableBodyNone">策略名    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>buildingHasTag</code> / <code>getBuildingExtra</code> / <code>getBuildingCost</code>   </td><td class="markdownTableBodyNone">标签与扩展    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newWorld(w,h,cellSize)</code> / <code>newGhost()</code>   </td><td class="markdownTableBodyNone">工厂    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>hasValidateRule</code> / <code>hasSnapRule</code>   </td><td class="markdownTableBodyNone">内置+已注册规则    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>clearChangeEvents</code> / <code>getChangeEvent*</code>   </td><td class="markdownTableBodyNone">变更事件 poll   </td></tr>
+</table>
+<h3><code>PlacementWorld</code></h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setOrigin</code> / <code>setCellSize</code> / <code>worldToCell*</code> / <code>cellToWorld*</code>   </td><td class="markdownTableBodyNone">坐标    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>fillTerrain</code> / <code>setTerrain</code> / <code>getTerrain</code>   </td><td class="markdownTableBodyNone">地形语义    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>canPlace</code> / <code>canPlaceReason</code> / <code>placeAt</code> / <code>placeAtWorld</code> / <code>placeGhost</code>   </td><td class="markdownTableBodyNone">放置    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>removeBuilding</code> / <code>moveBuilding</code> / <code>clearBuildings</code>   </td><td class="markdownTableBodyNone">拆除与移动    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getOccupant</code> / <code>isCellEmpty</code> / <code>getBuilding*</code>   </td><td class="markdownTableBodyNone">查询   </td></tr>
+</table>
+<h3><code>Ghost</code></h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setBuildingId</code> / <code>setCell</code> / <code>setFromWorld</code> / <code>setRotationDeg</code> / <code>rotateBy</code>   </td><td class="markdownTableBodyNone">姿态    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>validate(world)</code> / <code>isValid</code> / <code>getReason</code>   </td><td class="markdownTableBodyNone">校验结果   </td></tr>
+</table>
+<h2>生命周期注意</h2>
+<ul>
+<li>将 <code>PlacementWorld</code> / <code>Ghost</code> 保存在全局或实体组件中；不要每帧 <code>newWorld</code>。</li>
+<li>变更事件不会自动清空；批量操作后调用 <code>clearChangeEvents</code> 或按帧 poll。</li>
+<li>自定义 validate/snap/hook 只能在 C++ 注册；脚本通过字符串策略名选用。</li>
+<li>模块**不**扣资源、不画鬼影；<code>cost</code> 仅作数据提示，由游戏在 hook 或脚本中处理。</li>
+</ul>
+<h2>多样式网格 / 3D / Tilemap（2026-08-18 起）</h2>
+<p>坐标换算统一走 <code>grid</code> 模块（纯数学），<code>PlacementWorld</code> 缺省为正交 2D，旧脚本零改动。</p>
+<h3>网格布局</h3>
+<div class="fragment"><div class="line">world.setGridLayout(&quot;isometric&quot;);          // rectangle | hexagon | isometric | staggered | isometric-z-as-y</div>
+<div class="line">world.setGridPlane(&quot;xz&quot;);                  // xy（默认）| xz（3D：第二轴 -&gt; 世界 Z）</div>
+<div class="line">world.setCellGap(2.0, 2.0);</div>
+<div class="line">world.setStagger(&quot;y&quot;, &quot;odd&quot;);</div>
+<div class="line">world.setHexSideLength(14.0);</div>
+</div><!-- fragment --><h3>绑定 Tilemap（复用投影 + GID 地形）</h3>
+<div class="fragment"><div class="line">world.bindTileLayer(layer);                // 同时复用 layer 的 orientation/stagger/hex</div>
+<div class="line">world.setTerrainGid(2, 2);                 // GID 2 -&gt; 地形语义 2（水域）</div>
+<div class="line">world.setTerrainGidMapJson(&quot;{\&quot;1\&quot;:1,\&quot;2\&quot;:2}&quot;);  // 或整表</div>
+</div><!-- fragment --><p>绑定后 <code>getTerrain</code> 从 GID 懒解析；<code>setTerrain</code> 手动覆盖优先。</p>
+<h3>3D 放置（XZ 平面 + 表面接口）</h3>
+<div class="fragment"><div class="line">world.setGridPlane(&quot;xz&quot;);</div>
+<div class="line">ghost.setFromSurface(world, &quot;plane&quot;, hitX, hitZ);   // 内置平面表面；高度 setPlaneSurfaceHeight</div>
+<div class="line">ghost.setFromWorld3D(world, worldX, worldY, worldZ); // 直接喂真实世界坐标</div>
+<div class="line">world.placeAtWorld3D(&quot;house&quot;, x, y, z, rot);</div>
+</div><!-- fragment --><p>物理射线 / 高度场等表面由游戏在 C++ 侧 <code>registerSurface</code> 实现；引擎只提供接口 + <code>plane</code>。</p>
+<h3>通道（同格叠放）</h3>
+<p>定义 <code>"channel":"floor"</code> / <code>"channel":"furniture"</code>，同一格允许跨通道建筑并存； <code>getOccupantInChannel(channel, x, y)</code> / <code>isCellEmptyInChannel</code> 按通道查询。</p>
+<h3>视觉双形态与渲染桥（<code>eve.BuildingFx</code>）</h3>
+<div class="fragment"><div class="line">fx &lt;- eve.BuildingFx();</div>
+<div class="line">fx.attach(world);</div>
+<div class="line">fx.sync(world);                        // 按定义 renderMode/visual2d/visual3d 生成/同步/销毁视觉</div>
+<div class="line">fx.updateGhost(world, ghost);          // 每帧：鬼影 + 占地光标（绿/红）</div>
+<div class="line">fx.setGridVisible(world, true);</div>
+<div class="line">fx.drawGrid2D(world, gfx);             // 2D 网格叠加（渲染循环中调用）</div>
+<div class="line">fx.drawGrid3D(world, gfx, 0.01);       // 3D 平面线框</div>
+</div><!-- fragment --><h3>放置会话（<code>eve.Building.newSession</code>）</h3>
+<div class="fragment"><div class="line">session &lt;- building.newSession();</div>
+<div class="line">session.startPlacement(world, &quot;house&quot;);</div>
+<div class="line">session.updateFromSurface(world, &quot;plane&quot;, hitX, hitZ);  // 或 updateFromWorld / updateFromWorld3D</div>
+<div class="line">session.setMode(&quot;remove&quot;);</div>
+<div class="line">session.execute();                     // place 放置 / remove 拆除</div>
+</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network::HttpRequest类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1HttpRequest.html">HttpRequest</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1network_1_1HttpRequest-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::network::HttpRequest类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Asynchronous HTTP request (Poco-based). Configure headers/body, call <a class="el" href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51" title="Queues the request on the worker; true when accepted.">submit()</a>, then receive the response through <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> as a <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">NetEvType::HttpResp</a> completion.  
+ <a href="classeve_1_1network_1_1HttpRequest.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HttpRequest_8h_source.html">HttpRequest.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a790141a6d6d3642b572b95dd857bc8de" id="r_a790141a6d6d3642b572b95dd857bc8de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#a790141a6d6d3642b572b95dd857bc8de">HttpRequest</a> (<a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *net, std::string method, std::string url)</td></tr>
+<tr class="memdesc:a790141a6d6d3642b572b95dd857bc8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a request; method is e.g. "GET"/"POST", url is absolute.  <br /></td></tr>
+<tr class="separator:a790141a6d6d3642b572b95dd857bc8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79f7b0f5c58424f45ccb21d23d7f9424" id="r_a79f7b0f5c58424f45ccb21d23d7f9424"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#a79f7b0f5c58424f45ccb21d23d7f9424">~HttpRequest</a> ()=default</td></tr>
+<tr class="separator:a79f7b0f5c58424f45ccb21d23d7f9424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad0a1e4070a10f75e29ac0e41671a953" id="r_aad0a1e4070a10f75e29ac0e41671a953"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#aad0a1e4070a10f75e29ac0e41671a953">setHeader</a> (std::string k, std::string <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:aad0a1e4070a10f75e29ac0e41671a953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets one request header.  <br /></td></tr>
+<tr class="separator:aad0a1e4070a10f75e29ac0e41671a953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3b54a3ba3c8d2a5721043e4438d6be6" id="r_aa3b54a3ba3c8d2a5721043e4438d6be6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#aa3b54a3ba3c8d2a5721043e4438d6be6">setBody</a> (<a class="el" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a> *data)</td></tr>
+<tr class="memdesc:aa3b54a3ba3c8d2a5721043e4438d6be6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the request body bytes.  <br /></td></tr>
+<tr class="separator:aa3b54a3ba3c8d2a5721043e4438d6be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a024ac0fc178238caea4fc3b88966c050" id="r_a024ac0fc178238caea4fc3b88966c050"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#a024ac0fc178238caea4fc3b88966c050">setBodyString</a> (std::string <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="memdesc:a024ac0fc178238caea4fc3b88966c050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the request body as a string.  <br /></td></tr>
+<tr class="separator:a024ac0fc178238caea4fc3b88966c050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6398e85ed6c02074204a198441a832c3" id="r_a6398e85ed6c02074204a198441a832c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#a6398e85ed6c02074204a198441a832c3">setTimeout</a> (int ms)</td></tr>
+<tr class="memdesc:a6398e85ed6c02074204a198441a832c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overrides the module default timeout for this request (ms).  <br /></td></tr>
+<tr class="separator:a6398e85ed6c02074204a198441a832c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adae80e817bf4c681b8c08f841437af82" id="r_adae80e817bf4c681b8c08f841437af82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#adae80e817bf4c681b8c08f841437af82">setVerifySsl</a> (bool verify)</td></tr>
+<tr class="memdesc:adae80e817bf4c681b8c08f841437af82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overrides TLS verification for this request.  <br /></td></tr>
+<tr class="separator:adae80e817bf4c681b8c08f841437af82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab27f07502bd9ffceb1b9a86c07b9cc51" id="r_ab27f07502bd9ffceb1b9a86c07b9cc51"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51">submit</a> ()</td></tr>
+<tr class="memdesc:ab27f07502bd9ffceb1b9a86c07b9cc51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queues the request on the worker; true when accepted.  <br /></td></tr>
+<tr class="separator:ab27f07502bd9ffceb1b9a86c07b9cc51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c170f2ccc6b893886776fd510982eec" id="r_a6c170f2ccc6b893886776fd510982eec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRequest.html#a6c170f2ccc6b893886776fd510982eec">network</a> () const</td></tr>
+<tr class="memdesc:a6c170f2ccc6b893886776fd510982eec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning module.  <br /></td></tr>
+<tr class="separator:a6c170f2ccc6b893886776fd510982eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Asynchronous HTTP request (Poco-based). Configure headers/body, call <a class="el" href="classeve_1_1network_1_1HttpRequest.html#ab27f07502bd9ffceb1b9a86c07b9cc51" title="Queues the request on the worker; true when accepted.">submit()</a>, then receive the response through <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> as a <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">NetEvType::HttpResp</a> completion. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8h_source.html">HttpRequest.h</a> 第 <a class="el" href="HttpRequest_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a790141a6d6d3642b572b95dd857bc8de" name="a790141a6d6d3642b572b95dd857bc8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a790141a6d6d3642b572b95dd857bc8de">&#9670;&#160;</a></span>HttpRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::HttpRequest::HttpRequest </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *&#160;</td>
+          <td class="paramname"><em>net</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>url</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a request; method is e.g. "GET"/"POST", url is absolute. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79f7b0f5c58424f45ccb21d23d7f9424" name="a79f7b0f5c58424f45ccb21d23d7f9424"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79f7b0f5c58424f45ccb21d23d7f9424">&#9670;&#160;</a></span>~HttpRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::HttpRequest::~HttpRequest </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6c170f2ccc6b893886776fd510982eec" name="a6c170f2ccc6b893886776fd510982eec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c170f2ccc6b893886776fd510982eec">&#9670;&#160;</a></span>network()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> * eve::network::HttpRequest::network </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owning module. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8h_source.html">HttpRequest.h</a> 第 <a class="el" href="HttpRequest_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3b54a3ba3c8d2a5721043e4438d6be6" name="aa3b54a3ba3c8d2a5721043e4438d6be6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3b54a3ba3c8d2a5721043e4438d6be6">&#9670;&#160;</a></span>setBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRequest::setBody </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the request body bytes. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="a024ac0fc178238caea4fc3b88966c050" name="a024ac0fc178238caea4fc3b88966c050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a024ac0fc178238caea4fc3b88966c050">&#9670;&#160;</a></span>setBodyString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRequest::setBodyString </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the request body as a string. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00088">eve::network::Network::httpRequest()</a>.</p>
+
+</div>
+</div>
+<a id="aad0a1e4070a10f75e29ac0e41671a953" name="aad0a1e4070a10f75e29ac0e41671a953"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad0a1e4070a10f75e29ac0e41671a953">&#9670;&#160;</a></span>setHeader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRequest::setHeader </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets one request header. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<a id="a6398e85ed6c02074204a198441a832c3" name="a6398e85ed6c02074204a198441a832c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6398e85ed6c02074204a198441a832c3">&#9670;&#160;</a></span>setTimeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRequest::setTimeout </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overrides the module default timeout for this request (ms). </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00088">eve::network::Network::httpRequest()</a>.</p>
+
+</div>
+</div>
+<a id="adae80e817bf4c681b8c08f841437af82" name="adae80e817bf4c681b8c08f841437af82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adae80e817bf4c681b8c08f841437af82">&#9670;&#160;</a></span>setVerifySsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRequest::setVerifySsl </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verify</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overrides TLS verification for this request. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab27f07502bd9ffceb1b9a86c07b9cc51" name="ab27f07502bd9ffceb1b9a86c07b9cc51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab27f07502bd9ffceb1b9a86c07b9cc51">&#9670;&#160;</a></span>submit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::HttpRequest::submit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queues the request on the worker; true when accepted. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="Network_8cpp_source.html#l00172">eve::network::Network::getTimeout()</a>, <a class="el" href="Network_8cpp_source.html#l00180">eve::network::Network::getVerifySsl()</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca9d4d43de68f0b3555d5a5ef5dc05bb95">eve::network::Http</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">eve::network::HttpResp</a>, <a class="el" href="NetTypes_8h_source.html#l00035">eve::network::NetCompletion::kind</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00125">os</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00088">eve::network::Network::httpRequest()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/network/<a class="el" href="HttpRequest_8h_source.html">HttpRequest.h</a></li>
+<li>src/modules/network/<a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

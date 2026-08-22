@@ -1,0 +1,204 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene.html">scene</a></li><li class="navelem"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::scene::SceneNode 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a3c8997672bb5fdf7353643ba46373d56">bmaxX</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aa06292b6151169e1bd56cfa2861bdde6">bmaxY</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a7e5829ee6872fde43e7e2953793d3a38">bmaxZ</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a0886da45d920ff490b66f20c0a2cd0db">bminX</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aad5b6287d602788cc476d88d79c697b3">bminY</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#acc209ba7e63274057d2ce33fd5f5d9b8">bminZ</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae3bab8dc18ee03aa8c8b6aecb6cc3246">firstChild</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ada854a5d33cafce50e18a64e772ff0ae">hasBounds</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a762a92dab1375eed6f5d32b2f731ffb1">id</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a7ef449ed41f931738ac1fb410a18ea9a">key</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a51af3a5d39416c0dbcf5b75b3b54fdca">layer</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a8dda4c3849b462bb443088a227319a33">links</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#af375aecc1c579eb35e4e30a5211b70c3">localDirty</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aaf99b6f5d1be9947575eb41dc05a37ca">name</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a8aebc1e5facf58a751f27f6f40550adb">nextSibling</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a058cc010549c25e7bd8a56fa2128c319">objectId</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae7c913a6e57cecf26ebc6ca5d0e4539a">parent</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a8a477f24ab9ebe023d81477ff40f6f08">pitch</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a5c1a0f7b91cf650313bbded55f94eda7">roll</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ab8c48907cc06ab07ac1565b743088c9e">space</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a3125275b0d5457bf756663be304c236c">subtreeDirty</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#aee9e9ddea8e8f7e1ed7c5e724774542c">sx</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae7514ad855db9cc9531981c0672e157f">sy</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae34c2ef43348fb58d9bfd755586cd028">sz</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a17e339d02740f371f98c520c75639b66">tags</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#acc1687da511249a4e949cd6fb30db3d8">visible</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#afb27123e7e8d7a28b5be4ddaac3715f9">world</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a91505e27efd71805d05d91075d4c0f5b">x</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#a4afc72d7fa5ef1cd26c7b5a53f4f2925">y</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ab0a9fa043b695e0765ad0346370c4326">yaw</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html#ae948b5008627bc8118ba1d171b7307ea">z</a></td><td class="entry"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

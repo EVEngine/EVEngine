@@ -1,0 +1,463 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/thread/JobSystemThreadPool.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d0f964ef2f4a5250338b1e00ea12ead0.html">thread</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">JobSystemThreadPool.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="JobSystemThreadPool_8h_source.html">thread/JobSystemThreadPool.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Exception_8h_source.html">common/Exception.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ThreadPool_8h_source.html">thread/ThreadPool.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;condition_variable&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;deque&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;new&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;thread&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="JobSystemThreadPool_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1thread_1_1JobSystemThreadPool_1_1State.html">eve::thread::JobSystemThreadPool::State</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1thread" id="r_namespaceeve_1_1thread"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1thread.html">eve::thread</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a503889937f87ab447382207f9d5cba56" name="a503889937f87ab447382207f9d5cba56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a503889937f87ab447382207f9d5cba56">&#9670;&#160;</a></span>body</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JobFunc body</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00643">eve::thread::JobSystemThreadPool::createFrameJob()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00604">eve::thread::JobSystemThreadPool::createJob()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00229">eve::thread::JobSystemThreadPool::State::createJobLocked()</a>, <a class="el" href="World_8cpp_source.html#l00244">eve::physics::World::destroyBody()</a>, <a class="el" href="World3D_8cpp_source.html#l00113">eve::physics::World3D::destroyBody()</a>, <a class="el" href="World_8cpp_source.html#l00249">eve::physics::World::forgetBody()</a>, <a class="el" href="World3D_8cpp_source.html#l00118">eve::physics::World3D::forgetBody()</a>, <a class="el" href="Network_8cpp_source.html#l00088">eve::network::Network::httpRequest()</a>, <a class="el" href="World_8cpp_source.html#l00230">eve::physics::World::newBody()</a>, <a class="el" href="World3D_8cpp_source.html#l00098">eve::physics::World3D::newBody()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00373">eve::dev::DebugAdapter::notifyContinued()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00351">eve::dev::DebugAdapter::notifyStopped()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00622">eve::thread::JobSystemThreadPool::parallelFor()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00648">eve::thread::JobSystemThreadPool::parallelForFrame()</a>, <a class="el" href="World3D_8cpp_source.html#l00146">eve::physics::World3D::rayCast()</a>, <a class="el" href="HttpRequest_8cpp_source.html#l00048">eve::network::HttpRequest::submit()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00591">eve::thread::JobSystemThreadPool::submit()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00630">eve::thread::JobSystemThreadPool::submitFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a1b6e12abbcce781c4f68f58f335a7e43" name="a1b6e12abbcce781c4f68f58f335a7e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b6e12abbcce781c4f68f58f335a7e43">&#9670;&#160;</a></span>children</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;JobImpl *&gt; children</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab6ba314dad382fb3042f0ef8b21e0d1e" name="ab6ba314dad382fb3042f0ef8b21e0d1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6ba314dad382fb3042f0ef8b21e0d1e">&#9670;&#160;</a></span>completionDone</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool completionDone = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa77f9a3109793bc5ea0062cd8b86ca09" name="aa77f9a3109793bc5ea0062cd8b86ca09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa77f9a3109793bc5ea0062cd8b86ca09">&#9670;&#160;</a></span>depCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int depCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7eb28aa220928ef70f27367e4d9d9521" name="a7eb28aa220928ef70f27367e4d9d9521"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eb28aa220928ef70f27367e4d9d9521">&#9670;&#160;</a></span>dependents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;JobImpl *&gt; dependents</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00185">eve::ResourceManager::refreshDependents()</a>.</p>
+
+</div>
+</div>
+<a id="aceb701de009133aff176d2653f4d0da4" name="aceb701de009133aff176d2653f4d0da4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceb701de009133aff176d2653f4d0da4">&#9670;&#160;</a></span>destroy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void(* destroy) (void *) </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14abe73ec264aaa5c4d51a020e53a169" name="a14abe73ec264aaa5c4d51a020e53a169"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14abe73ec264aaa5c4d51a020e53a169">&#9670;&#160;</a></span>enqueued</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool enqueued = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c94119e5bd6fbde0680ef83f01c9685" name="a8c94119e5bd6fbde0680ef83f01c9685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c94119e5bd6fbde0680ef83f01c9685">&#9670;&#160;</a></span>error</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string error</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleConfig_8cpp_source.html#l00531">eve::particles::applyConfigText()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00610">eve::map::applyConfigText()</a>, <a class="el" href="Palette_8cpp_source.html#l00024">eve::procgen::PaletteTable::applyToLayer()</a>, <a class="el" href="Builder_8cpp_source.html#l00337">eve::virtualgeometry::VirtualGeometryBuilder::build()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00402">eve::dev::Snapshot::capture()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00348">eve::dev::Snapshot::captureState()</a>, <a class="el" href="Runtime_8cpp_source.html#l00491">eve::Runtime::compileFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00469">eve::Runtime::compileSource()</a>, <a class="el" href="DataModule_8cpp_source.html#l00279">eve::data::DataModule::decodeJson()</a>, <a class="el" href="DataModule_8cpp_source.html#l00300">eve::data::DataModule::decodeJson()</a>, <a class="el" href="DataModule_8cpp_source.html#l00344">eve::data::DataModule::decodeXml()</a>, <a class="el" href="DataModule_8cpp_source.html#l00365">eve::data::DataModule::decodeXml()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00612">eve::dialogue::Dialogue::evalConditionData()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">eve::Runtime::execute()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00331">eve::procgen::fillDensityField()</a>, <a class="el" href="HouseLayout_8cpp_source.html#l00130">eve::housegen::HouseLayout::fromJson()</a>, <a class="el" href="HouseGenerator_8cpp_source.html#l00120">eve::housegen::HouseGenerator::generate()</a>, <a class="el" href="GeneratorRegistry_8cpp_source.html#l00020">eve::procgen::GeneratorRegistry::generate()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00454">eve::procgen::MeshRecipeRegistry::generate()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00035">eve::procgen::PbrRecipeRegistry::generate()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00023">eve::procgen::TextureRecipeRegistry::generate()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00127">eve::procgen::generateBushMesh()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00149">eve::procgen::generateHexPlanetMesh()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00427">eve::procgen::generateMarchingCubesMesh()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00076">eve::procgen::generatePbrSet()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="SkyscraperMesh_8cpp_source.html#l00102">eve::procgen::generateSkyscraperMesh()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>, <a class="el" href="Runtime_8cpp_source.html#l00411">eve::Runtime::initialize()</a>, <a class="el" href="HouseLayout_8cpp_source.html#l00221">eve::housegen::HouseLayout::instantiate()</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00546">eve::particles::loadConfigFile()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00651">eve::map::loadConfigFile()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00495">eve::dev::Snapshot::loadFile()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00139">eve::housegen::HouseComponentLibrary::loadFromFile()</a>, <a class="el" href="I18n_8cpp_source.html#l00158">eve::i18n::I18n::loadFromFile()</a>, <a class="el" href="SpineAtlas_8cpp_source.html#l00079">eve::animation::SpineAtlas::loadFromFile()</a>, <a class="el" href="SpineSkeletonData_8cpp_source.html#l00165">eve::animation::SpineSkeletonData::loadFromFile()</a>, <a class="el" href="SpineSkeletonData_8cpp_source.html#l00188">eve::animation::SpineSkeletonData::loadFromJson()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00126">eve::building::BuildingRegistry::loadFromJson()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00123">eve::housegen::HouseComponentLibrary::loadFromJson()</a>, <a class="el" href="Item_8cpp_source.html#l00084">eve::inventory::ItemRegistry::loadFromJson()</a>, <a class="el" href="Effect_8cpp_source.html#l00071">eve::rpg::EffectRegistry::loadFromJson()</a>, <a class="el" href="Skill_8cpp_source.html#l00067">eve::rpg::SkillRegistry::loadFromJson()</a>, <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00071">eve::voxel::CubeTypeRegistry::loadFromJson()</a>, <a class="el" href="I18n_8cpp_source.html#l00147">eve::i18n::I18n::loadFromJson()</a>, <a class="el" href="SpineAtlas_8cpp_source.html#l00102">eve::animation::SpineAtlas::loadFromText()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00738">eve::map::loadMapFile()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00705">eve::map::loadMapFile()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00693">eve::map::loadMapText()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00744">eve::dialogue::Dialogue::loadPoolsFromData()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00792">eve::dialogue::Dialogue::loadPoolsFromDnut()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00239">eve::procgen::marchingCubes()</a>, <a class="el" href="Json_8cpp_source.html#l00449">eve::json::Document::parse()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00469">eve::dialogue::parseDnut()</a>, <a class="el" href="Runtime_8cpp_source.html#l00581">eve::Runtime::reflectClass()</a>, <a class="el" href="BuiltinTextures_8cpp_source.html#l00484">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00088">eve::housegen::HouseComponentLibrary::registerComponent()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00053">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00579">eve::particles::reloadConfigFile()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00683">eve::map::reloadConfigFile()</a>, <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>, <a class="el" href="DualGrid_8cpp_source.html#l00147">eve::map::resolveDualGrid()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00469">eve::dev::Snapshot::restore()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00419">eve::dev::Snapshot::restoreState()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00483">eve::dev::Snapshot::saveFile()</a>, <a class="el" href="Rx_8h_source.html#l00194">eve::rx::Observable&lt; T &gt;::subscribe()</a>, <a class="el" href="Runtime_8cpp_source.html#l01031">eve::Runtime::unload()</a>, <a class="el" href="HouseLayout_8cpp_source.html#l00174">eve::housegen::HouseLayout::validate()</a> , 以及 <a class="el" href="JsonExport_8cpp_source.html#l00056">eve::procgen::writeGridJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8d5ca65462822f0af8efaa6f74022d8d" name="a8d5ca65462822f0af8efaa6f74022d8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5ca65462822f0af8efaa6f74022d8d">&#9670;&#160;</a></span>onComplete</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JobFunc onComplete</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00229">eve::thread::JobSystemThreadPool::State::createJobLocked()</a>.</p>
+
+</div>
+</div>
+<a id="aadce8999da3e8c4e61fb669cd5fcd0b0" name="aadce8999da3e8c4e61fb669cd5fcd0b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadce8999da3e8c4e61fb669cd5fcd0b0">&#9670;&#160;</a></span>ownedChildren</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;JobImpl *&gt; ownedChildren</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add9af9569af79ec26dd741fb226b38ba" name="add9af9569af79ec26dd741fb226b38ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add9af9569af79ec26dd741fb226b38ba">&#9670;&#160;</a></span>ptr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00652">eve::thread::JobSystemThreadPool::createFrameTaskGroup()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00229">eve::thread::JobSystemThreadPool::State::createJobLocked()</a>, <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00056">eve::gpgpu::VulkanGpuBuffer::downloadBytes()</a>, <a class="el" href="Sound_8cpp_source.html#l00136">eve::sound::Sound::newDecoder()</a>, <a class="el" href="font_2Font_8cpp_source.html#l00025">eve::font::Font::newFontData()</a> , 以及 <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00027">eve::gpgpu::VulkanGpuBuffer::uploadBytes()</a>.</p>
+
+</div>
+</div>
+<a id="af355f64d47598017faf10e3147db1be6" name="af355f64d47598017faf10e3147db1be6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af355f64d47598017faf10e3147db1be6">&#9670;&#160;</a></span>scheduled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool scheduled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acca1405ad8722c85f51c891decedadda" name="acca1405ad8722c85f51c891decedadda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acca1405ad8722c85f51c891decedadda">&#9670;&#160;</a></span>scope</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JobScope scope</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00857">eve::Runtime::arrayAppend()</a>, <a class="el" href="Runtime_8cpp_source.html#l00805">eve::Runtime::arrayGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00877">eve::Runtime::arrayRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00829">eve::Runtime::arraySet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00786">eve::Runtime::arraySize()</a>, <a class="el" href="Runtime_8cpp_source.html#l01171">eve::Runtime::classNameOf()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00411">eve::dialogue::Dialogue::clearVar()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00416">eve::dialogue::Dialogue::clearVars()</a>, <a class="el" href="Runtime_8cpp_source.html#l00491">eve::Runtime::compileFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00469">eve::Runtime::compileSource()</a>, <a class="el" href="Runtime_8cpp_source.html#l00595">eve::Runtime::createInstance()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00229">eve::thread::JobSystemThreadPool::State::createJobLocked()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">eve::Runtime::execute()</a>, <a class="el" href="Module_8cpp_source.html#l00086">eve::ModuleManager::expose_pending()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00391">eve::dialogue::Dialogue::getVarBool()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00382">eve::dialogue::Dialogue::getVarFloat()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00374">eve::dialogue::Dialogue::getVarInt()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00400">eve::dialogue::Dialogue::getVarString()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00370">eve::dialogue::Dialogue::getVarType()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00363">eve::dialogue::Dialogue::getVarValue()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00406">eve::dialogue::Dialogue::hasVar()</a>, <a class="el" href="Runtime_8cpp_source.html#l00411">eve::Runtime::initialize()</a>, <a class="el" href="Runtime_8cpp_source.html#l00764">eve::Runtime::readObjectProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00682">eve::Runtime::readProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00581">eve::Runtime::reflectClass()</a>, <a class="el" href="Runtime_8cpp_source.html#l00635">eve::Runtime::reflectInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l01115">eve::Runtime::scanClasses()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00352">eve::dialogue::Dialogue::setVar()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00344">eve::dialogue::Dialogue::setVarValue()</a>, <a class="el" href="Runtime_8cpp_source.html#l00933">eve::Runtime::tableGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00904">eve::Runtime::tableKeys()</a>, <a class="el" href="Runtime_8cpp_source.html#l01000">eve::Runtime::tableRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00958">eve::Runtime::tableSet()</a>, <a class="el" href="Runtime_8cpp_source.html#l01031">eve::Runtime::unload()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00701">eve::Runtime::writeProperty()</a>.</p>
+
+</div>
+</div>
+<a id="ac6b5b0a4eaceab9c6cbb0f2258ad8287" name="ac6b5b0a4eaceab9c6cbb0f2258ad8287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6b5b0a4eaceab9c6cbb0f2258ad8287">&#9670;&#160;</a></span>state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JobSystemThreadPool::State* state</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Snapshot_8cpp_source.html#l00402">eve::dev::Snapshot::capture()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00010">eve::card::cardStateName()</a>, <a class="el" href="thread_2Channel_8cpp_source.html#l00033">eve::thread::Channel::demand()</a>, <a class="el" href="sdl_2Keyboard_8cpp_source.html#l00031">eve::keyboard::sdl::Keyboard::isDown()</a>, <a class="el" href="Source_8cpp_source.html#l00175">eve::audio::Source::isPlaying()</a>, <a class="el" href="sdl_2Keyboard_8cpp_source.html#l00048">eve::keyboard::sdl::Keyboard::isScancodeDown()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00512">eve::thread::JobSystemThreadPool::JobSystemThreadPool()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00419">eve::dev::Snapshot::restoreState()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00065">eve::ik::Solver2D::solve()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00065">eve::ik::Solver3D::solve()</a>, <a class="el" href="ChainSolver_8h_source.html#l00170">eve::ik::detail::solveChain()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00085">eve::ik::Solver2D::step()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00086">eve::ik::Solver3D::step()</a>, <a class="el" href="ThreadPool_8cpp_source.html#l00091">eve::thread::ThreadPool::submit()</a>, <a class="el" href="thread_2Channel_8cpp_source.html#l00042">eve::thread::Channel::supply()</a>, <a class="el" href="ThreadPool_8cpp_source.html#l00033">eve::thread::ThreadPool::ThreadPool()</a>, <a class="el" href="Task_8cpp_source.html#l00038">eve::thread::Task::wait()</a>, <a class="el" href="ThreadPool_8cpp_source.html#l00156">eve::thread::ThreadPool::waitAll()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00668">eve::thread::JobSystemThreadPool::waitAll()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00413">eve::thread::JobSystemThreadPool::State::workerLoop()</a>.</p>
+
+</div>
+</div>
+<a id="a7f6a03c6c8e79a334b53f883363aec3a" name="a7f6a03c6c8e79a334b53f883363aec3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f6a03c6c8e79a334b53f883363aec3a">&#9670;&#160;</a></span>status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JobStatus status = JobStatus::Pending</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JobSystemThreadPool_8cpp_source.html">JobSystemThreadPool.cpp</a> 第 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l04006">eve::graphics::webgpu::Graphics::beginFrameReadback()</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00163">eve::gpgpu::compileComputeGlsl()</a>, <a class="el" href="Compressor_8cpp_source.html#l00241">eve::data::zlibCompressor::compress()</a>, <a class="el" href="Compressor_8cpp_source.html#l00290">eve::data::zlibCompressor::decompress()</a>, <a class="el" href="Network_8cpp_source.html#l00088">eve::network::Network::httpRequest()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03472">eve::graphics::webgpu::Graphics::popValidationScope()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

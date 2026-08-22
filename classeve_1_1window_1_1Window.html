@@ -1,0 +1,1867 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::window::Window类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window.html">window</a></li><li class="navelem"><a class="el" href="classeve_1_1window_1_1Window.html">Window</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1window_1_1Window-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::window::Window类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Platform window interface (SDL implementation on desktop/mobile). Script: <code>win &lt;- eve.Window();</code>  
+ <a href="classeve_1_1window_1_1Window.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Window_8h_source.html">Window.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::window::Window 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1window_1_1Window.png" usemap="#eve::window::Window_map" alt=""/>
+  <map id="eve::window::Window_map" name="eve::window::Window_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,153,24"/>
+<area href="classeve_1_1window_1_1sdl_1_1Window.html" alt="eve::window::sdl::Window" shape="rect" coords="0,112,153,136"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1Window_1_1MessageBoxData.html">MessageBoxData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1Window_1_1WindowSize.html">WindowSize</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aadefa9b3bb4766e78b05c7ca9e7180ff" id="r_aadefa9b3bb4766e78b05c7ca9e7180ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aadefa9b3bb4766e78b05c7ca9e7180ff">Module_REG</a> (<a class="el" href="classeve_1_1window_1_1Window.html">Window</a>)</td></tr>
+<tr class="separator:aadefa9b3bb4766e78b05c7ca9e7180ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bc2070e1ce229a3885cf8f573f135e2" id="r_a4bc2070e1ce229a3885cf8f573f135e2"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a4bc2070e1ce229a3885cf8f573f135e2">~Window</a> ()</td></tr>
+<tr class="separator:a4bc2070e1ce229a3885cf8f573f135e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af13db08906c3d90f2ab2f21196095136" id="r_af13db08906c3d90f2ab2f21196095136"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#af13db08906c3d90f2ab2f21196095136">setSize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)=0</td></tr>
+<tr class="memdesc:af13db08906c3d90f2ab2f21196095136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests a new logical window size.  <br /></td></tr>
+<tr class="separator:af13db08906c3d90f2ab2f21196095136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2dc82329dfeb26602c472e2d0c78574" id="r_aa2dc82329dfeb26602c472e2d0c78574"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aa2dc82329dfeb26602c472e2d0c78574">getWidth</a> () const =0</td></tr>
+<tr class="separator:aa2dc82329dfeb26602c472e2d0c78574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9c1035279bc746a0e97820320d0fa80" id="r_ae9c1035279bc746a0e97820320d0fa80"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ae9c1035279bc746a0e97820320d0fa80">getHeight</a> () const =0</td></tr>
+<tr class="separator:ae9c1035279bc746a0e97820320d0fa80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad33fa5bc7c45e09bf31245386823d2c" id="r_aad33fa5bc7c45e09bf31245386823d2c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aad33fa5bc7c45e09bf31245386823d2c">setWindowSettings</a> (<a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> settings)=0</td></tr>
+<tr class="memdesc:aad33fa5bc7c45e09bf31245386823d2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a full <a class="el" href="structeve_1_1window_1_1WindowSettings.html" title="Display settings for window creation/resize. width/height == 0 selects the desktop display mode size.">WindowSettings</a> struct (recreates the window when needed).  <br /></td></tr>
+<tr class="separator:aad33fa5bc7c45e09bf31245386823d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae710cf78a331f6fb0abfc4f852b6dab7" id="r_ae710cf78a331f6fb0abfc4f852b6dab7"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ae710cf78a331f6fb0abfc4f852b6dab7">getWindowSettings</a> ()=0</td></tr>
+<tr class="separator:ae710cf78a331f6fb0abfc4f852b6dab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8bce05cdc317a16a24f42690ced321f" id="r_ac8bce05cdc317a16a24f42690ced321f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ac8bce05cdc317a16a24f42690ced321f">close</a> ()=0</td></tr>
+<tr class="memdesc:ac8bce05cdc317a16a24f42690ced321f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes and destroys the underlying window.  <br /></td></tr>
+<tr class="separator:ac8bce05cdc317a16a24f42690ced321f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f69e102f44e4deef67320ed5a1effbc" id="r_a1f69e102f44e4deef67320ed5a1effbc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a1f69e102f44e4deef67320ed5a1effbc">setFullscreenDesktop</a> (bool fullscreen)=0</td></tr>
+<tr class="memdesc:a1f69e102f44e4deef67320ed5a1effbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches between desktop fullscreen and windowed mode.  <br /></td></tr>
+<tr class="separator:a1f69e102f44e4deef67320ed5a1effbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ec57f58ca7c800920a62dbe0293e7b5" id="r_a7ec57f58ca7c800920a62dbe0293e7b5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a7ec57f58ca7c800920a62dbe0293e7b5">setFullscreenExclusive</a> (bool fullscreen)=0</td></tr>
+<tr class="memdesc:a7ec57f58ca7c800920a62dbe0293e7b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches between exclusive fullscreen and windowed mode.  <br /></td></tr>
+<tr class="separator:a7ec57f58ca7c800920a62dbe0293e7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94bb3c9427d43895a50574d175c70dc6" id="r_a94bb3c9427d43895a50574d175c70dc6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a94bb3c9427d43895a50574d175c70dc6">isOpen</a> () const =0</td></tr>
+<tr class="separator:a94bb3c9427d43895a50574d175c70dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8217d33317238df12ea8ff880804499b" id="r_a8217d33317238df12ea8ff880804499b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a8217d33317238df12ea8ff880804499b">setWindowTitle</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>)=0</td></tr>
+<tr class="memdesc:a8217d33317238df12ea8ff880804499b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the window title shown in the OS title bar.  <br /></td></tr>
+<tr class="separator:a8217d33317238df12ea8ff880804499b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a889033315a12b2174bcf07d970681f25" id="r_a889033315a12b2174bcf07d970681f25"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a889033315a12b2174bcf07d970681f25">getWindowTitle</a> () const =0</td></tr>
+<tr class="separator:a889033315a12b2174bcf07d970681f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae73f6b5f787a82bf6b28a15e60ea83c4" id="r_ae73f6b5f787a82bf6b28a15e60ea83c4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ae73f6b5f787a82bf6b28a15e60ea83c4">setPosition</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int display)=0</td></tr>
+<tr class="memdesc:ae73f6b5f787a82bf6b28a15e60ea83c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves the window to a position in logical units on the given display.  <br /></td></tr>
+<tr class="separator:ae73f6b5f787a82bf6b28a15e60ea83c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3a91f70345b4c00d0bbf7b0811cc6ee" id="r_ae3a91f70345b4c00d0bbf7b0811cc6ee"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ae3a91f70345b4c00d0bbf7b0811cc6ee">getPosition</a> (int &amp;<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int &amp;<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int &amp;display)=0</td></tr>
+<tr class="memdesc:ae3a91f70345b4c00d0bbf7b0811cc6ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the current window position and display index.  <br /></td></tr>
+<tr class="separator:ae3a91f70345b4c00d0bbf7b0811cc6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa675184700cbf7ac0378d5f45e35ef31" id="r_aa675184700cbf7ac0378d5f45e35ef31"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aa675184700cbf7ac0378d5f45e35ef31">minimize</a> ()=0</td></tr>
+<tr class="memdesc:aa675184700cbf7ac0378d5f45e35ef31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimizes / maximizes / restores the window.  <br /></td></tr>
+<tr class="separator:aa675184700cbf7ac0378d5f45e35ef31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f20a45ba38ff4ddd8570d4d80789be" id="r_a22f20a45ba38ff4ddd8570d4d80789be"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a22f20a45ba38ff4ddd8570d4d80789be">maximize</a> ()=0</td></tr>
+<tr class="separator:a22f20a45ba38ff4ddd8570d4d80789be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e4576e4a55a3ba36a5533efaf84ea7b" id="r_a4e4576e4a55a3ba36a5533efaf84ea7b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a4e4576e4a55a3ba36a5533efaf84ea7b">restore</a> ()=0</td></tr>
+<tr class="separator:a4e4576e4a55a3ba36a5533efaf84ea7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac225c18559f693eeed62b8a3fe39d114" id="r_ac225c18559f693eeed62b8a3fe39d114"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ac225c18559f693eeed62b8a3fe39d114">isMaximized</a> () const =0</td></tr>
+<tr class="separator:ac225c18559f693eeed62b8a3fe39d114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4437ca04a353da4f28c81c1267f7a02d" id="r_a4437ca04a353da4f28c81c1267f7a02d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a4437ca04a353da4f28c81c1267f7a02d">isMinimized</a> () const =0</td></tr>
+<tr class="separator:a4437ca04a353da4f28c81c1267f7a02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31367d5006048d5017fbd87bee936998" id="r_a31367d5006048d5017fbd87bee936998"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a31367d5006048d5017fbd87bee936998">hasFocus</a> () const =0</td></tr>
+<tr class="memdesc:a31367d5006048d5017fbd87bee936998"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the window has keyboard focus.  <br /></td></tr>
+<tr class="separator:a31367d5006048d5017fbd87bee936998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98d75ddbf2155a0ec1ef8672ccea9851" id="r_a98d75ddbf2155a0ec1ef8672ccea9851"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a98d75ddbf2155a0ec1ef8672ccea9851">hasMouseFocus</a> () const =0</td></tr>
+<tr class="memdesc:a98d75ddbf2155a0ec1ef8672ccea9851"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the window has mouse focus.  <br /></td></tr>
+<tr class="separator:a98d75ddbf2155a0ec1ef8672ccea9851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67b3d326825a0c5566f41d72f4b0fafa" id="r_a67b3d326825a0c5566f41d72f4b0fafa"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a67b3d326825a0c5566f41d72f4b0fafa">isVisible</a> () const =0</td></tr>
+<tr class="separator:a67b3d326825a0c5566f41d72f4b0fafa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cd19d3d87a665399be82c99b44cba49" id="r_a0cd19d3d87a665399be82c99b44cba49"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a0cd19d3d87a665399be82c99b44cba49">setVSync</a> (int vsync)=0</td></tr>
+<tr class="memdesc:a0cd19d3d87a665399be82c99b44cba49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables/disables vertical sync (0 = off, 1 = on).  <br /></td></tr>
+<tr class="separator:a0cd19d3d87a665399be82c99b44cba49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa3622701ae426f3e4f6becd8882a862" id="r_afa3622701ae426f3e4f6becd8882a862"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#afa3622701ae426f3e4f6becd8882a862">getVSync</a> () const =0</td></tr>
+<tr class="separator:afa3622701ae426f3e4f6becd8882a862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb0be647ed6de6d5c8967eeae96b9358" id="r_aeb0be647ed6de6d5c8967eeae96b9358"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aeb0be647ed6de6d5c8967eeae96b9358">getPixelWidth</a> () const =0</td></tr>
+<tr class="memdesc:aeb0be647ed6de6d5c8967eeae96b9358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Framebuffer (pixel) dimensions of the window.  <br /></td></tr>
+<tr class="separator:aeb0be647ed6de6d5c8967eeae96b9358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd62ff320550282d56c9afdc72a719c" id="r_afbd62ff320550282d56c9afdc72a719c"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#afbd62ff320550282d56c9afdc72a719c">getPixelHeight</a> () const =0</td></tr>
+<tr class="separator:afbd62ff320550282d56c9afdc72a719c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa97368a8e5402a9417542100911b6800" id="r_aa97368a8e5402a9417542100911b6800"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aa97368a8e5402a9417542100911b6800">getDPIScale</a> () const =0</td></tr>
+<tr class="memdesc:aa97368a8e5402a9417542100911b6800"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current UI/logical DPI scale (1.0 on non-retina displays).  <br /></td></tr>
+<tr class="separator:aa97368a8e5402a9417542100911b6800"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f4b1e102b6204b6fd8b7096225229a6" id="r_a2f4b1e102b6204b6fd8b7096225229a6"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a2f4b1e102b6204b6fd8b7096225229a6">getNativeDPIScale</a> () const =0</td></tr>
+<tr class="memdesc:a2f4b1e102b6204b6fd8b7096225229a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native DPI scale reported by the OS for this window.  <br /></td></tr>
+<tr class="separator:a2f4b1e102b6204b6fd8b7096225229a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaadc6beb65d17e4bd5c29aae58c1e7c7" id="r_aaadc6beb65d17e4bd5c29aae58c1e7c7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aaadc6beb65d17e4bd5c29aae58c1e7c7">windowToPixelCoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const =0</td></tr>
+<tr class="memdesc:aaadc6beb65d17e4bd5c29aae58c1e7c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts window logical coordinates to framebuffer pixel coordinates.  <br /></td></tr>
+<tr class="separator:aaadc6beb65d17e4bd5c29aae58c1e7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad08b6c33417155c6d3fbaa8c32ae6661" id="r_ad08b6c33417155c6d3fbaa8c32ae6661"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ad08b6c33417155c6d3fbaa8c32ae6661">pixelToWindowCoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const =0</td></tr>
+<tr class="memdesc:ad08b6c33417155c6d3fbaa8c32ae6661"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts framebuffer pixel coordinates to window logical coordinates.  <br /></td></tr>
+<tr class="separator:ad08b6c33417155c6d3fbaa8c32ae6661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c39371ae8fc22cc4e32c2d6b26d57f" id="r_a84c39371ae8fc22cc4e32c2d6b26d57f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a84c39371ae8fc22cc4e32c2d6b26d57f">windowToDPICoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const =0</td></tr>
+<tr class="memdesc:a84c39371ae8fc22cc4e32c2d6b26d57f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts window logical coordinates to UI-DPI coordinates.  <br /></td></tr>
+<tr class="separator:a84c39371ae8fc22cc4e32c2d6b26d57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ea157deab5af4ebee0f20865dec5d9" id="r_ab5ea157deab5af4ebee0f20865dec5d9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ab5ea157deab5af4ebee0f20865dec5d9">DPIToWindowCoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const =0</td></tr>
+<tr class="memdesc:ab5ea157deab5af4ebee0f20865dec5d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts UI-DPI coordinates to window logical coordinates.  <br /></td></tr>
+<tr class="separator:ab5ea157deab5af4ebee0f20865dec5d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a7f454eaa55654a24d9f66caafb8a1" id="r_ab5a7f454eaa55654a24d9f66caafb8a1"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ab5a7f454eaa55654a24d9f66caafb8a1">toPixels</a> (double <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
+<tr class="memdesc:ab5a7f454eaa55654a24d9f66caafb8a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scales a logical length to UI pixels (and back).  <br /></td></tr>
+<tr class="separator:ab5a7f454eaa55654a24d9f66caafb8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0a3ebab6b28fc89ffc90cf06e1f2cab" id="r_ae0a3ebab6b28fc89ffc90cf06e1f2cab"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ae0a3ebab6b28fc89ffc90cf06e1f2cab">fromPixels</a> (double <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
+<tr class="separator:ae0a3ebab6b28fc89ffc90cf06e1f2cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd9ad4d6aa381b23bc6d428787626e2" id="r_a4fd9ad4d6aa381b23bc6d428787626e2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a4fd9ad4d6aa381b23bc6d428787626e2">toPixelsXY</a> (double wx, double wy, double &amp;<a class="el" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, double &amp;py) const =0</td></tr>
+<tr class="memdesc:a4fd9ad4d6aa381b23bc6d428787626e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector variants of the coordinate conversions above.  <br /></td></tr>
+<tr class="separator:a4fd9ad4d6aa381b23bc6d428787626e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4c0ab7d306c9e932b5bf1951e48b15d" id="r_af4c0ab7d306c9e932b5bf1951e48b15d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#af4c0ab7d306c9e932b5bf1951e48b15d">fromPixelsXY</a> (double <a class="el" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, double py, double &amp;wx, double &amp;wy) const =0</td></tr>
+<tr class="separator:af4c0ab7d306c9e932b5bf1951e48b15d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee2fcb703b93acb71de793ad70a51280" id="r_aee2fcb703b93acb71de793ad70a51280"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aee2fcb703b93acb71de793ad70a51280">getHandle</a> () const =0</td></tr>
+<tr class="memdesc:aee2fcb703b93acb71de793ad70a51280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native window handle (SDL_Window* on SDL backend).  <br /></td></tr>
+<tr class="separator:aee2fcb703b93acb71de793ad70a51280"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e54083aa23b3100ac0f0f99e917dd32" id="r_a0e54083aa23b3100ac0f0f99e917dd32"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a0e54083aa23b3100ac0f0f99e917dd32">getDisplayCount</a> () const =0</td></tr>
+<tr class="memdesc:a0e54083aa23b3100ac0f0f99e917dd32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of displays attached to the system.  <br /></td></tr>
+<tr class="separator:a0e54083aa23b3100ac0f0f99e917dd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a518a769935235872f35d50ea225cf91e" id="r_a518a769935235872f35d50ea225cf91e"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a518a769935235872f35d50ea225cf91e">getDisplayName</a> (int display) const =0</td></tr>
+<tr class="memdesc:a518a769935235872f35d50ea225cf91e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable display name for a display index.  <br /></td></tr>
+<tr class="separator:a518a769935235872f35d50ea225cf91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2069f5e837c5cd603cfdac7e60cc5bb" id="r_ac2069f5e837c5cd603cfdac7e60cc5bb"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ac2069f5e837c5cd603cfdac7e60cc5bb">getDisplayOrientation</a> (int display) const =0</td></tr>
+<tr class="memdesc:ac2069f5e837c5cd603cfdac7e60cc5bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display orientation string (e.g. "landscape").  <br /></td></tr>
+<tr class="separator:ac2069f5e837c5cd603cfdac7e60cc5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7af5e960255a85e324486920b2eb01b8" id="r_a7af5e960255a85e324486920b2eb01b8"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="structeve_1_1window_1_1Window_1_1WindowSize.html">WindowSize</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a7af5e960255a85e324486920b2eb01b8">getFullscreenSizes</a> (int display) const =0</td></tr>
+<tr class="memdesc:a7af5e960255a85e324486920b2eb01b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fullscreen sizes supported by a display.  <br /></td></tr>
+<tr class="separator:a7af5e960255a85e324486920b2eb01b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e0b85913838d20d5cceac27514e3b82" id="r_a9e0b85913838d20d5cceac27514e3b82"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a9e0b85913838d20d5cceac27514e3b82">getDesktopDimensions</a> (int display, int &amp;<a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int &amp;<a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>) const =0</td></tr>
+<tr class="memdesc:a9e0b85913838d20d5cceac27514e3b82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desktop resolution of a display.  <br /></td></tr>
+<tr class="separator:a9e0b85913838d20d5cceac27514e3b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61f0a4b0800de8a92ebebea3d7c223ba" id="r_a61f0a4b0800de8a92ebebea3d7c223ba"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a61f0a4b0800de8a92ebebea3d7c223ba">showMessageBox</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, const std::string &amp;message, const std::string &amp;<a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, bool attachToWindow)=0</td></tr>
+<tr class="memdesc:a61f0a4b0800de8a92ebebea3d7c223ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows a modal message box ("info", "warning", or "error").  <br /></td></tr>
+<tr class="separator:a61f0a4b0800de8a92ebebea3d7c223ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17132e70ada992567ecf7ddb39438d3a" id="r_a17132e70ada992567ecf7ddb39438d3a"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a17132e70ada992567ecf7ddb39438d3a">showMessageBoxData</a> (const <a class="el" href="structeve_1_1window_1_1Window_1_1MessageBoxData.html">MessageBoxData</a> &amp;data)=0</td></tr>
+<tr class="memdesc:a17132e70ada992567ecf7ddb39438d3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows a configurable message box; returns the pressed button index.  <br /></td></tr>
+<tr class="separator:a17132e70ada992567ecf7ddb39438d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab213cdadf775d5e379969fae7919194b" id="r_ab213cdadf775d5e379969fae7919194b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#ab213cdadf775d5e379969fae7919194b">requestAttention</a> (bool continuous)=0</td></tr>
+<tr class="memdesc:ab213cdadf775d5e379969fae7919194b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests OS attention (flashing taskbar); continuous repeats until focused.  <br /></td></tr>
+<tr class="separator:ab213cdadf775d5e379969fae7919194b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a899bc3bbeec4b035c9586d41045291ff" id="r_a899bc3bbeec4b035c9586d41045291ff"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#a899bc3bbeec4b035c9586d41045291ff">setIconRGBA</a> (const uint8_t *rgba, int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)=0</td></tr>
+<tr class="memdesc:a899bc3bbeec4b035c9586d41045291ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the window icon from tightly packed RGBA8 pixels (w*h*4 bytes).  <br /></td></tr>
+<tr class="separator:a899bc3bbeec4b035c9586d41045291ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Platform window interface (SDL implementation on desktop/mobile). Script: <code>win &lt;- eve.Window();</code> </p>
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4bc2070e1ce229a3885cf8f573f135e2" name="a4bc2070e1ce229a3885cf8f573f135e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc2070e1ce229a3885cf8f573f135e2">&#9670;&#160;</a></span>~Window()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::window::Window::~Window </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>被 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#afa47fa19b5671692bb85f0e6d9564711">eve::window::sdl::Window</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac8bce05cdc317a16a24f42690ced321f" name="ac8bce05cdc317a16a24f42690ced321f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8bce05cdc317a16a24f42690ced321f">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Closes and destroys the underlying window. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab5ea157deab5af4ebee0f20865dec5d9" name="ab5ea157deab5af4ebee0f20865dec5d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ea157deab5af4ebee0f20865dec5d9">&#9670;&#160;</a></span>DPIToWindowCoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::DPIToWindowCoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts UI-DPI coordinates to window logical coordinates. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad77e384b9a230c8861d554218c156c92">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae0a3ebab6b28fc89ffc90cf06e1f2cab" name="ae0a3ebab6b28fc89ffc90cf06e1f2cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0a3ebab6b28fc89ffc90cf06e1f2cab">&#9670;&#160;</a></span>fromPixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eve::window::Window::fromPixels </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a75f70d42fe480b8344199f269e146bce">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af4c0ab7d306c9e932b5bf1951e48b15d" name="af4c0ab7d306c9e932b5bf1951e48b15d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4c0ab7d306c9e932b5bf1951e48b15d">&#9670;&#160;</a></span>fromPixelsXY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::fromPixelsXY </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>px</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>py</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a811bfaf4b7435da7b749f5faae887104">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a9e0b85913838d20d5cceac27514e3b82" name="a9e0b85913838d20d5cceac27514e3b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e0b85913838d20d5cceac27514e3b82">&#9670;&#160;</a></span>getDesktopDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::getDesktopDimensions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Desktop resolution of a display. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a0f1464e376f479d0c3db24e73f3a617d">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0e54083aa23b3100ac0f0f99e917dd32" name="a0e54083aa23b3100ac0f0f99e917dd32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e54083aa23b3100ac0f0f99e917dd32">&#9670;&#160;</a></span>getDisplayCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::getDisplayCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of displays attached to the system. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ac5b9b1fb32bd625f2f87849389407922">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a518a769935235872f35d50ea225cf91e" name="a518a769935235872f35d50ea225cf91e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a518a769935235872f35d50ea225cf91e">&#9670;&#160;</a></span>getDisplayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::window::Window::getDisplayName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable display name for a display index. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad18562ac4cc2b97b24449ba136445e3b">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac2069f5e837c5cd603cfdac7e60cc5bb" name="ac2069f5e837c5cd603cfdac7e60cc5bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2069f5e837c5cd603cfdac7e60cc5bb">&#9670;&#160;</a></span>getDisplayOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::window::Window::getDisplayOrientation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Display orientation string (e.g. "landscape"). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a615454ab1f689bc0604de91994cad541">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa97368a8e5402a9417542100911b6800" name="aa97368a8e5402a9417542100911b6800"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa97368a8e5402a9417542100911b6800">&#9670;&#160;</a></span>getDPIScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eve::window::Window::getDPIScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current UI/logical DPI scale (1.0 on non-retina displays). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a54ddc84563dbd55d5f1d716a6ca580cb">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a7af5e960255a85e324486920b2eb01b8" name="a7af5e960255a85e324486920b2eb01b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af5e960255a85e324486920b2eb01b8">&#9670;&#160;</a></span>getFullscreenSizes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; <a class="el" href="structeve_1_1window_1_1Window_1_1WindowSize.html">WindowSize</a> &gt; eve::window::Window::getFullscreenSizes </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fullscreen sizes supported by a display. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a96e1b34b3fa41b714c5fe4302d1ee991">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aee2fcb703b93acb71de793ad70a51280" name="aee2fcb703b93acb71de793ad70a51280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee2fcb703b93acb71de793ad70a51280">&#9670;&#160;</a></span>getHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void * eve::window::Window::getHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native window handle (SDL_Window* on SDL backend). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a099e008296bee06cdf51a634cbfee7a2">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae9c1035279bc746a0e97820320d0fa80" name="ae9c1035279bc746a0e97820320d0fa80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9c1035279bc746a0e97820320d0fa80">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a43b7225e2ddcfbda2a7f7cbbe29fe22f">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a2f4b1e102b6204b6fd8b7096225229a6" name="a2f4b1e102b6204b6fd8b7096225229a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f4b1e102b6204b6fd8b7096225229a6">&#9670;&#160;</a></span>getNativeDPIScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eve::window::Window::getNativeDPIScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native DPI scale reported by the OS for this window. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9db6c9e74eb1fb28b89e88d12e897fdb">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afbd62ff320550282d56c9afdc72a719c" name="afbd62ff320550282d56c9afdc72a719c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbd62ff320550282d56c9afdc72a719c">&#9670;&#160;</a></span>getPixelHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::getPixelHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a5b0de7d96316349c2227547c27f14e22">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aeb0be647ed6de6d5c8967eeae96b9358" name="aeb0be647ed6de6d5c8967eeae96b9358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb0be647ed6de6d5c8967eeae96b9358">&#9670;&#160;</a></span>getPixelWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::getPixelWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Framebuffer (pixel) dimensions of the window. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aad9a2f9fa37e1d3385a34d78f6f4e81a">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae3a91f70345b4c00d0bbf7b0811cc6ee" name="ae3a91f70345b4c00d0bbf7b0811cc6ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3a91f70345b4c00d0bbf7b0811cc6ee">&#9670;&#160;</a></span>getPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::getPosition </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>display</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads the current window position and display index. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad4b54c6b5213d937aa30d8c5ea1d7b73">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afa3622701ae426f3e4f6becd8882a862" name="afa3622701ae426f3e4f6becd8882a862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa3622701ae426f3e4f6becd8882a862">&#9670;&#160;</a></span>getVSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::getVSync </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a319af4a319354727f85bb3769978a15c">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa2dc82329dfeb26602c472e2d0c78574" name="aa2dc82329dfeb26602c472e2d0c78574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2dc82329dfeb26602c472e2d0c78574">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a77033bea64bc31ff81fcf95639f31858">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae710cf78a331f6fb0abfc4f852b6dab7" name="ae710cf78a331f6fb0abfc4f852b6dab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae710cf78a331f6fb0abfc4f852b6dab7">&#9670;&#160;</a></span>getWindowSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> eve::window::Window::getWindowSettings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#adcdddc1c70d86e03e54a419234246226">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a889033315a12b2174bcf07d970681f25" name="a889033315a12b2174bcf07d970681f25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a889033315a12b2174bcf07d970681f25">&#9670;&#160;</a></span>getWindowTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const std::string &amp; eve::window::Window::getWindowTitle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af36747f4cb8650b198fabfe521c9a462">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a31367d5006048d5017fbd87bee936998" name="a31367d5006048d5017fbd87bee936998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31367d5006048d5017fbd87bee936998">&#9670;&#160;</a></span>hasFocus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::hasFocus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the window has keyboard focus. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a662286a12d32f4ab6ad197bd5c206d87">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a98d75ddbf2155a0ec1ef8672ccea9851" name="a98d75ddbf2155a0ec1ef8672ccea9851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98d75ddbf2155a0ec1ef8672ccea9851">&#9670;&#160;</a></span>hasMouseFocus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::hasMouseFocus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the window has mouse focus. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a113c8477c1872c8b344971c4b80787b3">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac225c18559f693eeed62b8a3fe39d114" name="ac225c18559f693eeed62b8a3fe39d114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac225c18559f693eeed62b8a3fe39d114">&#9670;&#160;</a></span>isMaximized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::isMaximized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1d75884aae81b9461cfb30cfde67796b">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a4437ca04a353da4f28c81c1267f7a02d" name="a4437ca04a353da4f28c81c1267f7a02d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4437ca04a353da4f28c81c1267f7a02d">&#9670;&#160;</a></span>isMinimized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::isMinimized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a784212943e8ddb5b11572a368ef7e322">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a94bb3c9427d43895a50574d175c70dc6" name="a94bb3c9427d43895a50574d175c70dc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94bb3c9427d43895a50574d175c70dc6">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aaf37cb2433dd9e2d78d76c18d8a14816">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a67b3d326825a0c5566f41d72f4b0fafa" name="a67b3d326825a0c5566f41d72f4b0fafa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67b3d326825a0c5566f41d72f4b0fafa">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1ea52a8d58e775c4b2b67055087481b2">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a22f20a45ba38ff4ddd8570d4d80789be" name="a22f20a45ba38ff4ddd8570d4d80789be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f20a45ba38ff4ddd8570d4d80789be">&#9670;&#160;</a></span>maximize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::maximize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a255e81919f261575eb27a99ed0c0d5b7">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa675184700cbf7ac0378d5f45e35ef31" name="aa675184700cbf7ac0378d5f45e35ef31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa675184700cbf7ac0378d5f45e35ef31">&#9670;&#160;</a></span>minimize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::minimize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Minimizes / maximizes / restores the window. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ae9963e84e0005369e07ea09270db87ad">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aadefa9b3bb4766e78b05c7ca9e7180ff" name="aadefa9b3bb4766e78b05c7ca9e7180ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadefa9b3bb4766e78b05c7ca9e7180ff">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::window::Window::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1window_1_1Window.html">Window</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad08b6c33417155c6d3fbaa8c32ae6661" name="ad08b6c33417155c6d3fbaa8c32ae6661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad08b6c33417155c6d3fbaa8c32ae6661">&#9670;&#160;</a></span>pixelToWindowCoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::pixelToWindowCoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts framebuffer pixel coordinates to window logical coordinates. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aac66cbb3ce2d418189e298d4a77ca395">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab213cdadf775d5e379969fae7919194b" name="ab213cdadf775d5e379969fae7919194b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab213cdadf775d5e379969fae7919194b">&#9670;&#160;</a></span>requestAttention()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::requestAttention </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>continuous</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Requests OS attention (flashing taskbar); continuous repeats until focused. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a92fa05b53286d56669e8c82db46639a1">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a4e4576e4a55a3ba36a5533efaf84ea7b" name="a4e4576e4a55a3ba36a5533efaf84ea7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e4576e4a55a3ba36a5533efaf84ea7b">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::restore </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a5006434fceb8be0df191192b36d05e26">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a1f69e102f44e4deef67320ed5a1effbc" name="a1f69e102f44e4deef67320ed5a1effbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f69e102f44e4deef67320ed5a1effbc">&#9670;&#160;</a></span>setFullscreenDesktop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::setFullscreenDesktop </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fullscreen</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Switches between desktop fullscreen and windowed mode. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#acadd7190e5f8b156b61a65cb732c44e7">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a7ec57f58ca7c800920a62dbe0293e7b5" name="a7ec57f58ca7c800920a62dbe0293e7b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ec57f58ca7c800920a62dbe0293e7b5">&#9670;&#160;</a></span>setFullscreenExclusive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::setFullscreenExclusive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fullscreen</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Switches between exclusive fullscreen and windowed mode. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1892debfca56e8cd533e2b1aa808fe14">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a899bc3bbeec4b035c9586d41045291ff" name="a899bc3bbeec4b035c9586d41045291ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a899bc3bbeec4b035c9586d41045291ff">&#9670;&#160;</a></span>setIconRGBA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::setIconRGBA </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>rgba</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the window icon from tightly packed RGBA8 pixels (w*h*4 bytes). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a2a582b026ac08966bf6db6913d6bf20c">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae73f6b5f787a82bf6b28a15e60ea83c4" name="ae73f6b5f787a82bf6b28a15e60ea83c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae73f6b5f787a82bf6b28a15e60ea83c4">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Moves the window to a position in logical units on the given display. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aca7d667412c151606ea60b1c16af409a">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af13db08906c3d90f2ab2f21196095136" name="af13db08906c3d90f2ab2f21196095136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af13db08906c3d90f2ab2f21196095136">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::setSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Requests a new logical window size. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af556ef9a9098106603bd184e082152db">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0cd19d3d87a665399be82c99b44cba49" name="a0cd19d3d87a665399be82c99b44cba49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd19d3d87a665399be82c99b44cba49">&#9670;&#160;</a></span>setVSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::setVSync </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vsync</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables/disables vertical sync (0 = off, 1 = on). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a309bd22078ba61b48095e987436298dc">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aad33fa5bc7c45e09bf31245386823d2c" name="aad33fa5bc7c45e09bf31245386823d2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad33fa5bc7c45e09bf31245386823d2c">&#9670;&#160;</a></span>setWindowSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::setWindowSettings </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applies a full <a class="el" href="structeve_1_1window_1_1WindowSettings.html" title="Display settings for window creation/resize. width/height == 0 selects the desktop display mode size.">WindowSettings</a> struct (recreates the window when needed). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a788013e18e076a9b033b80fa5f550ba3">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8217d33317238df12ea8ff880804499b" name="a8217d33317238df12ea8ff880804499b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8217d33317238df12ea8ff880804499b">&#9670;&#160;</a></span>setWindowTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::setWindowTitle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the window title shown in the OS title bar. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a7c3d793b0ab5166a4d29e25641f66410">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a61f0a4b0800de8a92ebebea3d7c223ba" name="a61f0a4b0800de8a92ebebea3d7c223ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61f0a4b0800de8a92ebebea3d7c223ba">&#9670;&#160;</a></span>showMessageBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::window::Window::showMessageBox </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>attachToWindow</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shows a modal message box ("info", "warning", or "error"). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af673952b9d9493ff69f375c52e40ca34">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a17132e70ada992567ecf7ddb39438d3a" name="a17132e70ada992567ecf7ddb39438d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17132e70ada992567ecf7ddb39438d3a">&#9670;&#160;</a></span>showMessageBoxData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::window::Window::showMessageBoxData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1window_1_1Window_1_1MessageBoxData.html">MessageBoxData</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shows a configurable message box; returns the pressed button index. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a34a7a8ed208e21a3772061be8c0c309d">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab5a7f454eaa55654a24d9f66caafb8a1" name="ab5a7f454eaa55654a24d9f66caafb8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5a7f454eaa55654a24d9f66caafb8a1">&#9670;&#160;</a></span>toPixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double eve::window::Window::toPixels </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scales a logical length to UI pixels (and back). </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#abc2f0a2c39e3fcfabc2701ab46dc04af">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a4fd9ad4d6aa381b23bc6d428787626e2" name="a4fd9ad4d6aa381b23bc6d428787626e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fd9ad4d6aa381b23bc6d428787626e2">&#9670;&#160;</a></span>toPixelsXY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::toPixelsXY </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>px</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>py</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vector variants of the coordinate conversions above. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#acbb3112c317b2041ae430ba8337ca0e1">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a84c39371ae8fc22cc4e32c2d6b26d57f" name="a84c39371ae8fc22cc4e32c2d6b26d57f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c39371ae8fc22cc4e32c2d6b26d57f">&#9670;&#160;</a></span>windowToDPICoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::windowToDPICoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts window logical coordinates to UI-DPI coordinates. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9d0b40fd24815ea2fa5644b9bd7744a1">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aaadc6beb65d17e4bd5c29aae58c1e7c7" name="aaadc6beb65d17e4bd5c29aae58c1e7c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaadc6beb65d17e4bd5c29aae58c1e7c7">&#9670;&#160;</a></span>windowToPixelCoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::window::Window::windowToPixelCoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts window logical coordinates to framebuffer pixel coordinates. </p>
+
+<p>在 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad84dfa1a3601225ba4c525a9159c3ed1">eve::window::sdl::Window</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/window/<a class="el" href="Window_8h_source.html">Window.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

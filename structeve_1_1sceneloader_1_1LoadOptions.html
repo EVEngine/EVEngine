@@ -1,0 +1,386 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sceneloader::LoadOptions结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sceneloader.html">sceneloader</a></li><li class="navelem"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1sceneloader_1_1LoadOptions-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::sceneloader::LoadOptions结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Options controlling how a 3D scene file is decoded and mounted.  
+ <a href="structeve_1_1sceneloader_1_1LoadOptions.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a035282711d6f9e5abb8d99637058d439" id="r_a035282711d6f9e5abb8d99637058d439"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a035282711d6f9e5abb8d99637058d439">triangulate</a> = true</td></tr>
+<tr class="separator:a035282711d6f9e5abb8d99637058d439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a379b46115cb0a5b3682f664d6120edf9" id="r_a379b46115cb0a5b3682f664d6120edf9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a379b46115cb0a5b3682f664d6120edf9">generateNormalsIfMissing</a> = true</td></tr>
+<tr class="separator:a379b46115cb0a5b3682f664d6120edf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb8b76599b898799484836ce84791b07" id="r_aeb8b76599b898799484836ce84791b07"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#aeb8b76599b898799484836ce84791b07">joinIdenticalVertices</a> = true</td></tr>
+<tr class="separator:aeb8b76599b898799484836ce84791b07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac27eb74f23fda8fdb777ae4e3726e468" id="r_ac27eb74f23fda8fdb777ae4e3726e468"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac27eb74f23fda8fdb777ae4e3726e468">flipUVs</a> = true</td></tr>
+<tr class="separator:ac27eb74f23fda8fdb777ae4e3726e468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a792968ce3df94e01146372933f695bb0" id="r_a792968ce3df94e01146372933f695bb0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">improveCacheLocality</a> = true</td></tr>
+<tr class="separator:a792968ce3df94e01146372933f695bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2006c883697e215324fe76cca63328c8" id="r_a2006c883697e215324fe76cca63328c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8">sharedMeshes</a> = true</td></tr>
+<tr class="memdesc:a2006c883697e215324fe76cca63328c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reuse one GPU mesh when several nodes reference the same aiMesh.  <br /></td></tr>
+<tr class="separator:a2006c883697e215324fe76cca63328c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db208540321b658e7489f3d5f19fce2" id="r_a1db208540321b658e7489f3d5f19fce2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a1db208540321b658e7489f3d5f19fce2">mipmaps</a> = true</td></tr>
+<tr class="memdesc:a1db208540321b658e7489f3d5f19fce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate mipmaps + anisotropic filtering for imported textures.  <br /></td></tr>
+<tr class="separator:a1db208540321b658e7489f3d5f19fce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a140a966d1b3df71c9cb33446cd3cc56b" id="r_a140a966d1b3df71c9cb33446cd3cc56b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">importLights</a> = true</td></tr>
+<tr class="memdesc:a140a966d1b3df71c9cb33446cd3cc56b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import aiLight entries as <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; (≤15 chars...">graphics::Light3D</a> entities.  <br /></td></tr>
+<tr class="separator:a140a966d1b3df71c9cb33446cd3cc56b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac674924bef61e54b0ae85e538643f712" id="r_ac674924bef61e54b0ae85e538643f712"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">importCameras</a> = false</td></tr>
+<tr class="memdesc:ac674924bef61e54b0ae85e538643f712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import aiCamera entries as inactive <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> entities.  <br /></td></tr>
+<tr class="separator:ac674924bef61e54b0ae85e538643f712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4869a2b5dbc01fdac59611fd9dd499d2" id="r_a4869a2b5dbc01fdac59611fd9dd499d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">importAnimations</a> = true</td></tr>
+<tr class="memdesc:a4869a2b5dbc01fdac59611fd9dd499d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import aiAnimation clips (skeleton + clips exposed via accessors).  <br /></td></tr>
+<tr class="separator:a4869a2b5dbc01fdac59611fd9dd499d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Options controlling how a 3D scene file is decoded and mounted. </p>
+<p>The first five toggles map to medialoader's Assimp post-processing steps (triangulate, generate-normals-if-missing, join-identical-vertices, flip-UVs, improve-cache-locality). All default to on; disabling one changes the decoded vertex layout (e.g. joinIdenticalVertices=false keeps per-face vertices for hard-edged flat shading). Tangents are not required by the default PBR pipeline (it derives its tangent frame from screen-space derivatives). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00099">99</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ac27eb74f23fda8fdb777ae4e3726e468" name="ac27eb74f23fda8fdb777ae4e3726e468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac27eb74f23fda8fdb777ae4e3726e468">&#9670;&#160;</a></span>flipUVs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::flipUVs = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a379b46115cb0a5b3682f664d6120edf9" name="a379b46115cb0a5b3682f664d6120edf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a379b46115cb0a5b3682f664d6120edf9">&#9670;&#160;</a></span>generateNormalsIfMissing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::generateNormalsIfMissing = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4869a2b5dbc01fdac59611fd9dd499d2" name="a4869a2b5dbc01fdac59611fd9dd499d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4869a2b5dbc01fdac59611fd9dd499d2">&#9670;&#160;</a></span>importAnimations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::importAnimations = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Import aiAnimation clips (skeleton + clips exposed via accessors). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac674924bef61e54b0ae85e538643f712" name="ac674924bef61e54b0ae85e538643f712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac674924bef61e54b0ae85e538643f712">&#9670;&#160;</a></span>importCameras</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::importCameras = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Import aiCamera entries as inactive <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> entities. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a140a966d1b3df71c9cb33446cd3cc56b" name="a140a966d1b3df71c9cb33446cd3cc56b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a140a966d1b3df71c9cb33446cd3cc56b">&#9670;&#160;</a></span>importLights</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::importLights = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Import aiLight entries as <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; (≤15 chars...">graphics::Light3D</a> entities. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a792968ce3df94e01146372933f695bb0" name="a792968ce3df94e01146372933f695bb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a792968ce3df94e01146372933f695bb0">&#9670;&#160;</a></span>improveCacheLocality</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::improveCacheLocality = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb8b76599b898799484836ce84791b07" name="aeb8b76599b898799484836ce84791b07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb8b76599b898799484836ce84791b07">&#9670;&#160;</a></span>joinIdenticalVertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::joinIdenticalVertices = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1db208540321b658e7489f3d5f19fce2" name="a1db208540321b658e7489f3d5f19fce2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db208540321b658e7489f3d5f19fce2">&#9670;&#160;</a></span>mipmaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::mipmaps = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate mipmaps + anisotropic filtering for imported textures. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2006c883697e215324fe76cca63328c8" name="a2006c883697e215324fe76cca63328c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2006c883697e215324fe76cca63328c8">&#9670;&#160;</a></span>sharedMeshes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::sharedMeshes = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reuse one GPU mesh when several nodes reference the same aiMesh. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a035282711d6f9e5abb8d99637058d439" name="a035282711d6f9e5abb8d99637058d439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a035282711d6f9e5abb8d99637058d439">&#9670;&#160;</a></span>triangulate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::LoadOptions::triangulate = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/sceneloader/<a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 图形渲染模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">图形渲染模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>图形渲染模块</h1>
+<p><b>脚本入口：</b> <code>eve.Graphics()</code></p>
+<p>清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 <a class="el" href="math_8md.html">Math</a>，物理体查询见 <a class="el" href="physics_8md.html">Physics</a>。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">gfx.setBackgroundColor(0.08, 0.1, 0.16, 1.0);</div>
+<div class="line">gfx.clear();</div>
+<div class="line">gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Graphics</code> 管理设备、swapchain、camera、light 和提交；Texture/Shader/Mesh/Renderable 是资源或场景对象。CPU 资源创建在 init，帧内只更新参数并 draw。</p>
+<h2>目标导向指南</h2>
+<h3>绘制 2D 游戏帧</h3>
+<p>在 <code>eve_render()</code> 开始调用 <code>clear()</code>，随后按背景、地图、角色、粒子、UI 的顺序提交。纯色占位使用 <code>drawSolidRect()</code>；已有 Texture 使用 <code>drawTexturedRect()</code>。正常主循环由引擎负责 present。</p>
+<h3>渲染带光照的 3D 对象</h3>
+<p>初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 <code>render3D()</code>。阴影开关、bias 和 strength 应逐场景调节。</p>
+<h3>纹理过滤（mipmap / 各向异性 / LOD）</h3>
+<p>默认 <code>newTexture</code> 仍为线性过滤、单级 mip（兼容旧行为）。需要三线性与各向异性时：</p>
+<div class="fragment"><div class="line">// generateMipmaps=true, maxAnisotropy=16, filter/mipmap=&quot;linear&quot;, lodBias=0</div>
+<div class="line">tex &lt;- gfx.newTextureWithSampler(img, false, false, true, 16.0, &quot;linear&quot;, &quot;linear&quot;, 0.0);</div>
+<div class="line">print(tex.getMipmapCount());</div>
+<div class="line">gfx.setTextureSampler(tex, &quot;nearest&quot;, &quot;none&quot;, 1.0, 0.0); // 像素风</div>
+<div class="line">print(gfx.getMaxAnisotropy());</div>
+</div><!-- fragment --><p>C++ 侧使用 <code>TextureCreateInfo::withMipmaps()</code> / <code>TextureSampler::anisotropic()</code>，并通过同名 <code>setTextureSampler</code> 重载热更新采样状态（字符串版参数与脚本一致；旧名 <code>setTextureSamplerParams</code> 保留为弃用别名）。<code>filter</code> 只接受 <code>nearest</code>/<code>linear</code>，<code>mipmap</code> 只接受 <code>none</code>/<code>nearest</code>/<code>linear</code>，传错会抛异常而不是静默回退。Cubemap（IBL）默认生成完整 mip 链，供 <code>textureLod</code> 按粗糙度采样。</p>
+<p>几何 LOD：<code>Renderable3D.setMeshLod(index, mesh, switchDistance)</code>，<code>RenderSystem3D</code> 按相机距离选择网格。</p>
+<h3>材质（Material）与模型部件</h3>
+<p>把着色方法（<code>pbr</code> / <code>unlit</code> / <code>hair</code> / <code>custom</code>）、贴图和 PBR 参数打成一个 <code>Material</code>，挂到整模或某个部件：</p>
+<div class="fragment"><div class="line">local mat = gfx.newMaterial();</div>
+<div class="line">mat.setShadingModel(&quot;pbr&quot;);</div>
+<div class="line">mat.setAlbedoTexture(albedo);</div>
+<div class="line">mat.setNormalTexture(nrm);</div>
+<div class="line">mat.setMetallic(0.2);</div>
+<div class="line">mat.setRoughness(0.5);</div>
+<div class="line"> </div>
+<div class="line">local r = Renderable3D.create();</div>
+<div class="line">r.setMaterial(mat);                 // 整模</div>
+<div class="line">// 或多部件：r.setPart(0, &quot;body&quot;, bodyMesh, bodyMat);</div>
+</div><!-- fragment --><h3>可编译渲染控制与 GBuffer</h3>
+<p><code>RenderControl</code> 用字符串特性开关，再 <code>compile()</code> 成有序 Pass（默认：shadow → forward → hair）：</p>
+<div class="fragment"><div class="line">local rc = gfx.getRenderControl();</div>
+<div class="line">rc.enable(&quot;gbuffer&quot;);      // 额外填充可采样深度/法线</div>
+<div class="line">rc.enable(&quot;gbufferAlbedo&quot;);</div>
+<div class="line">rc.compile();</div>
+<div class="line">gfx.render3D();</div>
+<div class="line">local gb = rc.getGBuffer();</div>
+<div class="line">if (gb.isValid()) {</div>
+<div class="line">    local depth = gb.getDepthTexture();     // RGBA8，R = 线性深度 0..1（Canvas / 体积雾）</div>
+<div class="line">    local hwDepth = gb.getHwDepthTexture(); // D32，.r = Vulkan NDC z（3D AO / GI）</div>
+<div class="line">    local nrm = gb.getNormalTexture();      // RGB = 法线*0.5+0.5</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>3D 前向仍启用硬件 z-buffer；GBuffer 是给 AO / 体积雾 / 风格描边等中后期用的采样目标。阴影仍走 CSM shadow map。</p>
+<p>一帧里各 buffer 谁写谁读、对应函数和 shader，见开发文档 `3D渲染管线.md`。</p>
+<p>大面积平铺 albedo（地面、墙面）若出现明显重复，可对实体调用 <code>setTexCellBomb(cellScale, strength, rotAmount=1)</code>：按 UV 划分 cell，对邻接 cell 做随机偏移/旋转并混合。<code>strength=0</code>（默认）关闭，行为与原先一致；<code>cellScale</code> 一般为 2～16。</p>
+<p>砖墙、石板等需要假深度时，用 <code>setHeightTexture(heightTex)</code> + <code>setParallax(scale, minLayers=8, maxLayers=32)</code> 开启视差遮蔽贴图（POM）。高度图取 **R 通道**（白=凸起朝向观察者）；<code>scale=0</code>（默认）关闭。典型 <code>scale</code> 为 0.02～0.08；掠射角下层数会自适应增加。</p>
+<h3>毛发 / 皮毛渲染（Hair Cards）</h3>
+<p>适用于 VRoid / 角色发片、动物皮毛等 alpha 卡片网格。引擎提供内置 <b>Kajiya-Kay 各向异性高光</b> shader，并在 <code>RenderSystem3D</code> 中于不透明物体之后、按距离从远到近绘制。</p>
+<div class="fragment"><div class="line">local hairShader = gfx.newHairShader()</div>
+<div class="line">hairShader.sendFloat(&quot;specExp&quot;, 90.0)</div>
+<div class="line">hairShader.sendFloat(&quot;specStrength&quot;, 0.9)</div>
+<div class="line">hairShader.sendFloat(&quot;alphaCutoff&quot;, 0.12)</div>
+<div class="line"> </div>
+<div class="line">local hair = Renderable3D.create()</div>
+<div class="line">hair.setMesh(hairCardMesh)</div>
+<div class="line">hair.setTexture(hairAlbedo)</div>
+<div class="line">hair.setShader(hairShader)</div>
+<div class="line">hair.setHair(true)   // 启用透明毛发 pass（背面优先排序）</div>
+<div class="line">hair.setCastShadow(false)  // 发片通常不参与阴影投射</div>
+</div><!-- fragment --><p>可调 push 参数：<code>specExp</code>、<code>specStrength</code>、<code>primaryShift</code>、<code>secondaryShift</code>、<code>alphaCutoff</code>、<code>rimStrength</code>、<code>strandDirX/Y/Z</code>（发束方向，全 0 时由顶点自动推导）。</p>
+<h3>屏幕空间体积光（尘雾光柱）与体积雾</h3>
+<p><code>vol &lt;- gfx.newVolumetric()</code>。<code>setQuality("low"|"medium"|"high")</code> 控制采样与 <code>resolutionFor</code>。</p>
+<ul>
+<li>**screenspace**：<code>beginOcclusionMap</code> → <code>drawOccluders2D</code> → <code>scatter</code>；或 <code>applyFromScene</code></li>
+<li>**raymarch**：<code>setMode("raymarch")</code> + <code>setCamera</code> + 线性深度 → <code>rayMarch</code></li>
+<li>**fog**：<code>setMode("fog")</code> + <code>setFogHeight*</code> / <code>setFogStart</code>/<code>End</code> + 线性深度 → <code>applyFog</code>（雾色 alpha 叠加场景）</li>
+</ul>
+<p>细节见 `体积光模块设计.md`。</p>
+<h3>屏幕空间环境光遮蔽（SSAO / HBAO / GTAO）</h3>
+<p><code>ao &lt;- gfx.newAmbientOcclusion()</code>。<code>setMode("ssao"|"hbao"|"gtao")</code>，<code>setQuality</code> 控制采样与 <code>resolutionFor</code>。</p>
+<ol type="1">
+<li><code>setCamera</code> + 线性深度纹理（与体积雾相同约定）</li>
+<li><code>compute</code> / <code>computeTo</code> → AO 图（RGB=遮蔽因子，A=深度）</li>
+<li>可选 <code>blur</code> / <code>blurTo</code>（双边）</li>
+<li><code>applyOverlay</code> 以黑 + <code>alpha=(1-ao)*intensity</code> 叠到已有场景</li>
+</ol>
+<p>3D 默认路径：<code>RenderControl</code> 特性 <code>"ao"</code>（默认开）会在 forward 之后对 GBuffer 的 D32 + 法线做 <code>applyFromGBuffer</code>，不必手动建 Canvas。Canvas 上的 <code>compute</code> 仍用 8-bit 线性深度。</p>
+<p>细节见 `环境光遮蔽模块设计.md`。</p>
+<h3>屏幕空间全局光照（SSGI）</h3>
+<p><code>gi &lt;- gfx.newGlobalIllumination()</code>。<code>setQuality</code> 控制采样数与半径；<code>setLightDirection</code> / <code>setLightColor</code> 提供反弹用的太阳光。</p>
+<p>3D 默认路径：<code>RenderControl</code> 特性 <code>"gi"</code> 仍默认开（mesh 半球天空/地面 + wrap fill）。fullscreen <code>applyFromScene</code> 不会自动叠到 3D 回读：从 lit scene color 采样会把帘子/花盆印到地面上形成游走鬼影。需要时仍可手动 <code>applyFromScene</code> / <code>applyFromDepth</code>。Canvas 测试仍可用打包的 <code>applyFromDepth</code>（A=线性深度）。</p>
+<div class="fragment"><div class="line">local rc = gfx.getRenderControl();</div>
+<div class="line">rc.enable(&quot;gi&quot;);   // 默认已开</div>
+<div class="line">rc.compile();</div>
+</div><!-- fragment --><h3>抗锯齿（硬件 MSAA + 经典后处理）</h3>
+<p>**硬件 MSAA**（3D 模型/体素边缘效果最好）：3D scene color pass 默认 4x 多重采样再 resolve。用 <code>RenderControl "msaa"</code>（默认开）开关，<code>gfx.setMsaaSamples(n)</code> 设采样数（0/1=关，2/4/8 按设备能力 clamp）：</p>
+<div class="fragment"><div class="line">gfx.setMsaaSamples(8);          // 升到 8x（若设备支持）</div>
+<div class="line">gfx.setMsaaSamples(0);          // 关闭硬件 MSAA</div>
+<div class="line">rc.disable(&quot;msaa&quot;);             // 或通过 RenderControl 特性关</div>
+</div><!-- fragment --><p>**经典后处理**：<code>aa &lt;- gfx.newAntiAliasing()</code>。<code>setQuality("low"|"medium"|"high")</code> 调整阈值与搜索；<code>setMode</code> 选择算法：</p>
+<ul>
+<li>**fxaa**：FXAA 3.11 风格亮度边搜索</li>
+<li>**smaa**：SMAA 启发的单 Pass 形态学 AA</li>
+<li>**ssaa**：超采样 Resolve（先画到 <code>resolutionFor</code> 尺寸的 Canvas）</li>
+<li>**nfaa**：沿亮度梯度切向的 Normal Filter AA</li>
+</ul>
+<p>典型流程：场景 → Canvas → <code>aa.applyCanvas</code> / <code>applyCanvasTo</code> → 屏幕。</p>
+<p>3D 默认路径：<code>begin3DFrame</code> 画到可采样的 scene color（<code>"msaa"</code> 开时先 Nx 多重采样再 resolve 到 1x），present 时按 <code>RenderControl "aa"</code>（默认开）做 FXAA resolve 再叠 AO/HUD。手动 Canvas 路径仍然可用。细节见 `抗锯齿模块设计.md`。</p>
+<h3>2D 屏幕拾取</h3>
+<p><code>Camera2D</code> 用 <code>setPosition</code> / <code>setZoom</code> 控制视口中心与缩放；<code>screenToWorldX/Y(screenX, screenY, viewW, viewH)</code> 把鼠标像素换成世界坐标（<code>viewW/H</code> 通常取 <code>gfx.getWidth/Height</code>），再交给 Math 的 <code>pointIn*</code> 或 Physics 的 <code>testPoint</code> / <code>queryAABB</code>。</p>
+<h3>3D 屏幕拾取</h3>
+<p><code>Camera3D.screenToRay(screenX, screenY, viewW, viewH)</code> 写入眼点与单位方向，用 <code>getScreenRayOrigin*</code> / <code>getScreenRayDir*</code> 读取，再对包围球/盒调用 Math 的 <code>raycastSphere</code> / <code>raycastBox</code>。</p>
+<h2>常见问题</h2>
+<ul>
+<li>忘记每帧 <code>clear()</code>，保留未定义的旧帧内容。</li>
+<li>每帧编译 shader 或上传纹理。</li>
+<li>2D/UI/3D 提交顺序错误导致覆盖。</li>
+<li>拾取时 <code>viewW/H</code> 与实际渲染 drawable 不一致，射线会偏。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>bakeMeshMorph()</code>、<code>clear()</code>、<code>clearMorphWeights()</code>、<code>declareFloat()</code>、<code>declareMatrix()</code>、<code>declareVec2()</code>、<code>declareVec3()</code>、<code>declareVec4()</code></li>
+<li><code>drawSolidRect()</code>、<code>drawTexturedRect()</code>、<code>drawOcclusionSolid()</code>、<code>drawOcclusionTexture()</code>、<code>getCastShadow()</code>、<code>getCastOcclusion()</code>、<code>getDirX()</code>、<code>getDirY()</code>、<code>getDirZ()</code>、<code>getHeight()</code>、<code>getMorphCount()</code></li>
+<li><code>getMorphName()</code>、<code>getMorphWeight()</code>、<code>getName()</code>、<code>getRadius()</code>、<code>getScreenRayDirX()</code>、<code>getScreenRayDirY()</code>、<code>getScreenRayDirZ()</code>、<code>getScreenRayOriginX()</code></li>
+<li><code>getScreenRayOriginY()</code>、<code>getScreenRayOriginZ()</code>、<code>getShader()</code>、<code>getShadowBias()</code>、<code>getShadowStrength()</code>、<code>getType()</code>、<code>getUniformIndex()</code>、<code>getVertexCount()</code></li>
+<li><code>getVolumetric()</code>、<code>getVolumetricIntensity()</code>、<code>getWidth()</code>、<code>getX()</code>、<code>getY()</code>、<code>getYaw()</code>、<code>getZ()</code>、<code>getZoom()</code>、<code>hasMorph()</code>、<code>hasMorphData()</code></li>
+<li><code>hasUniform()</code>、<code>isEnabled()</code>、<code>isMorphDirty()</code>、<code>newHairShader()</code>、<code>newMeshCylinder()</code>、<code>newMeshShader()</code>、<code>newMeshSphere()</code>、<code>newQuad()</code>、<code>newShader()</code></li>
+<li><code>newShaderFromSpvFile()</code>、<code>newTexture()</code>、<code>newTextureWithSampler()</code>、<code>setTextureSampler()</code>、<code>getMaxAnisotropy()</code>、<code>newVolumetric()</code>、<code>newAmbientOcclusion()</code>、<code>newGlobalIllumination()</code>、<code>newAntiAliasing()</code>、<code>setMsaaSamples()</code>、<code>getMsaaSamples()</code>、<code>present()</code>、<code>render3D()</code>、<code>reset()</code>、<code>screenToRay()</code>、<code>screenToWorldX()</code>、<code>screenToWorldY()</code></li>
+<li><code>sendFloat()</code>、<code>sendVec2()</code>、<code>sendVec3()</code>、<code>sendVec4()</code>、<code>setActive()</code>、<code>setAmbient()</code>、<code>setBackgroundColor()</code>、<code>setCamera()</code></li>
+<li><code>setCanvas()</code>、<code>setCastOcclusion()</code>、<code>setCastShadow()</code>、<code>setColor()</code>、<code>setDirection()</code>、<code>setDirectionalLight()</code>、<code>setEnabled()</code>、<code>setEnvIntensity()</code>、<code>setEnvMap()</code></li>
+<li><code>setEye()</code>、<code>setFov()</code>、<code>setMesh()</code>、<code>setMeshLod()</code>、<code>clearMeshLod()</code>、<code>getMeshLodCount()</code>、<code>getMeshLodLevelAtDistance()</code>、<code>setMetallic()</code>、<code>setMorphWeight()</code>、<code>setNormalTexture()</code>、<code>setHeightTexture()</code>、<code>setPosition()</code>、<code>setRadius()</code></li>
+<li><code>setReceiveLight()</code>、<code>setReceiveShadow()</code>、<code>setRotation()</code>、<code>setRoughness()</code>、<code>setScale()</code>、<code>setShader()</code>、<code>setHair()</code>、<code>getHair()</code>、<code>setShadowBias()</code>、<code>setShadowStrength()</code></li>
+<li><code>setTarget()</code>、<code>setTexCellBomb()</code>、<code>getTexCellBombScale()</code>、<code>getTexCellBombStrength()</code>、<code>getTexCellBombRotation()</code>、<code>setParallax()</code>、<code>getParallaxScale()</code>、<code>getParallaxMinLayers()</code>、<code>getParallaxMaxLayers()</code>、<code>setTexture()</code>、<code>setTint()</code>、<code>setType()</code>、<code>setUp()</code>、<code>setViewport()</code>、<code>setVisible()</code>、<code>setVolumetric()</code>、<code>setVolumetricIntensity()</code>、<code>setYaw()</code></li>
+<li><code>setZoom()</code>、<code>worldToScreenX()</code>、<code>worldToScreenY()</code>、<code>Texture.getMipmapCount()</code></li>
+<li><code>Volumetric</code>：<code>setQuality</code>、<code>setMode</code>、<code>scatter</code>、<code>applyFromScene</code>、<code>rayMarch</code>、<code>applyFog</code>、<code>setFogHeight</code>、<code>setFogStart</code>、<code>setFogEnd</code>、<code>setCamera</code>、<code>setLightDirection</code>、<code>setDensity</code> 等</li>
+<li><code>AmbientOcclusion</code>：<code>setQuality</code>、<code>setMode</code>、<code>setCamera</code>、<code>setRadius</code>、<code>setBias</code>、<code>setIntensity</code>、<code>setPower</code>、<code>compute</code>、<code>blur</code>、<code>applyOverlay</code>、<code>applyFromDepth</code>、<code>resolutionFor</code> 等</li>
+<li><code>GlobalIllumination</code>：<code>setQuality</code>、<code>setCamera</code>、<code>setRadius</code>、<code>setIntensity</code>、<code>setLightDirection</code>、<code>setLightColor</code>、<code>applyFromDepth</code>、<code>getSampleCount</code> 等</li>
+<li><code>AntiAliasing</code>：<code>setQuality</code>、<code>setMode</code>、<code>apply</code>、<code>applyTo</code>、<code>applyCanvas</code>、<code>applyCanvasTo</code>、<code>suggestScale</code>、<code>resolutionFor</code>、<code>setFloat</code>、<code>getFloat</code> 等</li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/graphics/"><code>src/modules/graphics/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>graphics</code>、<code>Camera2D</code>、<code>Camera3D</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

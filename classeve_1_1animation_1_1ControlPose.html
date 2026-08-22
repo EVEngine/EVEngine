@@ -1,0 +1,712 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::ControlPose类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1ControlPose-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::ControlPose类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Control-theory procedural pose driver: tracks a target <a class="el" href="classeve_1_1animation_1_1AnimPose.html" title="Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.">AnimPose</a> with per-channel second-order / spring / PD dynamics (same laws as <a class="el" href="classeve_1_1animation_1_1ControlAnim.html" title="Control-theory procedural animation for named scalar properties.">ControlAnim</a>). Script type: <code><a class="el" href="classeve_1_1animation_1_1ControlPose.html" title="Control-theory procedural pose driver: tracks a target AnimPose with per-channel second-order / sprin...">ControlPose</a></code>.  
+ <a href="classeve_1_1animation_1_1ControlPose.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ControlPose_8h_source.html">ControlPose.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8550f759d2d5dbc7847a39a0b1528016" id="r_a8550f759d2d5dbc7847a39a0b1528016"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a8550f759d2d5dbc7847a39a0b1528016">ControlPose</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="separator:a8550f759d2d5dbc7847a39a0b1528016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9205f680507dc9809a307ba89c589cc" id="r_ae9205f680507dc9809a307ba89c589cc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#ae9205f680507dc9809a307ba89c589cc">~ControlPose</a> ()=default</td></tr>
+<tr class="separator:ae9205f680507dc9809a307ba89c589cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3145d7a50ed82f68973195853c843a60" id="r_a3145d7a50ed82f68973195853c843a60"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a3145d7a50ed82f68973195853c843a60">ControlPose</a> (const <a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a> &amp;)=delete</td></tr>
+<tr class="separator:a3145d7a50ed82f68973195853c843a60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462d0a8177a18b830494d6ef34515c0f" id="r_a462d0a8177a18b830494d6ef34515c0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a462d0a8177a18b830494d6ef34515c0f">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a> &amp;)=delete</td></tr>
+<tr class="separator:a462d0a8177a18b830494d6ef34515c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3324d3965f6131928ad42a5610b82bef" id="r_a3324d3965f6131928ad42a5610b82bef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a3324d3965f6131928ad42a5610b82bef">getSkeleton</a> () const</td></tr>
+<tr class="separator:a3324d3965f6131928ad42a5610b82bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcdc71802bb3f7c69eb5e916c1ff441f" id="r_adcdc71802bb3f7c69eb5e916c1ff441f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#adcdc71802bb3f7c69eb5e916c1ff441f">setFrequency</a> (float frequencyHz)</td></tr>
+<tr class="separator:adcdc71802bb3f7c69eb5e916c1ff441f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45982d01d5da374a7ca5f48a50a8cc2d" id="r_a45982d01d5da374a7ca5f48a50a8cc2d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a45982d01d5da374a7ca5f48a50a8cc2d">getFrequency</a> () const</td></tr>
+<tr class="separator:a45982d01d5da374a7ca5f48a50a8cc2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0633395edbd1f579900588aa5b41cb99" id="r_a0633395edbd1f579900588aa5b41cb99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a0633395edbd1f579900588aa5b41cb99">setDamping</a> (float dampingZeta)</td></tr>
+<tr class="separator:a0633395edbd1f579900588aa5b41cb99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d48f19e01653dd7f1521fefbdac230e" id="r_a6d48f19e01653dd7f1521fefbdac230e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a6d48f19e01653dd7f1521fefbdac230e">getDamping</a> () const</td></tr>
+<tr class="separator:a6d48f19e01653dd7f1521fefbdac230e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab645ce54f02e5b0babb16335477c1130" id="r_ab645ce54f02e5b0babb16335477c1130"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#ab645ce54f02e5b0babb16335477c1130">setResponse</a> (float response)</td></tr>
+<tr class="separator:ab645ce54f02e5b0babb16335477c1130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af498e3f95d9c722b7c8bed8e5f9c688d" id="r_af498e3f95d9c722b7c8bed8e5f9c688d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#af498e3f95d9c722b7c8bed8e5f9c688d">getResponse</a> () const</td></tr>
+<tr class="separator:af498e3f95d9c722b7c8bed8e5f9c688d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6f3e945e60069451779743a9ecc2520" id="r_af6f3e945e60069451779743a9ecc2520"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#af6f3e945e60069451779743a9ecc2520">setIntegrator</a> (const std::string &amp;<a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>)</td></tr>
+<tr class="separator:af6f3e945e60069451779743a9ecc2520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa218b3e33ee266af9f432ed50a24da86" id="r_aa218b3e33ee266af9f432ed50a24da86"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#aa218b3e33ee266af9f432ed50a24da86">getIntegrator</a> () const</td></tr>
+<tr class="separator:aa218b3e33ee266af9f432ed50a24da86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a001354d683f071f46b21a9705a92c168" id="r_a001354d683f071f46b21a9705a92c168"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a001354d683f071f46b21a9705a92c168">setBoneWeight</a> (int boneIndex, float weight)</td></tr>
+<tr class="memdesc:a001354d683f071f46b21a9705a92c168"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-bone blend weight in [0,1]; 1 = full dynamics, 0 = hard snap to target.  <br /></td></tr>
+<tr class="separator:a001354d683f071f46b21a9705a92c168"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a243f0e0758ccca9b8bbfeb1ff1bd6232" id="r_a243f0e0758ccca9b8bbfeb1ff1bd6232"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a243f0e0758ccca9b8bbfeb1ff1bd6232">getBoneWeight</a> (int boneIndex) const</td></tr>
+<tr class="separator:a243f0e0758ccca9b8bbfeb1ff1bd6232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309dab66322b456a4710a5ba6291e406" id="r_a309dab66322b456a4710a5ba6291e406"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a309dab66322b456a4710a5ba6291e406">setTargetPose</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *target)</td></tr>
+<tr class="memdesc:a309dab66322b456a4710a5ba6291e406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy target pose. Channels without prior state snap; existing state keeps momentum.  <br /></td></tr>
+<tr class="separator:a309dab66322b456a4710a5ba6291e406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76f39944da8e5cd1bd1661a2462723e2" id="r_a76f39944da8e5cd1bd1661a2462723e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a76f39944da8e5cd1bd1661a2462723e2">snapToTarget</a> ()</td></tr>
+<tr class="memdesc:a76f39944da8e5cd1bd1661a2462723e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap current state to the last target without changing the target.  <br /></td></tr>
+<tr class="separator:a76f39944da8e5cd1bd1661a2462723e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53fd810f7267be710eda214504b2ce56" id="r_a53fd810f7267be710eda214504b2ce56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a53fd810f7267be710eda214504b2ce56">getPose</a> ()</td></tr>
+<tr class="separator:a53fd810f7267be710eda214504b2ce56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae98ffe0b7c12a78628da271369e10a9f" id="r_ae98ffe0b7c12a78628da271369e10a9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#ae98ffe0b7c12a78628da271369e10a9f">getTargetPose</a> ()</td></tr>
+<tr class="separator:ae98ffe0b7c12a78628da271369e10a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a286fefccd335ac6d7178acd90ab6c83a" id="r_a286fefccd335ac6d7178acd90ab6c83a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlPose.html#a286fefccd335ac6d7178acd90ab6c83a">update</a> (float dt)</td></tr>
+<tr class="separator:a286fefccd335ac6d7178acd90ab6c83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Control-theory procedural pose driver: tracks a target <a class="el" href="classeve_1_1animation_1_1AnimPose.html" title="Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.">AnimPose</a> with per-channel second-order / spring / PD dynamics (same laws as <a class="el" href="classeve_1_1animation_1_1ControlAnim.html" title="Control-theory procedural animation for named scalar properties.">ControlAnim</a>). Script type: <code><a class="el" href="classeve_1_1animation_1_1ControlPose.html" title="Control-theory procedural pose driver: tracks a target AnimPose with per-channel second-order / sprin...">ControlPose</a></code>. </p>
+<p>Position and scale use independent scalar channels. Rotations use shortest-path quaternion components with renormalization after each step. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8h_source.html">ControlPose.h</a> 第 <a class="el" href="ControlPose_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8550f759d2d5dbc7847a39a0b1528016" name="a8550f759d2d5dbc7847a39a0b1528016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8550f759d2d5dbc7847a39a0b1528016">&#9670;&#160;</a></span>ControlPose() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::ControlPose::ControlPose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00121">eve::animation::AnimSkeleton::applyBindPose()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+</div>
+</div>
+<a id="ae9205f680507dc9809a307ba89c589cc" name="ae9205f680507dc9809a307ba89c589cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9205f680507dc9809a307ba89c589cc">&#9670;&#160;</a></span>~ControlPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::ControlPose::~ControlPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3145d7a50ed82f68973195853c843a60" name="a3145d7a50ed82f68973195853c843a60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3145d7a50ed82f68973195853c843a60">&#9670;&#160;</a></span>ControlPose() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::ControlPose::ControlPose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a243f0e0758ccca9b8bbfeb1ff1bd6232" name="a243f0e0758ccca9b8bbfeb1ff1bd6232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a243f0e0758ccca9b8bbfeb1ff1bd6232">&#9670;&#160;</a></span>getBoneWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlPose::getBoneWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6d48f19e01653dd7f1521fefbdac230e" name="a6d48f19e01653dd7f1521fefbdac230e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d48f19e01653dd7f1521fefbdac230e">&#9670;&#160;</a></span>getDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlPose::getDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8h_source.html">ControlPose.h</a> 第 <a class="el" href="ControlPose_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45982d01d5da374a7ca5f48a50a8cc2d" name="a45982d01d5da374a7ca5f48a50a8cc2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45982d01d5da374a7ca5f48a50a8cc2d">&#9670;&#160;</a></span>getFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlPose::getFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8h_source.html">ControlPose.h</a> 第 <a class="el" href="ControlPose_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa218b3e33ee266af9f432ed50a24da86" name="aa218b3e33ee266af9f432ed50a24da86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa218b3e33ee266af9f432ed50a24da86">&#9670;&#160;</a></span>getIntegrator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::ControlPose::getIntegrator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53fd810f7267be710eda214504b2ce56" name="a53fd810f7267be710eda214504b2ce56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53fd810f7267be710eda214504b2ce56">&#9670;&#160;</a></span>getPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::ControlPose::getPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af498e3f95d9c722b7c8bed8e5f9c688d" name="af498e3f95d9c722b7c8bed8e5f9c688d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af498e3f95d9c722b7c8bed8e5f9c688d">&#9670;&#160;</a></span>getResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlPose::getResponse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8h_source.html">ControlPose.h</a> 第 <a class="el" href="ControlPose_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3324d3965f6131928ad42a5610b82bef" name="a3324d3965f6131928ad42a5610b82bef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3324d3965f6131928ad42a5610b82bef">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::ControlPose::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8h_source.html">ControlPose.h</a> 第 <a class="el" href="ControlPose_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae98ffe0b7c12a78628da271369e10a9f" name="ae98ffe0b7c12a78628da271369e10a9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae98ffe0b7c12a78628da271369e10a9f">&#9670;&#160;</a></span>getTargetPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::ControlPose::getTargetPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a462d0a8177a18b830494d6ef34515c0f" name="a462d0a8177a18b830494d6ef34515c0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a462d0a8177a18b830494d6ef34515c0f">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a> &amp; eve::animation::ControlPose::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1ControlPose.html">ControlPose</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a001354d683f071f46b21a9705a92c168" name="a001354d683f071f46b21a9705a92c168"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a001354d683f071f46b21a9705a92c168">&#9670;&#160;</a></span>setBoneWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::setBoneWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-bone blend weight in [0,1]; 1 = full dynamics, 0 = hard snap to target. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>.</p>
+
+</div>
+</div>
+<a id="a0633395edbd1f579900588aa5b41cb99" name="a0633395edbd1f579900588aa5b41cb99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0633395edbd1f579900588aa5b41cb99">&#9670;&#160;</a></span>setDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::setDamping </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingZeta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adcdc71802bb3f7c69eb5e916c1ff441f" name="adcdc71802bb3f7c69eb5e916c1ff441f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcdc71802bb3f7c69eb5e916c1ff441f">&#9670;&#160;</a></span>setFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::setFrequency </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af6f3e945e60069451779743a9ecc2520" name="af6f3e945e60069451779743a9ecc2520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6f3e945e60069451779743a9ecc2520">&#9670;&#160;</a></span>setIntegrator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::setIntegrator </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>.</p>
+
+</div>
+</div>
+<a id="ab645ce54f02e5b0babb16335477c1130" name="ab645ce54f02e5b0babb16335477c1130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab645ce54f02e5b0babb16335477c1130">&#9670;&#160;</a></span>setResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::setResponse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>response</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a309dab66322b456a4710a5ba6291e406" name="a309dab66322b456a4710a5ba6291e406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a309dab66322b456a4710a5ba6291e406">&#9670;&#160;</a></span>setTargetPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::setTargetPose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy target pose. Channels without prior state snap; existing state keeps momentum. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimPose_8cpp_source.html#l00056">eve::animation::AnimPose::copyFrom()</a>.</p>
+
+</div>
+</div>
+<a id="a76f39944da8e5cd1bd1661a2462723e2" name="a76f39944da8e5cd1bd1661a2462723e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f39944da8e5cd1bd1661a2462723e2">&#9670;&#160;</a></span>snapToTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::snapToTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snap current state to the last target without changing the target. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a286fefccd335ac6d7178acd90ab6c83a" name="a286fefccd335ac6d7178acd90ab6c83a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a286fefccd335ac6d7178acd90ab6c83a">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlPose::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a> 第 <a class="el" href="ControlPose_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="AnimPose_8h_source.html#l00025">eve::animation::AnimPose::getBoneCount()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00074">eve::animation::AnimPose::local()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::px</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::py</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::pz</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qw</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qx</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qy</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qz</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="AnimMath_8h_source.html#l00012">eve::animation::TransformTRS::sx</a>, <a class="el" href="AnimMath_8h_source.html#l00012">eve::animation::TransformTRS::sy</a>, <a class="el" href="AnimMath_8h_source.html#l00012">eve::animation::TransformTRS::sz</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="ControlPose_8h_source.html">ControlPose.h</a></li>
+<li>src/modules/animation/<a class="el" href="ControlPose_8cpp_source.html">ControlPose.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

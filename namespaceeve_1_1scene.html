@@ -1,0 +1,846 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene.html">scene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned box in world space.  <a href="structeve_1_1scene_1_1AABB3f.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1LinkOps.html">LinkOps</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative scene-node description (build once / on dirty → flatten into <a class="el" href="structeve_1_1scene_1_1SceneHost_1_1Tree.html">SceneHost::Tree</a>). Isomorphic to <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html" title="Declarative widget description (build once / on dirty → flatten into UIHost::Tree).">eve::ui::WidgetDesc</a>.  <a href="structeve_1_1scene_1_1NodeDesc.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1Scene.html">Scene</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative scene module (eve.Scene).  <a href="classeve_1_1scene_1_1Scene.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneComponent.html">SceneComponent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">React-style scene component: implement <a class="el" href="classeve_1_1scene_1_1SceneComponent.html#a7d4b9179604c7cf2b2f7661b5614448b">build()</a>, call setState / markDirty, then <a class="el" href="classeve_1_1scene_1_1SceneComponent.html#ad1ab124888064c85e031d2ce6935a4f2" title="Rebuild tree onto host (reconcile by key when possible).">rebuild()</a>. Mounts onto a named <a class="el" href="classeve_1_1scene_1_1SceneHost.html" title="ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...">SceneHost</a> via mountAs / attach. Isomorphic to <a class="el" href="classeve_1_1ui_1_1Component.html" title="React-style UI component: implement build(), call setState / markDirty, then rebuild()....">eve::ui::Component</a>.  <a href="classeve_1_1scene_1_1SceneComponent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to <a class="el" href="classeve_1_1ui_1_1UIHost.html" title="ECS mount point for one UI panel/screen. Subclass to attach UI to game entities, e....">eve::ui::UIHost</a>.  <a href="classeve_1_1scene_1_1SceneHost.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneLink.html">SceneLink</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retained scene node (arena). Conceptual GameObject; isomorphic to <a class="el" href="structeve_1_1ui_1_1UINode.html" title="Retained UI widget node (arena tree). Conceptual counterpart of eve::scene::SceneNode; built declarat...">eve::ui::UINode</a>.  <a href="structeve_1_1scene_1_1SceneNode.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneNodeRef.html">SceneNodeRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script handle to a scene node (hostName + nodeId). Deliberately holds strings rather than arena pointers, so it stays valid across rebuilds/reconcile. Node-level entity bindings are forwarded through the <a class="el" href="classeve_1_1scene_1_1Scene.html" title="Declarative scene module (eve.Scene).">Scene</a> module.  <a href="classeve_1_1scene_1_1SceneNodeRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneObject.html">SceneObject</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-node ECS identity (created lazily when a node needs script bindings or engine components). A node's stable string id (hostName + nodeId) is mirrored here so ECS systems can address scene nodes and vice versa.  <a href="classeve_1_1scene_1_1SceneObject.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1TransformSystem.html">TransformSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Propagates local TRS → world matrices for all <a class="el" href="classeve_1_1scene_1_1SceneHost.html" title="ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...">SceneHost</a> trees (or one host). Call after mount/reconcile or local transform edits.  <a href="classeve_1_1scene_1_1TransformSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:af997be0c71d72c60568fac9c8048e183" id="r_af997be0c71d72c60568fac9c8048e183"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#af997be0c71d72c60568fac9c8048e183">GameObject</a> = <a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a></td></tr>
+<tr class="memdesc:af997be0c71d72c60568fac9c8048e183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alias: GameObject is the conceptual name for a <a class="el" href="structeve_1_1scene_1_1SceneNode.html" title="Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.">SceneNode</a> in a host tree.  <br /></td></tr>
+<tr class="separator:af997be0c71d72c60568fac9c8048e183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a418bfeac026aa59182514d6a21108916" id="r_a418bfeac026aa59182514d6a21108916"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a418bfeac026aa59182514d6a21108916">validateUniqueIds</a> (const <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> &amp;root)</td></tr>
+<tr class="separator:a418bfeac026aa59182514d6a21108916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c4048e8747f6927045611efc885b1ea" id="r_a3c4048e8747f6927045611efc885b1ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a3c4048e8747f6927045611efc885b1ea">node</a> (std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::vector&lt; <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>, std::string <a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a3c4048e8747f6927045611efc885b1ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e77ea909c1ad981054617f8dadd30fc" id="r_a2e77ea909c1ad981054617f8dadd30fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a2e77ea909c1ad981054617f8dadd30fc">group</a> (std::vector&lt; <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> &gt; <a class="el" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>, std::string <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a2e77ea909c1ad981054617f8dadd30fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a2ea4ac52ff35ad813d970f7e5096f" id="r_aa7a2ea4ac52ff35ad813d970f7e5096f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#aa7a2ea4ac52ff35ad813d970f7e5096f">when</a> (bool cond, <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> child)</td></tr>
+<tr class="memdesc:aa7a2ea4ac52ff35ad813d970f7e5096f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conditional: include <code>child</code> only when <code>cond</code> is true (empty group otherwise).  <br /></td></tr>
+<tr class="separator:aa7a2ea4ac52ff35ad813d970f7e5096f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dcd8ef783df29f96b98480826ecdb6f" id="r_a1dcd8ef783df29f96b98480826ecdb6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a1dcd8ef783df29f96b98480826ecdb6f">whenElse</a> (bool cond, <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> ifTrue, <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> ifFalse)</td></tr>
+<tr class="separator:a1dcd8ef783df29f96b98480826ecdb6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc4fc68a3c678c22440821a51c2401a9" id="r_afc4fc68a3c678c22440821a51c2401a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#afc4fc68a3c678c22440821a51c2401a9">applyTree</a> (<a class="el" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *host, <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> root)</td></tr>
+<tr class="separator:afc4fc68a3c678c22440821a51c2401a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a6da7458d863324d9136b0fc10fa88d" id="r_a0a6da7458d863324d9136b0fc10fa88d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a0a6da7458d863324d9136b0fc10fa88d">applyTreeReconcile</a> (<a class="el" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *host, <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> root)</td></tr>
+<tr class="memdesc:a0a6da7458d863324d9136b0fc10fa88d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Key-aware patch when structure matches; else full replace. Returns true if full rebuild.  <br /></td></tr>
+<tr class="separator:a0a6da7458d863324d9136b0fc10fa88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7d9f01710093fac13901a1c1960eddf" id="r_aa7d9f01710093fac13901a1c1960eddf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#aa7d9f01710093fac13901a1c1960eddf">Module_IMPL</a> (<a class="el" href="classeve_1_1scene_1_1Scene.html">Scene</a>, new <a class="el" href="classeve_1_1scene_1_1Scene.html">Scene</a>())</td></tr>
+<tr class="separator:aa7d9f01710093fac13901a1c1960eddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c3516dbf52b742a320339f6562b5115" id="r_a8c3516dbf52b742a320339f6562b5115"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a8c3516dbf52b742a320339f6562b5115">worldBoundsOf</a> (const <a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a> &amp;<a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="memdesc:a8c3516dbf52b742a320339f6562b5115"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space AABB of a node's local bounds (8 corners through world matrix).  <br /></td></tr>
+<tr class="separator:a8c3516dbf52b742a320339f6562b5115"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8415f071630e15167fe5f562b7071739" id="r_a8415f071630e15167fe5f562b7071739"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a8415f071630e15167fe5f562b7071739">rayAABB</a> (const glm::vec3 &amp;o, const glm::vec3 &amp;<a class="el" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>, const <a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float &amp;t0, float &amp;t1)</td></tr>
+<tr class="memdesc:a8415f071630e15167fe5f562b7071739"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slab ray-AABB intersection; fills entry/exit t (t0 &lt;= t1).  <br /></td></tr>
+<tr class="separator:a8415f071630e15167fe5f562b7071739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b05f857ff5e51d634a132c87f96167d" id="r_a4b05f857ff5e51d634a132c87f96167d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a4b05f857ff5e51d634a132c87f96167d">cornerInsideClip</a> (const glm::mat4 &amp;<a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, const glm::vec3 &amp;<a class="el" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="separator:a4b05f857ff5e51d634a132c87f96167d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34f5a7e15db573c65e624a34e0be27de" id="r_a34f5a7e15db573c65e624a34e0be27de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a34f5a7e15db573c65e624a34e0be27de">aabbIntersectsFrustum</a> (const glm::mat4 &amp;clip, const glm::mat4 &amp;invClip, const <a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:a34f5a7e15db573c65e624a34e0be27de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative AABB ↔ frustum overlap (AABB corners + frustum corners).  <br /></td></tr>
+<tr class="separator:a34f5a7e15db573c65e624a34e0be27de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a11113457e9da0e013daf40dbc8b880" id="r_a3a11113457e9da0e013daf40dbc8b880"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a3a11113457e9da0e013daf40dbc8b880">registerSceneCapabilities</a> ()</td></tr>
+<tr class="separator:a3a11113457e9da0e013daf40dbc8b880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dcba3d90551a627e339a47f955c237c" id="r_a7dcba3d90551a627e339a47f955c237c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a7dcba3d90551a627e339a47f955c237c">registerLinkKind</a> (const <a class="el" href="structeve_1_1scene_1_1LinkOps.html">LinkOps</a> &amp;<a class="el" href="SceneLink_8cpp.html#a07ccd537c52e229305d59298e1926d99">ops</a>)</td></tr>
+<tr class="separator:a7dcba3d90551a627e339a47f955c237c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add50ef4f4d0c24f3853dbabec04c4160" id="r_add50ef4f4d0c24f3853dbabec04c4160"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#add50ef4f4d0c24f3853dbabec04c4160">findLinkKind</a> (const char *<a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>)</td></tr>
+<tr class="separator:add50ef4f4d0c24f3853dbabec04c4160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40c9fcf8b8fde8b3de465fdbcdec78d7" id="r_a40c9fcf8b8fde8b3de465fdbcdec78d7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1scene_1_1LinkOps.html">LinkOps</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a40c9fcf8b8fde8b3de465fdbcdec78d7">linkOps</a> (int kindId)</td></tr>
+<tr class="separator:a40c9fcf8b8fde8b3de465fdbcdec78d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6845342c384d490d2dccba7681b301c5" id="r_a6845342c384d490d2dccba7681b301c5"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html#a6845342c384d490d2dccba7681b301c5">linkKindName</a> (int kindId)</td></tr>
+<tr class="separator:a6845342c384d490d2dccba7681b301c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="af997be0c71d72c60568fac9c8048e183" name="af997be0c71d72c60568fac9c8048e183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af997be0c71d72c60568fac9c8048e183">&#9670;&#160;</a></span>GameObject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1scene.html#af997be0c71d72c60568fac9c8048e183">eve::scene::GameObject</a> = typedef <a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Alias: GameObject is the conceptual name for a <a class="el" href="structeve_1_1scene_1_1SceneNode.html" title="Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.">SceneNode</a> in a host tree. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneHost_8h_source.html">SceneHost.h</a> 第 <a class="el" href="SceneHost_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a34f5a7e15db573c65e624a34e0be27de" name="a34f5a7e15db573c65e624a34e0be27de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34f5a7e15db573c65e624a34e0be27de">&#9670;&#160;</a></span>aabbIntersectsFrustum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::aabbIntersectsFrustum </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invClip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Conservative AABB ↔ frustum overlap (AABB corners + frustum corners). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneBounds_8h_source.html">SceneBounds.h</a> 第 <a class="el" href="SceneBounds_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="SceneBounds_8h_source.html#l00068">cornerInsideClip()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00034">eve::scene::Scene::collectFrustumIdsAt()</a>.</p>
+
+</div>
+</div>
+<a id="afc4fc68a3c678c22440821a51c2401a9" name="afc4fc68a3c678c22440821a51c2401a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc4fc68a3c678c22440821a51c2401a9">&#9670;&#160;</a></span>applyTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene::applyTree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td>
+          <td class="paramname"><em>root</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneHost_8cpp_source.html#l00399">eve::scene::SceneHost::fireEvent()</a>, <a class="el" href="SceneHost_8h_source.html#l00164">eve::scene::SceneHost::invalidateIndex()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="NodeDesc_8cpp_source.html#l00203">validateUniqueIds()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NodeDesc_8cpp_source.html#l00294">applyTreeReconcile()</a> , 以及 <a class="el" href="SceneHost_8cpp_source.html#l00137">eve::scene::SceneHost::setTree()</a>.</p>
+
+</div>
+</div>
+<a id="a0a6da7458d863324d9136b0fc10fa88d" name="a0a6da7458d863324d9136b0fc10fa88d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a6da7458d863324d9136b0fc10fa88d">&#9670;&#160;</a></span>applyTreeReconcile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::applyTreeReconcile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td>
+          <td class="paramname"><em>root</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Key-aware patch when structure matches; else full replace. Returns true if full rebuild. </p>
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NodeDesc_8cpp_source.html#l00241">applyTree()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneHost_8cpp_source.html#l00139">eve::scene::SceneHost::setTreeReconcile()</a>.</p>
+
+</div>
+</div>
+<a id="a4b05f857ff5e51d634a132c87f96167d" name="a4b05f857ff5e51d634a132c87f96167d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b05f857ff5e51d634a132c87f96167d">&#9670;&#160;</a></span>cornerInsideClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::cornerInsideClip </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneBounds_8h_source.html">SceneBounds.h</a> 第 <a class="el" href="SceneBounds_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneBounds_8h_source.html#l00075">aabbIntersectsFrustum()</a>.</p>
+
+</div>
+</div>
+<a id="add50ef4f4d0c24f3853dbabec04c4160" name="add50ef4f4d0c24f3853dbabec04c4160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add50ef4f4d0c24f3853dbabec04c4160">&#9670;&#160;</a></span>findLinkKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene::findLinkKind </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Id for a previously registered kind, or -1. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLink_8cpp_source.html">SceneLink.cpp</a> 第 <a class="el" href="SceneLink_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00635">eve::sceneloader::SceneLoader::applyTreeDiff()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00550">eve::scene::SceneHost::linkAudio3D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00546">eve::scene::SceneHost::linkCamera3D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00538">eve::scene::SceneHost::linkPhysics2D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00542">eve::scene::SceneHost::linkPhysics3D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00530">eve::scene::SceneHost::linkRenderable2D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00534">eve::scene::SceneHost::linkRenderable3D()</a>, <a class="el" href="SceneLink_8cpp_source.html#l00027">registerLinkKind()</a> , 以及 <a class="el" href="SceneLoader_8cpp_source.html#l00966">eve::sceneloader::SceneLoader::unload()</a>.</p>
+
+</div>
+</div>
+<a id="a2e77ea909c1ad981054617f8dadd30fc" name="a2e77ea909c1ad981054617f8dadd30fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e77ea909c1ad981054617f8dadd30fc">&#9670;&#160;</a></span>group()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> eve::scene::group </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="NodeDesc_8h_source.html#l00016">eve::scene::NodeDesc::id</a>.</p>
+
+</div>
+</div>
+<a id="a6845342c384d490d2dccba7681b301c5" name="a6845342c384d490d2dccba7681b301c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6845342c384d490d2dccba7681b301c5">&#9670;&#160;</a></span>linkKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::scene::linkKindName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kindId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Name for an id, or "" when the id is unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLink_8cpp_source.html">SceneLink.cpp</a> 第 <a class="el" href="SceneLink_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLink_8h_source.html#l00029">eve::scene::LinkOps::kind</a>, <a class="el" href="SceneLink_8cpp_source.html#l00047">linkOps()</a> , 以及 <a class="el" href="SceneLink_8cpp_source.html#l00012">ops</a>.</p>
+
+</div>
+</div>
+<a id="a40c9fcf8b8fde8b3de465fdbcdec78d7" name="a40c9fcf8b8fde8b3de465fdbcdec78d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40c9fcf8b8fde8b3de465fdbcdec78d7">&#9670;&#160;</a></span>linkOps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1scene_1_1LinkOps.html">LinkOps</a> * eve::scene::linkOps </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kindId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Operations for an id, or nullptr when the id is unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLink_8cpp_source.html">SceneLink.cpp</a> 第 <a class="el" href="SceneLink_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneHost_8cpp_source.html#l00522">eve::scene::SceneHost::link()</a> , 以及 <a class="el" href="SceneLink_8cpp_source.html#l00053">linkKindName()</a>.</p>
+
+</div>
+</div>
+<a id="aa7d9f01710093fac13901a1c1960eddf" name="aa7d9f01710093fac13901a1c1960eddf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7d9f01710093fac13901a1c1960eddf">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1Scene.html">Scene</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Scene</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c4048e8747f6927045611efc885b1ea" name="a3c4048e8747f6927045611efc885b1ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c4048e8747f6927045611efc885b1ea">&#9670;&#160;</a></span>node()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> eve::scene::node </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="NodeDesc_8h_source.html#l00016">eve::scene::NodeDesc::id</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneHost_8cpp_source.html#l00609">eve::scene::SceneHost::addTag()</a>, <a class="el" href="Scene_8cpp_source.html#l00647">eve::scene::Scene::bindOwner()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00454">eve::scene::SceneHost::filterFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00467">eve::scene::SceneHost::filterIndicesFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00440">eve::scene::SceneHost::findIfFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00581">eve::scene::SceneHost::findLink()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00573">eve::scene::SceneHost::findLink()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00629">eve::scene::SceneHost::hasTag()</a> , 以及 <a class="el" href="SceneHost_8cpp_source.html#l00618">eve::scene::SceneHost::removeTag()</a>.</p>
+
+</div>
+</div>
+<a id="a8415f071630e15167fe5f562b7071739" name="a8415f071630e15167fe5f562b7071739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8415f071630e15167fe5f562b7071739">&#9670;&#160;</a></span>rayAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::rayAABB </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>o</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>t0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>t1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Slab ray-AABB intersection; fills entry/exit t (t0 &lt;= t1). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneBounds_8h_source.html">SceneBounds.h</a> 第 <a class="el" href="SceneBounds_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneNodes_8cpp_source.html#l00461">eve::scene::Scene::pickRayAt()</a>.</p>
+
+</div>
+</div>
+<a id="a7dcba3d90551a627e339a47f955c237c" name="a7dcba3d90551a627e339a47f955c237c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dcba3d90551a627e339a47f955c237c">&#9670;&#160;</a></span>registerLinkKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::scene::registerLinkKind </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1LinkOps.html">LinkOps</a> &amp;&#160;</td>
+          <td class="paramname"><em>ops</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Register a link kind and return its id. Registering the same name twice returns the first id and leaves the original operations in place, so a module reloaded as a plugin cannot silently swap them out. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLink_8cpp_source.html">SceneLink.cpp</a> 第 <a class="el" href="SceneLink_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLink_8cpp_source.html#l00039">findLinkKind()</a>, <a class="el" href="SceneLink_8h_source.html#l00029">eve::scene::LinkOps::kind</a>, <a class="el" href="SceneLink_8cpp_source.html#l00012">ops</a> , 以及 <a class="el" href="SceneLink_8h_source.html#l00032">eve::scene::LinkOps::pushWorld</a>.</p>
+
+</div>
+</div>
+<a id="a3a11113457e9da0e013daf40dbc8b880" name="a3a11113457e9da0e013daf40dbc8b880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a11113457e9da0e013daf40dbc8b880">&#9670;&#160;</a></span>registerSceneCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene::registerSceneCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneCapabilities_8cpp_source.html">SceneCapabilities.cpp</a> 第 <a class="el" href="SceneCapabilities_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00013">impl</a> , 以及 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Scene_8cpp_source.html#l00031">eve::scene::Scene::Scene()</a>.</p>
+
+</div>
+</div>
+<a id="a418bfeac026aa59182514d6a21108916" name="a418bfeac026aa59182514d6a21108916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a418bfeac026aa59182514d6a21108916">&#9670;&#160;</a></span>validateUniqueIds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene::validateUniqueIds </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NodeDesc_8cpp_source.html#l00241">applyTree()</a>.</p>
+
+</div>
+</div>
+<a id="aa7a2ea4ac52ff35ad813d970f7e5096f" name="aa7a2ea4ac52ff35ad813d970f7e5096f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a2ea4ac52ff35ad813d970f7e5096f">&#9670;&#160;</a></span>when()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> eve::scene::when </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td>
+          <td class="paramname"><em>child</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Conditional: include <code>child</code> only when <code>cond</code> is true (empty group otherwise). </p>
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00122">group</a>.</p>
+
+</div>
+</div>
+<a id="a1dcd8ef783df29f96b98480826ecdb6f" name="a1dcd8ef783df29f96b98480826ecdb6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dcd8ef783df29f96b98480826ecdb6f">&#9670;&#160;</a></span>whenElse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a> eve::scene::whenElse </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td>
+          <td class="paramname"><em>ifTrue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">NodeDesc</a>&#160;</td>
+          <td class="paramname"><em>ifFalse</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NodeDesc_8cpp_source.html">NodeDesc.cpp</a> 第 <a class="el" href="NodeDesc_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c3516dbf52b742a320339f6562b5115" name="a8c3516dbf52b742a320339f6562b5115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c3516dbf52b742a320339f6562b5115">&#9670;&#160;</a></span>worldBoundsOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene_1_1AABB3f.html">AABB3f</a> eve::scene::worldBoundsOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a> &amp;&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space AABB of a node's local bounds (8 corners through world matrix). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneBounds_8h_source.html">SceneBounds.h</a> 第 <a class="el" href="SceneBounds_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePicking_8cpp_source.html#l00034">eve::scene::Scene::collectFrustumIdsAt()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00461">eve::scene::Scene::pickRayAt()</a> , 以及 <a class="el" href="SceneNodes_8cpp_source.html#l00484">eve::scene::Scene::syncSpatialIndexAt()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

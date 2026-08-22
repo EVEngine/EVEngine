@@ -1,0 +1,363 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/filesystem/physfs/Filesystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_afee26140d46546965aad89686474471.html">filesystem</a></li><li class="navelem"><a class="el" href="dir_ca4d6292f631558a16992084ad23fc4e.html">physfs</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Filesystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="physfs_2Filesystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Filesystem_8h.html">filesystem/Filesystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="FileWatch_8h.html">filesystem/FileWatch.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>filesystem {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>physfs {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html">Filesystem</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1filesystem_1_1Filesystem.html">eve::filesystem::Filesystem</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a25aa3a0f9ef1dedaca04b43d3882841a">Filesystem</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a3438f9f6592e7cd4d0320eff54924f54">~Filesystem</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aae917aeb6cc097037a5184cd1d341e97">init</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* arg0) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a281cd6882b484894205b127d91751318">setFused</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a64e7c291e8a537ba0305331bc5f477f1">isFused</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ab356f79d8510ddcb4d71f81ae14aeded">setupWriteDirectory</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1c132b4ac2ae5daad6053e103527917a">setIdentity</a>(std::string ident, <span class="keywordtype">bool</span> appendToPath = <span class="keyword">false</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aad9a4c041dcc3651862d51c88114cf14">getIdentity</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a15bf1af9d828e6611e1be10ef080aed3">setSource</a>(std::string source) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a2a5bc75afb3a52656d4ec80f791c5771">setSourceFromMemory</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a53d9f2f58838dfef13846f839333a43d">getSource</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9da4b5a5b7f76ee29a1efdf383cc6dd1">mount</a>(std::string archive, std::string mountpoint, <span class="keywordtype">bool</span> appendToPath = <span class="keyword">false</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9da4b5a5b7f76ee29a1efdf383cc6dd1">mount</a>(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, std::string archivename, std::string mountpoint, <span class="keywordtype">bool</span> appendToPath = <span class="keyword">false</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a91a507616b8957387156247b01668ee0">mountRealDirectory</a>(std::string realDir, std::string mountpoint, <span class="keywordtype">bool</span> appendToPath = <span class="keyword">false</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac7b9cf6cd5fc8f566b4a1e4f06b4f7c0">unmountRealDirectory</a>(std::string realDir) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a657fb57110c7ff7e946af7cc0f7c7e50">unmount</a>(std::string archive) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a657fb57110c7ff7e946af7cc0f7c7e50">unmount</a>(<a class="code hl_class" href="classeve_1_1Data.html">Data</a> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_class" href="classeve_1_1filesystem_1_1File.html">filesystem::File</a> *<a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a5556da3b91bf0377a02e210fc991f5d7">newFile</a>(std::string filename) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac01fd8b79ccf29d33ad0a8e96ae9b8ae">getWorkingDirectory</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a583d77f00275659eee42f1b0a9826940">getUserDirectory</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af70311594f8720b4286c804c83aabf54">getAppdataDirectory</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a0867ea14d92bd5dd9f9fb55f6b09858d">getSaveDirectory</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af347113e7f4f1d9d144f61102124c3e7">getSourceBaseDirectory</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a259339e45647788e6aba2cf40bf920a9">getRealDirectory</a>(std::string filename) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad75de3c0aed9eb1b559a3acbae2e8265">getInfo</a>(std::string filepath, <a class="code hl_struct" href="structeve_1_1filesystem_1_1Filesystem_1_1Info.html">Info</a> &amp;info) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a60317d0fe95655403674256a14d1c7d2">createDirectory</a>(std::string <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a62b0eea83be76c5fa5a8aac860c1c13a">remove</a>(std::string <a class="code hl_variable" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *<a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac30340ce187a65790eba0355fe70ac8b">read</a>(std::string filename, int64_t size = <a class="code hl_variable" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">File::ALL</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span>      <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad00522eec0ad244ed7a5749166821305">write</a>(std::string filename, <span class="keyword">const</span> <span class="keywordtype">void</span> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, int64_t size) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span>      <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a0942132f5cb7d691ac591fea9347c51b">append</a>(std::string filename, <span class="keyword">const</span> <span class="keywordtype">void</span> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, int64_t size) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a6410545a621df530798471cee38d3cbd">getDirectoryItems</a>(std::string <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad055f8e388a3acfcbc20da18ab44d8ef">setSymlinksEnabled</a>(<span class="keywordtype">bool</span> enable) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ae34e334edf7af7330f7a60748ee827b6">areSymlinksEnabled</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::vector&lt;std::string&gt; &amp;<a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ae9174ee51340f261ff22d6a72657d8e3">getRequirePath</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::vector&lt;std::string&gt; &amp;<a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#abc682e491bacb45815c65499fa4c97e1">getCRequirePath</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ace8d76d575fdfa883dc33c16141ceedd">allowMountingForPath</a>(<span class="keyword">const</span> std::string &amp;path) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a4d284af7b984a251e8f475ac4ff2757b">watch</a>(std::string path) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9bfd6663ea7d285d705dc6e263894daf">unwatch</a>(std::string path) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1ce4b590eef363607eb73cea3386e23c">unwatchAll</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1b595a2e8aeca97843fe1c6b7602bd9a">getWatchCount</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a6df2e10d4c213c443ddaf12e2ec46dc7">pollWatch</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af78b2bfd1029dfe832d9d0213a24ebe6">getLastWatchPath</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a89cf15e7afb466c504e83c6bc074d98a">getLastWatchRealPath</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">bool</span> resolveWatchTarget(<span class="keyword">const</span> std::string &amp;path, std::string &amp;realDir, std::string &amp;filterName,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                            std::string &amp;reportPath);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1filesystem_1_1FileWatch.html">FileWatch</a> &amp;watchers();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// Contains the current working directory (UTF8).</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::string cwd;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="comment">// %APPDATA% on Windows.</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::string appdata;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="comment">// This name will be used to create the folder</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="comment">// in the appdata/userdata folder.</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::string save_identity;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// Full and relative paths of the game save folder.</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// (Relative to the %APPDATA% folder, meaning that the</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="comment">// relative string will look something like: ./LOVE/game)</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::string save_path_relative, save_path_full;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="comment">// The full path to the source of the game.</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::string game_source;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="comment">// Allow saving outside of the LOVE_APPDATA_FOLDER</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// for release &#39;builds&#39;</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">bool</span> fused;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">bool</span> fusedSet;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="comment">// Search path for require</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::vector&lt;std::string&gt; requirePath;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    std::vector&lt;std::string&gt; cRequirePath;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    std::vector&lt;std::string&gt; allowedMountPaths;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::map&lt;std::string, Data*&gt; mountedData;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::unique_ptr&lt;FileWatch&gt; fileWatch_;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::string lastWatchPath_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    std::string lastWatchRealPath_;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="comment">// Real directories mounted as virtual overlays (see mountRealDirectory).</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::vector&lt;std::string&gt; mountedRealDirs_;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    std::mutex mountMu_;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="comment">// Owns the bytes backing a memory-mounted game archive (see setSourceFromMemory).</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">void</span>* memoryArchive_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>};  <span class="comment">// Filesystem</span></div>
+</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}  <span class="comment">// namespace physfs</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}  <span class="comment">// namespace filesystem</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aEveFileSystem_8cpp_html_a034078985d3cd1ed322585d4cc1dd314"><div class="ttname"><a href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a></div><div class="ttdeci">filesystem::File * file</div><div class="ttdef"><b>Definition</b> <a href="EveFileSystem_8cpp_source.html#l00014">EveFileSystem.cpp:14</a></div></div>
+<div class="ttc" id="aFileWatch_8h_html"><div class="ttname"><a href="FileWatch_8h.html">FileWatch.h</a></div></div>
+<div class="ttc" id="aFilesystem_8h_html"><div class="ttname"><a href="Filesystem_8h.html">Filesystem.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00121">TreeMesh.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1Data_html"><div class="ttname"><a href="classeve_1_1Data.html">eve::Data</a></div><div class="ttdef"><b>Definition</b> <a href="Data_8h_source.html#l00008">Data.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1FileData_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1FileData.html">eve::filesystem::FileData</a></div><div class="ttdoc">Data buffer paired with a filename (used for type identification).</div><div class="ttdef"><b>Definition</b> <a href="FileData_8h_source.html#l00012">FileData.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1FileWatch_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1FileWatch.html">eve::filesystem::FileWatch</a></div><div class="ttdoc">OS directory watch with a main-thread event queue. Desktop/mobile: backed by Poco::DirectoryWatcher (...</div><div class="ttdef"><b>Definition</b> <a href="FileWatch_8h_source.html#l00023">FileWatch.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html">eve::filesystem::File</a></div><div class="ttdoc">A File interface, providing generic means of reading from and writing to files.</div><div class="ttdef"><b>Definition</b> <a href="File_8h_source.html#l00014">File.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_aa45cdc7b0ea76ba67a7120ab8396ce0d"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">eve::filesystem::File::ALL</a></div><div class="ttdeci">static const int64_t ALL</div><div class="ttdoc">Used to indicate ALL data in a file.</div><div class="ttdef"><b>Definition</b> <a href="File_8h_source.html#l00019">File.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1Filesystem_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1Filesystem.html">eve::filesystem::Filesystem</a></div><div class="ttdef"><b>Definition</b> <a href="Filesystem_8h_source.html#l00036">Filesystem.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html">eve::filesystem::physfs::Filesystem</a></div><div class="ttdoc">PhysFS 文件系统后端实现（挂载/解挂、读写、热重载）。</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8h_source.html#l00019">Filesystem.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a0867ea14d92bd5dd9f9fb55f6b09858d"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a0867ea14d92bd5dd9f9fb55f6b09858d">eve::filesystem::physfs::Filesystem::getSaveDirectory</a></div><div class="ttdeci">std::string getSaveDirectory() override</div><div class="ttdoc">Gets the full path of the save folder.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00516">Filesystem.cpp:516</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a0942132f5cb7d691ac591fea9347c51b"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a0942132f5cb7d691ac591fea9347c51b">eve::filesystem::physfs::Filesystem::append</a></div><div class="ttdeci">void append(std::string filename, const void *data, int64_t size) const override</div><div class="ttdoc">Append data to a file, creating it if it doesn't exist.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00609">Filesystem.cpp:609</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a15bf1af9d828e6611e1be10ef080aed3"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a15bf1af9d828e6611e1be10ef080aed3">eve::filesystem::physfs::Filesystem::setSource</a></div><div class="ttdeci">bool setSource(std::string source) override</div><div class="ttdoc">Sets the path to the game source. This can only be set once.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00183">Filesystem.cpp:183</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a1b595a2e8aeca97843fe1c6b7602bd9a"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1b595a2e8aeca97843fe1c6b7602bd9a">eve::filesystem::physfs::Filesystem::getWatchCount</a></div><div class="ttdeci">int getWatchCount() const override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00786">Filesystem.cpp:786</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a1c132b4ac2ae5daad6053e103527917a"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1c132b4ac2ae5daad6053e103527917a">eve::filesystem::physfs::Filesystem::setIdentity</a></div><div class="ttdeci">bool setIdentity(std::string ident, bool appendToPath=false) override</div><div class="ttdoc">Sets the name of the save folder.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00123">Filesystem.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a1ce4b590eef363607eb73cea3386e23c"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1ce4b590eef363607eb73cea3386e23c">eve::filesystem::physfs::Filesystem::unwatchAll</a></div><div class="ttdeci">void unwatchAll() override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00782">Filesystem.cpp:782</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a259339e45647788e6aba2cf40bf920a9"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a259339e45647788e6aba2cf40bf920a9">eve::filesystem::physfs::Filesystem::getRealDirectory</a></div><div class="ttdeci">std::string getRealDirectory(std::string filename) const override</div><div class="ttdoc">Gets the real directory path containing the file.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00540">Filesystem.cpp:540</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a25aa3a0f9ef1dedaca04b43d3882841a"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a25aa3a0f9ef1dedaca04b43d3882841a">eve::filesystem::physfs::Filesystem::Filesystem</a></div><div class="ttdeci">Filesystem()</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00076">Filesystem.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a281cd6882b484894205b127d91751318"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a281cd6882b484894205b127d91751318">eve::filesystem::physfs::Filesystem::setFused</a></div><div class="ttdeci">void setFused(bool value) override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00112">Filesystem.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a2a5bc75afb3a52656d4ec80f791c5771"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a2a5bc75afb3a52656d4ec80f791c5771">eve::filesystem::physfs::Filesystem::setSourceFromMemory</a></div><div class="ttdeci">bool setSourceFromMemory(const void *data, size_t size) override</div><div class="ttdoc">Loads the game source from a packaged archive (.eve / zip) held entirely in memory and mounts it at &quot;...</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00246">Filesystem.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a3438f9f6592e7cd4d0320eff54924f54"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a3438f9f6592e7cd4d0320eff54924f54">eve::filesystem::physfs::Filesystem::~Filesystem</a></div><div class="ttdeci">~Filesystem() override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00089">Filesystem.cpp:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a4d284af7b984a251e8f475ac4ff2757b"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a4d284af7b984a251e8f475ac4ff2757b">eve::filesystem::physfs::Filesystem::watch</a></div><div class="ttdeci">bool watch(std::string path) override</div><div class="ttdoc">Watch a virtual or absolute OS path (file or directory). File watches monitor the parent directory an...</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00774">Filesystem.cpp:774</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a53d9f2f58838dfef13846f839333a43d"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a53d9f2f58838dfef13846f839333a43d">eve::filesystem::physfs::Filesystem::getSource</a></div><div class="ttdeci">std::string getSource() const override</div><div class="ttdoc">Gets the path to the game source. Returns a 0-length string if the source has not been set.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00244">Filesystem.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a5556da3b91bf0377a02e210fc991f5d7"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a5556da3b91bf0377a02e210fc991f5d7">eve::filesystem::physfs::Filesystem::newFile</a></div><div class="ttdeci">filesystem::File * newFile(std::string filename) const override</div><div class="ttdoc">Creates a new file.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00440">Filesystem.cpp:440</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a583d77f00275659eee42f1b0a9826940"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a583d77f00275659eee42f1b0a9826940">eve::filesystem::physfs::Filesystem::getUserDirectory</a></div><div class="ttdeci">std::string getUserDirectory() override</div><div class="ttdoc">Gets the user home directory.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00463">Filesystem.cpp:463</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a60317d0fe95655403674256a14d1c7d2"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a60317d0fe95655403674256a14d1c7d2">eve::filesystem::physfs::Filesystem::createDirectory</a></div><div class="ttdeci">bool createDirectory(std::string dir) override</div><div class="ttdoc">Creates a directory. Write dir must be set.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00571">Filesystem.cpp:571</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a62b0eea83be76c5fa5a8aac860c1c13a"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a62b0eea83be76c5fa5a8aac860c1c13a">eve::filesystem::physfs::Filesystem::remove</a></div><div class="ttdeci">bool remove(std::string file) override</div><div class="ttdoc">Removes a file (or directory).</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00581">Filesystem.cpp:581</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a6410545a621df530798471cee38d3cbd"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a6410545a621df530798471cee38d3cbd">eve::filesystem::physfs::Filesystem::getDirectoryItems</a></div><div class="ttdeci">std::vector&lt; std::string &gt; getDirectoryItems(std::string dir) override</div><div class="ttdoc">This &quot;native&quot; method returns a table of all files in a given directory.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00618">Filesystem.cpp:618</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a64e7c291e8a537ba0305331bc5f477f1"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a64e7c291e8a537ba0305331bc5f477f1">eve::filesystem::physfs::Filesystem::isFused</a></div><div class="ttdeci">bool isFused() const override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00118">Filesystem.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a657fb57110c7ff7e946af7cc0f7c7e50"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a657fb57110c7ff7e946af7cc0f7c7e50">eve::filesystem::physfs::Filesystem::unmount</a></div><div class="ttdeci">bool unmount(std::string archive) override</div><div class="ttdoc">Unmounts a previously mounted archive.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00389">Filesystem.cpp:389</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a6df2e10d4c213c443ddaf12e2ec46dc7"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a6df2e10d4c213c443ddaf12e2ec46dc7">eve::filesystem::physfs::Filesystem::pollWatch</a></div><div class="ttdeci">std::string pollWatch() override</div><div class="ttdoc">Pop next watch event kind: &quot;added&quot;|&quot;removed&quot;|&quot;modified&quot;|&quot;movedFrom&quot;|&quot;movedTo&quot;. Empty string if queue ...</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00791">Filesystem.cpp:791</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a89cf15e7afb466c504e83c6bc074d98a"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a89cf15e7afb466c504e83c6bc074d98a">eve::filesystem::physfs::Filesystem::getLastWatchRealPath</a></div><div class="ttdeci">std::string getLastWatchRealPath() const override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00805">Filesystem.cpp:805</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a91a507616b8957387156247b01668ee0"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a91a507616b8957387156247b01668ee0">eve::filesystem::physfs::Filesystem::mountRealDirectory</a></div><div class="ttdeci">bool mountRealDirectory(std::string realDir, std::string mountpoint, bool appendToPath=false) override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00365">Filesystem.cpp:365</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a9bfd6663ea7d285d705dc6e263894daf"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9bfd6663ea7d285d705dc6e263894daf">eve::filesystem::physfs::Filesystem::unwatch</a></div><div class="ttdeci">bool unwatch(std::string path) override</div><div class="ttdoc">Stop watching a path previously passed to watch().</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00780">Filesystem.cpp:780</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_a9da4b5a5b7f76ee29a1efdf383cc6dd1"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9da4b5a5b7f76ee29a1efdf383cc6dd1">eve::filesystem::physfs::Filesystem::mount</a></div><div class="ttdeci">bool mount(std::string archive, std::string mountpoint, bool appendToPath=false) override</div><div class="ttdoc">Mounts an archive (path or in-memory Data) at a virtual mountpoint.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00317">Filesystem.cpp:317</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_aad9a4c041dcc3651862d51c88114cf14"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aad9a4c041dcc3651862d51c88114cf14">eve::filesystem::physfs::Filesystem::getIdentity</a></div><div class="ttdeci">std::string getIdentity() const override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00181">Filesystem.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_aae917aeb6cc097037a5184cd1d341e97"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aae917aeb6cc097037a5184cd1d341e97">eve::filesystem::physfs::Filesystem::init</a></div><div class="ttdeci">void init(const char *arg0) override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00104">Filesystem.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ab356f79d8510ddcb4d71f81ae14aeded"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ab356f79d8510ddcb4d71f81ae14aeded">eve::filesystem::physfs::Filesystem::setupWriteDirectory</a></div><div class="ttdeci">bool setupWriteDirectory() override</div><div class="ttdoc">This sets up the save directory. If the it is already set up, nothing happens.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00270">Filesystem.cpp:270</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_abc682e491bacb45815c65499fa4c97e1"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#abc682e491bacb45815c65499fa4c97e1">eve::filesystem::physfs::Filesystem::getCRequirePath</a></div><div class="ttdeci">std::vector&lt; std::string &gt; &amp; getCRequirePath() override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00646">Filesystem.cpp:646</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ac01fd8b79ccf29d33ad0a8e96ae9b8ae"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac01fd8b79ccf29d33ad0a8e96ae9b8ae">eve::filesystem::physfs::Filesystem::getWorkingDirectory</a></div><div class="ttdeci">std::string getWorkingDirectory() override</div><div class="ttdoc">Gets the current working directory.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00442">Filesystem.cpp:442</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ac30340ce187a65790eba0355fe70ac8b"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac30340ce187a65790eba0355fe70ac8b">eve::filesystem::physfs::Filesystem::read</a></div><div class="ttdeci">FileData * read(std::string filename, int64_t size=File::ALL) const override</div><div class="ttdoc">Reads data from a file.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00591">Filesystem.cpp:591</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ac7b9cf6cd5fc8f566b4a1e4f06b4f7c0"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac7b9cf6cd5fc8f566b4a1e4f06b4f7c0">eve::filesystem::physfs::Filesystem::unmountRealDirectory</a></div><div class="ttdeci">bool unmountRealDirectory(std::string realDir) override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00380">Filesystem.cpp:380</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ace8d76d575fdfa883dc33c16141ceedd"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ace8d76d575fdfa883dc33c16141ceedd">eve::filesystem::physfs::Filesystem::allowMountingForPath</a></div><div class="ttdeci">void allowMountingForPath(const std::string &amp;path) override</div><div class="ttdoc">Allows a full (OS-dependent) path to be used with Filesystem::mount.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00648">Filesystem.cpp:648</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ad00522eec0ad244ed7a5749166821305"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad00522eec0ad244ed7a5749166821305">eve::filesystem::physfs::Filesystem::write</a></div><div class="ttdeci">void write(std::string filename, const void *data, int64_t size) const override</div><div class="ttdoc">Write data to a file.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00600">Filesystem.cpp:600</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ad055f8e388a3acfcbc20da18ab44d8ef"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad055f8e388a3acfcbc20da18ab44d8ef">eve::filesystem::physfs::Filesystem::setSymlinksEnabled</a></div><div class="ttdeci">void setSymlinksEnabled(bool enable) override</div><div class="ttdoc">Enable or disable symbolic link support in love.filesystem.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00632">Filesystem.cpp:632</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ad75de3c0aed9eb1b559a3acbae2e8265"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad75de3c0aed9eb1b559a3acbae2e8265">eve::filesystem::physfs::Filesystem::getInfo</a></div><div class="ttdeci">bool getInfo(std::string filepath, Info &amp;info) const override</div><div class="ttdoc">Gets information about the item at the specified filepath. Returns false if nothing exists at the pat...</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00550">Filesystem.cpp:550</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ae34e334edf7af7330f7a60748ee827b6"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ae34e334edf7af7330f7a60748ee827b6">eve::filesystem::physfs::Filesystem::areSymlinksEnabled</a></div><div class="ttdeci">bool areSymlinksEnabled() const override</div><div class="ttdoc">Gets whether symbolic link support is enabled.</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00638">Filesystem.cpp:638</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_ae9174ee51340f261ff22d6a72657d8e3"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ae9174ee51340f261ff22d6a72657d8e3">eve::filesystem::physfs::Filesystem::getRequirePath</a></div><div class="ttdeci">std::vector&lt; std::string &gt; &amp; getRequirePath() override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00644">Filesystem.cpp:644</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_af347113e7f4f1d9d144f61102124c3e7"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af347113e7f4f1d9d144f61102124c3e7">eve::filesystem::physfs::Filesystem::getSourceBaseDirectory</a></div><div class="ttdeci">std::string getSourceBaseDirectory() const override</div><div class="ttdoc">Gets the full path to the directory containing the game source. For example if the game source is C:\...</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00518">Filesystem.cpp:518</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_af70311594f8720b4286c804c83aabf54"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af70311594f8720b4286c804c83aabf54">eve::filesystem::physfs::Filesystem::getAppdataDirectory</a></div><div class="ttdeci">std::string getAppdataDirectory() override</div><div class="ttdoc">Gets the APPDATA directory. On Windows, this is the folder in the APPDATA% enviroment variable....</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00487">Filesystem.cpp:487</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1physfs_1_1Filesystem_html_af78b2bfd1029dfe832d9d0213a24ebe6"><div class="ttname"><a href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af78b2bfd1029dfe832d9d0213a24ebe6">eve::filesystem::physfs::Filesystem::getLastWatchPath</a></div><div class="ttdeci">std::string getLastWatchPath() const override</div><div class="ttdef"><b>Definition</b> <a href="physfs_2Filesystem_8cpp_source.html#l00804">Filesystem.cpp:804</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1filesystem_1_1Filesystem_1_1Info_html"><div class="ttname"><a href="structeve_1_1filesystem_1_1Filesystem_1_1Info.html">eve::filesystem::Filesystem::Info</a></div><div class="ttdef"><b>Definition</b> <a href="Filesystem_8h_source.html#l00040">Filesystem.h:40</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

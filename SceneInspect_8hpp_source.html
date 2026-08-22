@@ -1,0 +1,290 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/SceneInspect.hpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneInspect.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneInspect_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>IRenderCapture;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>ISceneQuery;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}  <span class="comment">// namespace eve</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectView.html">   28</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">   29</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">name</a>;   <span class="comment">// &quot;along_road&quot; | &quot;bird_eye&quot; | &quot;corner_close&quot; | &quot;vista&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectView.html#a3ceba363c51b6fd41f0f48a49464d0b1">   30</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectView.html#a3ceba363c51b6fd41f0f48a49464d0b1">kind</a>;   <span class="comment">// 中文说明：沿路平视 / 高空俯拍 / 拐角特写 / 远景视角</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectView.html#a7bf1e8eb058f77e84fd541d2b8814c1e">   31</a></span>    glm::vec3   <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>{0.f};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectView.html#ae7c8f361218da3c6472a90d41f42b89e">   32</a></span>    glm::vec3   target{0.f};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectView.html#a27a4685d89275052bf7177cf8a3ad7d9">   33</a></span>    <span class="keywordtype">float</span>       fovYDeg = 60.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html">   37</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1InspectCapture.html">InspectCapture</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#ace60d531d2c40859c1602159dd561952">   38</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">   39</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">error</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#aef5bba1e01b1dffe175a345ca96c8c83">   40</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#aef5bba1e01b1dffe175a345ca96c8c83">pngPath</a>;   <span class="comment">// 渲染帧 PNG 的磁盘路径（color buffer）</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#afdf478417b7a8b063b53cc0bd9c16c29">   41</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#afdf478417b7a8b063b53cc0bd9c16c29">jsonPath</a>;  <span class="comment">// 配套三维几何快照 JSON 的磁盘路径</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a47a0d8bc0eeba8cb9294652c8a368046">   42</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>  = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#afbfdc9e7a2c76447e535104578c304f6">   43</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a193a7059a00f87c8fc3e1fa03fd6aac3">   44</a></span>    <span class="keywordtype">int</span>         entityCount = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="comment">// 可选附加缓冲区（按需生成）。</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a6c98c83d1868ea2ba52c462292f6c52e">   46</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a6c98c83d1868ea2ba52c462292f6c52e">depthPngPath</a>;   <span class="comment">// depth buffer PNG（GBuffer 线性深度）</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a79e473969f20fbcb5b7ae02fff5813e4">   47</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a79e473969f20fbcb5b7ae02fff5813e4">normalPngPath</a>;  <span class="comment">// normal buffer PNG（GBuffer 世界法线）</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a165074ed352ec0a0d5c6cd1d0dbfb40b">   48</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a165074ed352ec0a0d5c6cd1d0dbfb40b">idPngPath</a>;      <span class="comment">// 渲染 ID mask PNG（逐像素实体 ID 颜色）</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a2c0d01b7d0f9390589768225931a9fc9">   49</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a2c0d01b7d0f9390589768225931a9fc9">idJsonPath</a>;     <span class="comment">// 渲染 ID mask 的 id→实体 映射 JSON</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">   50</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">unsupported</a>;  <span class="comment">// 请求但当前后端不支持的缓冲区</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html">   53</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a>&amp; instance();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a0feedd95254c31ce5473367e0311b622">   57</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a0feedd95254c31ce5473367e0311b622">SceneInspect</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a3d6772c33a90a835ce16e998cb794389">   58</a></span>    <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a3d6772c33a90a835ce16e998cb794389">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="comment">// ---------- 多机位自动采样 ----------</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">static</span> std::vector&lt;InspectView&gt; generateViews(<span class="keyword">const</span> glm::vec3&amp; center, <span class="keywordtype">float</span> fov = 60.f);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">// ---------- 相机位姿 ----------</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">bool</span> setCameraPose(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>, <span class="keyword">const</span> glm::vec3&amp; rotYawPitch, <span class="keywordtype">float</span> fov = 0.f);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> setCameraView(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a>&amp; <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// ---------- 原子快照（渲染帧 + 几何 JSON） ----------</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1InspectCapture.html">InspectCapture</a> capture(<span class="keyword">const</span> std::string&amp; outDir = {}, <span class="keyword">const</span> std::string&amp; tag = <span class="stringliteral">&quot;frame&quot;</span>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                           <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; buffers = {});</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// ---------- 可见实体三维几何快照 ----------</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::string visibleEntitiesJson(<span class="keyword">const</span> glm::vec3* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a> = <span class="keyword">nullptr</span>,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                                    <span class="keyword">const</span> glm::vec3* target = <span class="keyword">nullptr</span>, <span class="keywordtype">float</span> fov = 0.f);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::string currentPoseJson();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="comment">// ---------- 快照持久化 / 临时缓存 ----------</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a9a5864a9927d5f79a037ac0ef86db394">  104</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a9a5864a9927d5f79a037ac0ef86db394">setCacheDir</a>(std::string <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) { cacheDir_ = std::move(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>); }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a68e891d3045bf5b0fa9577e349f2a741">  105</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a68e891d3045bf5b0fa9577e349f2a741">cacheDir</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cacheDir_; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::string defaultCacheDir() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a2ab20a7747de5b2f3ac4e13963955a31">  109</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a2ab20a7747de5b2f3ac4e13963955a31">lastPngPath</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastPngPath_; }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#ab263813419cbc08b1fd94f596acb8a61">  110</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#ab263813419cbc08b1fd94f596acb8a61">lastJsonPath</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastJsonPath_; }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a>* captureIface();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_class" href="classeve_1_1ISceneQuery.html">eve::ISceneQuery</a>*    scene();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">bool</span>                 ensureCamera();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::string cacheDir_;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    std::string lastPngPath_;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::string lastJsonPath_;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>};</div>
+</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a48083b65ac9a863566dc3e3fff09a5b4"><div class="ttname"><a href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00235">Grass.cpp:235</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a2474a5474cbff19523a51eb1de01cda4"><div class="ttname"><a href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00144">Pathfinder.cpp:144</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a420d8d8ece65c00c51be184d896cdca9"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a></div><div class="ttdeci">glm::vec3 eye</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00484">RenderSystem3D.cpp:484</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00121">TreeMesh.cpp:121</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1IRenderCapture_html"><div class="ttname"><a href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a></div><div class="ttdoc">Frame capture + camera + visible-entity inspection (graphics).</div><div class="ttdef"><b>Definition</b> <a href="RenderCapture_8h_source.html#l00022">RenderCapture.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1ISceneQuery_html"><div class="ttname"><a href="classeve_1_1ISceneQuery.html">eve::ISceneQuery</a></div><div class="ttdoc">Scene graph query/mutation surface (provided by the scene module).</div><div class="ttdef"><b>Definition</b> <a href="SceneQuery_8h_source.html#l00030">SceneQuery.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html">eve::dev::SceneInspect</a></div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00053">SceneInspect.hpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a0feedd95254c31ce5473367e0311b622"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a0feedd95254c31ce5473367e0311b622">eve::dev::SceneInspect::SceneInspect</a></div><div class="ttdeci">SceneInspect(const SceneInspect &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a2ab20a7747de5b2f3ac4e13963955a31"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a2ab20a7747de5b2f3ac4e13963955a31">eve::dev::SceneInspect::lastPngPath</a></div><div class="ttdeci">const std::string &amp; lastPngPath() const</div><div class="ttdoc">最近一次快照的 PNG / JSON 路径（供后续读取）。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00109">SceneInspect.hpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a3d6772c33a90a835ce16e998cb794389"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a3d6772c33a90a835ce16e998cb794389">eve::dev::SceneInspect::operator=</a></div><div class="ttdeci">SceneInspect &amp; operator=(const SceneInspect &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a68e891d3045bf5b0fa9577e349f2a741"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a68e891d3045bf5b0fa9577e349f2a741">eve::dev::SceneInspect::cacheDir</a></div><div class="ttdeci">const std::string &amp; cacheDir() const</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00105">SceneInspect.hpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a9a5864a9927d5f79a037ac0ef86db394"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a9a5864a9927d5f79a037ac0ef86db394">eve::dev::SceneInspect::setCacheDir</a></div><div class="ttdeci">void setCacheDir(std::string dir)</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00104">SceneInspect.hpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_ab263813419cbc08b1fd94f596acb8a61"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#ab263813419cbc08b1fd94f596acb8a61">eve::dev::SceneInspect::lastJsonPath</a></div><div class="ttdeci">const std::string &amp; lastJsonPath() const</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00110">SceneInspect.hpp:110</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00008">AiPanel.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html">eve::dev::InspectCapture</a></div><div class="ttdoc">一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00037">SceneInspect.hpp:37</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a060a5d7dbe87e101cab331b8a5b55624"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">eve::dev::InspectCapture::error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00039">SceneInspect.hpp:39</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a165074ed352ec0a0d5c6cd1d0dbfb40b"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a165074ed352ec0a0d5c6cd1d0dbfb40b">eve::dev::InspectCapture::idPngPath</a></div><div class="ttdeci">std::string idPngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00048">SceneInspect.hpp:48</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a2c0d01b7d0f9390589768225931a9fc9"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a2c0d01b7d0f9390589768225931a9fc9">eve::dev::InspectCapture::idJsonPath</a></div><div class="ttdeci">std::string idJsonPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00049">SceneInspect.hpp:49</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a6c98c83d1868ea2ba52c462292f6c52e"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a6c98c83d1868ea2ba52c462292f6c52e">eve::dev::InspectCapture::depthPngPath</a></div><div class="ttdeci">std::string depthPngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00046">SceneInspect.hpp:46</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a79e473969f20fbcb5b7ae02fff5813e4"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a79e473969f20fbcb5b7ae02fff5813e4">eve::dev::InspectCapture::normalPngPath</a></div><div class="ttdeci">std::string normalPngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00047">SceneInspect.hpp:47</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a7aef02baa403497de59f56d5161a1f26"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">eve::dev::InspectCapture::unsupported</a></div><div class="ttdeci">std::vector&lt; std::string &gt; unsupported</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00050">SceneInspect.hpp:50</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_aef5bba1e01b1dffe175a345ca96c8c83"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#aef5bba1e01b1dffe175a345ca96c8c83">eve::dev::InspectCapture::pngPath</a></div><div class="ttdeci">std::string pngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00040">SceneInspect.hpp:40</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_afdf478417b7a8b063b53cc0bd9c16c29"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#afdf478417b7a8b063b53cc0bd9c16c29">eve::dev::InspectCapture::jsonPath</a></div><div class="ttdeci">std::string jsonPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00041">SceneInspect.hpp:41</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectView_html"><div class="ttname"><a href="structeve_1_1dev_1_1InspectView.html">eve::dev::InspectView</a></div><div class="ttdoc">场景巡检工具集（MCP 底层数据底座）。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00028">SceneInspect.hpp:28</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectView_html_a3ceba363c51b6fd41f0f48a49464d0b1"><div class="ttname"><a href="structeve_1_1dev_1_1InspectView.html#a3ceba363c51b6fd41f0f48a49464d0b1">eve::dev::InspectView::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00030">SceneInspect.hpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectView_html_ac700fb8491f6116c2cb4708f4f444ec0"><div class="ttname"><a href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">eve::dev::InspectView::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00029">SceneInspect.hpp:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

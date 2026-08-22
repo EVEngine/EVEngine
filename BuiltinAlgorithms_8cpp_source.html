@@ -1,0 +1,430 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/BuiltinAlgorithms.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BuiltinAlgorithms.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BuiltinAlgorithms_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="GeneratorRegistry_8h.html">procgen/GeneratorRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Semantic_8h.html">procgen/Semantic.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="DtlHelpers_8h.html">procgen/algorithms/DtlHelpers.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="RoguelikeGenerator_8h.html">procgen/algorithms/RoguelikeGenerator.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;random&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html">   13</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">bool</span> genDungeonBsp(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">getWidth</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">getHeight</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt; 8 || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt; 8) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;dungeon.bsp: size must be at least 8x8&quot;</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> divisionMin     = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;divisionMin&quot;</span>, 3);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> divisionRandMax = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;divisionRandMax&quot;</span>, 4);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> roomMinX        = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomMinX&quot;</span>, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomMin&quot;</span>, 5));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> roomRandMaxX    = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomRandMaxX&quot;</span>, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomRand&quot;</span>, 2));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> roomMinY        = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomMinY&quot;</span>, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomMin&quot;</span>, 5));</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> roomRandMaxY    = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomRandMaxY&quot;</span>, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;roomRand&quot;</span>, 2));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">auto</span> matrix = <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#ab543f4c6312e8e95bc425aef24024155">dtlutil::makeMatrix</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 0);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="comment">// room=1, road=2; wall remains 0</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    dtl::shape::SimpleRogueLike&lt;std::uint_fast8_t&gt; shape(</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        1, 2, <span class="keywordtype">size_t</span>(std::max(1, divisionMin)), <span class="keywordtype">size_t</span>(std::max(0, divisionRandMax)),</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordtype">size_t</span>(std::max(1, roomMinX)), <span class="keywordtype">size_t</span>(std::max(0, roomRandMaxX)),</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">size_t</span>(std::max(1, roomMinY)), <span class="keywordtype">size_t</span>(std::max(0, roomRandMaxY)));</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!shape.drawSEED(matrix, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>())) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;dungeon.bsp: DTL SimpleRogueLike draw failed&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a59b5e246bbdde880c19e8d57e4dc0bb1">dtlutil::copyMatrixToGrid</a>(matrix, out, [](std::uint_fast8_t <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) -&gt; uint32_t {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> == 1) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> == 2) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a69f554caa636d60bc8f0b3944711ec72">Semantic::Corridor</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    });</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a>(<span class="stringliteral">&quot;algorithm&quot;</span>, <span class="stringliteral">&quot;dungeon.bsp&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">dtlutil::placeSpawnAndStairs</a>(out, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keywordtype">bool</span> genCaveCellular(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">getWidth</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">getHeight</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt; 4 || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt; 4) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;cave.cellular: size must be at least 4x4&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>    loops = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;loops&quot;</span>, 5);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> fill  = double(params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;fill&quot;</span>, 0.45f));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">auto</span> matrix = <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#ab543f4c6312e8e95bc425aef24024155">dtlutil::makeMatrix</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 0);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// land=1, border/wall=0</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    dtl::shape::CellularAutomatonIsland&lt;std::uint_fast8_t&gt; shape(1, 0, <span class="keywordtype">size_t</span>(std::max(1, loops)),</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                                                 fill);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7beeea62d75f7a201775d08a2142e943">dtlutil::seedEngine</a>(params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (!shape.draw(matrix)) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;cave.cellular: DTL CellularAutomatonIsland draw failed&quot;</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a59b5e246bbdde880c19e8d57e4dc0bb1">dtlutil::copyMatrixToGrid</a>(matrix, out, [](std::uint_fast8_t <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) -&gt; uint32_t {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> == 1 ? <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a> : <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    });</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a>(<span class="stringliteral">&quot;algorithm&quot;</span>, <span class="stringliteral">&quot;cave.cellular&quot;</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">dtlutil::placeSpawnAndStairs</a>(out, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keywordtype">bool</span> genMazeBacktrack(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">getWidth</a>();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">getHeight</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="comment">// MazeDig works best on odd dimensions.</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> mw = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt; 5 ? 5 : (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> % 2 == 0 ? <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> - 1 : <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> mh = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt; 5 ? 5 : (<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> % 2 == 0 ? <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 1 : <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">auto</span> matrix = <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#ab543f4c6312e8e95bc425aef24024155">dtlutil::makeMatrix</a>(mw, mh, 0);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// empty(floor)=1, wall=0</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    dtl::shape::MazeDig&lt;std::uint_fast8_t&gt; shape(1, 0);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">if</span> (!shape.drawSEED(matrix, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>())) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;maze.backtrack: DTL MazeDig draw failed&quot;</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a55fd7106f49eaf5789a76aaf3b3ab0d5">resize</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a66f1422005532c0740f0b57e9afbd652">fill</a>(<a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; mh &amp;&amp; <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>; ++<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; mw &amp;&amp; <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>; ++<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, matrix[<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)][<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)] == 1 ? <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a> : <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a>(<span class="stringliteral">&quot;algorithm&quot;</span>, <span class="stringliteral">&quot;maze.backtrack&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">dtlutil::placeSpawnAndStairs</a>(out, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keywordtype">bool</span> genNoiseTerrain(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">getWidth</a>();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">getHeight</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt; 2 || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt; 2) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;noise.terrain: size must be at least 2x2&quot;</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> frequency = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;frequency&quot;</span>, 6.f);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   octaves   = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;octaves&quot;</span>, 4);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment">// Height bands in [0, maxHeight]</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxHeight = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">getInt</a>(<span class="stringliteral">&quot;maxHeight&quot;</span>, 9);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">auto</span> matrix = <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#ab543f4c6312e8e95bc425aef24024155">dtlutil::makeMatrix</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 0);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    dtl::shape::PerlinIsland&lt;std::uint_fast8_t&gt; shape(<span class="keywordtype">double</span>(std::max(0.1f, frequency)),</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                                      <span class="keywordtype">size_t</span>(std::max(1, octaves)),</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                                                      std::uint_fast8_t(std::max(1, maxHeight)), 0);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">if</span> (!shape.drawSEED(matrix, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>())) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;noise.terrain: DTL PerlinIsland draw failed&quot;</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> waterMax = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;waterMax&quot;</span>, 0.25f);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> sandMax  = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;sandMax&quot;</span>, 0.35f);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> grassMax = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;grassMax&quot;</span>, 0.65f);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dirtMax  = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;dirtMax&quot;</span>, 0.80f);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> stoneMax = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;stoneMax&quot;</span>, 0.92f);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a59b5e246bbdde880c19e8d57e4dc0bb1">dtlutil::copyMatrixToGrid</a>(matrix, out, [&amp;](std::uint_fast8_t <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) -&gt; uint32_t {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> t = maxHeight &lt;= 0 ? 0.f : float(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) / float(maxHeight);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">if</span> (t &lt; waterMax) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">Semantic::Water</a>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">if</span> (t &lt; sandMax) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a38307da2a8d89724f9383c09c51a8711">Semantic::Sand</a>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordflow">if</span> (t &lt; grassMax) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a257aca213452997475d73df1dd291cc8">Semantic::Grass</a>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">if</span> (t &lt; dirtMax) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a42717cd85e3f86e2ae4debc8b28f8550">Semantic::Dirt</a>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">if</span> (t &lt; stoneMax) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a29c06f76c165c6f129a5988d0fd5556f">Semantic::Stone</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae7b9acc7fe6a647129941b763f351152">Semantic::Snow</a>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    });</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a>(<span class="stringliteral">&quot;algorithm&quot;</span>, <span class="stringliteral">&quot;noise.terrain&quot;</span>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">dtlutil::placeSpawnAndStairs</a>(out, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="keywordtype">bool</span> genCaveDrunkard(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="code hl_class" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">getWidth</a>();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">getHeight</a>();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt; 4 || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt; 4) {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;cave.drunkard: size must be at least 4x4&quot;</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> floorPct = std::clamp(params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">getFloat</a>(<span class="stringliteral">&quot;floorPct&quot;</span>, 0.45f), 0.05f, 0.95f);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   target   = int(<span class="keywordtype">float</span>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> * <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) * floorPct);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a55fd7106f49eaf5789a76aaf3b3ab0d5">resize</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a66f1422005532c0740f0b57e9afbd652">fill</a>(<a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    std::mt19937 rng(params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    std::uniform_int_distribution&lt;int&gt; dirDist(0, 3);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> / 2;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> / 2;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">int</span> carved = 0;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">int</span> guard  = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> * <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> * 20;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">while</span> (carved &lt; target &amp;&amp; guard-- &gt; 0) {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">if</span> (out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a83e14ac97e99fd3b7090fcaa31ac65a3">getCell</a>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) != <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a>) {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">Semantic::Floor</a>);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            ++carved;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordflow">switch</span> (dirDist(rng)) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">case</span> 0: <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &gt; 1) --<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">case</span> 1: <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> - 2) ++<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">case</span> 2: <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &gt; 1) --<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">default</span>: <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 2) ++<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="comment">// Outer wall frame</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>; ++i) {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(i, 0, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(i, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 1, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>; ++j) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(0, j, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> - 1, j, <a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">Semantic::Wall</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    out.<a class="code hl_function" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a>(<span class="stringliteral">&quot;algorithm&quot;</span>, <span class="stringliteral">&quot;cave.drunkard&quot;</span>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <a class="code hl_function" href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">dtlutil::placeSpawnAndStairs</a>(out, params.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">getSeed</a>());</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>}</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="comment">// Defined in WfcSimple.cpp</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a537b7a3bad29e962f7c2049a935a40ef">registerWfcSimple</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1GeneratorRegistry.html">GeneratorRegistry</a> &amp;registry);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">// Defined in heightmap/BuiltinHeightmap.cpp</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a642c7d047a1d0cd78ba5a66addde3488">registerTerrainHeightmapAlgorithm</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1GeneratorRegistry.html">GeneratorRegistry</a> &amp;registry);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="foldopen" id="foldopen00202" data-start="{" data-end="}">
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a2b38f633019c0034e98b3ba43b69eb65">  202</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a2b38f633019c0034e98b3ba43b69eb65">GeneratorRegistry::registerBuiltins</a>() {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (builtinsRegistered_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a1fd01a47a0eab4322152cd2e26ce4cc8">registerAlgorithm</a>(<span class="stringliteral">&quot;dungeon.bsp&quot;</span>, genDungeonBsp);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a1fd01a47a0eab4322152cd2e26ce4cc8">registerAlgorithm</a>(<span class="stringliteral">&quot;cave.cellular&quot;</span>, genCaveCellular);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a1fd01a47a0eab4322152cd2e26ce4cc8">registerAlgorithm</a>(<span class="stringliteral">&quot;cave.drunkard&quot;</span>, genCaveDrunkard);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a1fd01a47a0eab4322152cd2e26ce4cc8">registerAlgorithm</a>(<span class="stringliteral">&quot;maze.backtrack&quot;</span>, genMazeBacktrack);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a1fd01a47a0eab4322152cd2e26ce4cc8">registerAlgorithm</a>(<span class="stringliteral">&quot;noise.terrain&quot;</span>, genNoiseTerrain);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <a class="code hl_function" href="namespaceeve_1_1procgen.html#a537b7a3bad29e962f7c2049a935a40ef">registerWfcSimple</a>(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <a class="code hl_function" href="namespaceeve_1_1procgen.html#a696a46d3c9b6ee493422163d81b2ec57">registerRoguelikeGenerator</a>(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <a class="code hl_function" href="namespaceeve_1_1procgen.html#a642c7d047a1d0cd78ba5a66addde3488">registerTerrainHeightmapAlgorithm</a>(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    builtinsRegistered_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
+</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>}  <span class="comment">// namespace eve::procgen</span></div>
+</div>
+<div class="ttc" id="aDtlHelpers_8h_html"><div class="ttname"><a href="DtlHelpers_8h.html">DtlHelpers.h</a></div></div>
+<div class="ttc" id="aGeneratorRegistry_8h_html"><div class="ttname"><a href="GeneratorRegistry_8h.html">GeneratorRegistry.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aRoguelikeGenerator_8h_html"><div class="ttname"><a href="RoguelikeGenerator_8h.html">RoguelikeGenerator.h</a></div></div>
+<div class="ttc" id="aSemantic_8h_html"><div class="ttname"><a href="Semantic_8h.html">Semantic.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GeneratorRegistry_html"><div class="ttname"><a href="classeve_1_1procgen_1_1GeneratorRegistry.html">eve::procgen::GeneratorRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="GeneratorRegistry_8h_source.html#l00015">GeneratorRegistry.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GeneratorRegistry_html_a1fd01a47a0eab4322152cd2e26ce4cc8"><div class="ttname"><a href="classeve_1_1procgen_1_1GeneratorRegistry.html#a1fd01a47a0eab4322152cd2e26ce4cc8">eve::procgen::GeneratorRegistry::registerAlgorithm</a></div><div class="ttdeci">void registerAlgorithm(const std::string &amp;id, GeneratorFn fn)</div><div class="ttdef"><b>Definition</b> <a href="GeneratorRegistry_8cpp_source.html#l00012">GeneratorRegistry.cpp:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GeneratorRegistry_html_a2b38f633019c0034e98b3ba43b69eb65"><div class="ttname"><a href="classeve_1_1procgen_1_1GeneratorRegistry.html#a2b38f633019c0034e98b3ba43b69eb65">eve::procgen::GeneratorRegistry::registerBuiltins</a></div><div class="ttdeci">void registerBuiltins()</div><div class="ttdoc">Register built-in DTL / custom map algorithms (idempotent).</div><div class="ttdef"><b>Definition</b> <a href="BuiltinAlgorithms_8cpp_source.html#l00202">BuiltinAlgorithms.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html">eve::procgen::Grid2D</a></div><div class="ttdoc">Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8h_source.html#l00016">Grid2D.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html_a55fd7106f49eaf5789a76aaf3b3ab0d5"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html#a55fd7106f49eaf5789a76aaf3b3ab0d5">eve::procgen::Grid2D::resize</a></div><div class="ttdeci">void resize(int width, int height)</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8cpp_source.html#l00013">Grid2D.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html_a66f1422005532c0740f0b57e9afbd652"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html#a66f1422005532c0740f0b57e9afbd652">eve::procgen::Grid2D::fill</a></div><div class="ttdeci">void fill(int semantic)</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8cpp_source.html#l00033">Grid2D.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html_a6c66f0caf5095da7b3222500335adfd4"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">eve::procgen::Grid2D::setCell</a></div><div class="ttdeci">void setCell(int x, int y, int semantic)</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8cpp_source.html#l00023">Grid2D.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html_a83e14ac97e99fd3b7090fcaa31ac65a3"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html#a83e14ac97e99fd3b7090fcaa31ac65a3">eve::procgen::Grid2D::getCell</a></div><div class="ttdeci">int getCell(int x, int y) const</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8cpp_source.html#l00028">Grid2D.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Grid2D_html_ad22107d54e6ad503cc7624181aee4031"><div class="ttname"><a href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">eve::procgen::Grid2D::setMeta</a></div><div class="ttdeci">void setMeta(const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="Grid2D_8cpp_source.html#l00047">Grid2D.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Generation parameters. Algorithm-specific keys live in values as strings (no overloads; typed setters...</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00013">Params.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a0645f3ad15b246f52b7d3d1fbe04cc0d"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a0645f3ad15b246f52b7d3d1fbe04cc0d">eve::procgen::Params::getSeed</a></div><div class="ttdeci">uint32_t getSeed() const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00008">Params.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a60856961aa7e4f6ed58f0a9ef5c18c61"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a60856961aa7e4f6ed58f0a9ef5c18c61">eve::procgen::Params::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00015">Params.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a95044446d104aae03b90dcda915ae865"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a95044446d104aae03b90dcda915ae865">eve::procgen::Params::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00014">Params.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_aaaad0b9bad38ea7378e1b3c41825f101"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#aaaad0b9bad38ea7378e1b3c41825f101">eve::procgen::Params::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;key, float defaultValue) const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00032">Params.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_adcc55d46d8177b000dccba61345441c7"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#adcc55d46d8177b000dccba61345441c7">eve::procgen::Params::getInt</a></div><div class="ttdeci">int getInt(const std::string &amp;key, int defaultValue) const</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00023">Params.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a21300f8aa8278b8c7682583c333e2098"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">eve::procgen::Semantic::Floor</a></div><div class="ttdeci">constexpr uint32_t Floor</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00012">Semantic.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a257aca213452997475d73df1dd291cc8"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a257aca213452997475d73df1dd291cc8">eve::procgen::Semantic::Grass</a></div><div class="ttdeci">constexpr uint32_t Grass</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00016">Semantic.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a29c06f76c165c6f129a5988d0fd5556f"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a29c06f76c165c6f129a5988d0fd5556f">eve::procgen::Semantic::Stone</a></div><div class="ttdeci">constexpr uint32_t Stone</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00018">Semantic.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a32bc9e2f55b389c403eba34b03af4cf8"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">eve::procgen::Semantic::Wall</a></div><div class="ttdeci">constexpr uint32_t Wall</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00011">Semantic.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a38307da2a8d89724f9383c09c51a8711"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a38307da2a8d89724f9383c09c51a8711">eve::procgen::Semantic::Sand</a></div><div class="ttdeci">constexpr uint32_t Sand</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00015">Semantic.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a42717cd85e3f86e2ae4debc8b28f8550"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a42717cd85e3f86e2ae4debc8b28f8550">eve::procgen::Semantic::Dirt</a></div><div class="ttdeci">constexpr uint32_t Dirt</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00017">Semantic.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_a69f554caa636d60bc8f0b3944711ec72"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#a69f554caa636d60bc8f0b3944711ec72">eve::procgen::Semantic::Corridor</a></div><div class="ttdeci">constexpr uint32_t Corridor</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00013">Semantic.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_ae5b92f11f345ebc0bdbfa29d93683e2d"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">eve::procgen::Semantic::Water</a></div><div class="ttdeci">constexpr uint32_t Water</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00014">Semantic.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_ae7b9acc7fe6a647129941b763f351152"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#ae7b9acc7fe6a647129941b763f351152">eve::procgen::Semantic::Snow</a></div><div class="ttdeci">constexpr uint32_t Snow</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00019">Semantic.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1dtlutil_html_a59b5e246bbdde880c19e8d57e4dc0bb1"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1dtlutil.html#a59b5e246bbdde880c19e8d57e4dc0bb1">eve::procgen::dtlutil::copyMatrixToGrid</a></div><div class="ttdeci">void copyMatrixToGrid(const std::vector&lt; std::vector&lt; std::uint_fast8_t &gt; &gt; &amp;matrix, Grid2D &amp;grid, const std::function&lt; uint32_t(std::uint_fast8_t)&gt; &amp;mapValue)</div><div class="ttdef"><b>Definition</b> <a href="DtlHelpers_8h_source.html#l00035">DtlHelpers.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1dtlutil_html_a7bc32130c08e9caa59dc75af9320c3bd"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1dtlutil.html#a7bc32130c08e9caa59dc75af9320c3bd">eve::procgen::dtlutil::placeSpawnAndStairs</a></div><div class="ttdeci">void placeSpawnAndStairs(Grid2D &amp;grid, uint32_t seed)</div><div class="ttdoc">Place spawn + stairs on walkable cells (floor/corridor/grass/dirt/sand).</div><div class="ttdef"><b>Definition</b> <a href="DtlHelpers_8h_source.html#l00049">DtlHelpers.h:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1dtlutil_html_a7beeea62d75f7a201775d08a2142e943"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1dtlutil.html#a7beeea62d75f7a201775d08a2142e943">eve::procgen::dtlutil::seedEngine</a></div><div class="ttdeci">void seedEngine(uint32_t seed)</div><div class="ttdef"><b>Definition</b> <a href="DtlHelpers_8h_source.html#l00024">DtlHelpers.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1dtlutil_html_ab543f4c6312e8e95bc425aef24024155"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1dtlutil.html#ab543f4c6312e8e95bc425aef24024155">eve::procgen::dtlutil::makeMatrix</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::uint_fast8_t &gt; &gt; makeMatrix(int width, int height, std::uint_fast8_t fill=0)</div><div class="ttdef"><b>Definition</b> <a href="DtlHelpers_8h_source.html#l00029">DtlHelpers.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="BuiltinAlgorithms_8cpp_source.html#l00013">BuiltinAlgorithms.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a537b7a3bad29e962f7c2049a935a40ef"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a537b7a3bad29e962f7c2049a935a40ef">eve::procgen::registerWfcSimple</a></div><div class="ttdeci">void registerWfcSimple(GeneratorRegistry &amp;registry)</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00289">WfcSimple.cpp:289</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a642c7d047a1d0cd78ba5a66addde3488"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a642c7d047a1d0cd78ba5a66addde3488">eve::procgen::registerTerrainHeightmapAlgorithm</a></div><div class="ttdeci">void registerTerrainHeightmapAlgorithm(GeneratorRegistry &amp;registry)</div><div class="ttdef"><b>Definition</b> <a href="BuiltinHeightmap_8cpp_source.html#l00034">BuiltinHeightmap.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a696a46d3c9b6ee493422163d81b2ec57"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a696a46d3c9b6ee493422163d81b2ec57">eve::procgen::registerRoguelikeGenerator</a></div><div class="ttdeci">void registerRoguelikeGenerator(GeneratorRegistry &amp;registry)</div><div class="ttdoc">Register the &quot;level.roguelike&quot; algorithm (idempotent).</div><div class="ttdef"><b>Definition</b> <a href="RoguelikeGenerator_8cpp_source.html#l00343">RoguelikeGenerator.cpp:343</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

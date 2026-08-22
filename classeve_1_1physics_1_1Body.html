@@ -1,0 +1,1456 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Body类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1Body-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Body类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>2D rigid body (Box2D) in pixel-space coordinates. Owned by a <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>; create shapes with newRectangleFixture/newCircleFixture.  
+ <a href="classeve_1_1physics_1_1Body.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Body_8h_source.html">Body.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af2a7e5e8b526b34cf195fed228153360" id="r_af2a7e5e8b526b34cf195fed228153360"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#af2a7e5e8b526b34cf195fed228153360">Body</a> (<a class="el" href="classeve_1_1physics_1_1World.html">World</a> *world, b2Body *<a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:af2a7e5e8b526b34cf195fed228153360"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: wraps a Box2D body (use <a class="el" href="classeve_1_1physics_1_1World.html#aa3ae89e72901d58785bd68512afeff8b" title="bodyType: &quot;static&quot; | &quot;kinematic&quot; | &quot;dynamic&quot;. x/y in pixels.">World::newBody</a>).  <br /></td></tr>
+<tr class="separator:af2a7e5e8b526b34cf195fed228153360"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad34b64164365dcd1025be38383345d02" id="r_ad34b64164365dcd1025be38383345d02"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#ad34b64164365dcd1025be38383345d02">~Body</a> ()</td></tr>
+<tr class="separator:ad34b64164365dcd1025be38383345d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42ea3e340ac04a2e714907afd534b71e" id="r_a42ea3e340ac04a2e714907afd534b71e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a42ea3e340ac04a2e714907afd534b71e">Body</a> (const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;)=delete</td></tr>
+<tr class="separator:a42ea3e340ac04a2e714907afd534b71e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6056be255757cf71d923d6fbc2eb0d42" id="r_a6056be255757cf71d923d6fbc2eb0d42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a6056be255757cf71d923d6fbc2eb0d42">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;)=delete</td></tr>
+<tr class="separator:a6056be255757cf71d923d6fbc2eb0d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa213aa8511d08d927a86e00c28193493" id="r_aa213aa8511d08d927a86e00c28193493"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#aa213aa8511d08d927a86e00c28193493">getId</a> () const</td></tr>
+<tr class="memdesc:aa213aa8511d08d927a86e00c28193493"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable id used by contact/impact events.  <br /></td></tr>
+<tr class="separator:aa213aa8511d08d927a86e00c28193493"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab40771309c7ded69ae2234f6fbb69c56" id="r_ab40771309c7ded69ae2234f6fbb69c56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#ab40771309c7ded69ae2234f6fbb69c56">setPosition</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="memdesc:ab40771309c7ded69ae2234f6fbb69c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position in pixels.  <br /></td></tr>
+<tr class="separator:ab40771309c7ded69ae2234f6fbb69c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b9606f1a28e6b12ded573c5a88be2b7" id="r_a1b9606f1a28e6b12ded573c5a88be2b7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a1b9606f1a28e6b12ded573c5a88be2b7">getX</a> () const</td></tr>
+<tr class="separator:a1b9606f1a28e6b12ded573c5a88be2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b37aeb15d9c72c2e5dbfd7024148c8" id="r_af5b37aeb15d9c72c2e5dbfd7024148c8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#af5b37aeb15d9c72c2e5dbfd7024148c8">getY</a> () const</td></tr>
+<tr class="separator:af5b37aeb15d9c72c2e5dbfd7024148c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c24fcd701e44d143906b409bfca14f9" id="r_a2c24fcd701e44d143906b409bfca14f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a2c24fcd701e44d143906b409bfca14f9">setAngle</a> (float radians)</td></tr>
+<tr class="memdesc:a2c24fcd701e44d143906b409bfca14f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotation in radians.  <br /></td></tr>
+<tr class="separator:a2c24fcd701e44d143906b409bfca14f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ba8a782a0d8453f374cb4589e3081ab" id="r_a9ba8a782a0d8453f374cb4589e3081ab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a9ba8a782a0d8453f374cb4589e3081ab">getAngle</a> () const</td></tr>
+<tr class="separator:a9ba8a782a0d8453f374cb4589e3081ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfadee022d7a146c2ce3956eeeebc25d" id="r_adfadee022d7a146c2ce3956eeeebc25d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#adfadee022d7a146c2ce3956eeeebc25d">setLinearVelocity</a> (float vx, float vy)</td></tr>
+<tr class="memdesc:adfadee022d7a146c2ce3956eeeebc25d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear velocity in pixels/s.  <br /></td></tr>
+<tr class="separator:adfadee022d7a146c2ce3956eeeebc25d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09fb33495b6bdda2bdb5d103efdfe742" id="r_a09fb33495b6bdda2bdb5d103efdfe742"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a09fb33495b6bdda2bdb5d103efdfe742">getLinearVelocityX</a> () const</td></tr>
+<tr class="separator:a09fb33495b6bdda2bdb5d103efdfe742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f8655a636f32870b51e049627c825c5" id="r_a2f8655a636f32870b51e049627c825c5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a2f8655a636f32870b51e049627c825c5">getLinearVelocityY</a> () const</td></tr>
+<tr class="separator:a2f8655a636f32870b51e049627c825c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96ab86d6672d14ecbd940bfd57b35b54" id="r_a96ab86d6672d14ecbd940bfd57b35b54"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a96ab86d6672d14ecbd940bfd57b35b54">getLinearSpeed</a> () const</td></tr>
+<tr class="memdesc:a96ab86d6672d14ecbd940bfd57b35b54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Magnitude of the linear velocity.  <br /></td></tr>
+<tr class="separator:a96ab86d6672d14ecbd940bfd57b35b54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb37ccb3867019eba580cc87441eba5d" id="r_acb37ccb3867019eba580cc87441eba5d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#acb37ccb3867019eba580cc87441eba5d">getMass</a> () const</td></tr>
+<tr class="memdesc:acb37ccb3867019eba580cc87441eba5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mass in kilograms (Box2D units).  <br /></td></tr>
+<tr class="separator:acb37ccb3867019eba580cc87441eba5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f1bab0db37bacc8ebdc173e94ae48f" id="r_ab5f1bab0db37bacc8ebdc173e94ae48f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#ab5f1bab0db37bacc8ebdc173e94ae48f">getWorldCenterX</a> () const</td></tr>
+<tr class="memdesc:ab5f1bab0db37bacc8ebdc173e94ae48f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> center of mass in pixels.  <br /></td></tr>
+<tr class="separator:ab5f1bab0db37bacc8ebdc173e94ae48f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a967fd55ac08f603cbcc26e78dce703f8" id="r_a967fd55ac08f603cbcc26e78dce703f8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a967fd55ac08f603cbcc26e78dce703f8">getWorldCenterY</a> () const</td></tr>
+<tr class="separator:a967fd55ac08f603cbcc26e78dce703f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a861e87dc508fa97f003cc259eeb67212" id="r_a861e87dc508fa97f003cc259eeb67212"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a861e87dc508fa97f003cc259eeb67212">setAngularVelocity</a> (float omega)</td></tr>
+<tr class="memdesc:a861e87dc508fa97f003cc259eeb67212"><td class="mdescLeft">&#160;</td><td class="mdescRight">Angular velocity in radians/s.  <br /></td></tr>
+<tr class="separator:a861e87dc508fa97f003cc259eeb67212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89d87600cc77083954f16435cddddde3" id="r_a89d87600cc77083954f16435cddddde3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a89d87600cc77083954f16435cddddde3">getAngularVelocity</a> () const</td></tr>
+<tr class="separator:a89d87600cc77083954f16435cddddde3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f89341ac152ecc7a879f0c735157a6b" id="r_a5f89341ac152ecc7a879f0c735157a6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a5f89341ac152ecc7a879f0c735157a6b">applyForce</a> (float fx, float fy)</td></tr>
+<tr class="memdesc:a5f89341ac152ecc7a879f0c735157a6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force (pixels/s² * kg) applied at the center of mass.  <br /></td></tr>
+<tr class="separator:a5f89341ac152ecc7a879f0c735157a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd14c0fb400664b075613687b53e297" id="r_a0dd14c0fb400664b075613687b53e297"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a0dd14c0fb400664b075613687b53e297">applyForceAt</a> (float fx, float fy, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="memdesc:a0dd14c0fb400664b075613687b53e297"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force applied at a world pixel position.  <br /></td></tr>
+<tr class="separator:a0dd14c0fb400664b075613687b53e297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3682512178029452f1dbc4aed57b0996" id="r_a3682512178029452f1dbc4aed57b0996"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a3682512178029452f1dbc4aed57b0996">applyLinearImpulse</a> (float ix, float iy)</td></tr>
+<tr class="memdesc:a3682512178029452f1dbc4aed57b0996"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantaneous linear impulse.  <br /></td></tr>
+<tr class="separator:a3682512178029452f1dbc4aed57b0996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a922467c8847092c4142c4380ab492dab" id="r_a922467c8847092c4142c4380ab492dab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a922467c8847092c4142c4380ab492dab">applyAngularImpulse</a> (float impulse)</td></tr>
+<tr class="memdesc:a922467c8847092c4142c4380ab492dab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantaneous angular impulse.  <br /></td></tr>
+<tr class="separator:a922467c8847092c4142c4380ab492dab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ddbf7860033253a4ddaf19c0038b0f" id="r_a25ddbf7860033253a4ddaf19c0038b0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a25ddbf7860033253a4ddaf19c0038b0f">setType</a> (const std::string &amp;bodyType)</td></tr>
+<tr class="memdesc:a25ddbf7860033253a4ddaf19c0038b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">"static" | "kinematic" | "dynamic".  <br /></td></tr>
+<tr class="separator:a25ddbf7860033253a4ddaf19c0038b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9db444adf6934ee2afb1062fcb5ca505" id="r_a9db444adf6934ee2afb1062fcb5ca505"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a9db444adf6934ee2afb1062fcb5ca505">getType</a> () const</td></tr>
+<tr class="separator:a9db444adf6934ee2afb1062fcb5ca505"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad0492d690e3148d5a4da76bb560007" id="r_a5ad0492d690e3148d5a4da76bb560007"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a5ad0492d690e3148d5a4da76bb560007">setFixedRotation</a> (bool fixed)</td></tr>
+<tr class="memdesc:a5ad0492d690e3148d5a4da76bb560007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locks rotation so the body cannot spin.  <br /></td></tr>
+<tr class="separator:a5ad0492d690e3148d5a4da76bb560007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a778f9a6db10804151df57d317ecff803" id="r_a778f9a6db10804151df57d317ecff803"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a778f9a6db10804151df57d317ecff803">isFixedRotation</a> () const</td></tr>
+<tr class="separator:a778f9a6db10804151df57d317ecff803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb787de184842895a5b2de572bb928fb" id="r_acb787de184842895a5b2de572bb928fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#acb787de184842895a5b2de572bb928fb">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>)</td></tr>
+<tr class="memdesc:acb787de184842895a5b2de572bb928fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables/enables the body and its fixtures.  <br /></td></tr>
+<tr class="separator:acb787de184842895a5b2de572bb928fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fda8109e1ef40ac4e1dbaef47f9259a" id="r_a2fda8109e1ef40ac4e1dbaef47f9259a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a2fda8109e1ef40ac4e1dbaef47f9259a">isActive</a> () const</td></tr>
+<tr class="separator:a2fda8109e1ef40ac4e1dbaef47f9259a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1186c03cc6a3c5306f44628836860bc2" id="r_a1186c03cc6a3c5306f44628836860bc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a1186c03cc6a3c5306f44628836860bc2">setBullet</a> (bool bullet)</td></tr>
+<tr class="memdesc:a1186c03cc6a3c5306f44628836860bc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">CCD bullet mode (recommended for fast small bodies).  <br /></td></tr>
+<tr class="separator:a1186c03cc6a3c5306f44628836860bc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a789ec76a267216dd820ee8850b4d8efd" id="r_a789ec76a267216dd820ee8850b4d8efd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a789ec76a267216dd820ee8850b4d8efd">isBullet</a> () const</td></tr>
+<tr class="separator:a789ec76a267216dd820ee8850b4d8efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a210601b34953f1582f9d434fc6e36c9b" id="r_a210601b34953f1582f9d434fc6e36c9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a210601b34953f1582f9d434fc6e36c9b">setAwake</a> (bool awake)</td></tr>
+<tr class="memdesc:a210601b34953f1582f9d434fc6e36c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wakes / sleeps the body manually.  <br /></td></tr>
+<tr class="separator:a210601b34953f1582f9d434fc6e36c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a6f40b514f656a35ec65b384e7a2e72" id="r_a6a6f40b514f656a35ec65b384e7a2e72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a6a6f40b514f656a35ec65b384e7a2e72">isAwake</a> () const</td></tr>
+<tr class="separator:a6a6f40b514f656a35ec65b384e7a2e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07e170d0604440646798965b5f1b150a" id="r_a07e170d0604440646798965b5f1b150a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a07e170d0604440646798965b5f1b150a">newRectangleFixture</a> (float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, float density=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float friction=0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float restitution=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a07e170d0604440646798965b5f1b150a"><td class="mdescLeft">&#160;</td><td class="mdescRight">width/height in pixels; density kg/m² (Box2D units).  <br /></td></tr>
+<tr class="separator:a07e170d0604440646798965b5f1b150a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5274333f54b6c0f92db5aff7e709c75" id="r_ac5274333f54b6c0f92db5aff7e709c75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#ac5274333f54b6c0f92db5aff7e709c75">newRectangleFixtureAt</a> (float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, float offsetX, float offsetY, float density=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float friction=0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float restitution=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ac5274333f54b6c0f92db5aff7e709c75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rectangle fixture with a local pixel-space offset from the body origin.  <br /></td></tr>
+<tr class="separator:ac5274333f54b6c0f92db5aff7e709c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5867bb11ff5713ed04ccda4b7f2daf9a" id="r_a5867bb11ff5713ed04ccda4b7f2daf9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a5867bb11ff5713ed04ccda4b7f2daf9a">newCircleFixture</a> (float radius, float density=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float friction=0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float restitution=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a5867bb11ff5713ed04ccda4b7f2daf9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b0d5867af5889c58c61e4fb1f4c2f35" id="r_a8b0d5867af5889c58c61e4fb1f4c2f35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a8b0d5867af5889c58c61e4fb1f4c2f35">destroy</a> ()</td></tr>
+<tr class="memdesc:a8b0d5867af5889c58c61e4fb1f4c2f35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the body inside its world.  <br /></td></tr>
+<tr class="separator:a8b0d5867af5889c58c61e4fb1f4c2f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f9494de5995b36fd91e7a3b87c85ec" id="r_ad4f9494de5995b36fd91e7a3b87c85ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#ad4f9494de5995b36fd91e7a3b87c85ec">getWorld</a> ()</td></tr>
+<tr class="memdesc:ad4f9494de5995b36fd91e7a3b87c85ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning world / raw Box2D body.  <br /></td></tr>
+<tr class="separator:ad4f9494de5995b36fd91e7a3b87c85ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a893b7ed444a48ee98c32783039c11d13" id="r_a893b7ed444a48ee98c32783039c11d13"><td class="memItemLeft" align="right" valign="top">b2Body *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a893b7ed444a48ee98c32783039c11d13">raw</a> ()</td></tr>
+<tr class="separator:a893b7ed444a48ee98c32783039c11d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81555fca2dfcd32aad743e906ec1eb54" id="r_a81555fca2dfcd32aad743e906ec1eb54"><td class="memItemLeft" align="right" valign="top">const b2Body *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a81555fca2dfcd32aad743e906ec1eb54">raw</a> () const</td></tr>
+<tr class="separator:a81555fca2dfcd32aad743e906ec1eb54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf399522023949e1541cdbaa0c3d7e73" id="r_aaf399522023949e1541cdbaa0c3d7e73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#aaf399522023949e1541cdbaa0c3d7e73">invalidate</a> ()</td></tr>
+<tr class="memdesc:aaf399522023949e1541cdbaa0c3d7e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: marks the wrapper invalid after world destruction.  <br /></td></tr>
+<tr class="separator:aaf399522023949e1541cdbaa0c3d7e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a7b4bcdf992c21ae83363f25df05b1d25" id="r_a7b4bcdf992c21ae83363f25df05b1d25"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a7b4bcdf992c21ae83363f25df05b1d25">World</a></td></tr>
+<tr class="separator:a7b4bcdf992c21ae83363f25df05b1d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc19ccd29f90e77e5332f42ab062038" id="r_a7cc19ccd29f90e77e5332f42ab062038"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html#a7cc19ccd29f90e77e5332f42ab062038">Fixture</a></td></tr>
+<tr class="separator:a7cc19ccd29f90e77e5332f42ab062038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>2D rigid body (Box2D) in pixel-space coordinates. Owned by a <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>; create shapes with newRectangleFixture/newCircleFixture. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af2a7e5e8b526b34cf195fed228153360" name="af2a7e5e8b526b34cf195fed228153360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a7e5e8b526b34cf195fed228153360">&#9670;&#160;</a></span>Body() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Body::Body </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">b2Body *&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: wraps a Box2D body (use <a class="el" href="classeve_1_1physics_1_1World.html#aa3ae89e72901d58785bd68512afeff8b" title="bodyType: &quot;static&quot; | &quot;kinematic&quot; | &quot;dynamic&quot;. x/y in pixels.">World::newBody</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad34b64164365dcd1025be38383345d02" name="ad34b64164365dcd1025be38383345d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad34b64164365dcd1025be38383345d02">&#9670;&#160;</a></span>~Body()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Body::~Body </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="World_8cpp_source.html#l00249">eve::physics::World::forgetBody()</a>, <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a> , 以及 <a class="el" href="World_8h_source.html#l00140">eve::physics::World::raw()</a>.</p>
+
+</div>
+</div>
+<a id="a42ea3e340ac04a2e714907afd534b71e" name="a42ea3e340ac04a2e714907afd534b71e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42ea3e340ac04a2e714907afd534b71e">&#9670;&#160;</a></span>Body() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Body::Body </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a922467c8847092c4142c4380ab492dab" name="a922467c8847092c4142c4380ab492dab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a922467c8847092c4142c4380ab492dab">&#9670;&#160;</a></span>applyAngularImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::applyAngularImpulse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulse</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantaneous angular impulse. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f89341ac152ecc7a879f0c735157a6b" name="a5f89341ac152ecc7a879f0c735157a6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f89341ac152ecc7a879f0c735157a6b">&#9670;&#160;</a></span>applyForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::applyForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Force (pixels/s² * kg) applied at the center of mass. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a0dd14c0fb400664b075613687b53e297" name="a0dd14c0fb400664b075613687b53e297"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dd14c0fb400664b075613687b53e297">&#9670;&#160;</a></span>applyForceAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::applyForceAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Force applied at a world pixel position. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a3682512178029452f1dbc4aed57b0996" name="a3682512178029452f1dbc4aed57b0996"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3682512178029452f1dbc4aed57b0996">&#9670;&#160;</a></span>applyLinearImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::applyLinearImpulse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>iy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantaneous linear impulse. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a8b0d5867af5889c58c61e4fb1f4c2f35" name="a8b0d5867af5889c58c61e4fb1f4c2f35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b0d5867af5889c58c61e4fb1f4c2f35">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys the body inside its world. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="World_8cpp_source.html#l00249">eve::physics::World::forgetBody()</a>, <a class="el" href="World_8cpp_source.html#l00260">eve::physics::World::forgetFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00055">invalidate()</a> , 以及 <a class="el" href="World_8h_source.html#l00140">eve::physics::World::raw()</a>.</p>
+
+</div>
+</div>
+<a id="a9ba8a782a0d8453f374cb4589e3081ab" name="a9ba8a782a0d8453f374cb4589e3081ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba8a782a0d8453f374cb4589e3081ab">&#9670;&#160;</a></span>getAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89d87600cc77083954f16435cddddde3" name="a89d87600cc77083954f16435cddddde3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89d87600cc77083954f16435cddddde3">&#9670;&#160;</a></span>getAngularVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getAngularVelocity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa213aa8511d08d927a86e00c28193493" name="aa213aa8511d08d927a86e00c28193493"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa213aa8511d08d927a86e00c28193493">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Body::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable id used by contact/impact events. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fixture_8cpp_source.html#l00103">eve::physics::Fixture::getBodyId()</a>.</p>
+
+</div>
+</div>
+<a id="a96ab86d6672d14ecbd940bfd57b35b54" name="a96ab86d6672d14ecbd940bfd57b35b54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96ab86d6672d14ecbd940bfd57b35b54">&#9670;&#160;</a></span>getLinearSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getLinearSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Magnitude of the linear velocity. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a09fb33495b6bdda2bdb5d103efdfe742" name="a09fb33495b6bdda2bdb5d103efdfe742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09fb33495b6bdda2bdb5d103efdfe742">&#9670;&#160;</a></span>getLinearVelocityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getLinearVelocityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a2f8655a636f32870b51e049627c825c5" name="a2f8655a636f32870b51e049627c825c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f8655a636f32870b51e049627c825c5">&#9670;&#160;</a></span>getLinearVelocityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getLinearVelocityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="acb37ccb3867019eba580cc87441eba5d" name="acb37ccb3867019eba580cc87441eba5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb37ccb3867019eba580cc87441eba5d">&#9670;&#160;</a></span>getMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getMass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mass in kilograms (Box2D units). </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9db444adf6934ee2afb1062fcb5ca505" name="a9db444adf6934ee2afb1062fcb5ca505"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9db444adf6934ee2afb1062fcb5ca505">&#9670;&#160;</a></span>getType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::Body::getType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4f9494de5995b36fd91e7a3b87c85ec" name="ad4f9494de5995b36fd91e7a3b87c85ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4f9494de5995b36fd91e7a3b87c85ec">&#9670;&#160;</a></span>getWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> * eve::physics::Body::getWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owning world / raw Box2D body. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5f1bab0db37bacc8ebdc173e94ae48f" name="ab5f1bab0db37bacc8ebdc173e94ae48f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f1bab0db37bacc8ebdc173e94ae48f">&#9670;&#160;</a></span>getWorldCenterX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getWorldCenterX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> center of mass in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a967fd55ac08f603cbcc26e78dce703f8" name="a967fd55ac08f603cbcc26e78dce703f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a967fd55ac08f603cbcc26e78dce703f8">&#9670;&#160;</a></span>getWorldCenterY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getWorldCenterY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a1b9606f1a28e6b12ded573c5a88be2b7" name="a1b9606f1a28e6b12ded573c5a88be2b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b9606f1a28e6b12ded573c5a88be2b7">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="af5b37aeb15d9c72c2e5dbfd7024148c8" name="af5b37aeb15d9c72c2e5dbfd7024148c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5b37aeb15d9c72c2e5dbfd7024148c8">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Body::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00226">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="aaf399522023949e1541cdbaa0c3d7e73" name="aaf399522023949e1541cdbaa0c3d7e73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf399522023949e1541cdbaa0c3d7e73">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::invalidate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: marks the wrapper invalid after world destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00061">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a2fda8109e1ef40ac4e1dbaef47f9259a" name="a2fda8109e1ef40ac4e1dbaef47f9259a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fda8109e1ef40ac4e1dbaef47f9259a">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Body::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a6f40b514f656a35ec65b384e7a2e72" name="a6a6f40b514f656a35ec65b384e7a2e72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a6f40b514f656a35ec65b384e7a2e72">&#9670;&#160;</a></span>isAwake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Body::isAwake </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a789ec76a267216dd820ee8850b4d8efd" name="a789ec76a267216dd820ee8850b4d8efd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a789ec76a267216dd820ee8850b4d8efd">&#9670;&#160;</a></span>isBullet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Body::isBullet </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a778f9a6db10804151df57d317ecff803" name="a778f9a6db10804151df57d317ecff803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a778f9a6db10804151df57d317ecff803">&#9670;&#160;</a></span>isFixedRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Body::isFixedRotation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5867bb11ff5713ed04ccda4b7f2daf9a" name="a5867bb11ff5713ed04ccda4b7f2daf9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5867bb11ff5713ed04ccda4b7f2daf9a">&#9670;&#160;</a></span>newCircleFixture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> * eve::physics::Body::newCircleFixture </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>friction</em> = <code>0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>restitution</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body_8h_source.html#l00105">Fixture</a>, <a class="el" href="Body_8h_source.html#l00097">raw()</a> , 以及 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a07e170d0604440646798965b5f1b150a" name="a07e170d0604440646798965b5f1b150a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07e170d0604440646798965b5f1b150a">&#9670;&#160;</a></span>newRectangleFixture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> * eve::physics::Body::newRectangleFixture </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>friction</em> = <code>0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>restitution</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>width/height in pixels; density kg/m² (Box2D units). </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Body_8cpp_source.html#l00216">newRectangleFixtureAt()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="ac5274333f54b6c0f92db5aff7e709c75" name="ac5274333f54b6c0f92db5aff7e709c75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5274333f54b6c0f92db5aff7e709c75">&#9670;&#160;</a></span>newRectangleFixtureAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> * eve::physics::Body::newRectangleFixtureAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>friction</em> = <code>0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>restitution</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rectangle fixture with a local pixel-space offset from the body origin. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body_8h_source.html#l00105">Fixture</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Body_8h_source.html#l00097">raw()</a>, <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00211">newRectangleFixture()</a>.</p>
+
+</div>
+</div>
+<a id="a6056be255757cf71d923d6fbc2eb0d42" name="a6056be255757cf71d923d6fbc2eb0d42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6056be255757cf71d923d6fbc2eb0d42">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp; eve::physics::Body::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a893b7ed444a48ee98c32783039c11d13" name="a893b7ed444a48ee98c32783039c11d13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a893b7ed444a48ee98c32783039c11d13">&#9670;&#160;</a></span>raw() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">b2Body * eve::physics::Body::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fixture_8cpp_source.html#l00030">eve::physics::Fixture::destroy()</a>, <a class="el" href="Body_8cpp_source.html#l00239">newCircleFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00216">newRectangleFixtureAt()</a>, <a class="el" href="Fixture_8cpp_source.html#l00064">eve::physics::Fixture::setDensity()</a> , 以及 <a class="el" href="Fixture_8cpp_source.html#l00012">eve::physics::Fixture::~Fixture()</a>.</p>
+
+</div>
+</div>
+<a id="a81555fca2dfcd32aad743e906ec1eb54" name="a81555fca2dfcd32aad743e906ec1eb54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81555fca2dfcd32aad743e906ec1eb54">&#9670;&#160;</a></span>raw() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const b2Body * eve::physics::Body::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb787de184842895a5b2de572bb928fb" name="acb787de184842895a5b2de572bb928fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb787de184842895a5b2de572bb928fb">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disables/enables the body and its fixtures. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00034">active</a>.</p>
+
+</div>
+</div>
+<a id="a2c24fcd701e44d143906b409bfca14f9" name="a2c24fcd701e44d143906b409bfca14f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c24fcd701e44d143906b409bfca14f9">&#9670;&#160;</a></span>setAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setAngle </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotation in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a861e87dc508fa97f003cc259eeb67212" name="a861e87dc508fa97f003cc259eeb67212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a861e87dc508fa97f003cc259eeb67212">&#9670;&#160;</a></span>setAngularVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setAngularVelocity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>omega</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Angular velocity in radians/s. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a210601b34953f1582f9d434fc6e36c9b" name="a210601b34953f1582f9d434fc6e36c9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a210601b34953f1582f9d434fc6e36c9b">&#9670;&#160;</a></span>setAwake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setAwake </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>awake</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wakes / sleeps the body manually. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1186c03cc6a3c5306f44628836860bc2" name="a1186c03cc6a3c5306f44628836860bc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1186c03cc6a3c5306f44628836860bc2">&#9670;&#160;</a></span>setBullet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setBullet </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bullet</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>CCD bullet mode (recommended for fast small bodies). </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ad0492d690e3148d5a4da76bb560007" name="a5ad0492d690e3148d5a4da76bb560007"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad0492d690e3148d5a4da76bb560007">&#9670;&#160;</a></span>setFixedRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setFixedRotation </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fixed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Locks rotation so the body cannot spin. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adfadee022d7a146c2ce3956eeeebc25d" name="adfadee022d7a146c2ce3956eeeebc25d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfadee022d7a146c2ce3956eeeebc25d">&#9670;&#160;</a></span>setLinearVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setLinearVelocity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>vx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>vy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear velocity in pixels/s. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="ab40771309c7ded69ae2234f6fbb69c56" name="ab40771309c7ded69ae2234f6fbb69c56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab40771309c7ded69ae2234f6fbb69c56">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Position in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00225">eve::physics::World::toMeters()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a25ddbf7860033253a4ddaf19c0038b0f" name="a25ddbf7860033253a4ddaf19c0038b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ddbf7860033253a4ddaf19c0038b0f">&#9670;&#160;</a></span>setType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Body::setType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>bodyType</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"static" | "kinematic" | "dynamic". </p>
+
+<p class="definition">在文件 <a class="el" href="Body_8cpp_source.html">Body.cpp</a> 第 <a class="el" href="Body_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a7cc19ccd29f90e77e5332f42ab062038" name="a7cc19ccd29f90e77e5332f42ab062038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cc19ccd29f90e77e5332f42ab062038">&#9670;&#160;</a></span>Fixture</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Body_8cpp_source.html#l00239">newCircleFixture()</a> , 以及 <a class="el" href="Body_8cpp_source.html#l00216">newRectangleFixtureAt()</a>.</p>
+
+</div>
+</div>
+<a id="a7b4bcdf992c21ae83363f25df05b1d25" name="a7b4bcdf992c21ae83363f25df05b1d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4bcdf992c21ae83363f25df05b1d25">&#9670;&#160;</a></span>World</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1World.html">World</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Body_8h_source.html">Body.h</a> 第 <a class="el" href="Body_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Body_8h_source.html">Body.h</a></li>
+<li>src/modules/physics/<a class="el" href="Body_8cpp_source.html">Body.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

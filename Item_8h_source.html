@@ -1,0 +1,209 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/inventory/Item.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b8bc26f51279c81dc355e07e5e1d99ba.html">inventory</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Item.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Item_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// 物品定义注册表：数据驱动的 ItemDefinition（C++ 注册或 JSON 批量加载）。</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ItemTypes_8h.html">inventory/ItemTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1ItemRegistry.html">   12</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1inventory_1_1ItemRegistry.html">ItemRegistry</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemRegistry.html#ac359d7454a7373cf9cca37b391cc2279">registerItem</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> *<a class="code hl_function" href="classeve_1_1inventory_1_1ItemRegistry.html#ac833b618fa502b30a9c90ede74d4ae43">find</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemRegistry.html#a05fe98e4b47208d4eaad2d1d4221ef6e">remove</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemRegistry.html#a87d9ca8427102a91388b09ef77bbb09e">clear</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemRegistry.html#a7bb812f983d4fc803385ca7b78c3ba69">count</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1inventory_1_1ItemRegistry.html#a67d2258a744181f1952db4cb849e8aba">loadFromJson</a>(<span class="keyword">const</span> std::string &amp;json, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, ItemDefinition&gt; &amp;table();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace eve::inventory</span></div>
+<div class="ttc" id="aItemTypes_8h_html"><div class="ttname"><a href="ItemTypes_8h.html">ItemTypes.h</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html">eve::inventory::ItemRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="Item_8h_source.html#l00012">Item.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html_a05fe98e4b47208d4eaad2d1d4221ef6e"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html#a05fe98e4b47208d4eaad2d1d4221ef6e">eve::inventory::ItemRegistry::remove</a></div><div class="ttdeci">static bool remove(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="Item_8cpp_source.html#l00059">Item.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html_a67d2258a744181f1952db4cb849e8aba"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html#a67d2258a744181f1952db4cb849e8aba">eve::inventory::ItemRegistry::loadFromJson</a></div><div class="ttdeci">static int loadFromJson(const std::string &amp;json, std::string *error=nullptr)</div><div class="ttdoc">从 JSON 数组或单对象批量注册，返回成功数量。 元素形如： { &quot;id&quot;: &quot;potion.hp&quot;, &quot;displayName&quot;: &quot;治疗药水&quot;, &quot;maxStack&quot;: 20,...</div><div class="ttdef"><b>Definition</b> <a href="Item_8cpp_source.html#l00084">Item.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html_a7bb812f983d4fc803385ca7b78c3ba69"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html#a7bb812f983d4fc803385ca7b78c3ba69">eve::inventory::ItemRegistry::count</a></div><div class="ttdeci">static int count()</div><div class="ttdef"><b>Definition</b> <a href="Item_8cpp_source.html#l00063">Item.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html_a87d9ca8427102a91388b09ef77bbb09e"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html#a87d9ca8427102a91388b09ef77bbb09e">eve::inventory::ItemRegistry::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdef"><b>Definition</b> <a href="Item_8cpp_source.html#l00061">Item.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html_ac359d7454a7373cf9cca37b391cc2279"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html#ac359d7454a7373cf9cca37b391cc2279">eve::inventory::ItemRegistry::registerItem</a></div><div class="ttdeci">static void registerItem(const ItemDefinition &amp;def)</div><div class="ttdef"><b>Definition</b> <a href="Item_8cpp_source.html#l00045">Item.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1ItemRegistry_html_ac833b618fa502b30a9c90ede74d4ae43"><div class="ttname"><a href="classeve_1_1inventory_1_1ItemRegistry.html#ac833b618fa502b30a9c90ede74d4ae43">eve::inventory::ItemRegistry::find</a></div><div class="ttdeci">static const ItemDefinition * find(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="Item_8cpp_source.html#l00053">Item.cpp:53</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="Bag_8cpp_source.html#l00006">Bag.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1ItemDefinition_html"><div class="ttname"><a href="structeve_1_1inventory_1_1ItemDefinition.html">eve::inventory::ItemDefinition</a></div><div class="ttdoc">物品模板（进程级注册表中的定义，不含运行时数量）。</div><div class="ttdef"><b>Definition</b> <a href="ItemTypes_8h_source.html#l00013">ItemTypes.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

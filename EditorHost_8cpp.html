@@ -1,0 +1,561 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/EditorHost.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">EditorHost.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="modules_2ui_2EditorHost_8h_source.html">ui/EditorHost.h</a>&quot;</code><br />
+<code>#include &quot;common/config.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="Module_8h_source.html">common/Module.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Event_8h_source.html">event/Event.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="FileData_8h_source.html">filesystem/FileData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Graphics_8h_source.html">graphics/Graphics.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ImageData_8h_source.html">image/ImageData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Timer_8h_source.html">timer/Timer.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="UI_8h_source.html">ui/UI.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Window_8h_source.html">window/Window.h</a>&quot;</code><br />
+<code>#include &lt;Poco/Dynamic/Var.h&gt;</code><br />
+<code>#include &lt;Poco/Exception.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Array.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Object.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Parser.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Stringifier.h&gt;</code><br />
+<code>#include &lt;imgui.h&gt;</code><br />
+<code>#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</code><br />
+<code>#include &lt;squirrel.h&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="EditorHost_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1EditorHost_1_1Impl.html">eve::ui::EditorHost::Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1ui" id="r_namespaceeve_1_1ui"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html">eve::ui</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a2d64aa53a01a44b3983f6cac3b8a02a1" name="a2d64aa53a01a44b3983f6cac3b8a02a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d64aa53a01a44b3983f6cac3b8a02a1">&#9670;&#160;</a></span>collapsible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool collapsible = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac31a88e02a38be67eb60912e63a95bd1" name="ac31a88e02a38be67eb60912e63a95bd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31a88e02a38be67eb60912e63a95bd1">&#9670;&#160;</a></span>events</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;HostEvent&gt; events</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00460">460</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00217">eve::ui::UI::dispatchEvents()</a> , 以及 <a class="el" href="UISystem_8cpp_source.html#l00628">eve::ui::UISystem::dispatchEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a48083b65ac9a863566dc3e3fff09a5b4" name="a48083b65ac9a863566dc3e3fff09a5b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48083b65ac9a863566dc3e3fff09a5b4">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float height = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd0d68c6d31ff249f3ae8662162663c3" name="afd0d68c6d31ff249f3ae8662162663c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd0d68c6d31ff249f3ae8662162663c3">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00450">450</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorInspector_8cpp_source.html#l00056">eve::editor::EditorInspector::addBool()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01255">eve::dialogue::Dialogue::addChoice()</a>, <a class="el" href="EditorInspector_8cpp_source.html#l00077">eve::editor::EditorInspector::addChoice()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00078">eve::avatar::AvatarInstance::addDestroyHook()</a>, <a class="el" href="EditorInspector_8cpp_source.html#l00029">eve::editor::EditorInspector::addFloat()</a>, <a class="el" href="EditorInspector_8cpp_source.html#l00043">eve::editor::EditorInspector::addFloat3()</a>, <a class="el" href="UI_8cpp_source.html#l00558">eve::ui::UI::addListItem()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00102">eve::rpg::AttributeSystem::addModifier()</a>, <a class="el" href="EditorInspector_8cpp_source.html#l00066">eve::editor::EditorInspector::addString()</a>, <a class="el" href="EditorToolbar_8cpp_source.html#l00019">eve::editor::EditorToolbar::addTool()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00118">eve::rpg::StatusSystem::apply()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00629">eve::ui::EditorHost::applyEditor()</a>, <a class="el" href="UI_8cpp_source.html#l00348">eve::ui::UI::beginCollapsing()</a>, <a class="el" href="UI_8cpp_source.html#l00395">eve::ui::UI::beginFlex()</a>, <a class="el" href="UI_8cpp_source.html#l00344">eve::ui::UI::beginGroup()</a>, <a class="el" href="UI_8cpp_source.html#l00346">eve::ui::UI::beginList()</a>, <a class="el" href="UI_8cpp_source.html#l00339">eve::ui::UI::beginWindow()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00115">eve::dev::RenderFlow::bind()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01074">eve::dialogue::Dialogue::bindAvatar()</a>, <a class="el" href="CardStateProvider_8cpp_source.html#l00043">eve::card::captureCardState()</a>, <a class="el" href="Runtime_8cpp_source.html#l00491">eve::Runtime::compileFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00469">eve::Runtime::compileSource()</a>, <a class="el" href="UISystem_8cpp_source.html#l00686">eve::ui::UISystem::consumeClickFor()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00099">eve::ui::DatabasePanel::createInstance()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00123">eve::dev::RenderFlow::draw()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00713">eve::ui::EditorHost::editorState()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00151">eve::dev::RenderFlow::error()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">eve::Runtime::execute()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00360">eve::card::Hand::find()</a>, <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00104">eve::voxel::CubeTypeRegistry::find()</a>, <a class="el" href="World_8cpp_source.html#l00249">eve::physics::World::forgetBody()</a>, <a class="el" href="GeneratorRegistry_8cpp_source.html#l00020">eve::procgen::GeneratorRegistry::generate()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00035">eve::procgen::PbrRecipeRegistry::generate()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00023">eve::procgen::TextureRecipeRegistry::generate()</a>, <a class="el" href="BSPTree2D_8cpp_source.html#l00036">eve::spatial::BSPTree2D::insert()</a>, <a class="el" href="QuadTree_8cpp_source.html#l00035">eve::spatial::QuadTree::insert()</a>, <a class="el" href="SpatialHash2D_8cpp_source.html#l00069">eve::spatial::SpatialHash2D::insert()</a>, <a class="el" href="BSPTree3D_8cpp_source.html#l00038">eve::spatial::BSPTree3D::insert()</a>, <a class="el" href="Octree_8cpp_source.html#l00037">eve::spatial::Octree::insert()</a>, <a class="el" href="SpatialHash3D_8cpp_source.html#l00075">eve::spatial::SpatialHash3D::insert()</a>, <a class="el" href="Card_8cpp_source.html#l00196">eve::card::Card::newZone()</a>, <a class="el" href="Graph_8h_source.html#l00110">eve::tensor::Graph::node()</a>, <a class="el" href="Graph_8h_source.html#l00109">eve::tensor::Graph::node()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00115">eve::dev::CallGraph::onCall()</a>, <a class="el" href="NetHost_8cpp_source.html#l00043">eve::network::NetHost::onDatagram()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00139">eve::dev::CallGraph::onDef()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00125">eve::dev::CallGraph::onReturn()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00154">eve::dev::CallGraph::onUse()</a>, <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00100">eve::dev::RenderFlow::passBegin()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00560">eve::building::PlacementSystem::placeAtWorld()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00576">eve::building::PlacementSystem::placeAtWorld3D()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00593">eve::building::PlacementSystem::placeGhost()</a>, <a class="el" href="GeneratorRegistry_8cpp_source.html#l00012">eve::procgen::GeneratorRegistry::registerAlgorithm()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01054">eve::dialogue::Dialogue::registerCharacter()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00109">eve::ui::DatabasePanel::registerObject()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00026">eve::ui::ObjectRegistry::registerObject()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00027">eve::procgen::PbrRecipeRegistry::registerPbrRecipe()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00446">eve::procgen::MeshRecipeRegistry::registerRecipe()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00015">eve::procgen::TextureRecipeRegistry::registerRecipe()</a>, <a class="el" href="Runtime_8cpp_source.html#l01020">eve::Runtime::reload()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00665">eve::ui::EditorHost::removeEditor()</a>, <a class="el" href="CubeTypeRegistry_8h_source.html#l00066">eve::voxel::resolveFaceTex()</a>, <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>, <a class="el" href="Runtime_8cpp_source.html#l00575">eve::Runtime::runFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00569">eve::Runtime::runSource()</a>, <a class="el" href="EditorHost_8cpp_source.html#l01277">eve::ui::EditorHost::saveEditor()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00040">eve::ui::ScenePanel::selectNode()</a>, <a class="el" href="EditorToolbar_8cpp_source.html#l00032">eve::editor::EditorToolbar::setActive()</a>, <a class="el" href="Ghost_8cpp_source.html#l00009">eve::building::Ghost::setBuildingId()</a>, <a class="el" href="Scene_8cpp_source.html#l00652">eve::scene::Scene::setHostVisible()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00039">eve::building::PlacementWorld::setId()</a>, <a class="el" href="Bag_8h_source.html#l00031">eve::inventory::Bag::setId()</a>, <a class="el" href="Equipment_8h_source.html#l00026">eve::inventory::EquipmentSet::setId()</a>, <a class="el" href="UIHost_8h_source.html#l00177">eve::ui::UIHost::setOwnerId()</a>, <a class="el" href="UdpLink_8h_source.html#l00066">eve::network::UdpLink::setPeerId()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00175">eve::dev::RenderFlow::sliceBackward()</a>, <a class="el" href="CallGraph_8cpp_source.html#l00315">eve::dev::CallGraph::sliceBackward()</a>, <a class="el" href="GpuBackend_8cpp_source.html#l00168">eve::tensor::GpuProgram::tryBuild()</a>, <a class="el" href="Runtime_8cpp_source.html#l01031">eve::Runtime::unload()</a>, <a class="el" href="EditorHost_8cpp_source.html#l01306">eve::ui::EditorHost::unloadEditor()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l00838">eve::ui::UI::viewportCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="accc3e5dba688a899c37c57e53edddb7f" name="accc3e5dba688a899c37c57e53edddb7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc3e5dba688a899c37c57e53edddb7f">&#9670;&#160;</a></span>layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string layout = &quot;vertical&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00669">eve::graphics::GrassField::bake()</a>, <a class="el" href="ComputePass_8cpp_source.html#l00020">eve::graphics::vulkan::ComputePass::create()</a>, <a class="el" href="HouseGen_8cpp_source.html#l00017">eve::housegen::HouseGen::generate()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00110">eve::card::CardData::hit()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01666">eve::graphics::webgpu::Graphics::newCubemap()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00053">eve::building::PlacementWorld::setGridLayout()</a>.</p>
+
+</div>
+</div>
+<a id="a733d885914976b32cea5140e5de55885" name="a733d885914976b32cea5140e5de55885"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a733d885914976b32cea5140e5de55885">&#9670;&#160;</a></span>rectMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, ImVec2&gt; rectMax</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a199c6d9d3a161b902a467e720d54fa01" name="a199c6d9d3a161b902a467e720d54fa01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a199c6d9d3a161b902a467e720d54fa01">&#9670;&#160;</a></span>rectMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, ImVec2&gt; rectMin</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b6ac8b02ffc67e7ac109edf6dca3ceb" name="a3b6ac8b02ffc67e7ac109edf6dca3ceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b6ac8b02ffc67e7ac109edf6dca3ceb">&#9670;&#160;</a></span>removed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool removed = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00264">eve::rpg::StatusSystem::remove()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00150">eve::rpg::AttributeSystem::removeAllModifiersBySource()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00285">eve::rpg::StatusSystem::removeByEffect()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00309">eve::rpg::StatusSystem::removeBySource()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00333">eve::rpg::StatusSystem::removeByTag()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00350">eve::inventory::InventorySystem::removeItem()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00134">eve::rpg::AttributeSystem::removeModifiersBySource()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00146">eve::scene::Scene::unlinkNodeKindAt()</a> , 以及 <a class="el" href="DatabasePanel_8cpp_source.html#l00120">eve::ui::DatabasePanel::unregister()</a>.</p>
+
+</div>
+</div>
+<a id="afafb18e955da377168a5c63822f538a3" name="afafb18e955da377168a5c63822f538a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afafb18e955da377168a5c63822f538a3">&#9670;&#160;</a></span>resizable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool resizable = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00455">455</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f710e8aae55f49281331e55cd4f1c45" name="a5f710e8aae55f49281331e55cd4f1c45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f710e8aae55f49281331e55cd4f1c45">&#9670;&#160;</a></span>theme</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Object::Ptr theme</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00458">458</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00135">eve::ui::applyThemeToImGui()</a>, <a class="el" href="Theme_8cpp_source.html#l00137">eve::ui::applyThemeToImGui()</a>, <a class="el" href="Theme_8cpp_source.html#l00103">eve::ui::setGlobalTheme()</a> , 以及 <a class="el" href="Theme_8cpp_source.html#l00105">eve::ui::setGlobalTheme()</a>.</p>
+
+</div>
+</div>
+<a id="ac30fed21fe991cc8475ce543929f8b72" name="ac30fed21fe991cc8475ce543929f8b72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac30fed21fe991cc8475ce543929f8b72">&#9670;&#160;</a></span>title</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string title</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AiPanel_8cpp_source.html#l00084">eve::dev::AiPanel::addLog()</a>, <a class="el" href="UI_8cpp_source.html#l00339">eve::ui::UI::beginWindow()</a>, <a class="el" href="UI_8cpp_source.html#l01100">eve::ui::UI::mountSimple()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00571">eve::ui::EditorHost::openWindow()</a>, <a class="el" href="UIHost_8cpp_source.html#l00030">eve::ui::UIHost::setSimplePanel()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00225">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="a75b160f574a0be26114bae2c7686a5e1" name="a75b160f574a0be26114bae2c7686a5e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75b160f574a0be26114bae2c7686a5e1">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00049">eve::voxel::CubeTypeRegistry::add()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00060">eve::procgen::Grid2D::addObject()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00056">eve::procgen::Grid2D::addObjectAt()</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00175">eve::particles::applyConfigDocument()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00136">eve::tensor::kernels::binaryOp()</a>, <a class="el" href="Light_8cpp_source.html#l00005">eve::graphics::Light2D::createLight()</a>, <a class="el" href="Light_8cpp_source.html#l00063">eve::graphics::Light3D::createLight()</a>, <a class="el" href="Graph_8cpp_source.html#l00177">eve::tensor::Func::emitBinary()</a>, <a class="el" href="Graph_8cpp_source.html#l00384">eve::tensor::Func::emitPool()</a>, <a class="el" href="Graph_8cpp_source.html#l00470">eve::tensor::Func::emitReduce()</a>, <a class="el" href="Graph_8cpp_source.html#l00193">eve::tensor::Func::emitTernary()</a>, <a class="el" href="Graph_8cpp_source.html#l00155">eve::tensor::Func::emitUnary()</a>, <a class="el" href="Graph_8cpp_source.html#l00165">eve::tensor::Func::emitUnaryScalar()</a>, <a class="el" href="Card_8cpp_source.html#l00314">eve::card::Card::getEventType()</a>, <a class="el" href="ModelData_8cpp_source.html#l00211">eve::model3d::ModelData::getMaterialTextureEmbeddedIndex()</a>, <a class="el" href="ModelData_8cpp_source.html#l00199">eve::model3d::ModelData::getMaterialTexturePath()</a>, <a class="el" href="ModelData_8cpp_source.html#l00191">eve::model3d::ModelData::getMaterialTextureSlotCount()</a>, <a class="el" href="DevTool_8cpp_source.html#l00404">eve::dev::DevTool::handleDebugEvent()</a>, <a class="el" href="SpineSkeletonData_8cpp_source.html#l00188">eve::animation::SpineSkeletonData::loadFromJson()</a>, <a class="el" href="NetRpc_8cpp_source.html#l00029">eve::network::NetRpc::NetRpc()</a>, <a class="el" href="Audio_8cpp_source.html#l00125">eve::audio::Audio::newSourceFromData()</a>, <a class="el" href="Audio_8cpp_source.html#l00103">eve::audio::Audio::newSourceFromDecoder()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00333">eve::network::UdpLink::onDatagram()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03472">eve::graphics::webgpu::Graphics::popValidationScope()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00401">eve::tensor::kernels::reduceAxis()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00164">eve::network::UdpLink::send()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00236">eve::network::UdpLink::sendString()</a>, <a class="el" href="NetHost_8cpp_source.html#l00087">eve::network::NetHost::sendStringTo()</a>, <a class="el" href="NetHost_8cpp_source.html#l00081">eve::network::NetHost::sendTo()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00981">eve::particles::ParticleEmitter::setEmissionArea()</a>, <a class="el" href="Light_8cpp_source.html#l00013">eve::graphics::Light2D::setType()</a>, <a class="el" href="Light_8cpp_source.html#l00071">eve::graphics::Light3D::setType()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00453">eve::window::sdl::Window::showMessageBox()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00302">eve::dialogue::Dialogue::VarValue::toString()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00288">eve::dialogue::Dialogue::VarValue::typeName()</a> , 以及 <a class="el" href="CpuKernels_8cpp_source.html#l00159">eve::tensor::kernels::unaryOp()</a>.</p>
+
+</div>
+</div>
+<a id="a06e0df41a7d8e81c3226bec38b0b6079" name="a06e0df41a7d8e81c3226bec38b0b6079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06e0df41a7d8e81c3226bec38b0b6079">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Var value</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a127467c202a16db28ed73fe86239cfd3" name="a127467c202a16db28ed73fe86239cfd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a127467c202a16db28ed73fe86239cfd3">&#9670;&#160;</a></span>values</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, Var&gt; values</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00459">459</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00082">eve::rpg::AttributeSystem::getBase()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00064">eve::procgen::grayscaleImage()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00096">eve::rpg::AttributeSystem::hasAttribute()</a>, <a class="el" href="Database_8cpp_source.html#l00121">eve::database::Connection::insert()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00178">eve::rpg::AttributeSystem::invalidate()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00123">eve::housegen::HouseComponentLibrary::loadFromJson()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00119">eve::rpg::AttributeSystem::removeModifier()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00134">eve::rpg::AttributeSystem::removeModifiersBySource()</a>, <a class="el" href="Database_8cpp_source.html#l00135">eve::database::Connection::update()</a>, <a class="el" href="Database_8h_source.html#l00192">eve::database::Repository&lt; T &gt;::update()</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00157">eve::database::Connection::updateByKey()</a>.</p>
+
+</div>
+</div>
+<a id="ad9f3c3fc2b5ec0361078ad739aa7267f" name="ad9f3c3fc2b5ec0361078ad739aa7267f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9f3c3fc2b5ec0361078ad739aa7267f">&#9670;&#160;</a></span>view</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Object::Ptr view</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e4dab5c0d0c1d3b54d8c67b47105d66" name="a8e4dab5c0d0c1d3b54d8c67b47105d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e4dab5c0d0c1d3b54d8c67b47105d66">&#9670;&#160;</a></span>vmName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string vmName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHost_8cpp_source.html#l01314">eve::ui::EditorHost::loadEditorsFromDisk()</a>.</p>
+
+</div>
+</div>
+<a id="a4b9905e37d3ddd8f7162d819b21f8555" name="a4b9905e37d3ddd8f7162d819b21f8555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b9905e37d3ddd8f7162d819b21f8555">&#9670;&#160;</a></span>widget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string widget</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHost_8cpp_source.html#l01423">eve::ui::EditorHost::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="ae426f00e82704fa09578f5446e22d915" name="ae426f00e82704fa09578f5446e22d915"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae426f00e82704fa09578f5446e22d915">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float width = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0da36b2558901e21e7a30f6c227a45e" name="ad0da36b2558901e21e7a30f6c227a45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0da36b2558901e21e7a30f6c227a45e">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4f0d3eebc3c443f9be81bf48561a217" name="aa4f0d3eebc3c443f9be81bf48561a217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f0d3eebc3c443f9be81bf48561a217">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHost_8cpp_source.html">EditorHost.cpp</a> 第 <a class="el" href="EditorHost_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

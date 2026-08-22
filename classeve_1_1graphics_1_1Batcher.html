@@ -1,0 +1,590 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Batcher类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Batcher.html">Batcher</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Batcher-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Batcher类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Accumulates solid / textured quads in logical (Y-down) coordinates. Used by <a class="el" href="classeve_1_1graphics_1_1RenderSystem.html" title="Walks ECS Renderable2D views and draws via Graphics batch path.">RenderSystem</a>; not a public script API.  
+ <a href="classeve_1_1graphics_1_1Batcher.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Batcher_8h_source.html">Batcher.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a889d4ad47eecd6293f6178a2e4fe856f" id="r_a889d4ad47eecd6293f6178a2e4fe856f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a889d4ad47eecd6293f6178a2e4fe856f">clear</a> ()</td></tr>
+<tr class="separator:a889d4ad47eecd6293f6178a2e4fe856f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a036eadd60215722db0c23e8db383e5c1" id="r_a036eadd60215722db0c23e8db383e5c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a036eadd60215722db0c23e8db383e5c1">addRect</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>)</td></tr>
+<tr class="separator:a036eadd60215722db0c23e8db383e5c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a037e74dcf25188bed7051f99d1a4a1" id="r_a2a037e74dcf25188bed7051f99d1a4a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a2a037e74dcf25188bed7051f99d1a4a1">addRectRotated</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>, const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>)</td></tr>
+<tr class="separator:a2a037e74dcf25188bed7051f99d1a4a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48533a7480e6be76fbcb0b8a3d40bedf" id="r_a48533a7480e6be76fbcb0b8a3d40bedf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a48533a7480e6be76fbcb0b8a3d40bedf">addTexturedRect</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, float u0, float v0, float u1, float v1, bool rotatedUV=false)</td></tr>
+<tr class="separator:a48533a7480e6be76fbcb0b8a3d40bedf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53bb7230d0dbcec21f2a8591b58ccb9d" id="r_a53bb7230d0dbcec21f2a8591b58ccb9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a53bb7230d0dbcec21f2a8591b58ccb9d">addTexturedRectRotated</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>, const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;<a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, float u0, float v0, float u1, float v1, bool rotatedUV=false)</td></tr>
+<tr class="memdesc:a53bb7230d0dbcec21f2a8591b58ccb9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Textured quad rotated <code>degrees</code> (clockwise, screen Y-down) around (cx, cy).  <br /></td></tr>
+<tr class="separator:a53bb7230d0dbcec21f2a8591b58ccb9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae72636885e6bd0537c75c511a81fcebc" id="r_ae72636885e6bd0537c75c511a81fcebc"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1BatchVertex.html">BatchVertex</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#ae72636885e6bd0537c75c511a81fcebc">vertices</a> () const</td></tr>
+<tr class="separator:ae72636885e6bd0537c75c511a81fcebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a495bfdf5fc8aebfda78ad814340e3ee9" id="r_a495bfdf5fc8aebfda78ad814340e3ee9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a495bfdf5fc8aebfda78ad814340e3ee9">empty</a> () const</td></tr>
+<tr class="separator:a495bfdf5fc8aebfda78ad814340e3ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7150790b3bb78fb75a968272f3f556ce" id="r_a7150790b3bb78fb75a968272f3f556ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Batcher.html#a7150790b3bb78fb75a968272f3f556ce">toNDC</a> (int logicalW, int logicalH)</td></tr>
+<tr class="separator:a7150790b3bb78fb75a968272f3f556ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Accumulates solid / textured quads in logical (Y-down) coordinates. Used by <a class="el" href="classeve_1_1graphics_1_1RenderSystem.html" title="Walks ECS Renderable2D views and draws via Graphics batch path.">RenderSystem</a>; not a public script API. </p>
+
+<p class="definition">在文件 <a class="el" href="Batcher_8h_source.html">Batcher.h</a> 第 <a class="el" href="Batcher_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a036eadd60215722db0c23e8db383e5c1" name="a036eadd60215722db0c23e8db383e5c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a036eadd60215722db0c23e8db383e5c1">&#9670;&#160;</a></span>addRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Batcher::addRect </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a> 第 <a class="el" href="Batcher_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Batcher_8cpp_source.html#l00014">addTexturedRect()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00051">color</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a2a037e74dcf25188bed7051f99d1a4a1" name="a2a037e74dcf25188bed7051f99d1a4a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a037e74dcf25188bed7051f99d1a4a1">&#9670;&#160;</a></span>addRectRotated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Batcher::addRectRotated </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a> 第 <a class="el" href="Batcher_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00051">color</a>, <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">degrees</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">tr</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a48533a7480e6be76fbcb0b8a3d40bedf" name="a48533a7480e6be76fbcb0b8a3d40bedf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48533a7480e6be76fbcb0b8a3d40bedf">&#9670;&#160;</a></span>addTexturedRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Batcher::addTexturedRect </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>rotatedUV</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a> 第 <a class="el" href="Batcher_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00051">color</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Batcher_8cpp_source.html#l00010">addRect()</a>.</p>
+
+</div>
+</div>
+<a id="a53bb7230d0dbcec21f2a8591b58ccb9d" name="a53bb7230d0dbcec21f2a8591b58ccb9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53bb7230d0dbcec21f2a8591b58ccb9d">&#9670;&#160;</a></span>addTexturedRectRotated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Batcher::addTexturedRectRotated </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> &amp;&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>rotatedUV</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Textured quad rotated <code>degrees</code> (clockwise, screen Y-down) around (cx, cy). </p>
+
+<p class="definition">在文件 <a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a> 第 <a class="el" href="Batcher_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00051">color</a>, <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">degrees</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">tr</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a889d4ad47eecd6293f6178a2e4fe856f" name="a889d4ad47eecd6293f6178a2e4fe856f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a889d4ad47eecd6293f6178a2e4fe856f">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Batcher::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a> 第 <a class="el" href="Batcher_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a495bfdf5fc8aebfda78ad814340e3ee9" name="a495bfdf5fc8aebfda78ad814340e3ee9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a495bfdf5fc8aebfda78ad814340e3ee9">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Batcher::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Batcher_8h_source.html">Batcher.h</a> 第 <a class="el" href="Batcher_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7150790b3bb78fb75a968272f3f556ce" name="a7150790b3bb78fb75a968272f3f556ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7150790b3bb78fb75a968272f3f556ce">&#9670;&#160;</a></span>toNDC()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Batcher::toNDC </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>logicalW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>logicalH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert stored logical Y-down positions into Vulkan NDC in-place ((-1,-1)=top-left, (+1,+1)=bottom-right). </p>
+
+<p class="definition">在文件 <a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a> 第 <a class="el" href="Batcher_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<a id="ae72636885e6bd0537c75c511a81fcebc" name="ae72636885e6bd0537c75c511a81fcebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae72636885e6bd0537c75c511a81fcebc">&#9670;&#160;</a></span>vertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1BatchVertex.html">BatchVertex</a> &gt; &amp; eve::graphics::Batcher::vertices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Batcher_8h_source.html">Batcher.h</a> 第 <a class="el" href="Batcher_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Batcher_8h_source.html">Batcher.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Batcher_8cpp_source.html">Batcher.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

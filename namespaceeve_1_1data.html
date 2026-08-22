@@ -1,0 +1,749 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::data 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1data.html">data</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::data 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1data_1_1impl" id="r_namespaceeve_1_1data_1_1impl"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data_1_1impl.html">impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1ByteData.html">ByteData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-memory byte buffer implementing <a class="el" href="classeve_1_1Data.html">eve::Data</a> (ref-counted).  <a href="classeve_1_1data_1_1ByteData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores byte data compressed via DataModule::compress.  <a href="classeve_1_1data_1_1CompressedData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1Compressor.html">Compressor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for backends for different compression formats.  <a href="classeve_1_1data_1_1Compressor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1DataModule.html">DataModule</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1DataView.html">DataView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a reference to a subsection of an existing <a class="el" href="classeve_1_1Data.html">Data</a> object.  <a href="classeve_1_1data_1_1DataView.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1HashFunction.html">HashFunction</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1JsonDocument.html">JsonDocument</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thin RAII wrapper over a <a class="el" href="namespacePoco.html">Poco</a> JSON value (object/array/scalar).  <a href="classeve_1_1data_1_1JsonDocument.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1LZ4Compressor.html">LZ4Compressor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1XmlDocument.html">XmlDocument</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thin RAII wrapper over a <a class="el" href="namespacePoco.html">Poco</a> XML DOM document.  <a href="classeve_1_1data_1_1XmlDocument.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1data_1_1zlibCompressor.html">zlibCompressor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8ffa901ca36028108bc29f760a49d790" id="r_a8ffa901ca36028108bc29f760a49d790"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790">ContainerType</a> { <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873">CONTAINER_DATA</a>
+, <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03">CONTAINER_STRING</a>
+, <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732">CONTAINER_MAX_ENUM</a>
+ }</td></tr>
+<tr class="separator:a8ffa901ca36028108bc29f760a49d790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a293787fd7f79bdc45ada87e62f1e5677" id="r_a293787fd7f79bdc45ada87e62f1e5677"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a293787fd7f79bdc45ada87e62f1e5677">Module_IMPL</a> (<a class="el" href="classeve_1_1data_1_1DataModule.html">DataModule</a>, new <a class="el" href="classeve_1_1data_1_1DataModule.html">DataModule</a>())</td></tr>
+<tr class="separator:a293787fd7f79bdc45ada87e62f1e5677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a457cedb68714d4cb60fd3bb3810f64ca" id="r_a457cedb68714d4cb60fd3bb3810f64ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a457cedb68714d4cb60fd3bb3810f64ca">compress</a> (std::string format, const char *rawbytes, size_t rawsize, int level=-1)</td></tr>
+<tr class="memdesc:a457cedb68714d4cb60fd3bb3810f64ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compresses a block of memory using the given compression format.  <br /></td></tr>
+<tr class="separator:a457cedb68714d4cb60fd3bb3810f64ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a627fde537f02a56846d0c025896c4ae0" id="r_a627fde537f02a56846d0c025896c4ae0"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a627fde537f02a56846d0c025896c4ae0">decompress</a> (<a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> *data, size_t &amp;decompressedsize)</td></tr>
+<tr class="memdesc:a627fde537f02a56846d0c025896c4ae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses existing compressed data into raw bytes.  <br /></td></tr>
+<tr class="separator:a627fde537f02a56846d0c025896c4ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9eaf87d2796296cb836774bdaaeaa9c" id="r_af9eaf87d2796296cb836774bdaaeaa9c"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#af9eaf87d2796296cb836774bdaaeaa9c">decompress</a> (std::string format, const char *cbytes, size_t compressedsize, size_t &amp;rawsize)</td></tr>
+<tr class="memdesc:af9eaf87d2796296cb836774bdaaeaa9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses existing compressed data into raw bytes.  <br /></td></tr>
+<tr class="separator:af9eaf87d2796296cb836774bdaaeaa9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c87650a45564a608303fbe8b1b489a8" id="r_a0c87650a45564a608303fbe8b1b489a8"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a0c87650a45564a608303fbe8b1b489a8">encode</a> (std::string format, const char *src, size_t srclen, size_t &amp;dstlen, size_t linelen=0)</td></tr>
+<tr class="memdesc:a0c87650a45564a608303fbe8b1b489a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes raw bytes (e.g. hex / base64) into a text buffer.  <br /></td></tr>
+<tr class="separator:a0c87650a45564a608303fbe8b1b489a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6803aa09ea28b695c3bd8b7dc1b11890" id="r_a6803aa09ea28b695c3bd8b7dc1b11890"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a6803aa09ea28b695c3bd8b7dc1b11890">decode</a> (std::string format, const char *src, size_t srclen, size_t &amp;dstlen)</td></tr>
+<tr class="memdesc:a6803aa09ea28b695c3bd8b7dc1b11890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodes a text buffer (hex / base64) back into raw bytes.  <br /></td></tr>
+<tr class="separator:a6803aa09ea28b695c3bd8b7dc1b11890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad61f925811a6e50d1826eb26ad724ff2" id="r_ad61f925811a6e50d1826eb26ad724ff2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#ad61f925811a6e50d1826eb26ad724ff2">hash</a> (std::string function, <a class="el" href="classeve_1_1Data.html">Data</a> *input)</td></tr>
+<tr class="memdesc:ad61f925811a6e50d1826eb26ad724ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash the input, producing an set of bytes as output.  <br /></td></tr>
+<tr class="separator:ad61f925811a6e50d1826eb26ad724ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7165e6c6da3d0c80e524e81382225fca" id="r_a7165e6c6da3d0c80e524e81382225fca"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a7165e6c6da3d0c80e524e81382225fca">hash</a> (std::string function, const char *input, uint64_t size)</td></tr>
+<tr class="separator:a7165e6c6da3d0c80e524e81382225fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cefdd674ae1ab6d6a6d846a372e7fed" id="r_a1cefdd674ae1ab6d6a6d846a372e7fed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#a1cefdd674ae1ab6d6a6d846a372e7fed">hash</a> (std::string function, <a class="el" href="classeve_1_1Data.html">Data</a> *input, <a class="el" href="structeve_1_1data_1_1HashFunction_1_1Value.html">HashFunction::Value</a> &amp;output)</td></tr>
+<tr class="separator:a1cefdd674ae1ab6d6a6d846a372e7fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a60f7d8b856792e8606946ee1f2904" id="r_ad7a60f7d8b856792e8606946ee1f2904"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html#ad7a60f7d8b856792e8606946ee1f2904">hash</a> (std::string function, const char *input, uint64_t size, <a class="el" href="structeve_1_1data_1_1HashFunction_1_1Value.html">HashFunction::Value</a> &amp;output)</td></tr>
+<tr class="separator:ad7a60f7d8b856792e8606946ee1f2904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a8ffa901ca36028108bc29f760a49d790" name="a8ffa901ca36028108bc29f760a49d790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ffa901ca36028108bc29f760a49d790">&#9670;&#160;</a></span>ContainerType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespaceeve_1_1data.html#a8ffa901ca36028108bc29f760a49d790">eve::data::ContainerType</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873" name="a8ffa901ca36028108bc29f760a49d790a58ab387055f903e78fe398059ba16873"></a>CONTAINER_DATA&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03" name="a8ffa901ca36028108bc29f760a49d790aaa486b8bf81540e0c8d2288e76623a03"></a>CONTAINER_STRING&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732" name="a8ffa901ca36028108bc29f760a49d790a39fdef16d80a4fdaf705c866571d8732"></a>CONTAINER_MAX_ENUM&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8h_source.html">DataModule.h</a> 第 <a class="el" href="DataModule_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a457cedb68714d4cb60fd3bb3810f64ca" name="a457cedb68714d4cb60fd3bb3810f64ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a457cedb68714d4cb60fd3bb3810f64ca">&#9670;&#160;</a></span>compress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> * eve::data::compress </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>rawbytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>rawsize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compresses a block of memory using the given compression format. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">format</td><td>The compression format to use. </td></tr>
+    <tr><td class="paramname">rawbytes</td><td>The data to compress. </td></tr>
+    <tr><td class="paramname">rawsize</td><td>The size in bytes of the data to compress. </td></tr>
+    <tr><td class="paramname">level</td><td>The amount of compression to apply (between 0 and 9.) A value of -1 indicates the default amount of compression. Specific formats may not use every level. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly compressed data. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1data_1_1Compressor.html#a6d198c69509fa06c00cdabc961346a8c">eve::data::Compressor::compress()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="Compressor_8cpp_source.html#l00342">eve::data::Compressor::getCompressor()</a>.</p>
+
+</div>
+</div>
+<a id="a6803aa09ea28b695c3bd8b7dc1b11890" name="a6803aa09ea28b695c3bd8b7dc1b11890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6803aa09ea28b695c3bd8b7dc1b11890">&#9670;&#160;</a></span>decode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::data::decode </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>srclen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>dstlen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodes a text buffer (hex / base64) back into raw bytes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">format</td><td>The encoding format ("hex" or "base64"). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">src</td><td>The encoded text. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">srclen</td><td>Size in bytes of src. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">dstlen</td><td>Receives the decoded length in bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly allocated decoded buffer (allocated with new[]; caller frees). </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html">eve::Exception</a></td><td>on an unsupported format or malformed input. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="b64_8cpp_source.html#l00102">eve::b64_decode()</a>.</p>
+
+</div>
+</div>
+<a id="a627fde537f02a56846d0c025896c4ae0" name="a627fde537f02a56846d0c025896c4ae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a627fde537f02a56846d0c025896c4ae0">&#9670;&#160;</a></span>decompress() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::data::decompress </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1CompressedData.html">CompressedData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>decompressedsize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decompresses existing compressed data into raw bytes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>The compressed data to decompress. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">decompressedsize</td><td>The size in bytes of the decompressed data. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly decompressed data (allocated with new[]). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a> , 以及 <a class="el" href="DataModule_8cpp_source.html#l00183">decompress()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DataModule_8cpp_source.html#l00183">decompress()</a>.</p>
+
+</div>
+</div>
+<a id="af9eaf87d2796296cb836774bdaaeaa9c" name="af9eaf87d2796296cb836774bdaaeaa9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9eaf87d2796296cb836774bdaaeaa9c">&#9670;&#160;</a></span>decompress() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::data::decompress </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>cbytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>compressedsize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>rawsize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decompresses existing compressed data into raw bytes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">format</td><td>The compression format the data is in. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cbytes</td><td>The compressed data to decompress. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">compressedsize</td><td>The size in bytes of the compressed data. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">rawsize</td><td>On input, the size in bytes of the original uncompressed data, or 0 if unknown. On return, the size in bytes of the newly decompressed data. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly decompressed data (allocated with new[]). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1data_1_1Compressor.html#a95e40f271031aa9cbe5e8f317d479f78">eve::data::Compressor::decompress()</a> , 以及 <a class="el" href="Compressor_8cpp_source.html#l00342">eve::data::Compressor::getCompressor()</a>.</p>
+
+</div>
+</div>
+<a id="a0c87650a45564a608303fbe8b1b489a8" name="a0c87650a45564a608303fbe8b1b489a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c87650a45564a608303fbe8b1b489a8">&#9670;&#160;</a></span>encode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::data::encode </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>srclen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>dstlen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>linelen</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encodes raw bytes (e.g. hex / base64) into a text buffer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">format</td><td>The encoding format ("hex" or "base64"). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">src</td><td>The raw bytes to encode. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">srclen</td><td>Size in bytes of src. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">dstlen</td><td>Receives the encoded length in bytes. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">linelen</td><td>Line width for the encoded output (0 = single line). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The newly allocated encoded buffer (allocated with new[]; caller frees). </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html">eve::Exception</a></td><td>on an unsupported format. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="b64_8cpp_source.html#l00028">eve::b64_encode()</a>.</p>
+
+</div>
+</div>
+<a id="a7165e6c6da3d0c80e524e81382225fca" name="a7165e6c6da3d0c80e524e81382225fca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7165e6c6da3d0c80e524e81382225fca">&#9670;&#160;</a></span>hash() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::data::hash </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>function</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HashFunction_8h_source.html#l00020">eve::data::HashFunction::Value::data</a>, <a class="el" href="DataModule_8cpp_source.html#l00220">hash()</a> , 以及 <a class="el" href="HashFunction_8h_source.html#l00021">eve::data::HashFunction::Value::size</a>.</p>
+
+</div>
+</div>
+<a id="ad7a60f7d8b856792e8606946ee1f2904" name="ad7a60f7d8b856792e8606946ee1f2904"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7a60f7d8b856792e8606946ee1f2904">&#9670;&#160;</a></span>hash() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::data::hash </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>function</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1data_1_1HashFunction_1_1Value.html">HashFunction::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HashFunction_8cpp_source.html#l00585">eve::data::HashFunction::getHashFunction()</a> , 以及 <a class="el" href="classeve_1_1data_1_1HashFunction.html#ad0acb85a88a85b696d3599552eb139b3">eve::data::HashFunction::hash()</a>.</p>
+
+</div>
+</div>
+<a id="ad61f925811a6e50d1826eb26ad724ff2" name="ad61f925811a6e50d1826eb26ad724ff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad61f925811a6e50d1826eb26ad724ff2">&#9670;&#160;</a></span>hash() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::data::hash </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>function</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Data.html">Data</a> *&#160;</td>
+          <td class="paramname"><em>input</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hash the input, producing an set of bytes as output. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">function</td><td>The selected hash function. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input</td><td>The input data to hash. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An std::string of bytes, representing the result of the hash function. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Data.html#a4a1adbcde17925d1dbf4ff5b2806dcc1">eve::Data::getData()</a>, <a class="el" href="classeve_1_1Data.html#a3e3f7f5e7b2b451519932073ce6a33e6">eve::Data::getSize()</a> , 以及 <a class="el" href="DataModule_8cpp_source.html#l00220">hash()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DataModule_8cpp_source.html#l00225">hash()</a>, <a class="el" href="DataModule_8cpp_source.html#l00220">hash()</a> , 以及 <a class="el" href="DataModule_8cpp_source.html#l00232">hash()</a>.</p>
+
+</div>
+</div>
+<a id="a1cefdd674ae1ab6d6a6d846a372e7fed" name="a1cefdd674ae1ab6d6a6d846a372e7fed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cefdd674ae1ab6d6a6d846a372e7fed">&#9670;&#160;</a></span>hash() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::data::hash </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>function</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Data.html">Data</a> *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1data_1_1HashFunction_1_1Value.html">HashFunction::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DataModule_8cpp_source.html">DataModule.cpp</a> 第 <a class="el" href="DataModule_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1Data.html#a4a1adbcde17925d1dbf4ff5b2806dcc1">eve::Data::getData()</a>, <a class="el" href="classeve_1_1Data.html#a3e3f7f5e7b2b451519932073ce6a33e6">eve::Data::getSize()</a> , 以及 <a class="el" href="DataModule_8cpp_source.html#l00220">hash()</a>.</p>
+
+</div>
+</div>
+<a id="a293787fd7f79bdc45ada87e62f1e5677" name="a293787fd7f79bdc45ada87e62f1e5677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a293787fd7f79bdc45ada87e62f1e5677">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::data::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1DataModule.html">DataModule</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>DataModule</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

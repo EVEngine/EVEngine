@@ -1,0 +1,1380 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimTrail类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1AnimTrail-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimTrail类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Motion trail / afterimage recorder + 2D trajectory drawer.  
+ <a href="classeve_1_1animation_1_1AnimTrail.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afdaaee344ea66ab0bc559a08ab66fb0d" id="r_afdaaee344ea66ab0bc559a08ab66fb0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#afdaaee344ea66ab0bc559a08ab66fb0d">AnimTrail</a> (int capacity=64)</td></tr>
+<tr class="separator:afdaaee344ea66ab0bc559a08ab66fb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fbc7e9ca1a6128422215bac2102695a" id="r_a4fbc7e9ca1a6128422215bac2102695a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a4fbc7e9ca1a6128422215bac2102695a">~AnimTrail</a> ()=default</td></tr>
+<tr class="separator:a4fbc7e9ca1a6128422215bac2102695a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac00f83d85608ac3c0c27cdfdd5c1dca4" id="r_ac00f83d85608ac3c0c27cdfdd5c1dca4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ac00f83d85608ac3c0c27cdfdd5c1dca4">AnimTrail</a> (const <a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a> &amp;)=delete</td></tr>
+<tr class="separator:ac00f83d85608ac3c0c27cdfdd5c1dca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9734faa1dbfb9a62cf53a2f1e8680d0f" id="r_a9734faa1dbfb9a62cf53a2f1e8680d0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a9734faa1dbfb9a62cf53a2f1e8680d0f">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a> &amp;)=delete</td></tr>
+<tr class="separator:a9734faa1dbfb9a62cf53a2f1e8680d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2207b9447b1f8ab521e88fb7636a5584" id="r_a2207b9447b1f8ab521e88fb7636a5584"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a2207b9447b1f8ab521e88fb7636a5584">setCapacity</a> (int capacity)</td></tr>
+<tr class="memdesc:a2207b9447b1f8ab521e88fb7636a5584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max retained samples (ring). Clamped to &gt;= 2.  <br /></td></tr>
+<tr class="separator:a2207b9447b1f8ab521e88fb7636a5584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8f3917aa418cf1222d933b78c8acf32" id="r_af8f3917aa418cf1222d933b78c8acf32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#af8f3917aa418cf1222d933b78c8acf32">getCapacity</a> () const</td></tr>
+<tr class="separator:af8f3917aa418cf1222d933b78c8acf32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a111b4d3514837e039207f2898d8fcfb9" id="r_a111b4d3514837e039207f2898d8fcfb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a111b4d3514837e039207f2898d8fcfb9">setDuration</a> (float seconds)</td></tr>
+<tr class="memdesc:a111b4d3514837e039207f2898d8fcfb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long each sample lives (seconds). &lt;= 0 keeps until capacity eviction.  <br /></td></tr>
+<tr class="separator:a111b4d3514837e039207f2898d8fcfb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6f816c83883fb60687a8114e4557bf7" id="r_ae6f816c83883fb60687a8114e4557bf7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ae6f816c83883fb60687a8114e4557bf7">getDuration</a> () const</td></tr>
+<tr class="separator:ae6f816c83883fb60687a8114e4557bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f1c0aa425d428a5361b777a776d8adb" id="r_a5f1c0aa425d428a5361b777a776d8adb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a5f1c0aa425d428a5361b777a776d8adb">setMinDistance</a> (float distance)</td></tr>
+<tr class="memdesc:a5f1c0aa425d428a5361b777a776d8adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip new samples closer than this distance to the newest point (0 = always add).  <br /></td></tr>
+<tr class="separator:a5f1c0aa425d428a5361b777a776d8adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba7abde8d5e16eaab8d07b39672770f5" id="r_aba7abde8d5e16eaab8d07b39672770f5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aba7abde8d5e16eaab8d07b39672770f5">getMinDistance</a> () const</td></tr>
+<tr class="separator:aba7abde8d5e16eaab8d07b39672770f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23995c97dbd30712dbf88415edb1db3c" id="r_a23995c97dbd30712dbf88415edb1db3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a23995c97dbd30712dbf88415edb1db3c">setWidth</a> (float pixels)</td></tr>
+<tr class="separator:a23995c97dbd30712dbf88415edb1db3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a767dad2aac59604a6ef7c86c275ce0a3" id="r_a767dad2aac59604a6ef7c86c275ce0a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a767dad2aac59604a6ef7c86c275ce0a3">getWidth</a> () const</td></tr>
+<tr class="separator:a767dad2aac59604a6ef7c86c275ce0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77e6be898ad9059e6e29e9045af59991" id="r_a77e6be898ad9059e6e29e9045af59991"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a77e6be898ad9059e6e29e9045af59991">setColor</a> (float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a77e6be898ad9059e6e29e9045af59991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Head (newest) color; alpha fades toward 0 along the trail when fade is on.  <br /></td></tr>
+<tr class="separator:a77e6be898ad9059e6e29e9045af59991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa542a1e633484c5ef7f630de61ab9627" id="r_aa542a1e633484c5ef7f630de61ab9627"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aa542a1e633484c5ef7f630de61ab9627">getColorR</a> () const</td></tr>
+<tr class="separator:aa542a1e633484c5ef7f630de61ab9627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad026b78e03a76c0d8d7f93cce5ac862e" id="r_ad026b78e03a76c0d8d7f93cce5ac862e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ad026b78e03a76c0d8d7f93cce5ac862e">getColorG</a> () const</td></tr>
+<tr class="separator:ad026b78e03a76c0d8d7f93cce5ac862e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12de8051332c2c0fd73bc5d36acb2cdb" id="r_a12de8051332c2c0fd73bc5d36acb2cdb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a12de8051332c2c0fd73bc5d36acb2cdb">getColorB</a> () const</td></tr>
+<tr class="separator:a12de8051332c2c0fd73bc5d36acb2cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc0d722ae2be4938e7a0a6b0cbb35328" id="r_adc0d722ae2be4938e7a0a6b0cbb35328"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#adc0d722ae2be4938e7a0a6b0cbb35328">getColorA</a> () const</td></tr>
+<tr class="separator:adc0d722ae2be4938e7a0a6b0cbb35328"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaff20c69e1cfb4d22baeb3448035eab7" id="r_aaff20c69e1cfb4d22baeb3448035eab7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aaff20c69e1cfb4d22baeb3448035eab7">setFade</a> (bool enable)</td></tr>
+<tr class="separator:aaff20c69e1cfb4d22baeb3448035eab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f2c73ef2445bb49eca85f8827e397ad" id="r_a1f2c73ef2445bb49eca85f8827e397ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a1f2c73ef2445bb49eca85f8827e397ad">getFade</a> () const</td></tr>
+<tr class="separator:a1f2c73ef2445bb49eca85f8827e397ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8b6ebefb7172564783e48207ae733c0" id="r_aa8b6ebefb7172564783e48207ae733c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aa8b6ebefb7172564783e48207ae733c0">setStyle</a> (const std::string &amp;style)</td></tr>
+<tr class="memdesc:aa8b6ebefb7172564783e48207ae733c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">"line" | "points". Invalid → exception.  <br /></td></tr>
+<tr class="separator:aa8b6ebefb7172564783e48207ae733c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06d5ef5a82952c70f0f238a7aae82e90" id="r_a06d5ef5a82952c70f0f238a7aae82e90"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a06d5ef5a82952c70f0f238a7aae82e90">getStyle</a> () const</td></tr>
+<tr class="separator:a06d5ef5a82952c70f0f238a7aae82e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0974f719a7108d4fab16c391ea0c33" id="r_add0974f719a7108d4fab16c391ea0c33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#add0974f719a7108d4fab16c391ea0c33">setDrawScale</a> (float sx, float sy)</td></tr>
+<tr class="memdesc:add0974f719a7108d4fab16c391ea0c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applied at draw time: screen = (x,y) * scale + offset. Useful when sampling bone world units into pixel space.  <br /></td></tr>
+<tr class="separator:add0974f719a7108d4fab16c391ea0c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3b6f8b7f9c82d8ceff757993a2de71e" id="r_ab3b6f8b7f9c82d8ceff757993a2de71e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ab3b6f8b7f9c82d8ceff757993a2de71e">getDrawScaleX</a> () const</td></tr>
+<tr class="separator:ab3b6f8b7f9c82d8ceff757993a2de71e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fb0c13dc489593eaa998470d466ed7d" id="r_a6fb0c13dc489593eaa998470d466ed7d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a6fb0c13dc489593eaa998470d466ed7d">getDrawScaleY</a> () const</td></tr>
+<tr class="separator:a6fb0c13dc489593eaa998470d466ed7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f44a5b6fa194832289f5e2dad1cefee" id="r_a2f44a5b6fa194832289f5e2dad1cefee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a2f44a5b6fa194832289f5e2dad1cefee">setDrawOffset</a> (float ox, float oy)</td></tr>
+<tr class="separator:a2f44a5b6fa194832289f5e2dad1cefee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e78467f2af86ccb1e9bb5991a25971d" id="r_a7e78467f2af86ccb1e9bb5991a25971d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a7e78467f2af86ccb1e9bb5991a25971d">getDrawOffsetX</a> () const</td></tr>
+<tr class="separator:a7e78467f2af86ccb1e9bb5991a25971d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab28c87e15f6fe021b0a998a8cbf7e8dd" id="r_ab28c87e15f6fe021b0a998a8cbf7e8dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ab28c87e15f6fe021b0a998a8cbf7e8dd">getDrawOffsetY</a> () const</td></tr>
+<tr class="separator:ab28c87e15f6fe021b0a998a8cbf7e8dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8e0c0636dfd5e437bb943bb7eb1a5ba" id="r_af8e0c0636dfd5e437bb943bb7eb1a5ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#af8e0c0636dfd5e437bb943bb7eb1a5ba">addPoint</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="memdesc:af8e0c0636dfd5e437bb943bb7eb1a5ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a 2D sample (z stored as 0).  <br /></td></tr>
+<tr class="separator:af8e0c0636dfd5e437bb943bb7eb1a5ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea8fbd1f0ca9651dbf762d446b4437a" id="r_a2ea8fbd1f0ca9651dbf762d446b4437a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a2ea8fbd1f0ca9651dbf762d446b4437a">addPoint3</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="memdesc:a2ea8fbd1f0ca9651dbf762d446b4437a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a 3D sample (draw uses set plane / first two mapped axes via sampleBone).  <br /></td></tr>
+<tr class="separator:a2ea8fbd1f0ca9651dbf762d446b4437a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c5d1a4aa3f9ef75618dbfeb7b6fa89" id="r_a97c5d1a4aa3f9ef75618dbfeb7b6fa89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a97c5d1a4aa3f9ef75618dbfeb7b6fa89">sampleBone</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose, int boneIndex, const std::string &amp;plane=&quot;xy&quot;)</td></tr>
+<tr class="memdesc:a97c5d1a4aa3f9ef75618dbfeb7b6fa89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample bone world position after <code>pose-&gt;computeWorld</code>. <code>plane</code> maps axes to draw (x,y): "xy" | "xz" | "yz". Optional local offset is applied in bone world space (translation only).  <br /></td></tr>
+<tr class="separator:a97c5d1a4aa3f9ef75618dbfeb7b6fa89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af564a36f451ecc9ffb10105406608e82" id="r_af564a36f451ecc9ffb10105406608e82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#af564a36f451ecc9ffb10105406608e82">sampleBoneOffset</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose, int boneIndex, float ox, float oy, float oz, const std::string &amp;plane=&quot;xy&quot;)</td></tr>
+<tr class="separator:af564a36f451ecc9ffb10105406608e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a993bc7e5eaa494f50e0bab72ea8de62f" id="r_a993bc7e5eaa494f50e0bab72ea8de62f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a993bc7e5eaa494f50e0bab72ea8de62f">clear</a> ()</td></tr>
+<tr class="separator:a993bc7e5eaa494f50e0bab72ea8de62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c44272f42382ad28625792daa7ce6d" id="r_a29c44272f42382ad28625792daa7ce6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a29c44272f42382ad28625792daa7ce6d">update</a> (float dt)</td></tr>
+<tr class="memdesc:a29c44272f42382ad28625792daa7ce6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Age samples by dt; drop expired (when duration &gt; 0).  <br /></td></tr>
+<tr class="separator:a29c44272f42382ad28625792daa7ce6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a362325e9d65b9d4796be65d3ff8fa732" id="r_a362325e9d65b9d4796be65d3ff8fa732"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a362325e9d65b9d4796be65d3ff8fa732">getPointCount</a> () const</td></tr>
+<tr class="separator:a362325e9d65b9d4796be65d3ff8fa732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7fc7af0165761acc929d30e6ceefcc" id="r_acd7fc7af0165761acc929d30e6ceefcc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#acd7fc7af0165761acc929d30e6ceefcc">getPointX</a> (int index) const</td></tr>
+<tr class="memdesc:acd7fc7af0165761acc929d30e6ceefcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index 0 = oldest retained sample; count-1 = newest.  <br /></td></tr>
+<tr class="separator:acd7fc7af0165761acc929d30e6ceefcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1bf24e22933954d56ca5de40fccce1f" id="r_ae1bf24e22933954d56ca5de40fccce1f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ae1bf24e22933954d56ca5de40fccce1f">getPointY</a> (int index) const</td></tr>
+<tr class="separator:ae1bf24e22933954d56ca5de40fccce1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85ac356b58215820b5a337db556a3856" id="r_a85ac356b58215820b5a337db556a3856"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a85ac356b58215820b5a337db556a3856">getPointZ</a> (int index) const</td></tr>
+<tr class="separator:a85ac356b58215820b5a337db556a3856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeee41e742d3b0876285a90bc7d8567a7" id="r_aeee41e742d3b0876285a90bc7d8567a7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#aeee41e742d3b0876285a90bc7d8567a7">getPointAge</a> (int index) const</td></tr>
+<tr class="separator:aeee41e742d3b0876285a90bc7d8567a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ec1519ab0023dabee1ea4e43ec113f" id="r_ac1ec1519ab0023dabee1ea4e43ec113f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#ac1ec1519ab0023dabee1ea4e43ec113f">getPointAlpha</a> (int index) const</td></tr>
+<tr class="memdesc:ac1ec1519ab0023dabee1ea4e43ec113f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effective draw alpha in [0, colorA] after fade.  <br /></td></tr>
+<tr class="separator:ac1ec1519ab0023dabee1ea4e43ec113f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a689abc150f802f7cebe69f3254a0b55f" id="r_a689abc150f802f7cebe69f3254a0b55f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html#a689abc150f802f7cebe69f3254a0b55f">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a689abc150f802f7cebe69f3254a0b55f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw trajectory in 2D pixel/world space via Graphics.  <br /></td></tr>
+<tr class="separator:a689abc150f802f7cebe69f3254a0b55f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Motion trail / afterimage recorder + 2D trajectory drawer. </p>
+<p>Records timed samples (manual points or bone world positions) and draws a fading path with <code>Graphics::drawSolidRect</code> (same dotted-segment style as Cloth). Script type: <code><a class="el" href="classeve_1_1animation_1_1AnimTrail.html" title="Motion trail / afterimage recorder + 2D trajectory drawer.">AnimTrail</a></code>.</p>
+<p>Typical frame: pose.computeWorld(sk); trail.sampleBone(pose, tipBone); // or addPoint(x, y) trail.update(dt); // eve_render: trail.draw(gfx);</p>
+<p>Plane strings for 3D→2D projection: "xy" | "xz" | "yz". Draw styles: "line" (connected segments) | "points" (sample dots only). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="afdaaee344ea66ab0bc559a08ab66fb0d" name="afdaaee344ea66ab0bc559a08ab66fb0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdaaee344ea66ab0bc559a08ab66fb0d">&#9670;&#160;</a></span>AnimTrail() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimTrail::AnimTrail </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>capacity</em> = <code>64</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimTrail_8cpp_source.html#l00019">setCapacity()</a>.</p>
+
+</div>
+</div>
+<a id="a4fbc7e9ca1a6128422215bac2102695a" name="a4fbc7e9ca1a6128422215bac2102695a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fbc7e9ca1a6128422215bac2102695a">&#9670;&#160;</a></span>~AnimTrail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimTrail::~AnimTrail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac00f83d85608ac3c0c27cdfdd5c1dca4" name="ac00f83d85608ac3c0c27cdfdd5c1dca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac00f83d85608ac3c0c27cdfdd5c1dca4">&#9670;&#160;</a></span>AnimTrail() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimTrail::AnimTrail </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af8e0c0636dfd5e437bb943bb7eb1a5ba" name="af8e0c0636dfd5e437bb943bb7eb1a5ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8e0c0636dfd5e437bb943bb7eb1a5ba">&#9670;&#160;</a></span>addPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::addPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a 2D sample (z stored as 0). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a2ea8fbd1f0ca9651dbf762d446b4437a" name="a2ea8fbd1f0ca9651dbf762d446b4437a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ea8fbd1f0ca9651dbf762d446b4437a">&#9670;&#160;</a></span>addPoint3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::addPoint3 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a 3D sample (draw uses set plane / first two mapped axes via sampleBone). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a993bc7e5eaa494f50e0bab72ea8de62f" name="a993bc7e5eaa494f50e0bab72ea8de62f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a993bc7e5eaa494f50e0bab72ea8de62f">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a689abc150f802f7cebe69f3254a0b55f" name="a689abc150f802f7cebe69f3254a0b55f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a689abc150f802f7cebe69f3254a0b55f">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw trajectory in 2D pixel/world space via Graphics. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="af8f3917aa418cf1222d933b78c8acf32" name="af8f3917aa418cf1222d933b78c8acf32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8f3917aa418cf1222d933b78c8acf32">&#9670;&#160;</a></span>getCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimTrail::getCapacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc0d722ae2be4938e7a0a6b0cbb35328" name="adc0d722ae2be4938e7a0a6b0cbb35328"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc0d722ae2be4938e7a0a6b0cbb35328">&#9670;&#160;</a></span>getColorA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getColorA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12de8051332c2c0fd73bc5d36acb2cdb" name="a12de8051332c2c0fd73bc5d36acb2cdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12de8051332c2c0fd73bc5d36acb2cdb">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getColorB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad026b78e03a76c0d8d7f93cce5ac862e" name="ad026b78e03a76c0d8d7f93cce5ac862e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad026b78e03a76c0d8d7f93cce5ac862e">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getColorG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa542a1e633484c5ef7f630de61ab9627" name="aa542a1e633484c5ef7f630de61ab9627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa542a1e633484c5ef7f630de61ab9627">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getColorR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e78467f2af86ccb1e9bb5991a25971d" name="a7e78467f2af86ccb1e9bb5991a25971d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e78467f2af86ccb1e9bb5991a25971d">&#9670;&#160;</a></span>getDrawOffsetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getDrawOffsetX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab28c87e15f6fe021b0a998a8cbf7e8dd" name="ab28c87e15f6fe021b0a998a8cbf7e8dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab28c87e15f6fe021b0a998a8cbf7e8dd">&#9670;&#160;</a></span>getDrawOffsetY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getDrawOffsetY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3b6f8b7f9c82d8ceff757993a2de71e" name="ab3b6f8b7f9c82d8ceff757993a2de71e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b6f8b7f9c82d8ceff757993a2de71e">&#9670;&#160;</a></span>getDrawScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getDrawScaleX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fb0c13dc489593eaa998470d466ed7d" name="a6fb0c13dc489593eaa998470d466ed7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fb0c13dc489593eaa998470d466ed7d">&#9670;&#160;</a></span>getDrawScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getDrawScaleY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6f816c83883fb60687a8114e4557bf7" name="ae6f816c83883fb60687a8114e4557bf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f816c83883fb60687a8114e4557bf7">&#9670;&#160;</a></span>getDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f2c73ef2445bb49eca85f8827e397ad" name="a1f2c73ef2445bb49eca85f8827e397ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f2c73ef2445bb49eca85f8827e397ad">&#9670;&#160;</a></span>getFade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimTrail::getFade </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba7abde8d5e16eaab8d07b39672770f5" name="aba7abde8d5e16eaab8d07b39672770f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba7abde8d5e16eaab8d07b39672770f5">&#9670;&#160;</a></span>getMinDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getMinDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeee41e742d3b0876285a90bc7d8567a7" name="aeee41e742d3b0876285a90bc7d8567a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeee41e742d3b0876285a90bc7d8567a7">&#9670;&#160;</a></span>getPointAge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getPointAge </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1ec1519ab0023dabee1ea4e43ec113f" name="ac1ec1519ab0023dabee1ea4e43ec113f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ec1519ab0023dabee1ea4e43ec113f">&#9670;&#160;</a></span>getPointAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getPointAlpha </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Effective draw alpha in [0, colorA] after fade. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a362325e9d65b9d4796be65d3ff8fa732" name="a362325e9d65b9d4796be65d3ff8fa732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a362325e9d65b9d4796be65d3ff8fa732">&#9670;&#160;</a></span>getPointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimTrail::getPointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd7fc7af0165761acc929d30e6ceefcc" name="acd7fc7af0165761acc929d30e6ceefcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7fc7af0165761acc929d30e6ceefcc">&#9670;&#160;</a></span>getPointX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getPointX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Index 0 = oldest retained sample; count-1 = newest. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+</div>
+</div>
+<a id="ae1bf24e22933954d56ca5de40fccce1f" name="ae1bf24e22933954d56ca5de40fccce1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1bf24e22933954d56ca5de40fccce1f">&#9670;&#160;</a></span>getPointY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getPointY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a85ac356b58215820b5a337db556a3856" name="a85ac356b58215820b5a337db556a3856"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85ac356b58215820b5a337db556a3856">&#9670;&#160;</a></span>getPointZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getPointZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a06d5ef5a82952c70f0f238a7aae82e90" name="a06d5ef5a82952c70f0f238a7aae82e90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06d5ef5a82952c70f0f238a7aae82e90">&#9670;&#160;</a></span>getStyle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimTrail::getStyle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a767dad2aac59604a6ef7c86c275ce0a3" name="a767dad2aac59604a6ef7c86c275ce0a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a767dad2aac59604a6ef7c86c275ce0a3">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimTrail::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a> 第 <a class="el" href="AnimTrail_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9734faa1dbfb9a62cf53a2f1e8680d0f" name="a9734faa1dbfb9a62cf53a2f1e8680d0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9734faa1dbfb9a62cf53a2f1e8680d0f">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a> &amp; eve::animation::AnimTrail::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimTrail.html">AnimTrail</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97c5d1a4aa3f9ef75618dbfeb7b6fa89" name="a97c5d1a4aa3f9ef75618dbfeb7b6fa89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97c5d1a4aa3f9ef75618dbfeb7b6fa89">&#9670;&#160;</a></span>sampleBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::sampleBone </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>plane</em> = <code>&quot;xy&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample bone world position after <code>pose-&gt;computeWorld</code>. <code>plane</code> maps axes to draw (x,y): "xy" | "xz" | "yz". Optional local offset is applied in bone world space (translation only). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimTrail_8cpp_source.html#l00105">sampleBoneOffset()</a>.</p>
+
+</div>
+</div>
+<a id="af564a36f451ecc9ffb10105406608e82" name="af564a36f451ecc9ffb10105406608e82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af564a36f451ecc9ffb10105406608e82">&#9670;&#160;</a></span>sampleBoneOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::sampleBoneOffset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>plane</em> = <code>&quot;xy&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimPose_8h_source.html#l00025">eve::animation::AnimPose::getBoneCount()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00168">eve::animation::AnimPose::getWorldPositionX()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00172">eve::animation::AnimPose::getWorldPositionY()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00176">eve::animation::AnimPose::getWorldPositionZ()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimTrail_8cpp_source.html#l00101">sampleBone()</a>.</p>
+
+</div>
+</div>
+<a id="a2207b9447b1f8ab521e88fb7636a5584" name="a2207b9447b1f8ab521e88fb7636a5584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2207b9447b1f8ab521e88fb7636a5584">&#9670;&#160;</a></span>setCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setCapacity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>capacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Max retained samples (ring). Clamped to &gt;= 2. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimTrail_8cpp_source.html#l00015">AnimTrail()</a>.</p>
+
+</div>
+</div>
+<a id="a77e6be898ad9059e6e29e9045af59991" name="a77e6be898ad9059e6e29e9045af59991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77e6be898ad9059e6e29e9045af59991">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Head (newest) color; alpha fades toward 0 along the trail when fade is on. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>.</p>
+
+</div>
+</div>
+<a id="a2f44a5b6fa194832289f5e2dad1cefee" name="a2f44a5b6fa194832289f5e2dad1cefee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f44a5b6fa194832289f5e2dad1cefee">&#9670;&#160;</a></span>setDrawOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setDrawOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add0974f719a7108d4fab16c391ea0c33" name="add0974f719a7108d4fab16c391ea0c33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0974f719a7108d4fab16c391ea0c33">&#9670;&#160;</a></span>setDrawScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setDrawScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applied at draw time: screen = (x,y) * scale + offset. Useful when sampling bone world units into pixel space. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a111b4d3514837e039207f2898d8fcfb9" name="a111b4d3514837e039207f2898d8fcfb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a111b4d3514837e039207f2898d8fcfb9">&#9670;&#160;</a></span>setDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setDuration </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>How long each sample lives (seconds). &lt;= 0 keeps until capacity eviction. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaff20c69e1cfb4d22baeb3448035eab7" name="aaff20c69e1cfb4d22baeb3448035eab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaff20c69e1cfb4d22baeb3448035eab7">&#9670;&#160;</a></span>setFade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setFade </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f1c0aa425d428a5361b777a776d8adb" name="a5f1c0aa425d428a5361b777a776d8adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f1c0aa425d428a5361b777a776d8adb">&#9670;&#160;</a></span>setMinDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setMinDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Skip new samples closer than this distance to the newest point (0 = always add). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8b6ebefb7172564783e48207ae733c0" name="aa8b6ebefb7172564783e48207ae733c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8b6ebefb7172564783e48207ae733c0">&#9670;&#160;</a></span>setStyle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setStyle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>style</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"line" | "points". Invalid → exception. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a23995c97dbd30712dbf88415edb1db3c" name="a23995c97dbd30712dbf88415edb1db3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23995c97dbd30712dbf88415edb1db3c">&#9670;&#160;</a></span>setWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::setWidth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pixels</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29c44272f42382ad28625792daa7ce6d" name="a29c44272f42382ad28625792daa7ce6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c44272f42382ad28625792daa7ce6d">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimTrail::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Age samples by dt; drop expired (when duration &gt; 0). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a> 第 <a class="el" href="AnimTrail_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimTrail_8h_source.html">AnimTrail.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimTrail_8cpp_source.html">AnimTrail.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1288 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::UINode结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="structeve_1_1ui_1_1UINode.html">UINode</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1ui_1_1UINode-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::UINode结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Retained <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> widget node (arena tree). Conceptual counterpart of <a class="el" href="structeve_1_1scene_1_1SceneNode.html" title="Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.">eve::scene::SceneNode</a>; built declaratively from <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html" title="Declarative widget description (build once / on dirty → flatten into UIHost::Tree).">WidgetDesc</a>.  
+ <a href="structeve_1_1ui_1_1UINode.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="UIHost_8h_source.html">UIHost.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a0ce35c353c4dc4ed7c1f913e301038e6" id="r_a0ce35c353c4dc4ed7c1f913e301038e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639">NodeType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a0ce35c353c4dc4ed7c1f913e301038e6">type</a> = <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675">NodeType::Text</a></td></tr>
+<tr class="separator:a0ce35c353c4dc4ed7c1f913e301038e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907458ffe59716bcb3032dbd24614b3c" id="r_a907458ffe59716bcb3032dbd24614b3c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a907458ffe59716bcb3032dbd24614b3c">id</a></td></tr>
+<tr class="separator:a907458ffe59716bcb3032dbd24614b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15d473432e7acc26f0add68a377341f0" id="r_a15d473432e7acc26f0add68a377341f0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a15d473432e7acc26f0add68a377341f0">key</a></td></tr>
+<tr class="separator:a15d473432e7acc26f0add68a377341f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88402abe0944413d0810f597851690e6" id="r_a88402abe0944413d0810f597851690e6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a88402abe0944413d0810f597851690e6">text</a></td></tr>
+<tr class="separator:a88402abe0944413d0810f597851690e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec11e8d1f72ab5d182c50802d523fa94" id="r_aec11e8d1f72ab5d182c50802d523fa94"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#aec11e8d1f72ab5d182c50802d523fa94">valueText</a></td></tr>
+<tr class="separator:aec11e8d1f72ab5d182c50802d523fa94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf015c601048bce25e46505698bd6d7" id="r_a9cf015c601048bce25e46505698bd6d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a9cf015c601048bce25e46505698bd6d7">visible</a> = true</td></tr>
+<tr class="separator:a9cf015c601048bce25e46505698bd6d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0830ecf3fc51f27dd632f1db322c17f2" id="r_a0830ecf3fc51f27dd632f1db322c17f2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a0830ecf3fc51f27dd632f1db322c17f2">checked</a> = false</td></tr>
+<tr class="separator:a0830ecf3fc51f27dd632f1db322c17f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa7d3f3a47c757160005c5b97b5356a7" id="r_afa7d3f3a47c757160005c5b97b5356a7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#afa7d3f3a47c757160005c5b97b5356a7">open</a> = true</td></tr>
+<tr class="separator:afa7d3f3a47c757160005c5b97b5356a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f114192a9781808814529a617489892" id="r_a0f114192a9781808814529a617489892"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a0f114192a9781808814529a617489892">value</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0f114192a9781808814529a617489892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eb89a760bf257b4ce455f35cc7eafd1" id="r_a8eb89a760bf257b4ce455f35cc7eafd1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a8eb89a760bf257b4ce455f35cc7eafd1">minValue</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8eb89a760bf257b4ce455f35cc7eafd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d5e87fcfcd65d914fe8495aba6fcc9b" id="r_a1d5e87fcfcd65d914fe8495aba6fcc9b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a1d5e87fcfcd65d914fe8495aba6fcc9b">maxValue</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1d5e87fcfcd65d914fe8495aba6fcc9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef39cceabb6a1c7258efa29f990c1090" id="r_aef39cceabb6a1c7258efa29f990c1090"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#aef39cceabb6a1c7258efa29f990c1090">sizeX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aef39cceabb6a1c7258efa29f990c1090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a346a9adc67e5a15794170fa3eda62220" id="r_a346a9adc67e5a15794170fa3eda62220"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a346a9adc67e5a15794170fa3eda62220">sizeY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a346a9adc67e5a15794170fa3eda62220"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fa19685c4a586408171c77ed9f5a7c2" id="r_a6fa19685c4a586408171c77ed9f5a7c2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a6fa19685c4a586408171c77ed9f5a7c2">marginL</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6fa19685c4a586408171c77ed9f5a7c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3fdac3390d10f238a69c9557aeff4f5" id="r_ad3fdac3390d10f238a69c9557aeff4f5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ad3fdac3390d10f238a69c9557aeff4f5">marginT</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad3fdac3390d10f238a69c9557aeff4f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a006cbbcd83acc09b5bc390226390dd32" id="r_a006cbbcd83acc09b5bc390226390dd32"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a006cbbcd83acc09b5bc390226390dd32">marginR</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a006cbbcd83acc09b5bc390226390dd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e74cc373848deb8b9850ce820f4436f" id="r_a4e74cc373848deb8b9850ce820f4436f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a4e74cc373848deb8b9850ce820f4436f">marginB</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4e74cc373848deb8b9850ce820f4436f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac8d47098b38708efc1bab8f6af50693" id="r_aac8d47098b38708efc1bab8f6af50693"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#aac8d47098b38708efc1bab8f6af50693">paddingL</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aac8d47098b38708efc1bab8f6af50693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2feb9f4a01fcf24ff4377411a7f926d9" id="r_a2feb9f4a01fcf24ff4377411a7f926d9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a2feb9f4a01fcf24ff4377411a7f926d9">paddingT</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2feb9f4a01fcf24ff4377411a7f926d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cd819683efcb2ffb7e9529df5f89e04" id="r_a9cd819683efcb2ffb7e9529df5f89e04"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a9cd819683efcb2ffb7e9529df5f89e04">paddingR</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9cd819683efcb2ffb7e9529df5f89e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bc90fb2bd8d3e181ecb52673e5b0871" id="r_a1bc90fb2bd8d3e181ecb52673e5b0871"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a1bc90fb2bd8d3e181ecb52673e5b0871">paddingB</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1bc90fb2bd8d3e181ecb52673e5b0871"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42bac18d900b548dfad1ceb9ff39c56b" id="r_a42bac18d900b548dfad1ceb9ff39c56b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a42bac18d900b548dfad1ceb9ff39c56b">minSizeX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a42bac18d900b548dfad1ceb9ff39c56b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a031fe288570bce3ee89b32d7bd403a" id="r_a5a031fe288570bce3ee89b32d7bd403a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a5a031fe288570bce3ee89b32d7bd403a">minSizeY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5a031fe288570bce3ee89b32d7bd403a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a52f932d43c9588ed133e9910b0f495" id="r_a9a52f932d43c9588ed133e9910b0f495"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a9a52f932d43c9588ed133e9910b0f495">maxSizeX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9a52f932d43c9588ed133e9910b0f495"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51f6dee8ca277e6f5ad8a4c05c5c3351" id="r_a51f6dee8ca277e6f5ad8a4c05c5c3351"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a51f6dee8ca277e6f5ad8a4c05c5c3351">maxSizeY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a51f6dee8ca277e6f5ad8a4c05c5c3351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af805816424ae306ce49085d635753f60" id="r_af805816424ae306ce49085d635753f60"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#af805816424ae306ce49085d635753f60">percentW</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af805816424ae306ce49085d635753f60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4227a84a1922573bd6f4309af2d1da71" id="r_a4227a84a1922573bd6f4309af2d1da71"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a4227a84a1922573bd6f4309af2d1da71">percentH</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4227a84a1922573bd6f4309af2d1da71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2972915069cb2f24b4644359e8dcb443" id="r_a2972915069cb2f24b4644359e8dcb443"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a2972915069cb2f24b4644359e8dcb443">anchorX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2972915069cb2f24b4644359e8dcb443"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a143eed83da9aab6983da8781e7c2531d" id="r_a143eed83da9aab6983da8781e7c2531d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a143eed83da9aab6983da8781e7c2531d">anchorY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a143eed83da9aab6983da8781e7c2531d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a4ff3d9ac4ab4961486b340ada77fb" id="r_a29a4ff3d9ac4ab4961486b340ada77fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a29a4ff3d9ac4ab4961486b340ada77fb">posX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a29a4ff3d9ac4ab4961486b340ada77fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b1c6f80813b59f4b0ab9dc5cddaa13c" id="r_a5b1c6f80813b59f4b0ab9dc5cddaa13c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a5b1c6f80813b59f4b0ab9dc5cddaa13c">posY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5b1c6f80813b59f4b0ab9dc5cddaa13c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74dea8e3a5bfefdd217638f95abc049c" id="r_a74dea8e3a5bfefdd217638f95abc049c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a74dea8e3a5bfefdd217638f95abc049c">absolute</a> = false</td></tr>
+<tr class="separator:a74dea8e3a5bfefdd217638f95abc049c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a107946d9036b16f97760febafb67962b" id="r_a107946d9036b16f97760febafb67962b"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a107946d9036b16f97760febafb67962b">textureId</a> = 0</td></tr>
+<tr class="separator:a107946d9036b16f97760febafb67962b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fb159ff5724c90c9b34cbe88f42b07f" id="r_a8fb159ff5724c90c9b34cbe88f42b07f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a8fb159ff5724c90c9b34cbe88f42b07f">tintR</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8fb159ff5724c90c9b34cbe88f42b07f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70fccac34f3ca66e990f5a92e78cd69f" id="r_a70fccac34f3ca66e990f5a92e78cd69f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a70fccac34f3ca66e990f5a92e78cd69f">tintG</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a70fccac34f3ca66e990f5a92e78cd69f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a763bc8984b1a1314ae0973c99255f" id="r_ae4a763bc8984b1a1314ae0973c99255f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ae4a763bc8984b1a1314ae0973c99255f">tintB</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae4a763bc8984b1a1314ae0973c99255f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a502e77521e4a58c9411bb61631b89931" id="r_a502e77521e4a58c9411bb61631b89931"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a502e77521e4a58c9411bb61631b89931">tintA</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a502e77521e4a58c9411bb61631b89931"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4839b09902d931280415e924d83e10f" id="r_ab4839b09902d931280415e924d83e10f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ab4839b09902d931280415e924d83e10f">uv0x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab4839b09902d931280415e924d83e10f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97e7db5517c9308b9ea48a786dd68a29" id="r_a97e7db5517c9308b9ea48a786dd68a29"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a97e7db5517c9308b9ea48a786dd68a29">uv0y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a97e7db5517c9308b9ea48a786dd68a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b0b1d57bf914bef8149f54b4e7fc9e" id="r_a18b0b1d57bf914bef8149f54b4e7fc9e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a18b0b1d57bf914bef8149f54b4e7fc9e">uv1x</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a18b0b1d57bf914bef8149f54b4e7fc9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa432eed1643343fa6648be1acbcbd695" id="r_aa432eed1643343fa6648be1acbcbd695"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#aa432eed1643343fa6648be1acbcbd695">uv1y</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa432eed1643343fa6648be1acbcbd695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56d126241fa684bbdbc1205e9119ccd3" id="r_a56d126241fa684bbdbc1205e9119ccd3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a56d126241fa684bbdbc1205e9119ccd3">borderL</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a56d126241fa684bbdbc1205e9119ccd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ae7a2730ed3cb32dde17f27dd1d35d" id="r_a66ae7a2730ed3cb32dde17f27dd1d35d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a66ae7a2730ed3cb32dde17f27dd1d35d">borderT</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a66ae7a2730ed3cb32dde17f27dd1d35d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af596ee670ad57361f5dd3fbc2347e4b8" id="r_af596ee670ad57361f5dd3fbc2347e4b8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#af596ee670ad57361f5dd3fbc2347e4b8">borderR</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af596ee670ad57361f5dd3fbc2347e4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4536265968f3df5bb2bc72e7606f2288" id="r_a4536265968f3df5bb2bc72e7606f2288"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a4536265968f3df5bb2bc72e7606f2288">borderB</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4536265968f3df5bb2bc72e7606f2288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab685b9352455c33e8af10517b639af91" id="r_ab685b9352455c33e8af10517b639af91"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ab685b9352455c33e8af10517b639af91">cornerRadius</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab685b9352455c33e8af10517b639af91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b9a058a6920e73d5c369bb9ae2fc290" id="r_a0b9a058a6920e73d5c369bb9ae2fc290"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a0b9a058a6920e73d5c369bb9ae2fc290">wrapWidth</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0b9a058a6920e73d5c369bb9ae2fc290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b35293f96976fe66c8202b17d805de5" id="r_a8b35293f96976fe66c8202b17d805de5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a8b35293f96976fe66c8202b17d805de5">itemHeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8b35293f96976fe66c8202b17d805de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad582ce54d4bec5eb41d7bf76150b2f2d" id="r_ad582ce54d4bec5eb41d7bf76150b2f2d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ad582ce54d4bec5eb41d7bf76150b2f2d">measuredW</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad582ce54d4bec5eb41d7bf76150b2f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f7dd05e049f98df6e133c612409e4c" id="r_ae4f7dd05e049f98df6e133c612409e4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ae4f7dd05e049f98df6e133c612409e4c">measuredH</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae4f7dd05e049f98df6e133c612409e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18196f55ebf47d5c6bdd1c6f171d4174" id="r_a18196f55ebf47d5c6bdd1c6f171d4174"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">FlexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a18196f55ebf47d5c6bdd1c6f171d4174">flexDirection</a> = <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3">FlexDirection::Row</a></td></tr>
+<tr class="separator:a18196f55ebf47d5c6bdd1c6f171d4174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad51b2f13a86b7b016e44f569b777552f" id="r_ad51b2f13a86b7b016e44f569b777552f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">FlexAlign</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ad51b2f13a86b7b016e44f569b777552f">alignItems</a> = <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9aa6122a65eaa676f700ae68d393054a37">FlexAlign::Start</a></td></tr>
+<tr class="separator:ad51b2f13a86b7b016e44f569b777552f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb09cfe1286b58a11d2b4bf2cb17f6b4" id="r_acb09cfe1286b58a11d2b4bf2cb17f6b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">FlexJustify</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#acb09cfe1286b58a11d2b4bf2cb17f6b4">justifyContent</a> = <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75aa6122a65eaa676f700ae68d393054a37">FlexJustify::Start</a></td></tr>
+<tr class="separator:acb09cfe1286b58a11d2b4bf2cb17f6b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc696579ea366206afe11562baff8300" id="r_abc696579ea366206afe11562baff8300"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#abc696579ea366206afe11562baff8300">gap</a> = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abc696579ea366206afe11562baff8300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a9f81b9497fee991a6fdcd4408f96e" id="r_af5a9f81b9497fee991a6fdcd4408f96e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#af5a9f81b9497fee991a6fdcd4408f96e">flexGrow</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af5a9f81b9497fee991a6fdcd4408f96e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae179eb343b986fead965881ba1d8b5ff" id="r_ae179eb343b986fead965881ba1d8b5ff"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#ae179eb343b986fead965881ba1d8b5ff">firstChild</a> = -1</td></tr>
+<tr class="separator:ae179eb343b986fead965881ba1d8b5ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a452bf41c4d162784cde38948d583b093" id="r_a452bf41c4d162784cde38948d583b093"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a452bf41c4d162784cde38948d583b093">nextSibling</a> = -1</td></tr>
+<tr class="separator:a452bf41c4d162784cde38948d583b093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ac14f93b2cbcd5122422c13a0171793" id="r_a5ac14f93b2cbcd5122422c13a0171793"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a5ac14f93b2cbcd5122422c13a0171793">handlerClick</a> = 0</td></tr>
+<tr class="separator:a5ac14f93b2cbcd5122422c13a0171793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdfefa08c29ef617a42bca34f18ffdc5" id="r_abdfefa08c29ef617a42bca34f18ffdc5"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#abdfefa08c29ef617a42bca34f18ffdc5">handlerToggle</a> = 0</td></tr>
+<tr class="separator:abdfefa08c29ef617a42bca34f18ffdc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21eaf5d387d56f3ba4677b35e0d08460" id="r_a21eaf5d387d56f3ba4677b35e0d08460"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a21eaf5d387d56f3ba4677b35e0d08460">handlerValue</a> = 0</td></tr>
+<tr class="separator:a21eaf5d387d56f3ba4677b35e0d08460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3822a3a4362bb94806aebd3fde2e8d9d" id="r_a3822a3a4362bb94806aebd3fde2e8d9d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1UINode.html#a3822a3a4362bb94806aebd3fde2e8d9d">handlerText</a> = 0</td></tr>
+<tr class="separator:a3822a3a4362bb94806aebd3fde2e8d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Retained <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> widget node (arena tree). Conceptual counterpart of <a class="el" href="structeve_1_1scene_1_1SceneNode.html" title="Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.">eve::scene::SceneNode</a>; built declaratively from <a class="el" href="structeve_1_1ui_1_1WidgetDesc.html" title="Declarative widget description (build once / on dirty → flatten into UIHost::Tree).">WidgetDesc</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00054">54</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a74dea8e3a5bfefdd217638f95abc049c" name="a74dea8e3a5bfefdd217638f95abc049c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74dea8e3a5bfefdd217638f95abc049c">&#9670;&#160;</a></span>absolute</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::UINode::absolute = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad51b2f13a86b7b016e44f569b777552f" name="ad51b2f13a86b7b016e44f569b777552f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad51b2f13a86b7b016e44f569b777552f">&#9670;&#160;</a></span>alignItems</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9">FlexAlign</a> eve::ui::UINode::alignItems = <a class="el" href="namespaceeve_1_1ui.html#acff0a0ccbeb97db5dfaf4a76b7243ce9aa6122a65eaa676f700ae68d393054a37">FlexAlign::Start</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2972915069cb2f24b4644359e8dcb443" name="a2972915069cb2f24b4644359e8dcb443"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2972915069cb2f24b4644359e8dcb443">&#9670;&#160;</a></span>anchorX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::anchorX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a143eed83da9aab6983da8781e7c2531d" name="a143eed83da9aab6983da8781e7c2531d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a143eed83da9aab6983da8781e7c2531d">&#9670;&#160;</a></span>anchorY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::anchorY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4536265968f3df5bb2bc72e7606f2288" name="a4536265968f3df5bb2bc72e7606f2288"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4536265968f3df5bb2bc72e7606f2288">&#9670;&#160;</a></span>borderB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::borderB = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56d126241fa684bbdbc1205e9119ccd3" name="a56d126241fa684bbdbc1205e9119ccd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56d126241fa684bbdbc1205e9119ccd3">&#9670;&#160;</a></span>borderL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::borderL = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af596ee670ad57361f5dd3fbc2347e4b8" name="af596ee670ad57361f5dd3fbc2347e4b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af596ee670ad57361f5dd3fbc2347e4b8">&#9670;&#160;</a></span>borderR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::borderR = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66ae7a2730ed3cb32dde17f27dd1d35d" name="a66ae7a2730ed3cb32dde17f27dd1d35d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ae7a2730ed3cb32dde17f27dd1d35d">&#9670;&#160;</a></span>borderT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::borderT = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0830ecf3fc51f27dd632f1db322c17f2" name="a0830ecf3fc51f27dd632f1db322c17f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0830ecf3fc51f27dd632f1db322c17f2">&#9670;&#160;</a></span>checked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::UINode::checked = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab685b9352455c33e8af10517b639af91" name="ab685b9352455c33e8af10517b639af91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab685b9352455c33e8af10517b639af91">&#9670;&#160;</a></span>cornerRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::cornerRadius = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae179eb343b986fead965881ba1d8b5ff" name="ae179eb343b986fead965881ba1d8b5ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae179eb343b986fead965881ba1d8b5ff">&#9670;&#160;</a></span>firstChild</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui::UINode::firstChild = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18196f55ebf47d5c6bdd1c6f171d4174" name="a18196f55ebf47d5c6bdd1c6f171d4174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18196f55ebf47d5c6bdd1c6f171d4174">&#9670;&#160;</a></span>flexDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05">FlexDirection</a> eve::ui::UINode::flexDirection = <a class="el" href="namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3">FlexDirection::Row</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5a9f81b9497fee991a6fdcd4408f96e" name="af5a9f81b9497fee991a6fdcd4408f96e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5a9f81b9497fee991a6fdcd4408f96e">&#9670;&#160;</a></span>flexGrow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::flexGrow = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc696579ea366206afe11562baff8300" name="abc696579ea366206afe11562baff8300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc696579ea366206afe11562baff8300">&#9670;&#160;</a></span>gap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::gap = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ac14f93b2cbcd5122422c13a0171793" name="a5ac14f93b2cbcd5122422c13a0171793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ac14f93b2cbcd5122422c13a0171793">&#9670;&#160;</a></span>handlerClick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::ui::UINode::handlerClick = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3822a3a4362bb94806aebd3fde2e8d9d" name="a3822a3a4362bb94806aebd3fde2e8d9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3822a3a4362bb94806aebd3fde2e8d9d">&#9670;&#160;</a></span>handlerText</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::ui::UINode::handlerText = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abdfefa08c29ef617a42bca34f18ffdc5" name="abdfefa08c29ef617a42bca34f18ffdc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdfefa08c29ef617a42bca34f18ffdc5">&#9670;&#160;</a></span>handlerToggle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::ui::UINode::handlerToggle = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21eaf5d387d56f3ba4677b35e0d08460" name="a21eaf5d387d56f3ba4677b35e0d08460"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21eaf5d387d56f3ba4677b35e0d08460">&#9670;&#160;</a></span>handlerValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::ui::UINode::handlerValue = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a907458ffe59716bcb3032dbd24614b3c" name="a907458ffe59716bcb3032dbd24614b3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a907458ffe59716bcb3032dbd24614b3c">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UINode::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b35293f96976fe66c8202b17d805de5" name="a8b35293f96976fe66c8202b17d805de5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b35293f96976fe66c8202b17d805de5">&#9670;&#160;</a></span>itemHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::itemHeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb09cfe1286b58a11d2b4bf2cb17f6b4" name="acb09cfe1286b58a11d2b4bf2cb17f6b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb09cfe1286b58a11d2b4bf2cb17f6b4">&#9670;&#160;</a></span>justifyContent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75">FlexJustify</a> eve::ui::UINode::justifyContent = <a class="el" href="namespaceeve_1_1ui.html#a8233ad15a5a68dfc0ca17e60eeff0d75aa6122a65eaa676f700ae68d393054a37">FlexJustify::Start</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a15d473432e7acc26f0add68a377341f0" name="a15d473432e7acc26f0add68a377341f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15d473432e7acc26f0add68a377341f0">&#9670;&#160;</a></span>key</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UINode::key</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e74cc373848deb8b9850ce820f4436f" name="a4e74cc373848deb8b9850ce820f4436f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e74cc373848deb8b9850ce820f4436f">&#9670;&#160;</a></span>marginB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::marginB = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fa19685c4a586408171c77ed9f5a7c2" name="a6fa19685c4a586408171c77ed9f5a7c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fa19685c4a586408171c77ed9f5a7c2">&#9670;&#160;</a></span>marginL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::marginL = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a006cbbcd83acc09b5bc390226390dd32" name="a006cbbcd83acc09b5bc390226390dd32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a006cbbcd83acc09b5bc390226390dd32">&#9670;&#160;</a></span>marginR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::marginR = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3fdac3390d10f238a69c9557aeff4f5" name="ad3fdac3390d10f238a69c9557aeff4f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3fdac3390d10f238a69c9557aeff4f5">&#9670;&#160;</a></span>marginT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::marginT = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a52f932d43c9588ed133e9910b0f495" name="a9a52f932d43c9588ed133e9910b0f495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a52f932d43c9588ed133e9910b0f495">&#9670;&#160;</a></span>maxSizeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::maxSizeX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51f6dee8ca277e6f5ad8a4c05c5c3351" name="a51f6dee8ca277e6f5ad8a4c05c5c3351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51f6dee8ca277e6f5ad8a4c05c5c3351">&#9670;&#160;</a></span>maxSizeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::maxSizeY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d5e87fcfcd65d914fe8495aba6fcc9b" name="a1d5e87fcfcd65d914fe8495aba6fcc9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d5e87fcfcd65d914fe8495aba6fcc9b">&#9670;&#160;</a></span>maxValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::maxValue = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4f7dd05e049f98df6e133c612409e4c" name="ae4f7dd05e049f98df6e133c612409e4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4f7dd05e049f98df6e133c612409e4c">&#9670;&#160;</a></span>measuredH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::measuredH = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad582ce54d4bec5eb41d7bf76150b2f2d" name="ad582ce54d4bec5eb41d7bf76150b2f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad582ce54d4bec5eb41d7bf76150b2f2d">&#9670;&#160;</a></span>measuredW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::measuredW = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a42bac18d900b548dfad1ceb9ff39c56b" name="a42bac18d900b548dfad1ceb9ff39c56b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42bac18d900b548dfad1ceb9ff39c56b">&#9670;&#160;</a></span>minSizeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::minSizeX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a031fe288570bce3ee89b32d7bd403a" name="a5a031fe288570bce3ee89b32d7bd403a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a031fe288570bce3ee89b32d7bd403a">&#9670;&#160;</a></span>minSizeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::minSizeY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8eb89a760bf257b4ce455f35cc7eafd1" name="a8eb89a760bf257b4ce455f35cc7eafd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eb89a760bf257b4ce455f35cc7eafd1">&#9670;&#160;</a></span>minValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::minValue = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a452bf41c4d162784cde38948d583b093" name="a452bf41c4d162784cde38948d583b093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a452bf41c4d162784cde38948d583b093">&#9670;&#160;</a></span>nextSibling</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui::UINode::nextSibling = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa7d3f3a47c757160005c5b97b5356a7" name="afa7d3f3a47c757160005c5b97b5356a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa7d3f3a47c757160005c5b97b5356a7">&#9670;&#160;</a></span>open</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::UINode::open = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1bc90fb2bd8d3e181ecb52673e5b0871" name="a1bc90fb2bd8d3e181ecb52673e5b0871"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc90fb2bd8d3e181ecb52673e5b0871">&#9670;&#160;</a></span>paddingB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::paddingB = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac8d47098b38708efc1bab8f6af50693" name="aac8d47098b38708efc1bab8f6af50693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac8d47098b38708efc1bab8f6af50693">&#9670;&#160;</a></span>paddingL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::paddingL = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9cd819683efcb2ffb7e9529df5f89e04" name="a9cd819683efcb2ffb7e9529df5f89e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cd819683efcb2ffb7e9529df5f89e04">&#9670;&#160;</a></span>paddingR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::paddingR = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2feb9f4a01fcf24ff4377411a7f926d9" name="a2feb9f4a01fcf24ff4377411a7f926d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2feb9f4a01fcf24ff4377411a7f926d9">&#9670;&#160;</a></span>paddingT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::paddingT = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4227a84a1922573bd6f4309af2d1da71" name="a4227a84a1922573bd6f4309af2d1da71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4227a84a1922573bd6f4309af2d1da71">&#9670;&#160;</a></span>percentH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::percentH = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af805816424ae306ce49085d635753f60" name="af805816424ae306ce49085d635753f60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af805816424ae306ce49085d635753f60">&#9670;&#160;</a></span>percentW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::percentW = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29a4ff3d9ac4ab4961486b340ada77fb" name="a29a4ff3d9ac4ab4961486b340ada77fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a4ff3d9ac4ab4961486b340ada77fb">&#9670;&#160;</a></span>posX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::posX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b1c6f80813b59f4b0ab9dc5cddaa13c" name="a5b1c6f80813b59f4b0ab9dc5cddaa13c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b1c6f80813b59f4b0ab9dc5cddaa13c">&#9670;&#160;</a></span>posY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::posY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef39cceabb6a1c7258efa29f990c1090" name="aef39cceabb6a1c7258efa29f990c1090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef39cceabb6a1c7258efa29f990c1090">&#9670;&#160;</a></span>sizeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::sizeX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a346a9adc67e5a15794170fa3eda62220" name="a346a9adc67e5a15794170fa3eda62220"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a346a9adc67e5a15794170fa3eda62220">&#9670;&#160;</a></span>sizeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::sizeY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a88402abe0944413d0810f597851690e6" name="a88402abe0944413d0810f597851690e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88402abe0944413d0810f597851690e6">&#9670;&#160;</a></span>text</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UINode::text</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a107946d9036b16f97760febafb67962b" name="a107946d9036b16f97760febafb67962b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a107946d9036b16f97760febafb67962b">&#9670;&#160;</a></span>textureId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::UINode::textureId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a502e77521e4a58c9411bb61631b89931" name="a502e77521e4a58c9411bb61631b89931"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a502e77521e4a58c9411bb61631b89931">&#9670;&#160;</a></span>tintA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::tintA = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4a763bc8984b1a1314ae0973c99255f" name="ae4a763bc8984b1a1314ae0973c99255f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a763bc8984b1a1314ae0973c99255f">&#9670;&#160;</a></span>tintB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::tintB = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70fccac34f3ca66e990f5a92e78cd69f" name="a70fccac34f3ca66e990f5a92e78cd69f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70fccac34f3ca66e990f5a92e78cd69f">&#9670;&#160;</a></span>tintG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::tintG = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8fb159ff5724c90c9b34cbe88f42b07f" name="a8fb159ff5724c90c9b34cbe88f42b07f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fb159ff5724c90c9b34cbe88f42b07f">&#9670;&#160;</a></span>tintR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::tintR = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ce35c353c4dc4ed7c1f913e301038e6" name="a0ce35c353c4dc4ed7c1f913e301038e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ce35c353c4dc4ed7c1f913e301038e6">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639">NodeType</a> eve::ui::UINode::type = <a class="el" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a9dffbf69ffba8bc38bc4e01abf4b1675">NodeType::Text</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab4839b09902d931280415e924d83e10f" name="ab4839b09902d931280415e924d83e10f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4839b09902d931280415e924d83e10f">&#9670;&#160;</a></span>uv0x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::uv0x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97e7db5517c9308b9ea48a786dd68a29" name="a97e7db5517c9308b9ea48a786dd68a29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97e7db5517c9308b9ea48a786dd68a29">&#9670;&#160;</a></span>uv0y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::uv0y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18b0b1d57bf914bef8149f54b4e7fc9e" name="a18b0b1d57bf914bef8149f54b4e7fc9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b0b1d57bf914bef8149f54b4e7fc9e">&#9670;&#160;</a></span>uv1x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::uv1x = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa432eed1643343fa6648be1acbcbd695" name="aa432eed1643343fa6648be1acbcbd695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa432eed1643343fa6648be1acbcbd695">&#9670;&#160;</a></span>uv1y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::uv1y = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f114192a9781808814529a617489892" name="a0f114192a9781808814529a617489892"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f114192a9781808814529a617489892">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::value = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec11e8d1f72ab5d182c50802d523fa94" name="aec11e8d1f72ab5d182c50802d523fa94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec11e8d1f72ab5d182c50802d523fa94">&#9670;&#160;</a></span>valueText</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ui::UINode::valueText</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9cf015c601048bce25e46505698bd6d7" name="a9cf015c601048bce25e46505698bd6d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf015c601048bce25e46505698bd6d7">&#9670;&#160;</a></span>visible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::UINode::visible = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b9a058a6920e73d5c369bb9ae2fc290" name="a0b9a058a6920e73d5c369bb9ae2fc290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b9a058a6920e73d5c369bb9ae2fc290">&#9670;&#160;</a></span>wrapWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::UINode::wrapWidth = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIHost_8h_source.html">UIHost.h</a> 第 <a class="el" href="UIHost_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="UIHost_8h_source.html">UIHost.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

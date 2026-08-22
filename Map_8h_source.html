@@ -1,0 +1,290 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/map/Map.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_582b002fc0c2f43475ae6ca1126d8de3.html">map</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Map.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Map_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="TileLayer_8h.html">map/TileLayer.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="MapObject_8h.html">map/MapObject.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Pathfinder_8h.html">map/Pathfinder.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Fov_8h.html">map/Fov.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1map.html">eve::map</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1Map.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1map_1_1Map.html">Map</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1Map.html#a5de016273c57e6dd78a6f30613bf4eb4">   26</a></span>    <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a5de016273c57e6dd78a6f30613bf4eb4">Module_REG</a>(<a class="code hl_class" href="classeve_1_1map_1_1Map.html">Map</a>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1Map.html#adf08a6e13e76c0477e09d655c994fb2e">   27</a></span>    <a class="code hl_function" href="classeve_1_1map_1_1Map.html#adf08a6e13e76c0477e09d655c994fb2e">Map</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1Map.html#a31cafec7e6344f8a4f8ec32ff49cf20d">   28</a></span>    <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a31cafec7e6344f8a4f8ec32ff49cf20d">~Map</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a915795668950309a4b433d8a2d1ab942">newLayer</a>(<span class="keywordtype">int</span> mapW, <span class="keywordtype">int</span> mapH, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a> = 32.f, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a> = 32.f);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a711989cfc1766e06057782d26f3ac0a7">newPathfinder</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_class" href="classeve_1_1map_1_1Pathfinder.html">Pathfinder</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a3db0c5907fcda51524e05647a0178fb4">newPathfinderSize</a>(<span class="keywordtype">int</span> mapW, <span class="keywordtype">int</span> mapH);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_class" href="classeve_1_1map_1_1Fov.html">Fov</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#ae0f04b2fad239c2dbd1deb1ad677c8af">newFov</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classeve_1_1map_1_1Fov.html">Fov</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a915aa97c82249bd0f674ae284c3ff8f7">newFovSize</a>(<span class="keywordtype">int</span> mapW, <span class="keywordtype">int</span> mapH);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classeve_1_1map_1_1Fov.html">Fov</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a7abba7f027cdd1e8b0a14037ad9d6b3d">newFovVolume</a>(<span class="keywordtype">int</span> mapW, <span class="keywordtype">int</span> mapH, <span class="keywordtype">int</span> <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a13c5b33e1f247c2120c0d06dbbbb7e74">newLayerFromFile</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a3a56724165756a0c67b43a584f67d44f">loadFromFile</a>(<span class="keyword">const</span> std::string &amp;path);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a2c93f576270f9e7ee7dab6233b480786">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#ab3bcb2fd44c0435447cc960a7fc21b19">render</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#afef886fc22796d782a39e73c05145378">pollConfigs</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a729d6f9990ee495a494d0d0cb03a9be7">getLayerCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *<a class="code hl_function" href="classeve_1_1map_1_1Map.html#a3e297068effa56bc3dfbe26a29156f8a">getLayer</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#aa14dbfcc39b13e882adda7ab1d464dc6">getObjectCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::string <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a0601b6f976bce69f8ed0046c137c8f92">getObjectName</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::string <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a435c253080cbcdbbf34e65ccc10ffe5f">getObjectType</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a85e2ad3019ecd7590f46004db1fcc4b1">getObjectX</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#aa846be2176d0c837b9cbe6424d733772">getObjectY</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a7680544672f1fba2b326a3bd7e22c43c">getObjectWidth</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a0be4650eb90d0aa6b58e9cf747ce2d5e">getObjectHeight</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a710bc6be17f6e1e9bf9903da753cfb7d">getObjectGid</a>(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a1fe430f2208117dea17b0b4be8aa45fd">setObjects</a>(std::vector&lt;MapObject&gt; objects);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a6b3ed7c741d933c3e31268432ea0ea0f">resolveDualGrid</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic, <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *display);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a69f1a5da524365e5a743eca41d24dc73">resolveDualGridFilled</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic, <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *display, <span class="keywordtype">int</span> filledGid);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#ad7d0fd46e9a84dfd9ea5a8501f8536d4">dualGridMaskAt</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic, <span class="keywordtype">int</span> dx, <span class="keywordtype">int</span> dy, <span class="keywordtype">int</span> filledGid);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a8872c598e45a5a818cb2bb6f5da98e08">dualGridFrame</a>(<span class="keywordtype">int</span> mask);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a49b0414203ce5542bd7a9505f8dfd79f">dualGridOffsetX</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1map_1_1Map.html#a58cad2556c828d7d8abdef80a3a407a0">dualGridOffsetY</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::string <a class="code hl_function" href="classeve_1_1map_1_1Map.html#ac2b8c30d765ded95b653da959abca2f5">lastDualGridError</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::vector&lt;MapObject&gt; objects_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::vector&lt;TileLayer *&gt; loadedLayers_;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::string dualGridError_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::map</span></div>
+<div class="ttc" id="aFov_8h_html"><div class="ttname"><a href="Fov_8h.html">Fov.h</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aMapObject_8h_html"><div class="ttname"><a href="MapObject_8h.html">MapObject.h</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aPathfinder_8h_html"><div class="ttname"><a href="Pathfinder_8h.html">Pathfinder.h</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a610e16748328942de9e86ea346d25fde"><div class="ttname"><a href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a></div><div class="ttdeci">int tileW</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00114">TileConfig.cpp:114</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a874b28363d25afff3707792758892c19"><div class="ttname"><a href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a></div><div class="ttdeci">int tileH</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00115">TileConfig.cpp:115</a></div></div>
+<div class="ttc" id="aTileLayer_8h_html"><div class="ttname"><a href="TileLayer_8h.html">TileLayer.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Fov_html"><div class="ttname"><a href="classeve_1_1map_1_1Fov.html">eve::map::Fov</a></div><div class="ttdoc">Dynamic field-of-view / fog-of-war facade. Phase A: 2D shadowcast + multi-revealer + explored memory....</div><div class="ttdef"><b>Definition</b> <a href="Fov_8h_source.html#l00024">Fov.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html"><div class="ttname"><a href="classeve_1_1map_1_1Map.html">eve::map::Map</a></div><div class="ttdoc">Map module — factory + script binding for 2D tilemaps. Per-frame: TileConfigSystem (hot reload) → uni...</div><div class="ttdef"><b>Definition</b> <a href="Map_8h_source.html#l00024">Map.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a0601b6f976bce69f8ed0046c137c8f92"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a0601b6f976bce69f8ed0046c137c8f92">eve::map::Map::getObjectName</a></div><div class="ttdeci">std::string getObjectName(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00096">Map.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a0be4650eb90d0aa6b58e9cf747ce2d5e"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a0be4650eb90d0aa6b58e9cf747ce2d5e">eve::map::Map::getObjectHeight</a></div><div class="ttdeci">float getObjectHeight(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00121">Map.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a13c5b33e1f247c2120c0d06dbbbb7e74"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a13c5b33e1f247c2120c0d06dbbbb7e74">eve::map::Map::newLayerFromFile</a></div><div class="ttdeci">TileLayer * newLayerFromFile(const std::string &amp;path)</div><div class="ttdoc">Load map JSON (Tiled-compatible subset or EVEngine simplified format). Creates one TileLayer per tile...</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00048">Map.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a1fe430f2208117dea17b0b4be8aa45fd"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a1fe430f2208117dea17b0b4be8aa45fd">eve::map::Map::setObjects</a></div><div class="ttdeci">void setObjects(std::vector&lt; MapObject &gt; objects)</div><div class="ttdoc">Replace object cache (used by load / hot reload).</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00092">Map.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a2c93f576270f9e7ee7dab6233b480786"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a2c93f576270f9e7ee7dab6233b480786">eve::map::Map::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00064">Map.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a31cafec7e6344f8a4f8ec32ff49cf20d"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a31cafec7e6344f8a4f8ec32ff49cf20d">eve::map::Map::~Map</a></div><div class="ttdeci">~Map() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a3a56724165756a0c67b43a584f67d44f"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a3a56724165756a0c67b43a584f67d44f">eve::map::Map::loadFromFile</a></div><div class="ttdeci">int loadFromFile(const std::string &amp;path)</div><div class="ttdoc">Same as newLayerFromFile but returns how many layers were created (0 on failure).</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00056">Map.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a3db0c5907fcda51524e05647a0178fb4"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a3db0c5907fcda51524e05647a0178fb4">eve::map::Map::newPathfinderSize</a></div><div class="ttdeci">Pathfinder * newPathfinderSize(int mapW, int mapH)</div><div class="ttdoc">Custom grid pathfinder (no layer); fill with setBlocked / setCellCost.</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00028">Map.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a3e297068effa56bc3dfbe26a29156f8a"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a3e297068effa56bc3dfbe26a29156f8a">eve::map::Map::getLayer</a></div><div class="ttdeci">TileLayer * getLayer(int index) const</div><div class="ttdoc">Layer created by the most recent loadFromFile/newLayerFromFile call.</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00087">Map.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a435c253080cbcdbbf34e65ccc10ffe5f"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a435c253080cbcdbbf34e65ccc10ffe5f">eve::map::Map::getObjectType</a></div><div class="ttdeci">std::string getObjectType(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00101">Map.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a49b0414203ce5542bd7a9505f8dfd79f"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a49b0414203ce5542bd7a9505f8dfd79f">eve::map::Map::dualGridOffsetX</a></div><div class="ttdeci">float dualGridOffsetX(TileLayer *logic)</div><div class="ttdoc">Projection-correct half-step origin delta for a logic layer.</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00151">Map.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a58cad2556c828d7d8abdef80a3a407a0"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a58cad2556c828d7d8abdef80a3a407a0">eve::map::Map::dualGridOffsetY</a></div><div class="ttdeci">float dualGridOffsetY(TileLayer *logic)</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00158">Map.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a5de016273c57e6dd78a6f30613bf4eb4"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a5de016273c57e6dd78a6f30613bf4eb4">eve::map::Map::Module_REG</a></div><div class="ttdeci">Module_REG(Map)</div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a69f1a5da524365e5a743eca41d24dc73"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a69f1a5da524365e5a743eca41d24dc73">eve::map::Map::resolveDualGridFilled</a></div><div class="ttdeci">bool resolveDualGridFilled(TileLayer *logic, TileLayer *display, int filledGid)</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00137">Map.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a6b3ed7c741d933c3e31268432ea0ea0f"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a6b3ed7c741d933c3e31268432ea0ea0f">eve::map::Map::resolveDualGrid</a></div><div class="ttdeci">bool resolveDualGrid(TileLayer *logic, TileLayer *display)</div><div class="ttdoc">Dual-grid resolve: paint logic (filled/empty), fill display with 15-tile autotiles on a half-offset g...</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00131">Map.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a710bc6be17f6e1e9bf9903da753cfb7d"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a710bc6be17f6e1e9bf9903da753cfb7d">eve::map::Map::getObjectGid</a></div><div class="ttdeci">int getObjectGid(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00126">Map.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a711989cfc1766e06057782d26f3ac0a7"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a711989cfc1766e06057782d26f3ac0a7">eve::map::Map::newPathfinder</a></div><div class="ttdeci">Pathfinder * newPathfinder(TileLayer *layer)</div><div class="ttdoc">Pathfinder bound to a TileLayer (syncs walkability from GIDs).</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00023">Map.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a729d6f9990ee495a494d0d0cb03a9be7"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a729d6f9990ee495a494d0d0cb03a9be7">eve::map::Map::getLayerCount</a></div><div class="ttdeci">int getLayerCount() const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00079">Map.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a7680544672f1fba2b326a3bd7e22c43c"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a7680544672f1fba2b326a3bd7e22c43c">eve::map::Map::getObjectWidth</a></div><div class="ttdeci">float getObjectWidth(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00116">Map.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a7abba7f027cdd1e8b0a14037ad9d6b3d"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a7abba7f027cdd1e8b0a14037ad9d6b3d">eve::map::Map::newFovVolume</a></div><div class="ttdeci">Fov * newFovVolume(int mapW, int mapH, int depth)</div><div class="ttdoc">Volume FOV (W×H×D voxels); mode defaults to volume.</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00043">Map.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a85e2ad3019ecd7590f46004db1fcc4b1"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a85e2ad3019ecd7590f46004db1fcc4b1">eve::map::Map::getObjectX</a></div><div class="ttdeci">float getObjectX(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00106">Map.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a8872c598e45a5a818cb2bb6f5da98e08"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a8872c598e45a5a818cb2bb6f5da98e08">eve::map::Map::dualGridFrame</a></div><div class="ttdeci">int dualGridFrame(int mask)</div><div class="ttdoc">Default atlas frame for mask (-1 = empty).</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00149">Map.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a915795668950309a4b433d8a2d1ab942"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a915795668950309a4b433d8a2d1ab942">eve::map::Map::newLayer</a></div><div class="ttdeci">TileLayer * newLayer(int mapW, int mapH, float tileW=32.f, float tileH=32.f)</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00019">Map.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_a915aa97c82249bd0f674ae284c3ff8f7"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#a915aa97c82249bd0f674ae284c3ff8f7">eve::map::Map::newFovSize</a></div><div class="ttdeci">Fov * newFovSize(int mapW, int mapH)</div><div class="ttdoc">Custom grid FOV (no layer); fill with setOpaque.</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00038">Map.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_aa14dbfcc39b13e882adda7ab1d464dc6"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#aa14dbfcc39b13e882adda7ab1d464dc6">eve::map::Map::getObjectCount</a></div><div class="ttdeci">int getObjectCount() const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00094">Map.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_aa846be2176d0c837b9cbe6424d733772"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#aa846be2176d0c837b9cbe6424d733772">eve::map::Map::getObjectY</a></div><div class="ttdeci">float getObjectY(int i) const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00111">Map.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_ab3bcb2fd44c0435447cc960a7fc21b19"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#ab3bcb2fd44c0435447cc960a7fc21b19">eve::map::Map::render</a></div><div class="ttdeci">void render(graphics::Graphics *gfx)</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00069">Map.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_ac2b8c30d765ded95b653da959abca2f5"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#ac2b8c30d765ded95b653da959abca2f5">eve::map::Map::lastDualGridError</a></div><div class="ttdeci">std::string lastDualGridError() const</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00165">Map.cpp:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_ad7d0fd46e9a84dfd9ea5a8501f8536d4"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#ad7d0fd46e9a84dfd9ea5a8501f8536d4">eve::map::Map::dualGridMaskAt</a></div><div class="ttdeci">int dualGridMaskAt(TileLayer *logic, int dx, int dy, int filledGid)</div><div class="ttdoc">4-bit corner mask at display cell (dx,dy); see DualGrid.h.</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00144">Map.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_adf08a6e13e76c0477e09d655c994fb2e"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#adf08a6e13e76c0477e09d655c994fb2e">eve::map::Map::Map</a></div><div class="ttdeci">Map()=default</div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_ae0f04b2fad239c2dbd1deb1ad677c8af"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#ae0f04b2fad239c2dbd1deb1ad677c8af">eve::map::Map::newFov</a></div><div class="ttdeci">Fov * newFov(TileLayer *layer)</div><div class="ttdoc">FOV bound to a TileLayer (syncs opacity from opaque GIDs).</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00033">Map.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Map_html_afef886fc22796d782a39e73c05145378"><div class="ttname"><a href="classeve_1_1map_1_1Map.html#afef886fc22796d782a39e73c05145378">eve::map::Map::pollConfigs</a></div><div class="ttdeci">int pollConfigs()</div><div class="ttdef"><b>Definition</b> <a href="Map_8cpp_source.html#l00077">Map.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Pathfinder_html"><div class="ttname"><a href="classeve_1_1map_1_1Pathfinder.html">eve::map::Pathfinder</a></div><div class="ttdoc">Pathfinding facade. Single-agent: A*. Group (same goal): Flow Field + follow. Grid/topology internals...</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00017">Pathfinder.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></div><div class="ttdoc">ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem batch-draws atlas ...</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00030">TileLayer.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html"><div class="ttname"><a href="namespaceeve_1_1map.html">eve::map</a></div><div class="ttdoc">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectang...</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00016">PlacementWorld.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

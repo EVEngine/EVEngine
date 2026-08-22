@@ -1,0 +1,344 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/window/sdl/Window.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_894a2eb173d004eb6d9fe2743337c84b.html">window</a></li><li class="navelem"><a class="el" href="dir_c59668b1d6809778d62ab24a03115bb4.html">sdl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Window.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="sdl_2Window_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;SDL2/SDL.h&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Window_8h.html">window/Window.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_function" href="namespaceeve_1_1ui.html#aa9faeccac79ba15e77d60dae53b07951">window</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>sdl {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1window_1_1sdl_1_1Window.html">   15</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1window_1_1sdl_1_1Window.html">Window</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1window_1_1Window.html">eve::window::Window</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#aeac0e3ae979e19bfdac85a6e49ddf577">Window</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#afa47fa19b5671692bb85f0e6d9564711">~Window</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#af556ef9a9098106603bd184e082152db">setSize</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a77033bea64bc31ff81fcf95639f31858">getWidth</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a43b7225e2ddcfbda2a7f7cbbe29fe22f">getHeight</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">bool</span>           <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a788013e18e076a9b033b80fa5f550ba3">setWindowSettings</a>(<a class="code hl_struct" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> settings) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_struct" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#adcdddc1c70d86e03e54a419234246226">getWindowSettings</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">close</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#acadd7190e5f8b156b61a65cb732c44e7">setFullscreenDesktop</a>(<span class="keywordtype">bool</span> fullscreen) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a1892debfca56e8cd533e2b1aa808fe14">setFullscreenExclusive</a>(<span class="keywordtype">bool</span> fullscreen) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#aaf37cb2433dd9e2d78d76c18d8a14816">isOpen</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a7c3d793b0ab5166a4d29e25641f66410">setWindowTitle</a>(<span class="keyword">const</span> std::string&amp; title) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#af36747f4cb8650b198fabfe521c9a462">getWindowTitle</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#aca7d667412c151606ea60b1c16af409a">setPosition</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> display) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ad4b54c6b5213d937aa30d8c5ea1d7b73">getPosition</a>(<span class="keywordtype">int</span>&amp; <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span>&amp; <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span>&amp; display) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ae9963e84e0005369e07ea09270db87ad">minimize</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a255e81919f261575eb27a99ed0c0d5b7">maximize</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a5006434fceb8be0df191192b36d05e26">restore</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">bool</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a1d75884aae81b9461cfb30cfde67796b">isMaximized</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">bool</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a784212943e8ddb5b11572a368ef7e322">isMinimized</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">bool</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a662286a12d32f4ab6ad197bd5c206d87">hasFocus</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a113c8477c1872c8b344971c4b80787b3">hasMouseFocus</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a1ea52a8d58e775c4b2b67055087481b2">isVisible</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span>               <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a309bd22078ba61b48095e987436298dc">setVSync</a>(<span class="keywordtype">int</span> vsync) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span>                <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a319af4a319354727f85bb3769978a15c">getVSync</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">int</span>    <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#aad9a2f9fa37e1d3385a34d78f6f4e81a">getPixelWidth</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">int</span>    <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a5b0de7d96316349c2227547c27f14e22">getPixelHeight</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a54ddc84563dbd55d5f1d716a6ca580cb">getDPIScale</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a9db6c9e74eb1fb28b89e88d12e897fdb">getNativeDPIScale</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ad84dfa1a3601225ba4c525a9159c3ed1">windowToPixelCoords</a>(<span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#aac66cbb3ce2d418189e298d4a77ca395">pixelToWindowCoords</a>(<span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a9d0b40fd24815ea2fa5644b9bd7744a1">windowToDPICoords</a>(<span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ad77e384b9a230c8861d554218c156c92">DPIToWindowCoords</a>(<span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">double</span>* <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#abc2f0a2c39e3fcfabc2701ab46dc04af">toPixels</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a75f70d42fe480b8344199f269e146bce">fromPixels</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#acbb3112c317b2041ae430ba8337ca0e1">toPixelsXY</a>(<span class="keywordtype">double</span> wx, <span class="keywordtype">double</span> wy, <span class="keywordtype">double</span>&amp; <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">double</span>&amp; py) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a811bfaf4b7435da7b749f5faae887104">fromPixelsXY</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">double</span> py, <span class="keywordtype">double</span>&amp; wx, <span class="keywordtype">double</span>&amp; wy) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1window_1_1sdl_1_1Window.html#a099e008296bee06cdf51a634cbfee7a2">   62</a></span>    <span class="keywordtype">void</span> *<a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a099e008296bee06cdf51a634cbfee7a2">getHandle</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> window; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">int</span>                     <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ac5b9b1fb32bd625f2f87849389407922">getDisplayCount</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::string             <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ad18562ac4cc2b97b24449ba136445e3b">getDisplayName</a>(<span class="keywordtype">int</span> display) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string             <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a615454ab1f689bc0604de91994cad541">getDisplayOrientation</a>(<span class="keywordtype">int</span> display) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::vector&lt;WindowSize&gt; <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a96e1b34b3fa41b714c5fe4302d1ee991">getFullscreenSizes</a>(<span class="keywordtype">int</span> display) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a0f1464e376f479d0c3db24e73f3a617d">getDesktopDimensions</a>(<span class="keywordtype">int</span> display, <span class="keywordtype">int</span>&amp; outWidth, <span class="keywordtype">int</span>&amp; outHeight) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#af673952b9d9493ff69f375c52e40ca34">showMessageBox</a>(<span class="keyword">const</span> std::string&amp; caption, <span class="keyword">const</span> std::string&amp; message,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                        <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, <span class="keywordtype">bool</span> attachToWindow) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a34a7a8ed208e21a3772061be8c0c309d">showMessageBoxData</a>(<span class="keyword">const</span> MessageBoxData&amp; data) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a92fa05b53286d56669e8c82db46639a1">requestAttention</a>(<span class="keywordtype">bool</span> continuous) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a2a582b026ac08966bf6db6913d6bf20c">setIconRGBA</a>(<span class="keyword">const</span> uint8_t* rgba, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#a9ce13679c447d676376cce2678ba8f39">updateSettings</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> &amp;newsettings, <span class="keywordtype">bool</span> updateGraphicsViewport);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">bool</span> setFullscreenInternal(<span class="keywordtype">bool</span> fullscreen, <span class="keywordtype">bool</span> desktop_mode);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">int</span> width = 800, height = 600;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_struct" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> settings;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::string <a class="code hl_variable" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::vector&lt;uint8_t&gt; iconRgba;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">int</span>                  iconWidth  = 0;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">int</span>                  iconHeight = 0;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">int</span> windowWidth  = 800;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">int</span> windowHeight = 600;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">int</span> pixelWidth   = 800;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">int</span> pixelHeight  = 600;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">bool</span> open;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">bool</span> mouseGrabbed;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">bool</span> displayedWindowError;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    SDL_Window *window = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">bool</span> createWindowAndContext(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, Uint32 windowflags, <span class="keywordtype">int</span> msaa, <span class="keywordtype">bool</span> stencil, <span class="keywordtype">int</span> <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1window_1_1sdl_1_1Window.html#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">close</a>(<span class="keywordtype">bool</span> allowExceptions);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};  <span class="comment">// Window</span></div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}  <span class="comment">// namespace sdl</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}  <span class="comment">// namespace window</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a75b160f574a0be26114bae2c7686a5e1"><div class="ttname"><a href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00444">EditorHost.cpp:444</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_ac30fed21fe991cc8475ce543929f8b72"><div class="ttname"><a href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00451">EditorHost.cpp:451</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00652">ImageData.cpp:652</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aWindow_8h_html"><div class="ttname"><a href="Window_8h.html">Window.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1Window_html"><div class="ttname"><a href="classeve_1_1window_1_1Window.html">eve::window::Window</a></div><div class="ttdoc">Platform window interface (SDL implementation on desktop/mobile). Script: win &lt;- eve....</div><div class="ttdef"><b>Definition</b> <a href="Window_8h_source.html#l00046">Window.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8h_source.html#l00015">Window.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a099e008296bee06cdf51a634cbfee7a2"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a099e008296bee06cdf51a634cbfee7a2">eve::window::sdl::Window::getHandle</a></div><div class="ttdeci">void * getHandle() const override</div><div class="ttdoc">Native window handle (SDL_Window* on SDL backend).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8h_source.html#l00062">Window.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a0f1464e376f479d0c3db24e73f3a617d"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a0f1464e376f479d0c3db24e73f3a617d">eve::window::sdl::Window::getDesktopDimensions</a></div><div class="ttdeci">void getDesktopDimensions(int display, int &amp;outWidth, int &amp;outHeight) const override</div><div class="ttdoc">Desktop resolution of a display.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00443">Window.cpp:443</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a113c8477c1872c8b344971c4b80787b3"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a113c8477c1872c8b344971c4b80787b3">eve::window::sdl::Window::hasMouseFocus</a></div><div class="ttdeci">bool hasMouseFocus() const override</div><div class="ttdoc">True when the window has mouse focus.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00329">Window.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a1892debfca56e8cd533e2b1aa808fe14"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a1892debfca56e8cd533e2b1aa808fe14">eve::window::sdl::Window::setFullscreenExclusive</a></div><div class="ttdeci">bool setFullscreenExclusive(bool fullscreen) override</div><div class="ttdoc">Switches between exclusive fullscreen and windowed mode.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00216">Window.cpp:216</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a1d75884aae81b9461cfb30cfde67796b"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a1d75884aae81b9461cfb30cfde67796b">eve::window::sdl::Window::isMaximized</a></div><div class="ttdeci">bool isMaximized() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00320">Window.cpp:320</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a1ea52a8d58e775c4b2b67055087481b2"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a1ea52a8d58e775c4b2b67055087481b2">eve::window::sdl::Window::isVisible</a></div><div class="ttdeci">bool isVisible() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00332">Window.cpp:332</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a255e81919f261575eb27a99ed0c0d5b7"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a255e81919f261575eb27a99ed0c0d5b7">eve::window::sdl::Window::maximize</a></div><div class="ttdeci">void maximize() override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00317">Window.cpp:317</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a2a582b026ac08966bf6db6913d6bf20c"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a2a582b026ac08966bf6db6913d6bf20c">eve::window::sdl::Window::setIconRGBA</a></div><div class="ttdeci">bool setIconRGBA(const uint8_t *rgba, int w, int h) override</div><div class="ttdoc">Sets the window icon from tightly packed RGBA8 pixels (w*h*4 bytes).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00493">Window.cpp:493</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a309bd22078ba61b48095e987436298dc"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a309bd22078ba61b48095e987436298dc">eve::window::sdl::Window::setVSync</a></div><div class="ttdeci">void setVSync(int vsync) override</div><div class="ttdoc">Enables/disables vertical sync (0 = off, 1 = on).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00337">Window.cpp:337</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a319af4a319354727f85bb3769978a15c"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a319af4a319354727f85bb3769978a15c">eve::window::sdl::Window::getVSync</a></div><div class="ttdeci">int getVSync() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00341">Window.cpp:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a34a7a8ed208e21a3772061be8c0c309d"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a34a7a8ed208e21a3772061be8c0c309d">eve::window::sdl::Window::showMessageBoxData</a></div><div class="ttdeci">int showMessageBoxData(const MessageBoxData &amp;data) override</div><div class="ttdoc">Shows a configurable message box; returns the pressed button index.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00459">Window.cpp:459</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a43b7225e2ddcfbda2a7f7cbbe29fe22f"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a43b7225e2ddcfbda2a7f7cbbe29fe22f">eve::window::sdl::Window::getHeight</a></div><div class="ttdeci">int getHeight() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00074">Window.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a5006434fceb8be0df191192b36d05e26"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a5006434fceb8be0df191192b36d05e26">eve::window::sdl::Window::restore</a></div><div class="ttdeci">void restore() override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00318">Window.cpp:318</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a54ddc84563dbd55d5f1d716a6ca580cb"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a54ddc84563dbd55d5f1d716a6ca580cb">eve::window::sdl::Window::getDPIScale</a></div><div class="ttdeci">double getDPIScale() const override</div><div class="ttdoc">Current UI/logical DPI scale (1.0 on non-retina displays).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00352">Window.cpp:352</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a5b0de7d96316349c2227547c27f14e22"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a5b0de7d96316349c2227547c27f14e22">eve::window::sdl::Window::getPixelHeight</a></div><div class="ttdeci">int getPixelHeight() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00345">Window.cpp:345</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a615454ab1f689bc0604de91994cad541"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a615454ab1f689bc0604de91994cad541">eve::window::sdl::Window::getDisplayOrientation</a></div><div class="ttdeci">std::string getDisplayOrientation(int display) const override</div><div class="ttdoc">Display orientation string (e.g. &quot;landscape&quot;).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00416">Window.cpp:416</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a662286a12d32f4ab6ad197bd5c206d87"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a662286a12d32f4ab6ad197bd5c206d87">eve::window::sdl::Window::hasFocus</a></div><div class="ttdeci">bool hasFocus() const override</div><div class="ttdoc">True when the window has keyboard focus.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00326">Window.cpp:326</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a75f70d42fe480b8344199f269e146bce"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a75f70d42fe480b8344199f269e146bce">eve::window::sdl::Window::fromPixels</a></div><div class="ttdeci">double fromPixels(double x) const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00390">Window.cpp:390</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a77033bea64bc31ff81fcf95639f31858"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a77033bea64bc31ff81fcf95639f31858">eve::window::sdl::Window::getWidth</a></div><div class="ttdeci">int getWidth() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00072">Window.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a784212943e8ddb5b11572a368ef7e322"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a784212943e8ddb5b11572a368ef7e322">eve::window::sdl::Window::isMinimized</a></div><div class="ttdeci">bool isMinimized() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00323">Window.cpp:323</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a788013e18e076a9b033b80fa5f550ba3"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a788013e18e076a9b033b80fa5f550ba3">eve::window::sdl::Window::setWindowSettings</a></div><div class="ttdeci">bool setWindowSettings(WindowSettings settings) override</div><div class="ttdoc">Applies a full WindowSettings struct (recreates the window when needed).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00076">Window.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a7c3d793b0ab5166a4d29e25641f66410"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a7c3d793b0ab5166a4d29e25641f66410">eve::window::sdl::Window::setWindowTitle</a></div><div class="ttdeci">void setWindowTitle(const std::string &amp;title) override</div><div class="ttdoc">Sets the window title shown in the OS title bar.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00279">Window.cpp:279</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a811bfaf4b7435da7b749f5faae887104"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a811bfaf4b7435da7b749f5faae887104">eve::window::sdl::Window::fromPixelsXY</a></div><div class="ttdeci">void fromPixelsXY(double px, double py, double &amp;wx, double &amp;wy) const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00400">Window.cpp:400</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a92fa05b53286d56669e8c82db46639a1"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a92fa05b53286d56669e8c82db46639a1">eve::window::sdl::Window::requestAttention</a></div><div class="ttdeci">void requestAttention(bool continuous) override</div><div class="ttdoc">Requests OS attention (flashing taskbar); continuous repeats until focused.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00482">Window.cpp:482</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a96e1b34b3fa41b714c5fe4302d1ee991"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a96e1b34b3fa41b714c5fe4302d1ee991">eve::window::sdl::Window::getFullscreenSizes</a></div><div class="ttdeci">std::vector&lt; WindowSize &gt; getFullscreenSizes(int display) const override</div><div class="ttdoc">Fullscreen sizes supported by a display.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00427">Window.cpp:427</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a9ce13679c447d676376cce2678ba8f39"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a9ce13679c447d676376cce2678ba8f39">eve::window::sdl::Window::updateSettings</a></div><div class="ttdeci">void updateSettings(const WindowSettings &amp;newsettings, bool updateGraphicsViewport)</div><div class="ttdoc">Used by event backend on resize to refresh drawable size / viewport.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00578">Window.cpp:578</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a9d0b40fd24815ea2fa5644b9bd7744a1"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a9d0b40fd24815ea2fa5644b9bd7744a1">eve::window::sdl::Window::windowToDPICoords</a></div><div class="ttdeci">void windowToDPICoords(double *x, double *y) const override</div><div class="ttdoc">Converts window logical coordinates to UI-DPI coordinates.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00373">Window.cpp:373</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_a9db6c9e74eb1fb28b89e88d12e897fdb"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#a9db6c9e74eb1fb28b89e88d12e897fdb">eve::window::sdl::Window::getNativeDPIScale</a></div><div class="ttdeci">double getNativeDPIScale() const override</div><div class="ttdoc">Native DPI scale reported by the OS for this window.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00347">Window.cpp:347</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_aac66cbb3ce2d418189e298d4a77ca395"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#aac66cbb3ce2d418189e298d4a77ca395">eve::window::sdl::Window::pixelToWindowCoords</a></div><div class="ttdeci">void pixelToWindowCoords(double *x, double *y) const override</div><div class="ttdoc">Converts framebuffer pixel coordinates to window logical coordinates.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00365">Window.cpp:365</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_aad9a2f9fa37e1d3385a34d78f6f4e81a"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#aad9a2f9fa37e1d3385a34d78f6f4e81a">eve::window::sdl::Window::getPixelWidth</a></div><div class="ttdeci">int getPixelWidth() const override</div><div class="ttdoc">Framebuffer (pixel) dimensions of the window.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00343">Window.cpp:343</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_aaf37cb2433dd9e2d78d76c18d8a14816"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#aaf37cb2433dd9e2d78d76c18d8a14816">eve::window::sdl::Window::isOpen</a></div><div class="ttdeci">bool isOpen() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00277">Window.cpp:277</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_abc2f0a2c39e3fcfabc2701ab46dc04af"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#abc2f0a2c39e3fcfabc2701ab46dc04af">eve::window::sdl::Window::toPixels</a></div><div class="ttdeci">double toPixels(double x) const override</div><div class="ttdoc">Scales a logical length to UI pixels (and back).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00388">Window.cpp:388</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ac5b9b1fb32bd625f2f87849389407922"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ac5b9b1fb32bd625f2f87849389407922">eve::window::sdl::Window::getDisplayCount</a></div><div class="ttdeci">int getDisplayCount() const override</div><div class="ttdoc">Number of displays attached to the system.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00405">Window.cpp:405</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_aca7d667412c151606ea60b1c16af409a"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#aca7d667412c151606ea60b1c16af409a">eve::window::sdl::Window::setPosition</a></div><div class="ttdeci">void setPosition(int x, int y, int display) override</div><div class="ttdoc">Moves the window to a position in logical units on the given display.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00286">Window.cpp:286</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_acadd7190e5f8b156b61a65cb732c44e7"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#acadd7190e5f8b156b61a65cb732c44e7">eve::window::sdl::Window::setFullscreenDesktop</a></div><div class="ttdeci">bool setFullscreenDesktop(bool fullscreen) override</div><div class="ttdoc">Switches between desktop fullscreen and windowed mode.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00212">Window.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_acbb3112c317b2041ae430ba8337ca0e1"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#acbb3112c317b2041ae430ba8337ca0e1">eve::window::sdl::Window::toPixelsXY</a></div><div class="ttdeci">void toPixelsXY(double wx, double wy, double &amp;px, double &amp;py) const override</div><div class="ttdoc">Vector variants of the coordinate conversions above.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00395">Window.cpp:395</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ad18562ac4cc2b97b24449ba136445e3b"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ad18562ac4cc2b97b24449ba136445e3b">eve::window::sdl::Window::getDisplayName</a></div><div class="ttdeci">std::string getDisplayName(int display) const override</div><div class="ttdoc">Human-readable display name for a display index.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00410">Window.cpp:410</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ad4b54c6b5213d937aa30d8c5ea1d7b73"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ad4b54c6b5213d937aa30d8c5ea1d7b73">eve::window::sdl::Window::getPosition</a></div><div class="ttdeci">void getPosition(int &amp;x, int &amp;y, int &amp;display) override</div><div class="ttdoc">Reads the current window position and display index.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00299">Window.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ad77e384b9a230c8861d554218c156c92"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ad77e384b9a230c8861d554218c156c92">eve::window::sdl::Window::DPIToWindowCoords</a></div><div class="ttdeci">void DPIToWindowCoords(double *x, double *y) const override</div><div class="ttdoc">Converts UI-DPI coordinates to window logical coordinates.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00381">Window.cpp:381</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ad84dfa1a3601225ba4c525a9159c3ed1"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ad84dfa1a3601225ba4c525a9159c3ed1">eve::window::sdl::Window::windowToPixelCoords</a></div><div class="ttdeci">void windowToPixelCoords(double *x, double *y) const override</div><div class="ttdoc">Converts window logical coordinates to framebuffer pixel coordinates.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00358">Window.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_adcdddc1c70d86e03e54a419234246226"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#adcdddc1c70d86e03e54a419234246226">eve::window::sdl::Window::getWindowSettings</a></div><div class="ttdeci">WindowSettings getWindowSettings() override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00210">Window.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ae3db8ddeae8e6ccc4b4738ccd56a5ec6"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">eve::window::sdl::Window::close</a></div><div class="ttdeci">void close() override</div><div class="ttdoc">Closes and destroys the underlying window.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00557">Window.cpp:557</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_ae9963e84e0005369e07ea09270db87ad"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#ae9963e84e0005369e07ea09270db87ad">eve::window::sdl::Window::minimize</a></div><div class="ttdeci">void minimize() override</div><div class="ttdoc">Minimizes / maximizes / restores the window.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00316">Window.cpp:316</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_aeac0e3ae979e19bfdac85a6e49ddf577"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#aeac0e3ae979e19bfdac85a6e49ddf577">eve::window::sdl::Window::Window</a></div><div class="ttdeci">Window()</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00051">Window.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_af36747f4cb8650b198fabfe521c9a462"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#af36747f4cb8650b198fabfe521c9a462">eve::window::sdl::Window::getWindowTitle</a></div><div class="ttdeci">const std::string &amp; getWindowTitle() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00284">Window.cpp:284</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_af556ef9a9098106603bd184e082152db"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#af556ef9a9098106603bd184e082152db">eve::window::sdl::Window::setSize</a></div><div class="ttdeci">void setSize(int w, int h) override</div><div class="ttdoc">Requests a new logical window size.</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00064">Window.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_af673952b9d9493ff69f375c52e40ca34"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#af673952b9d9493ff69f375c52e40ca34">eve::window::sdl::Window::showMessageBox</a></div><div class="ttdeci">bool showMessageBox(const std::string &amp;caption, const std::string &amp;message, const std::string &amp;type, bool attachToWindow) override</div><div class="ttdoc">Shows a modal message box (&quot;info&quot;, &quot;warning&quot;, or &quot;error&quot;).</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00453">Window.cpp:453</a></div></div>
+<div class="ttc" id="aclasseve_1_1window_1_1sdl_1_1Window_html_afa47fa19b5671692bb85f0e6d9564711"><div class="ttname"><a href="classeve_1_1window_1_1sdl_1_1Window.html#afa47fa19b5671692bb85f0e6d9564711">eve::window::sdl::Window::~Window</a></div><div class="ttdeci">~Window()</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Window_8cpp_source.html#l00062">Window.cpp:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_aa9faeccac79ba15e77d60dae53b07951"><div class="ttname"><a href="namespaceeve_1_1ui.html#aa9faeccac79ba15e77d60dae53b07951">eve::ui::window</a></div><div class="ttdeci">WidgetDesc window(std::string title, std::vector&lt; WidgetDesc &gt; children, std::string id)</div><div class="ttdoc">Top-level window widget with a title bar.</div><div class="ttdef"><b>Definition</b> <a href="Widget_8cpp_source.html#l00225">Widget.cpp:225</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1window_1_1WindowSettings_html"><div class="ttname"><a href="structeve_1_1window_1_1WindowSettings.html">eve::window::WindowSettings</a></div><div class="ttdoc">Display settings for window creation/resize. width/height == 0 selects the desktop display mode size.</div><div class="ttdef"><b>Definition</b> <a href="Window_8h_source.html#l00017">Window.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

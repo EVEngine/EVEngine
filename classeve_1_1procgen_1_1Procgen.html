@@ -1,0 +1,1611 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::Procgen类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1Procgen-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::Procgen类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Procedural generation module. Phase A: runtime maps (semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> → TileLayer). Phase B: runtime textures (ImageData / Texture). Phase C (partial): mesh recipes (Marching Cubes → <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a> / Mesh). Script: <code>procgen &lt;- eve.Procgen();</code>  
+ <a href="classeve_1_1procgen_1_1Procgen.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Procgen_8h_source.html">Procgen.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::procgen::Procgen 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1procgen_1_1Procgen.png" usemap="#eve::procgen::Procgen_map" alt=""/>
+  <map id="eve::procgen::Procgen_map" name="eve::procgen::Procgen_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,140,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a615800a1581d62bdcc3dc33626bb7f1e" id="r_a615800a1581d62bdcc3dc33626bb7f1e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a615800a1581d62bdcc3dc33626bb7f1e">Module_REG</a> (<a class="el" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a>)</td></tr>
+<tr class="separator:a615800a1581d62bdcc3dc33626bb7f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd93ae539b8439a115275e32b13d2d46" id="r_acd93ae539b8439a115275e32b13d2d46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#acd93ae539b8439a115275e32b13d2d46">Procgen</a> ()</td></tr>
+<tr class="separator:acd93ae539b8439a115275e32b13d2d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab96239f5af465d542b6cc0f9488e1c1e" id="r_ab96239f5af465d542b6cc0f9488e1c1e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ab96239f5af465d542b6cc0f9488e1c1e">~Procgen</a> () override=default</td></tr>
+<tr class="separator:ab96239f5af465d542b6cc0f9488e1c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5faf059c9026efabe740afff2c38dd1b" id="r_a5faf059c9026efabe740afff2c38dd1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a5faf059c9026efabe740afff2c38dd1b">newParams</a> ()</td></tr>
+<tr class="separator:a5faf059c9026efabe740afff2c38dd1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8891b918238e4f91be2945b4fe9ff753" id="r_a8891b918238e4f91be2945b4fe9ff753"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a8891b918238e4f91be2945b4fe9ff753">newOutput</a> ()</td></tr>
+<tr class="separator:a8891b918238e4f91be2945b4fe9ff753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7362757ebae35123a9b03cae116529d0" id="r_a7362757ebae35123a9b03cae116529d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a7362757ebae35123a9b03cae116529d0">newGrid</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:a7362757ebae35123a9b03cae116529d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f276026d271090aa8b92cf12799cb6" id="r_a29f276026d271090aa8b92cf12799cb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a29f276026d271090aa8b92cf12799cb6">generate</a> (const std::string &amp;algorithmId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params)</td></tr>
+<tr class="separator:a29f276026d271090aa8b92cf12799cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f5cc8199cf4c7a0bf0948c2e436e04c" id="r_a7f5cc8199cf4c7a0bf0948c2e436e04c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a7f5cc8199cf4c7a0bf0948c2e436e04c">generateTo</a> (const std::string &amp;algorithmId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params, <a class="el" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a> *output)</td></tr>
+<tr class="separator:a7f5cc8199cf4c7a0bf0948c2e436e04c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59e1b55719b4f2483adf7dc38c24ffc7" id="r_a59e1b55719b4f2483adf7dc38c24ffc7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a59e1b55719b4f2483adf7dc38c24ffc7">applyToLayer</a> (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *grid, const std::string &amp;palette, <a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="separator:a59e1b55719b4f2483adf7dc38c24ffc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb3c918be0d271d8d2a00b95a7ffed3" id="r_a4cb3c918be0d271d8d2a00b95a7ffed3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a4cb3c918be0d271d8d2a00b95a7ffed3">setPaletteGid</a> (const std::string &amp;palette, const std::string &amp;<a class="el" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>, int gid)</td></tr>
+<tr class="separator:a4cb3c918be0d271d8d2a00b95a7ffed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab08f47ec0af87bf7b6238ed35623c532" id="r_ab08f47ec0af87bf7b6238ed35623c532"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ab08f47ec0af87bf7b6238ed35623c532">getPaletteGid</a> (const std::string &amp;palette, const std::string &amp;<a class="el" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>) const</td></tr>
+<tr class="separator:ab08f47ec0af87bf7b6238ed35623c532"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc3133b1b59f7e9fcb77cc2a9e50a22a" id="r_acc3133b1b59f7e9fcb77cc2a9e50a22a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#acc3133b1b59f7e9fcb77cc2a9e50a22a">getAlgorithmCount</a> () const</td></tr>
+<tr class="separator:acc3133b1b59f7e9fcb77cc2a9e50a22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6103224ff94a69ae0709724b951919a7" id="r_a6103224ff94a69ae0709724b951919a7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a6103224ff94a69ae0709724b951919a7">getAlgorithmId</a> (int index) const</td></tr>
+<tr class="separator:a6103224ff94a69ae0709724b951919a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac363cb788ca907f296d01d145c913aa" id="r_aac363cb788ca907f296d01d145c913aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#aac363cb788ca907f296d01d145c913aa">hasAlgorithm</a> (const std::string &amp;algorithmId) const</td></tr>
+<tr class="separator:aac363cb788ca907f296d01d145c913aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4fb96fe24c0917f9c77a9c202080187" id="r_af4fb96fe24c0917f9c77a9c202080187"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#af4fb96fe24c0917f9c77a9c202080187">autotileGrid</a> (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *grid)</td></tr>
+<tr class="memdesc:af4fb96fe24c0917f9c77a9c202080187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post-process a generated grid: fill each wall cell's detail with an 8-bit neighbour mask (autotile directions). Mutates <code>grid</code> in place.  <br /></td></tr>
+<tr class="separator:af4fb96fe24c0917f9c77a9c202080187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace94eec17a5b27f86d99a97a98facaea" id="r_ace94eec17a5b27f86d99a97a98facaea"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ace94eec17a5b27f86d99a97a98facaea">randomSeed</a> ()</td></tr>
+<tr class="memdesc:ace94eec17a5b27f86d99a97a98facaea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fresh non-zero seed for regenerating a level.  <br /></td></tr>
+<tr class="separator:ace94eec17a5b27f86d99a97a98facaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae868898a3178f28eb2e29315a7180efe" id="r_ae868898a3178f28eb2e29315a7180efe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ae868898a3178f28eb2e29315a7180efe">lastError</a> () const</td></tr>
+<tr class="separator:ae868898a3178f28eb2e29315a7180efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add5cb7a808a094e1b8606440f16da4d6" id="r_add5cb7a808a094e1b8606440f16da4d6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#add5cb7a808a094e1b8606440f16da4d6">gridToJson</a> (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *grid) const</td></tr>
+<tr class="separator:add5cb7a808a094e1b8606440f16da4d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd74cdf7bcd8cb47e4054834352eb28" id="r_a5cd74cdf7bcd8cb47e4054834352eb28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a5cd74cdf7bcd8cb47e4054834352eb28">generateImage</a> (const std::string &amp;recipeId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params)</td></tr>
+<tr class="memdesc:a5cd74cdf7bcd8cb47e4054834352eb28"><td class="mdescLeft">&#160;</td><td class="mdescRight">RGBA8 ImageData (caller owns). Pixel-friendly recipes: tex.soil/stone/marble/water/sky_cloud.  <br /></td></tr>
+<tr class="separator:a5cd74cdf7bcd8cb47e4054834352eb28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f0683b067dd8b60383109b81e12c83a" id="r_a7f0683b067dd8b60383109b81e12c83a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a7f0683b067dd8b60383109b81e12c83a">generateNormalImage</a> (const std::string &amp;recipeId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params)</td></tr>
+<tr class="memdesc:a7f0683b067dd8b60383109b81e12c83a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal map derived from albedo luminance (caller owns).  <br /></td></tr>
+<tr class="separator:a7f0683b067dd8b60383109b81e12c83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5374163ade79ee3ec1f53e9944bd8d8f" id="r_a5374163ade79ee3ec1f53e9944bd8d8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a5374163ade79ee3ec1f53e9944bd8d8f">generateTexture</a> (const std::string &amp;recipeId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a5374163ade79ee3ec1f53e9944bd8d8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload recipe to GPU. repeatU/V follow params "seamless" (default on). Caller owns Texture*.  <br /></td></tr>
+<tr class="separator:a5374163ade79ee3ec1f53e9944bd8d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a094b742b7940bbb74fd74a0508e32ba1" id="r_a094b742b7940bbb74fd74a0508e32ba1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a094b742b7940bbb74fd74a0508e32ba1">getTextureRecipeCount</a> () const</td></tr>
+<tr class="separator:a094b742b7940bbb74fd74a0508e32ba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af28e425020b63ab02ade5a4c630f4af6" id="r_af28e425020b63ab02ade5a4c630f4af6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#af28e425020b63ab02ade5a4c630f4af6">getTextureRecipeId</a> (int index) const</td></tr>
+<tr class="separator:af28e425020b63ab02ade5a4c630f4af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23d81d451721ff5dfeb9dafb06602924" id="r_a23d81d451721ff5dfeb9dafb06602924"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a23d81d451721ff5dfeb9dafb06602924">hasTextureRecipe</a> (const std::string &amp;recipeId) const</td></tr>
+<tr class="separator:a23d81d451721ff5dfeb9dafb06602924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c8ab08cb79f89bb38697343b8d73f87" id="r_a0c8ab08cb79f89bb38697343b8d73f87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a0c8ab08cb79f89bb38697343b8d73f87">newCloudField</a> ()</td></tr>
+<tr class="memdesc:a0c8ab08cb79f89bb38697343b8d73f87"><td class="mdescLeft">&#160;</td><td class="mdescRight">New deterministic, tiling, time-animated cloud field (caller owns).  <br /></td></tr>
+<tr class="separator:a0c8ab08cb79f89bb38697343b8d73f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83996b74e0409ea61b5003020ecceb78" id="r_a83996b74e0409ea61b5003020ecceb78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a83996b74e0409ea61b5003020ecceb78">newCloudShadow</a> ()</td></tr>
+<tr class="memdesc:a83996b74e0409ea61b5003020ecceb78"><td class="mdescLeft">&#160;</td><td class="mdescRight">New sun projection over a cloud field → ground shadows (caller owns).  <br /></td></tr>
+<tr class="separator:a83996b74e0409ea61b5003020ecceb78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a444cfb8e6dc97415d506ba13f74e3b87" id="r_a444cfb8e6dc97415d506ba13f74e3b87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a444cfb8e6dc97415d506ba13f74e3b87">cloudCoverageAt</a> (<a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *field, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, float time)</td></tr>
+<tr class="memdesc:a444cfb8e6dc97415d506ba13f74e3b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cloud coverage at world (x, z) and time (via a <a class="el" href="classeve_1_1procgen_1_1CloudField.html" title="Deterministic, seamlessly-tiling, time-animated procedural cloud field.">CloudField</a>).  <br /></td></tr>
+<tr class="separator:a444cfb8e6dc97415d506ba13f74e3b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7835332143032aa93608d39d7323541" id="r_ab7835332143032aa93608d39d7323541"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ab7835332143032aa93608d39d7323541">cloudShadowFactor</a> (<a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *shadow, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, float time)</td></tr>
+<tr class="memdesc:ab7835332143032aa93608d39d7323541"><td class="mdescLeft">&#160;</td><td class="mdescRight">Light multiplier in [0,1] from a <a class="el" href="classeve_1_1procgen_1_1CloudShadow.html" title="Cloud shadows cast onto the ground plane.">CloudShadow</a> at world (x, z) and time.  <br /></td></tr>
+<tr class="separator:ab7835332143032aa93608d39d7323541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a389c734e55661c3664cb98206dbb7971" id="r_a389c734e55661c3664cb98206dbb7971"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a389c734e55661c3664cb98206dbb7971">sampleCloud</a> (<a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *field, float *out, int <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, float time, float x0, float z0, float extent)</td></tr>
+<tr class="separator:a389c734e55661c3664cb98206dbb7971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e64443b115ae0b8c5f160cee5b09e5b" id="r_a4e64443b115ae0b8c5f160cee5b09e5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a4e64443b115ae0b8c5f160cee5b09e5b">sampleCloudShadow</a> (<a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *shadow, float *out, int <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, float time, float x0, float z0, float extent)</td></tr>
+<tr class="separator:a4e64443b115ae0b8c5f160cee5b09e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea02da1582f4f2565dc634569811070e" id="r_aea02da1582f4f2565dc634569811070e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#aea02da1582f4f2565dc634569811070e">generatePbrMaterial</a> (const std::string &amp;recipeId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params)</td></tr>
+<tr class="memdesc:aea02da1582f4f2565dc634569811070e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full metallic-roughness PBR set (albedo/normal/roughness/metallic/height/ao) derived from a single displacement field. Caller owns the returned set (call <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html#a6c633f9ca902dc98c41912080a367b96" title="Deletes all maps and nulls the pointers (defined in PbrMaterial.cpp).">PbrTextureSet::destroy()</a>). Recipes: pbr.soil/stone/rock/marble/water/ ripple/wood/cloth/ornament/spot/zebra/wall/cement/mud/sky_cloud.  <br /></td></tr>
+<tr class="separator:aea02da1582f4f2565dc634569811070e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a62ea843b681f26f968c36b1f8d945" id="r_ac7a62ea843b681f26f968c36b1f8d945"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ac7a62ea843b681f26f968c36b1f8d945">getPbrRecipeCount</a> () const</td></tr>
+<tr class="separator:ac7a62ea843b681f26f968c36b1f8d945"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5947339c1f3b7a89ee04e305b36305d" id="r_ab5947339c1f3b7a89ee04e305b36305d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ab5947339c1f3b7a89ee04e305b36305d">getPbrRecipeId</a> (int index) const</td></tr>
+<tr class="separator:ab5947339c1f3b7a89ee04e305b36305d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f4be2549c6d4397ce03051df5e7212a" id="r_a9f4be2549c6d4397ce03051df5e7212a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a9f4be2549c6d4397ce03051df5e7212a">hasPbrRecipe</a> (const std::string &amp;recipeId) const</td></tr>
+<tr class="separator:a9f4be2549c6d4397ce03051df5e7212a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6f5f687a56b7fbb441248ce81e67bd3" id="r_ae6f5f687a56b7fbb441248ce81e67bd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ae6f5f687a56b7fbb441248ce81e67bd3">buildMesh</a> (const std::string &amp;recipeId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params)</td></tr>
+<tr class="memdesc:ae6f5f687a56b7fbb441248ce81e67bd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet.  <br /></td></tr>
+<tr class="separator:ae6f5f687a56b7fbb441248ce81e67bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad232fd35b13fd2f225b91757d4204f86" id="r_ad232fd35b13fd2f225b91757d4204f86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ad232fd35b13fd2f225b91757d4204f86">generateMesh</a> (const std::string &amp;recipeId, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:ad232fd35b13fd2f225b91757d4204f86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build + upload to GPU Mesh (owned by Graphics).  <br /></td></tr>
+<tr class="separator:ad232fd35b13fd2f225b91757d4204f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3431f3661c672d04ea9676ed5c7d3a1" id="r_aa3431f3661c672d04ea9676ed5c7d3a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#aa3431f3661c672d04ea9676ed5c7d3a1">getMeshRecipeCount</a> () const</td></tr>
+<tr class="separator:aa3431f3661c672d04ea9676ed5c7d3a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91d73e1c5bc62aa0dbe2ee3c46633727" id="r_a91d73e1c5bc62aa0dbe2ee3c46633727"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a91d73e1c5bc62aa0dbe2ee3c46633727">getMeshRecipeId</a> (int index) const</td></tr>
+<tr class="separator:a91d73e1c5bc62aa0dbe2ee3c46633727"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad58e11f06d7d0d839f045d94cf90f07d" id="r_ad58e11f06d7d0d839f045d94cf90f07d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ad58e11f06d7d0d839f045d94cf90f07d">hasMeshRecipe</a> (const std::string &amp;recipeId) const</td></tr>
+<tr class="separator:ad58e11f06d7d0d839f045d94cf90f07d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3c597df4ad0e6c6a4d31c8b57fc5d31" id="r_af3c597df4ad0e6c6a4d31c8b57fc5d31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#af3c597df4ad0e6c6a4d31c8b57fc5d31">newTerrainSampler</a> ()</td></tr>
+<tr class="memdesc:af3c597df4ad0e6c6a4d31c8b57fc5d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampling function over continuous map coordinates (caller owns).  <br /></td></tr>
+<tr class="separator:af3c597df4ad0e6c6a4d31c8b57fc5d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7024bd2666a1ad40f118c2a0a123c9ee" id="r_a7024bd2666a1ad40f118c2a0a123c9ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a7024bd2666a1ad40f118c2a0a123c9ee">newHeightmap</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="memdesc:a7024bd2666a1ad40f118c2a0a123c9ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty in-memory heightmap (caller owns).  <br /></td></tr>
+<tr class="separator:a7024bd2666a1ad40f118c2a0a123c9ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64bfa661d8da013dacd0b5ce2f8c455a" id="r_a64bfa661d8da013dacd0b5ce2f8c455a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a64bfa661d8da013dacd0b5ce2f8c455a">generateHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params)</td></tr>
+<tr class="memdesc:a64bfa661d8da013dacd0b5ce2f8c455a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a sampler from params (seed/scale/octaves/…) and materialize it (caller owns).  <br /></td></tr>
+<tr class="separator:a64bfa661d8da013dacd0b5ce2f8c455a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6493cc25abca3823a940a5150a201f21" id="r_a6493cc25abca3823a940a5150a201f21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#a6493cc25abca3823a940a5150a201f21">heightmapToGrid</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *heightmap, <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *params, <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *out)</td></tr>
+<tr class="memdesc:a6493cc25abca3823a940a5150a201f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classify a heightmap into a semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> using params bands (waterMax…).  <br /></td></tr>
+<tr class="separator:a6493cc25abca3823a940a5150a201f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7d4c30c92653bcad13727bf7b96775a" id="r_ad7d4c30c92653bcad13727bf7b96775a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Procgen.html#ad7d4c30c92653bcad13727bf7b96775a">palettes</a> ()</td></tr>
+<tr class="separator:ad7d4c30c92653bcad13727bf7b96775a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Procedural generation module. Phase A: runtime maps (semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> → TileLayer). Phase B: runtime textures (ImageData / Texture). Phase C (partial): mesh recipes (Marching Cubes → <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a> / Mesh). Script: <code>procgen &lt;- eve.Procgen();</code> </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8h_source.html">Procgen.h</a> 第 <a class="el" href="Procgen_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acd93ae539b8439a115275e32b13d2d46" name="acd93ae539b8439a115275e32b13d2d46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd93ae539b8439a115275e32b13d2d46">&#9670;&#160;</a></span>Procgen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::Procgen::Procgen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00441">eve::procgen::MeshRecipeRegistry::instance()</a>, <a class="el" href="GeneratorRegistry_8cpp_source.html#l00007">eve::procgen::GeneratorRegistry::instance()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00022">eve::procgen::PbrRecipeRegistry::instance()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00010">eve::procgen::TextureRecipeRegistry::instance()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00472">eve::procgen::MeshRecipeRegistry::registerBuiltins()</a>, <a class="el" href="BuiltinAlgorithms_8cpp_source.html#l00202">eve::procgen::GeneratorRegistry::registerBuiltins()</a>, <a class="el" href="BuiltinTextures_8cpp_source.html#l00484">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00053">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>, <a class="el" href="ProcgenCapabilities_8cpp_source.html#l00101">eve::procgen::registerProcgenCapabilities()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l00122">setPaletteGid()</a>.</p>
+
+</div>
+</div>
+<a id="ab96239f5af465d542b6cc0f9488e1c1e" name="ab96239f5af465d542b6cc0f9488e1c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab96239f5af465d542b6cc0f9488e1c1e">&#9670;&#160;</a></span>~Procgen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::Procgen::~Procgen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a59e1b55719b4f2483adf7dc38c24ffc7" name="a59e1b55719b4f2483adf7dc38c24ffc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59e1b55719b4f2483adf7dc38c24ffc7">&#9670;&#160;</a></span>applyToLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::applyToLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *&#160;</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>palette</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Palette_8cpp_source.html#l00024">eve::procgen::PaletteTable::applyToLayer()</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l00085">generateTo()</a>.</p>
+
+</div>
+</div>
+<a id="af4fb96fe24c0917f9c77a9c202080187" name="af4fb96fe24c0917f9c77a9c202080187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4fb96fe24c0917f9c77a9c202080187">&#9670;&#160;</a></span>autotileGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::autotileGrid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *&#160;</td>
+          <td class="paramname"><em>grid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Post-process a generated grid: fill each wall cell's detail with an 8-bit neighbour mask (autotile directions). Mutates <code>grid</code> in place. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00347">eve::procgen::autotileGridInPlace()</a>.</p>
+
+</div>
+</div>
+<a id="ae6f5f687a56b7fbb441248ce81e67bd3" name="ae6f5f687a56b7fbb441248ce81e67bd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f5f687a56b7fbb441248ce81e67bd3">&#9670;&#160;</a></span>buildMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> * eve::procgen::Procgen::buildMesh </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00072">generate()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00441">eve::procgen::MeshRecipeRegistry::instance()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00527">mesh</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00472">eve::procgen::MeshRecipeRegistry::registerBuiltins()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l00320">generateMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a444cfb8e6dc97415d506ba13f74e3b87" name="a444cfb8e6dc97415d506ba13f74e3b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a444cfb8e6dc97415d506ba13f74e3b87">&#9670;&#160;</a></span>cloudCoverageAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Procgen::cloudCoverageAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cloud coverage at world (x, z) and time (via a <a class="el" href="classeve_1_1procgen_1_1CloudField.html" title="Deterministic, seamlessly-tiling, time-animated procedural cloud field.">CloudField</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="ab7835332143032aa93608d39d7323541" name="ab7835332143032aa93608d39d7323541"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7835332143032aa93608d39d7323541">&#9670;&#160;</a></span>cloudShadowFactor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Procgen::cloudShadowFactor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *&#160;</td>
+          <td class="paramname"><em>shadow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Light multiplier in [0,1] from a <a class="el" href="classeve_1_1procgen_1_1CloudShadow.html" title="Cloud shadows cast onto the ground plane.">CloudShadow</a> at world (x, z) and time. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CloudShadow_8cpp_source.html#l00034">eve::procgen::CloudShadow::shadowFactorAt()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a29f276026d271090aa8b92cf12799cb6" name="a29f276026d271090aa8b92cf12799cb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f276026d271090aa8b92cf12799cb6">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> * eve::procgen::Procgen::generate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>algorithmId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l00304">buildMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a64bfa661d8da013dacd0b5ce2f8c455a" name="a64bfa661d8da013dacd0b5ce2f8c455a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64bfa661d8da013dacd0b5ce2f8c455a">&#9670;&#160;</a></span>generateHeightmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> * eve::procgen::Procgen::generateHeightmap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a sampler from params (seed/scale/octaves/…) and materialize it (caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainSampler_8cpp_source.html#l00128">eve::procgen::TerrainSampler::fromParams()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00069">eve::procgen::Heightmap::generate()</a>, <a class="el" href="Params_8cpp_source.html#l00015">eve::procgen::Params::getHeight()</a> , 以及 <a class="el" href="Params_8cpp_source.html#l00014">eve::procgen::Params::getWidth()</a>.</p>
+
+</div>
+</div>
+<a id="a5cd74cdf7bcd8cb47e4054834352eb28" name="a5cd74cdf7bcd8cb47e4054834352eb28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cd74cdf7bcd8cb47e4054834352eb28">&#9670;&#160;</a></span>generateImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> * eve::procgen::Procgen::generateImage </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RGBA8 ImageData (caller owns). Pixel-friendly recipes: tex.soil/stone/marble/water/sky_cloud. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TextureRecipe_8cpp_source.html#l00023">eve::procgen::TextureRecipeRegistry::generate()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00010">eve::procgen::TextureRecipeRegistry::instance()</a> , 以及 <a class="el" href="BuiltinTextures_8cpp_source.html#l00484">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l00175">generateNormalImage()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l00195">generateTexture()</a>.</p>
+
+</div>
+</div>
+<a id="ad232fd35b13fd2f225b91757d4204f86" name="ad232fd35b13fd2f225b91757d4204f86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad232fd35b13fd2f225b91757d4204f86">&#9670;&#160;</a></span>generateMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::procgen::Procgen::generateMesh </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build + upload to GPU Mesh (owned by Graphics). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00304">buildMesh()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00041">eve::procgen::MeshBuild::getIndexCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00040">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="MeshBuild_8h_source.html#l00042">eve::procgen::MeshBuild::indices()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="MeshBuild_8h_source.html#l00040">eve::procgen::MeshBuild::normals()</a>, <a class="el" href="MeshBuild_8h_source.html#l00039">eve::procgen::MeshBuild::positions()</a> , 以及 <a class="el" href="MeshBuild_8h_source.html#l00041">eve::procgen::MeshBuild::uvs()</a>.</p>
+
+</div>
+</div>
+<a id="a7f0683b067dd8b60383109b81e12c83a" name="a7f0683b067dd8b60383109b81e12c83a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f0683b067dd8b60383109b81e12c83a">&#9670;&#160;</a></span>generateNormalImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> * eve::procgen::Procgen::generateNormalImage </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normal map derived from albedo luminance (caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00091">albedo</a>, <a class="el" href="Procgen_8cpp_source.html#l00162">generateImage()</a>, <a class="el" href="Params_8cpp_source.html#l00032">eve::procgen::Params::getFloat()</a>, <a class="el" href="Params_8cpp_source.html#l00023">eve::procgen::Params::getInt()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00106">eve::procgen::heightToNormalImage()</a>, <a class="el" href="ImageData_8cpp_source.html#l00652">px</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="aea02da1582f4f2565dc634569811070e" name="aea02da1582f4f2565dc634569811070e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea02da1582f4f2565dc634569811070e">&#9670;&#160;</a></span>generatePbrMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> * eve::procgen::Procgen::generatePbrMaterial </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Full metallic-roughness PBR set (albedo/normal/roughness/metallic/height/ao) derived from a single displacement field. Caller owns the returned set (call <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html#a6c633f9ca902dc98c41912080a367b96" title="Deletes all maps and nulls the pointers (defined in PbrMaterial.cpp).">PbrTextureSet::destroy()</a>). Recipes: pbr.soil/stone/rock/marble/water/ ripple/wood/cloth/ornament/spot/zebra/wall/cement/mud/sky_cloud. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PbrMaterial_8cpp_source.html#l00035">eve::procgen::PbrRecipeRegistry::generate()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00022">eve::procgen::PbrRecipeRegistry::instance()</a> , 以及 <a class="el" href="PbrMaterial_8cpp_source.html#l00053">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a5374163ade79ee3ec1f53e9944bd8d8f" name="a5374163ade79ee3ec1f53e9944bd8d8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5374163ade79ee3ec1f53e9944bd8d8f">&#9670;&#160;</a></span>generateTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::procgen::Procgen::generateTexture </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload recipe to GPU. repeatU/V follow params "seamless" (default on). Caller owns Texture*. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00162">generateImage()</a>, <a class="el" href="ImageData_8cpp_source.html#l00244">eve::image::ImageData::getData()</a>, <a class="el" href="ImageData_8cpp_source.html#l00252">eve::image::ImageData::getHeight()</a>, <a class="el" href="Params_8cpp_source.html#l00023">eve::procgen::Params::getInt()</a>, <a class="el" href="ImageData_8cpp_source.html#l00250">eve::image::ImageData::getWidth()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a7f5cc8199cf4c7a0bf0948c2e436e04c" name="a7f5cc8199cf4c7a0bf0948c2e436e04c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f5cc8199cf4c7a0bf0948c2e436e04c">&#9670;&#160;</a></span>generateTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::generateTo </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>algorithmId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a> *&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00113">applyToLayer()</a>, <a class="el" href="OutputSpec_8cpp_source.html#l00011">eve::procgen::OutputSpec::getLayer()</a>, <a class="el" href="OutputSpec_8cpp_source.html#l00014">eve::procgen::OutputSpec::getPalette()</a>, <a class="el" href="OutputSpec_8cpp_source.html#l00017">eve::procgen::OutputSpec::getPath()</a>, <a class="el" href="OutputSpec_8cpp_source.html#l00008">eve::procgen::OutputSpec::getTarget()</a> , 以及 <a class="el" href="JsonExport_8cpp_source.html#l00056">eve::procgen::writeGridJson()</a>.</p>
+
+</div>
+</div>
+<a id="acc3133b1b59f7e9fcb77cc2a9e50a22a" name="acc3133b1b59f7e9fcb77cc2a9e50a22a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc3133b1b59f7e9fcb77cc2a9e50a22a">&#9670;&#160;</a></span>getAlgorithmCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Procgen::getAlgorithmCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00007">eve::procgen::GeneratorRegistry::instance()</a> , 以及 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00030">eve::procgen::GeneratorRegistry::list()</a>.</p>
+
+</div>
+</div>
+<a id="a6103224ff94a69ae0709724b951919a7" name="a6103224ff94a69ae0709724b951919a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6103224ff94a69ae0709724b951919a7">&#9670;&#160;</a></span>getAlgorithmId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::getAlgorithmId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00007">eve::procgen::GeneratorRegistry::instance()</a> , 以及 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00030">eve::procgen::GeneratorRegistry::list()</a>.</p>
+
+</div>
+</div>
+<a id="aa3431f3661c672d04ea9676ed5c7d3a1" name="aa3431f3661c672d04ea9676ed5c7d3a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3431f3661c672d04ea9676ed5c7d3a1">&#9670;&#160;</a></span>getMeshRecipeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Procgen::getMeshRecipeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00441">eve::procgen::MeshRecipeRegistry::instance()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00464">eve::procgen::MeshRecipeRegistry::list()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00472">eve::procgen::MeshRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a91d73e1c5bc62aa0dbe2ee3c46633727" name="a91d73e1c5bc62aa0dbe2ee3c46633727"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91d73e1c5bc62aa0dbe2ee3c46633727">&#9670;&#160;</a></span>getMeshRecipeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::getMeshRecipeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00441">eve::procgen::MeshRecipeRegistry::instance()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00464">eve::procgen::MeshRecipeRegistry::list()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00472">eve::procgen::MeshRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="ab08f47ec0af87bf7b6238ed35623c532" name="ab08f47ec0af87bf7b6238ed35623c532"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab08f47ec0af87bf7b6238ed35623c532">&#9670;&#160;</a></span>getPaletteGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Procgen::getPaletteGid </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>palette</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>semantic</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Palette_8cpp_source.html#l00013">eve::procgen::PaletteTable::getGid()</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a>.</p>
+
+</div>
+</div>
+<a id="ac7a62ea843b681f26f968c36b1f8d945" name="ac7a62ea843b681f26f968c36b1f8d945"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a62ea843b681f26f968c36b1f8d945">&#9670;&#160;</a></span>getPbrRecipeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Procgen::getPbrRecipeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PbrMaterial_8cpp_source.html#l00022">eve::procgen::PbrRecipeRegistry::instance()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00045">eve::procgen::PbrRecipeRegistry::list()</a> , 以及 <a class="el" href="PbrMaterial_8cpp_source.html#l00053">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="ab5947339c1f3b7a89ee04e305b36305d" name="ab5947339c1f3b7a89ee04e305b36305d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5947339c1f3b7a89ee04e305b36305d">&#9670;&#160;</a></span>getPbrRecipeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::getPbrRecipeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PbrMaterial_8cpp_source.html#l00022">eve::procgen::PbrRecipeRegistry::instance()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00045">eve::procgen::PbrRecipeRegistry::list()</a> , 以及 <a class="el" href="PbrMaterial_8cpp_source.html#l00053">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a094b742b7940bbb74fd74a0508e32ba1" name="a094b742b7940bbb74fd74a0508e32ba1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a094b742b7940bbb74fd74a0508e32ba1">&#9670;&#160;</a></span>getTextureRecipeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Procgen::getTextureRecipeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TextureRecipe_8cpp_source.html#l00010">eve::procgen::TextureRecipeRegistry::instance()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00033">eve::procgen::TextureRecipeRegistry::list()</a> , 以及 <a class="el" href="BuiltinTextures_8cpp_source.html#l00484">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="af28e425020b63ab02ade5a4c630f4af6" name="af28e425020b63ab02ade5a4c630f4af6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af28e425020b63ab02ade5a4c630f4af6">&#9670;&#160;</a></span>getTextureRecipeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::getTextureRecipeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TextureRecipe_8cpp_source.html#l00010">eve::procgen::TextureRecipeRegistry::instance()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00033">eve::procgen::TextureRecipeRegistry::list()</a> , 以及 <a class="el" href="BuiltinTextures_8cpp_source.html#l00484">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="add5cb7a808a094e1b8606440f16da4d6" name="add5cb7a808a094e1b8606440f16da4d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add5cb7a808a094e1b8606440f16da4d6">&#9670;&#160;</a></span>gridToJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::gridToJson </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *&#160;</td>
+          <td class="paramname"><em>grid</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="aac363cb788ca907f296d01d145c913aa" name="aac363cb788ca907f296d01d145c913aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac363cb788ca907f296d01d145c913aa">&#9670;&#160;</a></span>hasAlgorithm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::hasAlgorithm </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>algorithmId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00016">eve::procgen::GeneratorRegistry::has()</a> , 以及 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00007">eve::procgen::GeneratorRegistry::instance()</a>.</p>
+
+</div>
+</div>
+<a id="ad58e11f06d7d0d839f045d94cf90f07d" name="ad58e11f06d7d0d839f045d94cf90f07d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad58e11f06d7d0d839f045d94cf90f07d">&#9670;&#160;</a></span>hasMeshRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::hasMeshRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00450">eve::procgen::MeshRecipeRegistry::has()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00441">eve::procgen::MeshRecipeRegistry::instance()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00472">eve::procgen::MeshRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a9f4be2549c6d4397ce03051df5e7212a" name="a9f4be2549c6d4397ce03051df5e7212a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f4be2549c6d4397ce03051df5e7212a">&#9670;&#160;</a></span>hasPbrRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::hasPbrRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PbrMaterial_8cpp_source.html#l00031">eve::procgen::PbrRecipeRegistry::has()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00022">eve::procgen::PbrRecipeRegistry::instance()</a> , 以及 <a class="el" href="PbrMaterial_8cpp_source.html#l00053">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a23d81d451721ff5dfeb9dafb06602924" name="a23d81d451721ff5dfeb9dafb06602924"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23d81d451721ff5dfeb9dafb06602924">&#9670;&#160;</a></span>hasTextureRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::hasTextureRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TextureRecipe_8cpp_source.html#l00019">eve::procgen::TextureRecipeRegistry::has()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00010">eve::procgen::TextureRecipeRegistry::instance()</a> , 以及 <a class="el" href="BuiltinTextures_8cpp_source.html#l00484">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a6493cc25abca3823a940a5150a201f21" name="a6493cc25abca3823a940a5150a201f21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6493cc25abca3823a940a5150a201f21">&#9670;&#160;</a></span>heightmapToGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Procgen::heightmapToGrid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Classify a heightmap into a semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> using params bands (waterMax…). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainSampler_8cpp_source.html#l00168">eve::procgen::TerrainBands::fromParams()</a> , 以及 <a class="el" href="Heightmap_8cpp_source.html#l00084">eve::procgen::Heightmap::toGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ae868898a3178f28eb2e29315a7180efe" name="ae868898a3178f28eb2e29315a7180efe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae868898a3178f28eb2e29315a7180efe">&#9670;&#160;</a></span>lastError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::lastError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a615800a1581d62bdcc3dc33626bb7f1e" name="a615800a1581d62bdcc3dc33626bb7f1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615800a1581d62bdcc3dc33626bb7f1e">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::Procgen::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0c8ab08cb79f89bb38697343b8d73f87" name="a0c8ab08cb79f89bb38697343b8d73f87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c8ab08cb79f89bb38697343b8d73f87">&#9670;&#160;</a></span>newCloudField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> * eve::procgen::Procgen::newCloudField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>New deterministic, tiling, time-animated cloud field (caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a83996b74e0409ea61b5003020ecceb78" name="a83996b74e0409ea61b5003020ecceb78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83996b74e0409ea61b5003020ecceb78">&#9670;&#160;</a></span>newCloudShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> * eve::procgen::Procgen::newCloudShadow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>New sun projection over a cloud field → ground shadows (caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7362757ebae35123a9b03cae116529d0" name="a7362757ebae35123a9b03cae116529d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7362757ebae35123a9b03cae116529d0">&#9670;&#160;</a></span>newGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> * eve::procgen::Procgen::newGrid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="a7024bd2666a1ad40f118c2a0a123c9ee" name="a7024bd2666a1ad40f118c2a0a123c9ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7024bd2666a1ad40f118c2a0a123c9ee">&#9670;&#160;</a></span>newHeightmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> * eve::procgen::Procgen::newHeightmap </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Empty in-memory heightmap (caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+</div>
+</div>
+<a id="a8891b918238e4f91be2945b4fe9ff753" name="a8891b918238e4f91be2945b4fe9ff753"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8891b918238e4f91be2945b4fe9ff753">&#9670;&#160;</a></span>newOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a> * eve::procgen::Procgen::newOutput </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5faf059c9026efabe740afff2c38dd1b" name="a5faf059c9026efabe740afff2c38dd1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5faf059c9026efabe740afff2c38dd1b">&#9670;&#160;</a></span>newParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> * eve::procgen::Procgen::newParams </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3c597df4ad0e6c6a4d31c8b57fc5d31" name="af3c597df4ad0e6c6a4d31c8b57fc5d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3c597df4ad0e6c6a4d31c8b57fc5d31">&#9670;&#160;</a></span>newTerrainSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a> * eve::procgen::Procgen::newTerrainSampler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sampling function over continuous map coordinates (caller owns). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7d4c30c92653bcad13727bf7b96775a" name="ad7d4c30c92653bcad13727bf7b96775a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7d4c30c92653bcad13727bf7b96775a">&#9670;&#160;</a></span>palettes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a> &amp; eve::procgen::Procgen::palettes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8h_source.html">Procgen.h</a> 第 <a class="el" href="Procgen_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ace94eec17a5b27f86d99a97a98facaea" name="ace94eec17a5b27f86d99a97a98facaea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace94eec17a5b27f86d99a97a98facaea">&#9670;&#160;</a></span>randomSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::Procgen::randomSeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fresh non-zero seed for regenerating a level. </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00352">eve::procgen::randomSeedValue()</a>.</p>
+
+</div>
+</div>
+<a id="a389c734e55661c3664cb98206dbb7971" name="a389c734e55661c3664cb98206dbb7971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a389c734e55661c3664cb98206dbb7971">&#9670;&#160;</a></span>sampleCloud()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Procgen::sampleCloud </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> *&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sample coverage/factor into a caller-owned float buffer (w*h). </p>
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="CloudField_8cpp_source.html#l00125">eve::procgen::CloudField::sample()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a4e64443b115ae0b8c5f160cee5b09e5b" name="a4e64443b115ae0b8c5f160cee5b09e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e64443b115ae0b8c5f160cee5b09e5b">&#9670;&#160;</a></span>sampleCloudShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Procgen::sampleCloudShadow </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a> *&#160;</td>
+          <td class="paramname"><em>shadow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="CloudShadow_8cpp_source.html#l00039">eve::procgen::CloudShadow::sampleCoverage()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a4cb3c918be0d271d8d2a00b95a7ffed3" name="a4cb3c918be0d271d8d2a00b95a7ffed3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cb3c918be0d271d8d2a00b95a7ffed3">&#9670;&#160;</a></span>setPaletteGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Procgen::setPaletteGid </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>palette</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>semantic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a> 第 <a class="el" href="Procgen_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a> , 以及 <a class="el" href="Palette_8cpp_source.html#l00009">eve::procgen::PaletteTable::setGid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l00028">Procgen()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="Procgen_8h_source.html">Procgen.h</a></li>
+<li>src/modules/procgen/<a class="el" href="Procgen_8cpp_source.html">Procgen.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

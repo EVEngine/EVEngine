@@ -1,0 +1,386 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/TransformGizmo.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TransformGizmo.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TransformGizmo_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1TransformGizmo.html">TransformGizmo</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a470a4433f5ad5403543bd49f6dba7c32">TransformGizmo</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ad298d5e26d5cfb55e107fdae4f4fb3f3">setMode</a>(<span class="keyword">const</span> std::string &amp;mode);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a5cdc71ed4659a643de60ad306c5961cb">   21</a></span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a5cdc71ed4659a643de60ad306c5961cb">getMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode_; }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#affe9b7f451bc976163f54224936654dc">setSpace</a>(<span class="keyword">const</span> std::string &amp;space);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#adb6e3374832ebe373c4de83ce9580cab">   24</a></span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#adb6e3374832ebe373c4de83ce9580cab">getSpace</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> space_; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a7a86c1e8a8421fc515e019343e8bc36e">setSize</a>(<span class="keywordtype">float</span> size);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a44ebbe0e01159f65a37856472c44b16b">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a44ebbe0e01159f65a37856472c44b16b">getSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> size_; }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#aba8e158ad91989a8fdfd7bc3622b57c8">setPosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#afe167f4e7226243fb3bb3f8d1a3e9878">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#afe167f4e7226243fb3bb3f8d1a3e9878">getPositionX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> position_.x; }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a2947fffe31eb0512d1328368e7cecb12">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a2947fffe31eb0512d1328368e7cecb12">getPositionY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> position_.y; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#aa5dfaf4267399400393908a9174bac13">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#aa5dfaf4267399400393908a9174bac13">getPositionZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> position_.z; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ad04cc1e6e4a58b10ab87a916ef5d227c">setRotationEuler</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a4d08c2ba3c8ae005650a8e4de0b30036">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a4d08c2ba3c8ae005650a8e4de0b30036">getRotationX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rotation_.x; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#ad8f01b432fea4cc9915369f6d5948caf">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ad8f01b432fea4cc9915369f6d5948caf">getRotationY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rotation_.y; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a286dfa92da62b70cdcba4bdce4781526">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a286dfa92da62b70cdcba4bdce4781526">getRotationZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rotation_.z; }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#add06565a3658a0888c7f7d6df7ed4d76">setScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#aab3737e49b5a23b4677183b5be154990">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#aab3737e49b5a23b4677183b5be154990">getScaleX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> scale_.x; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#ab997df158a8cba26627589a089cf09b2">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ab997df158a8cba26627589a089cf09b2">getScaleY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> scale_.y; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#aa077f649e2f9126b0faac27414cd6043">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#aa077f649e2f9126b0faac27414cd6043">getScaleZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> scale_.z; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a83a29fe44c4dcdbd4f4b4169d72353ad">setBounds</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a57e156fa08f7f58cdc04fabd39ac2bb5">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a57e156fa08f7f58cdc04fabd39ac2bb5">getBoundsMinX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundsMin_.x; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a15c8154a690df7486e666d91bc88b21e">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a15c8154a690df7486e666d91bc88b21e">getBoundsMinY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundsMin_.y; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a34253f89ea434d095a0657c7f65e4afc">   49</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a34253f89ea434d095a0657c7f65e4afc">getBoundsMinZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundsMin_.z; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#ad8bddad7c66974daae4b479efa992b38">   50</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ad8bddad7c66974daae4b479efa992b38">getBoundsMaxX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundsMax_.x; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#afccb818a7811d8434ad4efbefa8563e0">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#afccb818a7811d8434ad4efbefa8563e0">getBoundsMaxY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundsMax_.y; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a6de09f6c6983c411a0afa353d317ae4a">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a6de09f6c6983c411a0afa353d317ae4a">getBoundsMaxZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> boundsMax_.z; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a9e565e5672514c6b0d80317168a36968">setSnapTranslate</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a22c48e00f6c34f7085a25ed2a7658796">setSnapRotate</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a16e20da91572858da4e91732d94a8304">setSnapScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#acd00c941fb07c7c4f55a77561e4dec42">   57</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#acd00c941fb07c7c4f55a77561e4dec42">getSnapTranslateX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> snapTranslate_.x; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a1362a5b81834b039ec374a3d4a405b62">   58</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a1362a5b81834b039ec374a3d4a405b62">getSnapTranslateY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> snapTranslate_.y; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a1ff5898a70b71341363d649f8ff066be">   59</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a1ff5898a70b71341363d649f8ff066be">getSnapTranslateZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> snapTranslate_.z; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a7f50daed92bef0a8db45e288bd35eb49">   60</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a7f50daed92bef0a8db45e288bd35eb49">getSnapRotate</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> snapRotateDeg_; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#adb30a3019525665b715eb638b84c9135">   61</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#adb30a3019525665b715eb638b84c9135">getSnapScale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> snapScale_; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a6f9f466ab8b83ef488e4008dbab5c4d9">getMatrix</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a49a82f7687104a21f2af861e631e89f7">pick</a>(<span class="keywordtype">float</span> ox, <span class="keywordtype">float</span> oy, <span class="keywordtype">float</span> oz, <span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy, <span class="keywordtype">float</span> dz);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a8b37e212cfa7c445eb37b285d0dc1434">beginDrag</a>(<span class="keyword">const</span> std::string &amp;axis, <span class="keywordtype">float</span> ox, <span class="keywordtype">float</span> oy, <span class="keywordtype">float</span> oz, <span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                   <span class="keywordtype">float</span> dz);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ac45a0997ff8e93087a43f578550cfb58">updateDrag</a>(<span class="keywordtype">float</span> ox, <span class="keywordtype">float</span> oy, <span class="keywordtype">float</span> oz, <span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy, <span class="keywordtype">float</span> dz);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a5d0dcccd2994566d6d888d4de036e43f">endDrag</a>();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a31f7c1339117e3cd9ed7061b3382d40d">   77</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a31f7c1339117e3cd9ed7061b3382d40d">isDragging</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> dragging_; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a4a80a061c941d1ce8cc6284ed65aec6d">   78</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a4a80a061c941d1ce8cc6284ed65aec6d">isHovered</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !hoverAxis_.empty(); }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#aa6975b58071d8b07f00a83d3caec7515">   79</a></span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#aa6975b58071d8b07f00a83d3caec7515">getActiveAxis</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> activeAxis_; }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#a1435b7408737c605f06a366a8edd458e">   80</a></span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a1435b7408737c605f06a366a8edd458e">getHoverAxis</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> hoverAxis_; }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a323b3495282a2029458b2651795d9763">rebuildParts</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1TransformGizmo.html#afdf1c83b7aa72e8b1a59987334800074">   85</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#afdf1c83b7aa72e8b1a59987334800074">getPartCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(parts_.size()); }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a54875f132e5c99b3f0ad6d3f9a4e454e">getPartKind</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ae8246b8fabaeb789148ff6ac373a7496">getPartAxis</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a2532ed9f26b11d9bc306dd6b17f498c7">getPartColorR</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a7c3ae1e1eab129e90c6695afaaf48adb">getPartColorG</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a85c21470dad78023c863bd0ce205ce8b">getPartColorB</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ac2b32c66de62c18b70018a6cce9fb9d1">getPartColorA</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#acda927e636d46cd3530e6ba1fe0028f1">getPartOriginX</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a9d33b6ce7c58f9dbe2edf9a502c58326">getPartOriginY</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#af290f43e53e448b88bb01934f4e976b2">getPartOriginZ</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a429959af02ef251ba7a34aadfbe5b7d8">getPartDirX</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a0926ae49b78770a09e1dbdba417b5ef0">getPartDirY</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a4e21d31caa21e1728194b9fb787491ac">getPartDirZ</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#ab3802c21f888c0ddb5fa79be081ef995">getPartLength</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1editor_1_1TransformGizmo.html#a67427066ab0f01cf02925497e090f84e">getPartRadius</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">struct </span>Part {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        std::string <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>;  <span class="comment">// axis | plane | ring | box | center | handle</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        std::string axis;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        glm::vec3 origin{0.f};</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        glm::vec3 <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordtype">float</span> length = 1.f;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordtype">float</span> radius = 0.05f;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        glm::vec4 <a class="code hl_variable" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>{1.f, 0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    };</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    glm::mat4 localRotationMatrix() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    glm::mat4 worldMatrix() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    glm::vec3 axisWorld(<span class="keywordtype">int</span> axis) <span class="keyword">const</span>;  <span class="comment">// 0=x,1=y,2=z</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> colorForAxis(<span class="keyword">const</span> std::string &amp;axis, glm::vec4 &amp;out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">float</span> hitAxis(<span class="keyword">const</span> glm::vec3 &amp;ro, <span class="keyword">const</span> glm::vec3 &amp;rd, <span class="keywordtype">int</span> axisIndex, <span class="keywordtype">float</span> &amp;outT) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">float</span> hitPlane(<span class="keyword">const</span> glm::vec3 &amp;ro, <span class="keyword">const</span> glm::vec3 &amp;rd, <span class="keywordtype">int</span> planeMask, <span class="keywordtype">float</span> &amp;outT) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">float</span> hitRing(<span class="keyword">const</span> glm::vec3 &amp;ro, <span class="keyword">const</span> glm::vec3 &amp;rd, <span class="keywordtype">int</span> axisIndex, <span class="keywordtype">float</span> &amp;outT) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">float</span> hitBoundHandle(<span class="keyword">const</span> glm::vec3 &amp;ro, <span class="keyword">const</span> glm::vec3 &amp;rd, <span class="keywordtype">int</span> handle, <span class="keywordtype">float</span> &amp;outT) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    glm::vec3 projectToDragPlane(<span class="keyword">const</span> glm::vec3 &amp;ro, <span class="keyword">const</span> glm::vec3 &amp;rd) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> applySnapTranslate(glm::vec3 &amp;<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">float</span> applySnapRotate(<span class="keywordtype">float</span> radians) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">float</span> applySnapScale(<span class="keywordtype">float</span> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">bool</span> validPart(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    std::string mode_ = <span class="stringliteral">&quot;translate&quot;</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::string space_ = <span class="stringliteral">&quot;world&quot;</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">float</span> size_ = 1.f;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    glm::vec3 position_{0.f};</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    glm::vec3 rotation_{0.f};</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    glm::vec3 scale_{1.f};</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    glm::vec3 boundsMin_{-0.5f};</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    glm::vec3 boundsMax_{0.5f};</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    glm::vec3 snapTranslate_{0.f};</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">float</span> snapRotateDeg_ = 0.f;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">float</span> snapScale_ = 0.f;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">bool</span> dragging_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    std::string activeAxis_;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    std::string hoverAxis_;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    glm::vec3 dragStartPos_{0.f};</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    glm::vec3 dragStartRot_{0.f};</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    glm::vec3 dragStartScale_{0.f};</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    glm::vec3 dragStartHit_{0.f};</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    glm::vec3 dragPlaneNormal_{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    glm::vec3 dragAxisDir_{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    std::vector&lt;Part&gt; parts_;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>};</div>
+</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_aa6a11f8f07bde2d8bb6416cf51199a20"><div class="ttname"><a href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a></div><div class="ttdeci">float degrees</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5744cedb1550b25c28b21ecb540428ca"><div class="ttname"><a href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a></div><div class="ttdeci">Tok kind</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00017">DnutParser.cpp:17</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_aefa993834f8df4a73caaf0185139b880"><div class="ttname"><a href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a></div><div class="ttdeci">image::ImageData::Colorf color</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00051">SpriteStack.cpp:51</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00121">TreeMesh.cpp:121</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html">eve::editor::TransformGizmo</a></div><div class="ttdoc">3D transform gizmo (Three.js TransformControls + ImGuizmo style). Owns TRS + optional local bounds; i...</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00016">TransformGizmo.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a0926ae49b78770a09e1dbdba417b5ef0"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a0926ae49b78770a09e1dbdba417b5ef0">eve::editor::TransformGizmo::getPartDirY</a></div><div class="ttdeci">float getPartDirY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00621">TransformGizmo.cpp:621</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a1362a5b81834b039ec374a3d4a405b62"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a1362a5b81834b039ec374a3d4a405b62">eve::editor::TransformGizmo::getSnapTranslateY</a></div><div class="ttdeci">float getSnapTranslateY() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00058">TransformGizmo.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a1435b7408737c605f06a366a8edd458e"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a1435b7408737c605f06a366a8edd458e">eve::editor::TransformGizmo::getHoverAxis</a></div><div class="ttdeci">std::string getHoverAxis() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00080">TransformGizmo.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a15c8154a690df7486e666d91bc88b21e"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a15c8154a690df7486e666d91bc88b21e">eve::editor::TransformGizmo::getBoundsMinY</a></div><div class="ttdeci">float getBoundsMinY() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00048">TransformGizmo.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a16e20da91572858da4e91732d94a8304"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a16e20da91572858da4e91732d94a8304">eve::editor::TransformGizmo::setSnapScale</a></div><div class="ttdeci">void setSnapScale(float s)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00083">TransformGizmo.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a1ff5898a70b71341363d649f8ff066be"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a1ff5898a70b71341363d649f8ff066be">eve::editor::TransformGizmo::getSnapTranslateZ</a></div><div class="ttdeci">float getSnapTranslateZ() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00059">TransformGizmo.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a22c48e00f6c34f7085a25ed2a7658796"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a22c48e00f6c34f7085a25ed2a7658796">eve::editor::TransformGizmo::setSnapRotate</a></div><div class="ttdeci">void setSnapRotate(float degrees)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00081">TransformGizmo.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a2532ed9f26b11d9bc306dd6b17f498c7"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a2532ed9f26b11d9bc306dd6b17f498c7">eve::editor::TransformGizmo::getPartColorR</a></div><div class="ttdeci">float getPartColorR(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00589">TransformGizmo.cpp:589</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a286dfa92da62b70cdcba4bdce4781526"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a286dfa92da62b70cdcba4bdce4781526">eve::editor::TransformGizmo::getRotationZ</a></div><div class="ttdeci">float getRotationZ() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00038">TransformGizmo.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a2947fffe31eb0512d1328368e7cecb12"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a2947fffe31eb0512d1328368e7cecb12">eve::editor::TransformGizmo::getPositionY</a></div><div class="ttdeci">float getPositionY() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00031">TransformGizmo.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a31f7c1339117e3cd9ed7061b3382d40d"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a31f7c1339117e3cd9ed7061b3382d40d">eve::editor::TransformGizmo::isDragging</a></div><div class="ttdeci">bool isDragging() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00077">TransformGizmo.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a323b3495282a2029458b2651795d9763"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a323b3495282a2029458b2651795d9763">eve::editor::TransformGizmo::rebuildParts</a></div><div class="ttdeci">void rebuildParts()</div><div class="ttdoc">Rebuild draw parts for current mode/space (call after TRS/mode change).</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00137">TransformGizmo.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a34253f89ea434d095a0657c7f65e4afc"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a34253f89ea434d095a0657c7f65e4afc">eve::editor::TransformGizmo::getBoundsMinZ</a></div><div class="ttdeci">float getBoundsMinZ() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00049">TransformGizmo.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a429959af02ef251ba7a34aadfbe5b7d8"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a429959af02ef251ba7a34aadfbe5b7d8">eve::editor::TransformGizmo::getPartDirX</a></div><div class="ttdeci">float getPartDirX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00617">TransformGizmo.cpp:617</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a44ebbe0e01159f65a37856472c44b16b"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a44ebbe0e01159f65a37856472c44b16b">eve::editor::TransformGizmo::getSize</a></div><div class="ttdeci">float getSize() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00027">TransformGizmo.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a470a4433f5ad5403543bd49f6dba7c32"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a470a4433f5ad5403543bd49f6dba7c32">eve::editor::TransformGizmo::TransformGizmo</a></div><div class="ttdeci">TransformGizmo()</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00033">TransformGizmo.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a49a82f7687104a21f2af861e631e89f7"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a49a82f7687104a21f2af861e631e89f7">eve::editor::TransformGizmo::pick</a></div><div class="ttdeci">std::string pick(float ox, float oy, float oz, float dx, float dy, float dz)</div><div class="ttdoc">Ray pick against active mode handles. Returns axis id: &quot;x&quot;|&quot;y&quot;|&quot;z&quot;|&quot;xy&quot;|&quot;yz&quot;|&quot;xz&quot;|&quot;xyz&quot;|&quot;bx&quot;|…|&quot;bz&quot;|&quot;...</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00335">TransformGizmo.cpp:335</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a4a80a061c941d1ce8cc6284ed65aec6d"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a4a80a061c941d1ce8cc6284ed65aec6d">eve::editor::TransformGizmo::isHovered</a></div><div class="ttdeci">bool isHovered() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00078">TransformGizmo.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a4d08c2ba3c8ae005650a8e4de0b30036"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a4d08c2ba3c8ae005650a8e4de0b30036">eve::editor::TransformGizmo::getRotationX</a></div><div class="ttdeci">float getRotationX() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00036">TransformGizmo.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a4e21d31caa21e1728194b9fb787491ac"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a4e21d31caa21e1728194b9fb787491ac">eve::editor::TransformGizmo::getPartDirZ</a></div><div class="ttdeci">float getPartDirZ(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00625">TransformGizmo.cpp:625</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a54875f132e5c99b3f0ad6d3f9a4e454e"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a54875f132e5c99b3f0ad6d3f9a4e454e">eve::editor::TransformGizmo::getPartKind</a></div><div class="ttdeci">std::string getPartKind(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00581">TransformGizmo.cpp:581</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a57e156fa08f7f58cdc04fabd39ac2bb5"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a57e156fa08f7f58cdc04fabd39ac2bb5">eve::editor::TransformGizmo::getBoundsMinX</a></div><div class="ttdeci">float getBoundsMinX() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00047">TransformGizmo.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a5cdc71ed4659a643de60ad306c5961cb"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a5cdc71ed4659a643de60ad306c5961cb">eve::editor::TransformGizmo::getMode</a></div><div class="ttdeci">std::string getMode() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00021">TransformGizmo.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a5d0dcccd2994566d6d888d4de036e43f"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a5d0dcccd2994566d6d888d4de036e43f">eve::editor::TransformGizmo::endDrag</a></div><div class="ttdeci">void endDrag()</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00571">TransformGizmo.cpp:571</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a67427066ab0f01cf02925497e090f84e"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a67427066ab0f01cf02925497e090f84e">eve::editor::TransformGizmo::getPartRadius</a></div><div class="ttdeci">float getPartRadius(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00633">TransformGizmo.cpp:633</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a6de09f6c6983c411a0afa353d317ae4a"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a6de09f6c6983c411a0afa353d317ae4a">eve::editor::TransformGizmo::getBoundsMaxZ</a></div><div class="ttdeci">float getBoundsMaxZ() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00052">TransformGizmo.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a6f9f466ab8b83ef488e4008dbab5c4d9"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a6f9f466ab8b83ef488e4008dbab5c4d9">eve::editor::TransformGizmo::getMatrix</a></div><div class="ttdeci">float getMatrix(int index) const</div><div class="ttdoc">Column-major matrix element 0..15 of current TRS.</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00085">TransformGizmo.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a7a86c1e8a8421fc515e019343e8bc36e"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a7a86c1e8a8421fc515e019343e8bc36e">eve::editor::TransformGizmo::setSize</a></div><div class="ttdeci">void setSize(float size)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00051">TransformGizmo.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a7c3ae1e1eab129e90c6695afaaf48adb"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a7c3ae1e1eab129e90c6695afaaf48adb">eve::editor::TransformGizmo::getPartColorG</a></div><div class="ttdeci">float getPartColorG(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00593">TransformGizmo.cpp:593</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a7f50daed92bef0a8db45e288bd35eb49"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a7f50daed92bef0a8db45e288bd35eb49">eve::editor::TransformGizmo::getSnapRotate</a></div><div class="ttdeci">float getSnapRotate() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00060">TransformGizmo.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a83a29fe44c4dcdbd4f4b4169d72353ad"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a83a29fe44c4dcdbd4f4b4169d72353ad">eve::editor::TransformGizmo::setBounds</a></div><div class="ttdeci">void setBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdoc">Local AABB extents for bound mode (relative to object origin).</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00072">TransformGizmo.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a85c21470dad78023c863bd0ce205ce8b"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a85c21470dad78023c863bd0ce205ce8b">eve::editor::TransformGizmo::getPartColorB</a></div><div class="ttdeci">float getPartColorB(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00597">TransformGizmo.cpp:597</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a8b37e212cfa7c445eb37b285d0dc1434"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a8b37e212cfa7c445eb37b285d0dc1434">eve::editor::TransformGizmo::beginDrag</a></div><div class="ttdeci">bool beginDrag(const std::string &amp;axis, float ox, float oy, float oz, float dx, float dy, float dz)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00431">TransformGizmo.cpp:431</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a9d33b6ce7c58f9dbe2edf9a502c58326"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a9d33b6ce7c58f9dbe2edf9a502c58326">eve::editor::TransformGizmo::getPartOriginY</a></div><div class="ttdeci">float getPartOriginY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00609">TransformGizmo.cpp:609</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_a9e565e5672514c6b0d80317168a36968"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#a9e565e5672514c6b0d80317168a36968">eve::editor::TransformGizmo::setSnapTranslate</a></div><div class="ttdeci">void setSnapTranslate(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00079">TransformGizmo.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_aa077f649e2f9126b0faac27414cd6043"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#aa077f649e2f9126b0faac27414cd6043">eve::editor::TransformGizmo::getScaleZ</a></div><div class="ttdeci">float getScaleZ() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00043">TransformGizmo.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_aa5dfaf4267399400393908a9174bac13"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#aa5dfaf4267399400393908a9174bac13">eve::editor::TransformGizmo::getPositionZ</a></div><div class="ttdeci">float getPositionZ() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00032">TransformGizmo.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_aa6975b58071d8b07f00a83d3caec7515"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#aa6975b58071d8b07f00a83d3caec7515">eve::editor::TransformGizmo::getActiveAxis</a></div><div class="ttdeci">std::string getActiveAxis() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00079">TransformGizmo.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_aab3737e49b5a23b4677183b5be154990"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#aab3737e49b5a23b4677183b5be154990">eve::editor::TransformGizmo::getScaleX</a></div><div class="ttdeci">float getScaleX() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00041">TransformGizmo.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ab3802c21f888c0ddb5fa79be081ef995"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ab3802c21f888c0ddb5fa79be081ef995">eve::editor::TransformGizmo::getPartLength</a></div><div class="ttdeci">float getPartLength(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00629">TransformGizmo.cpp:629</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ab997df158a8cba26627589a089cf09b2"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ab997df158a8cba26627589a089cf09b2">eve::editor::TransformGizmo::getScaleY</a></div><div class="ttdeci">float getScaleY() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00042">TransformGizmo.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_aba8e158ad91989a8fdfd7bc3622b57c8"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#aba8e158ad91989a8fdfd7bc3622b57c8">eve::editor::TransformGizmo::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00057">TransformGizmo.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ac2b32c66de62c18b70018a6cce9fb9d1"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ac2b32c66de62c18b70018a6cce9fb9d1">eve::editor::TransformGizmo::getPartColorA</a></div><div class="ttdeci">float getPartColorA(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00601">TransformGizmo.cpp:601</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ac45a0997ff8e93087a43f578550cfb58"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ac45a0997ff8e93087a43f578550cfb58">eve::editor::TransformGizmo::updateDrag</a></div><div class="ttdeci">bool updateDrag(float ox, float oy, float oz, float dx, float dy, float dz)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00488">TransformGizmo.cpp:488</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_acd00c941fb07c7c4f55a77561e4dec42"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#acd00c941fb07c7c4f55a77561e4dec42">eve::editor::TransformGizmo::getSnapTranslateX</a></div><div class="ttdeci">float getSnapTranslateX() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00057">TransformGizmo.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_acda927e636d46cd3530e6ba1fe0028f1"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#acda927e636d46cd3530e6ba1fe0028f1">eve::editor::TransformGizmo::getPartOriginX</a></div><div class="ttdeci">float getPartOriginX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00605">TransformGizmo.cpp:605</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ad04cc1e6e4a58b10ab87a916ef5d227c"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ad04cc1e6e4a58b10ab87a916ef5d227c">eve::editor::TransformGizmo::setRotationEuler</a></div><div class="ttdeci">void setRotationEuler(float x, float y, float z)</div><div class="ttdoc">Euler radians, XYZ order.</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00062">TransformGizmo.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ad298d5e26d5cfb55e107fdae4f4fb3f3"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ad298d5e26d5cfb55e107fdae4f4fb3f3">eve::editor::TransformGizmo::setMode</a></div><div class="ttdeci">void setMode(const std::string &amp;mode)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00035">TransformGizmo.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ad8bddad7c66974daae4b479efa992b38"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ad8bddad7c66974daae4b479efa992b38">eve::editor::TransformGizmo::getBoundsMaxX</a></div><div class="ttdeci">float getBoundsMaxX() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00050">TransformGizmo.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ad8f01b432fea4cc9915369f6d5948caf"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ad8f01b432fea4cc9915369f6d5948caf">eve::editor::TransformGizmo::getRotationY</a></div><div class="ttdeci">float getRotationY() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00037">TransformGizmo.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_adb30a3019525665b715eb638b84c9135"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#adb30a3019525665b715eb638b84c9135">eve::editor::TransformGizmo::getSnapScale</a></div><div class="ttdeci">float getSnapScale() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00061">TransformGizmo.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_adb6e3374832ebe373c4de83ce9580cab"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#adb6e3374832ebe373c4de83ce9580cab">eve::editor::TransformGizmo::getSpace</a></div><div class="ttdeci">std::string getSpace() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00024">TransformGizmo.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_add06565a3658a0888c7f7d6df7ed4d76"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#add06565a3658a0888c7f7d6df7ed4d76">eve::editor::TransformGizmo::setScale</a></div><div class="ttdeci">void setScale(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00067">TransformGizmo.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_ae8246b8fabaeb789148ff6ac373a7496"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#ae8246b8fabaeb789148ff6ac373a7496">eve::editor::TransformGizmo::getPartAxis</a></div><div class="ttdeci">std::string getPartAxis(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00585">TransformGizmo.cpp:585</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_af290f43e53e448b88bb01934f4e976b2"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#af290f43e53e448b88bb01934f4e976b2">eve::editor::TransformGizmo::getPartOriginZ</a></div><div class="ttdeci">float getPartOriginZ(int index) const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00613">TransformGizmo.cpp:613</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_afccb818a7811d8434ad4efbefa8563e0"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#afccb818a7811d8434ad4efbefa8563e0">eve::editor::TransformGizmo::getBoundsMaxY</a></div><div class="ttdeci">float getBoundsMaxY() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00051">TransformGizmo.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_afdf1c83b7aa72e8b1a59987334800074"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#afdf1c83b7aa72e8b1a59987334800074">eve::editor::TransformGizmo::getPartCount</a></div><div class="ttdeci">int getPartCount() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00085">TransformGizmo.h:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_afe167f4e7226243fb3bb3f8d1a3e9878"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#afe167f4e7226243fb3bb3f8d1a3e9878">eve::editor::TransformGizmo::getPositionX</a></div><div class="ttdeci">float getPositionX() const</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8h_source.html#l00030">TransformGizmo.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1TransformGizmo_html_affe9b7f451bc976163f54224936654dc"><div class="ttname"><a href="classeve_1_1editor_1_1TransformGizmo.html#affe9b7f451bc976163f54224936654dc">eve::editor::TransformGizmo::setSpace</a></div><div class="ttdeci">void setSpace(const std::string &amp;space)</div><div class="ttdef"><b>Definition</b> <a href="TransformGizmo_8cpp_source.html#l00043">TransformGizmo.cpp:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00010">Brush.cpp:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

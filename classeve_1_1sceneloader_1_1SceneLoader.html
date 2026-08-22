@@ -1,0 +1,1206 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sceneloader::SceneLoader类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sceneloader.html">sceneloader</a></li><li class="navelem"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">SceneLoader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1sceneloader_1_1SceneLoader-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::sceneloader::SceneLoader类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Loads a 3D scene (glTF / OBJ / FBX / GLB ... via Assimp/medialoader) into the ECS scene tree.  
+ <a href="classeve_1_1sceneloader_1_1SceneLoader.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::sceneloader::SceneLoader 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1sceneloader_1_1SceneLoader.png" usemap="#eve::sceneloader::SceneLoader_map" alt=""/>
+  <map id="eve::sceneloader::SceneLoader_map" name="eve::sceneloader::SceneLoader_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,191,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html">CpuImage</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-decoded texture (RGBA8) keyed by the same source+suffix key as TextureCache.  <a href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:afbdf250e29612a51c32fafeec878121f" id="r_afbdf250e29612a51c32fafeec878121f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">TextureCache</a> = std::unordered_map&lt; std::string, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * &gt;</td></tr>
+<tr class="memdesc:afbdf250e29612a51c32fafeec878121f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caches shared across the loader: textures by source key, GPU meshes per aiMesh.  <br /></td></tr>
+<tr class="separator:afbdf250e29612a51c32fafeec878121f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205e2c9195db963d95b8695fbeb686ea" id="r_a205e2c9195db963d95b8695fbeb686ea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">MeshCache</a> = std::unordered_map&lt; const aiMesh *, <a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * &gt;</td></tr>
+<tr class="separator:a205e2c9195db963d95b8695fbeb686ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60da3b4482a28c694ef5a251dd3753ef" id="r_a60da3b4482a28c694ef5a251dd3753ef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">CpuImageMap</a> = std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html">CpuImage</a> &gt;</td></tr>
+<tr class="separator:a60da3b4482a28c694ef5a251dd3753ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a017ac8fad179bebc2a0889221394773e" id="r_a017ac8fad179bebc2a0889221394773e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a017ac8fad179bebc2a0889221394773e">Module_REG</a> (<a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">SceneLoader</a>)</td></tr>
+<tr class="separator:a017ac8fad179bebc2a0889221394773e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0544ab2e290e64a27f58f9f1fd5490c" id="r_ac0544ab2e290e64a27f58f9f1fd5490c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac0544ab2e290e64a27f58f9f1fd5490c">~SceneLoader</a> () override</td></tr>
+<tr class="separator:ac0544ab2e290e64a27f58f9f1fd5490c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cb975ba484fd4cc7a9e0712b173e80e" id="r_a5cb975ba484fd4cc7a9e0712b173e80e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e">load</a> (const std::string &amp;path, bool linkRenderables=true, const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options={})</td></tr>
+<tr class="memdesc:a5cb975ba484fd4cc7a9e0712b173e80e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full load: build the GameObject tree from <code>path</code>, mount it, return host.  <br /></td></tr>
+<tr class="separator:a5cb975ba484fd4cc7a9e0712b173e80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c7007f1a8aaff29855265389ae9a8a9" id="r_a2c7007f1a8aaff29855265389ae9a8a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a2c7007f1a8aaff29855265389ae9a8a9">load</a> (const std::string &amp;path, const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options)</td></tr>
+<tr class="separator:a2c7007f1a8aaff29855265389ae9a8a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62612f4c6919abe23cd36a74be264e17" id="r_a62612f4c6919abe23cd36a74be264e17"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a62612f4c6919abe23cd36a74be264e17">reload</a> (const std::string &amp;path, <a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> *out=nullptr, const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options={})</td></tr>
+<tr class="memdesc:a62612f4c6919abe23cd36a74be264e17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hot-reload <code>path</code>. Re-decodes, diffs, and applies only what changed. Returns false if the file failed to decode (old scene is kept) or nothing changed. When <code>out</code> is non-null it is filled with the applied diff.  <br /></td></tr>
+<tr class="separator:a62612f4c6919abe23cd36a74be264e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab18e48476feb8633aee68c32a14ef63f" id="r_ab18e48476feb8633aee68c32a14ef63f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ab18e48476feb8633aee68c32a14ef63f">reloadChecked</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:ab18e48476feb8633aee68c32a14ef63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-friendly reload: returns true when anything was updated.  <br /></td></tr>
+<tr class="separator:ab18e48476feb8633aee68c32a14ef63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b46c1e62efec726ae1683572dd79d7" id="r_a61b46c1e62efec726ae1683572dd79d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a61b46c1e62efec726ae1683572dd79d7">diff</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a61b46c1e62efec726ae1683572dd79d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dry-run diff for <code>path</code> against the currently mounted tree (no mutation).  <br /></td></tr>
+<tr class="separator:a61b46c1e62efec726ae1683572dd79d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c5a56515982531a1eae081386f1de96" id="r_a6c5a56515982531a1eae081386f1de96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a6c5a56515982531a1eae081386f1de96"><td class="mdescLeft">&#160;</td><td class="mdescRight">The mounted host for <code>path</code>, or nullptr if not loaded.  <br /></td></tr>
+<tr class="separator:a6c5a56515982531a1eae081386f1de96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac45f0c558e514c68e3b1544e5c9a14d7" id="r_ac45f0c558e514c68e3b1544e5c9a14d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac45f0c558e514c68e3b1544e5c9a14d7">unload</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:ac45f0c558e514c68e3b1544e5c9a14d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the loaded scene for <code>path</code>, destroying linked Renderable3D objects.  <br /></td></tr>
+<tr class="separator:ac45f0c558e514c68e3b1544e5c9a14d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7d1cd366a79b65f250eaa0e77dd8e77" id="r_ac7d1cd366a79b65f250eaa0e77dd8e77"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac7d1cd366a79b65f250eaa0e77dd8e77">nodeCount</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:ac7d1cd366a79b65f250eaa0e77dd8e77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of GameObjects (SceneNodes) currently mounted for <code>path</code>; 0 if none.  <br /></td></tr>
+<tr class="separator:ac7d1cd366a79b65f250eaa0e77dd8e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83f1fcd956ae7b18b6f7dee208fe24b9" id="r_a83f1fcd956ae7b18b6f7dee208fe24b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a83f1fcd956ae7b18b6f7dee208fe24b9">loaded</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a83f1fcd956ae7b18b6f7dee208fe24b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if <code>path</code> is currently loaded.  <br /></td></tr>
+<tr class="separator:a83f1fcd956ae7b18b6f7dee208fe24b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a007b1d4ac4eb8861635ea20a0605cdfb" id="r_a007b1d4ac4eb8861635ea20a0605cdfb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a007b1d4ac4eb8861635ea20a0605cdfb">loadAsync</a> (const std::string &amp;path, const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options={}, std::function&lt; void(<a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *)&gt; done=nullptr)</td></tr>
+<tr class="memdesc:a007b1d4ac4eb8861635ea20a0605cdfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode <code>path</code> on a worker thread, then apply it on the main thread the next time <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370" title="Mount every decoded-but-not-applied scene. Must be called on the main / render thread....">pollAsync()</a> is called (GPU upload + ECS mount happen there). <code>done</code> fires on the main thread during <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370" title="Mount every decoded-but-not-applied scene. Must be called on the main / render thread....">pollAsync()</a> with the mounted host. Returns false when a load for <code>path</code> is already in flight.  <br /></td></tr>
+<tr class="separator:a007b1d4ac4eb8861635ea20a0605cdfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b6a62c7ae5d89b28b4e059d1277370" id="r_ae8b6a62c7ae5d89b28b4e059d1277370"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370">pollAsync</a> ()</td></tr>
+<tr class="memdesc:ae8b6a62c7ae5d89b28b4e059d1277370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mount every decoded-but-not-applied scene. Must be called on the main / render thread. Returns the number of scenes applied this call.  <br /></td></tr>
+<tr class="separator:ae8b6a62c7ae5d89b28b4e059d1277370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c0e8341bbd8459e6132e88099d22ae6" id="r_a5c0e8341bbd8459e6132e88099d22ae6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5c0e8341bbd8459e6132e88099d22ae6">prewarmAsync</a> (const std::string &amp;path, const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;options={})</td></tr>
+<tr class="memdesc:a5c0e8341bbd8459e6132e88099d22ae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and retain a scene without creating ECS/GPU objects.  <br /></td></tr>
+<tr class="separator:a5c0e8341bbd8459e6132e88099d22ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4dec923708f6389131ea70d5c26e58b" id="r_ac4dec923708f6389131ea70d5c26e58b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac4dec923708f6389131ea70d5c26e58b">prewarmed</a> (const std::string &amp;path) const</td></tr>
+<tr class="memdesc:ac4dec923708f6389131ea70d5c26e58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a decoded scene is ready for <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e" title="Full load: build the GameObject tree from path, mount it, return host.">load()</a> to consume.  <br /></td></tr>
+<tr class="separator:ac4dec923708f6389131ea70d5c26e58b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32bd3ce19626caf016f492d7c89be4f8" id="r_a32bd3ce19626caf016f492d7c89be4f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a32bd3ce19626caf016f492d7c89be4f8">clearPrewarm</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a32bd3ce19626caf016f492d7c89be4f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop a decoded prewarm result and release its CPU scene.  <br /></td></tr>
+<tr class="separator:a32bd3ce19626caf016f492d7c89be4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a063026e11a6030ecf753c29ab3f8c8f7" id="r_a063026e11a6030ecf753c29ab3f8c8f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a063026e11a6030ecf753c29ab3f8c8f7">pendingAsyncCount</a> () const</td></tr>
+<tr class="memdesc:a063026e11a6030ecf753c29ab3f8c8f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of async loads still waiting to be mounted.  <br /></td></tr>
+<tr class="separator:a063026e11a6030ecf753c29ab3f8c8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a8e9426a9c795ff401423183327ebbe" id="r_a3a8e9426a9c795ff401423183327ebbe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a3a8e9426a9c795ff401423183327ebbe">lightCount</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a3a8e9426a9c795ff401423183327ebbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of imported Light3D entities for <code>path</code>; 0 if none / disabled.  <br /></td></tr>
+<tr class="separator:a3a8e9426a9c795ff401423183327ebbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31a3a26e66ade7a670a868e83e26ae2b" id="r_a31a3a26e66ade7a670a868e83e26ae2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a31a3a26e66ade7a670a868e83e26ae2b">light</a> (const std::string &amp;path, int index)</td></tr>
+<tr class="separator:a31a3a26e66ade7a670a868e83e26ae2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd6e47cc2050500aa6c261537244d9dc" id="r_afd6e47cc2050500aa6c261537244d9dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#afd6e47cc2050500aa6c261537244d9dc">cameraCount</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:afd6e47cc2050500aa6c261537244d9dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of imported Camera3D entities for <code>path</code>; 0 if none / disabled.  <br /></td></tr>
+<tr class="separator:afd6e47cc2050500aa6c261537244d9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac976ad10c0b9088cb9cd339d4d946be4" id="r_ac976ad10c0b9088cb9cd339d4d946be4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac976ad10c0b9088cb9cd339d4d946be4">camera</a> (const std::string &amp;path, int index)</td></tr>
+<tr class="separator:ac976ad10c0b9088cb9cd339d4d946be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c6bb73ec0f592b748ded54a475de061" id="r_a4c6bb73ec0f592b748ded54a475de061"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a4c6bb73ec0f592b748ded54a475de061">animationCount</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a4c6bb73ec0f592b748ded54a475de061"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of imported animation clips for <code>path</code>; 0 if none / disabled.  <br /></td></tr>
+<tr class="separator:a4c6bb73ec0f592b748ded54a475de061"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7df1751c157e0e30cae69572315ba793" id="r_a7df1751c157e0e30cae69572315ba793"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a7df1751c157e0e30cae69572315ba793">skeleton</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a7df1751c157e0e30cae69572315ba793"><td class="mdescLeft">&#160;</td><td class="mdescRight">Imported skeleton for <code>path</code> (nullptr when the scene has no animations).  <br /></td></tr>
+<tr class="separator:a7df1751c157e0e30cae69572315ba793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9162d011e61721a112cb411597be1dca" id="r_a9162d011e61721a112cb411597be1dca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a9162d011e61721a112cb411597be1dca">clip</a> (const std::string &amp;path, int index)</td></tr>
+<tr class="separator:a9162d011e61721a112cb411597be1dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a958330c0eee2520cee0d1aa8cbfdc070" id="r_a958330c0eee2520cee0d1aa8cbfdc070"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a958330c0eee2520cee0d1aa8cbfdc070">buildNodeDesc</a> (const aiScene *scene, <a class="el" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> *slotsOut=nullptr)</td></tr>
+<tr class="memdesc:a958330c0eee2520cee0d1aa8cbfdc070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flatten an Assimp scene into a <a class="el" href="structeve_1_1scene_1_1NodeDesc.html" title="Declarative scene-node description (build once / on dirty → flatten into SceneHost::Tree)....">scene::NodeDesc</a> tree (id = object id).  <br /></td></tr>
+<tr class="separator:a958330c0eee2520cee0d1aa8cbfdc070"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abea55f236223151fa9d1a1044c5aacb3" id="r_abea55f236223151fa9d1a1044c5aacb3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#abea55f236223151fa9d1a1044c5aacb3">diffTree</a> (<a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, const <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> &amp;newRoot)</td></tr>
+<tr class="memdesc:abea55f236223151fa9d1a1044c5aacb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diff a mounted host tree against a freshly built NodeDesc tree.  <br /></td></tr>
+<tr class="separator:abea55f236223151fa9d1a1044c5aacb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a117d12fa176212cb2501695d3dec5c65" id="r_a117d12fa176212cb2501695d3dec5c65"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a117d12fa176212cb2501695d3dec5c65">applyTreeDiff</a> (<a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, const <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> &amp;newRoot, const <a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> &amp;<a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a61b46c1e62efec726ae1683572dd79d7">diff</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, const <a class="el" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> *slots)</td></tr>
+<tr class="memdesc:a117d12fa176212cb2501695d3dec5c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a diff to the host arena in place. Creates/destroys Renderable3D for added/removed mesh objects when <code>gfx</code> and <code>slots</code> are provided; otherwise only the GameObject tree is mutated (useful for logic-only tests).  <br /></td></tr>
+<tr class="separator:a117d12fa176212cb2501695d3dec5c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe56d4ba994c2b28c7e0619adfb964c9" id="r_abe56d4ba994c2b28c7e0619adfb964c9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#abe56d4ba994c2b28c7e0619adfb964c9">fillSceneBounds</a> (<a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *<a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>, const <a class="el" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> &amp;slots)</td></tr>
+<tr class="memdesc:abe56d4ba994c2b28c7e0619adfb964c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill node bounds from Assimp mesh AABBs (mesh GameObjects get the exact local-space AABB; ancestors get the union of their children in local space), so picking / frustum culling work on loaded models.  <br /></td></tr>
+<tr class="separator:abe56d4ba994c2b28c7e0619adfb964c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Loads a 3D scene (glTF / OBJ / FBX / GLB ... via Assimp/medialoader) into the ECS scene tree. </p>
+<p>For every aiNode it creates a <a class="el" href="classeve_1_1scene_1_1SceneHost.html" title="ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...">scene::SceneHost</a> GameObject (SceneNode) mirroring the source hierarchy, and for every referenced aiMesh it creates a child GameObject that links a <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> (mesh + material). Materials import the PBR base-color / metallic / roughness / normal / height factors and textures. Textures are cached by path and shared across meshes; meshes referenced by several nodes share one GPU buffer (<a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8" title="Reuse one GPU mesh when several nodes reference the same aiMesh.">LoadOptions::sharedMeshes</a>). aiLight / aiCamera / aiAnimation entries are imported as <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; (≤15 chars...">graphics::Light3D</a> / <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> entities and <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html" title="3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...">animation::AnimSkeleton</a> + AnimClip objects when the corresponding <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html" title="Options controlling how a 3D scene file is decoded and mounted.">LoadOptions</a> flags are enabled.</p>
+<p>Hot-reload: <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a62612f4c6919abe23cd36a74be264e17" title="Hot-reload path. Re-decodes, diffs, and applies only what changed. Returns false if the file failed t...">reload()</a> re-decodes the file, diffs the new tree against the mounted tree, and applies only the changed GameObjects in place — transform / visibility edits patch the existing node, added objects are appended (mesh uploaded once), removed objects are destroyed, and identical objects are left completely untouched (no re-upload, no rebuild). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00137">137</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a60da3b4482a28c694ef5a251dd3753ef" name="a60da3b4482a28c694ef5a251dd3753ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60da3b4482a28c694ef5a251dd3753ef">&#9670;&#160;</a></span>CpuImageMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">eve::sceneloader::SceneLoader::CpuImageMap</a> =  std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1sceneloader_1_1SceneLoader_1_1CpuImage.html">CpuImage</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00227">227</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a205e2c9195db963d95b8695fbeb686ea" name="a205e2c9195db963d95b8695fbeb686ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a205e2c9195db963d95b8695fbeb686ea">&#9670;&#160;</a></span>MeshCache</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">eve::sceneloader::SceneLoader::MeshCache</a> =  std::unordered_map&lt;const aiMesh *, <a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00220">220</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afbdf250e29612a51c32fafeec878121f" name="afbdf250e29612a51c32fafeec878121f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbdf250e29612a51c32fafeec878121f">&#9670;&#160;</a></span>TextureCache</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">eve::sceneloader::SceneLoader::TextureCache</a> =  std::unordered_map&lt;std::string, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Caches shared across the loader: textures by source key, GPU meshes per aiMesh. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00219">219</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac0544ab2e290e64a27f58f9f1fd5490c" name="ac0544ab2e290e64a27f58f9f1fd5490c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0544ab2e290e64a27f58f9f1fd5490c">&#9670;&#160;</a></span>~SceneLoader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sceneloader::SceneLoader::~SceneLoader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4c6bb73ec0f592b748ded54a475de061" name="a4c6bb73ec0f592b748ded54a475de061"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c6bb73ec0f592b748ded54a475de061">&#9670;&#160;</a></span>animationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sceneloader::SceneLoader::animationCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of imported animation clips for <code>path</code>; 0 if none / disabled. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01092">1092</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a117d12fa176212cb2501695d3dec5c65" name="a117d12fa176212cb2501695d3dec5c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a117d12fa176212cb2501695d3dec5c65">&#9670;&#160;</a></span>applyTreeDiff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::applyTreeDiff </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> &amp;&#160;</td>
+          <td class="paramname"><em>newRoot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> &amp;&#160;</td>
+          <td class="paramname"><em>diff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> *&#160;</td>
+          <td class="paramname"><em>slots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply a diff to the host arena in place. Creates/destroys Renderable3D for added/removed mesh objects when <code>gfx</code> and <code>slots</code> are provided; otherwise only the GameObject tree is mutated (useful for logic-only tests). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00635">635</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00923">diff()</a>, <a class="el" href="SceneLoader_8h_source.html#l00072">eve::sceneloader::SceneDiff::empty()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00748">fillSceneBounds()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00573">eve::scene::SceneHost::findLink()</a>, <a class="el" href="SceneLink_8cpp_source.html#l00039">eve::scene::findLinkKind()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00954">host()</a>, <a class="el" href="SceneHost_8h_source.html#l00040">eve::scene::SceneNode::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a>, <a class="el" href="SceneHost_8h_source.html#l00164">eve::scene::SceneHost::invalidateIndex()</a>, <a class="el" href="SceneHost_8h_source.html#l00158">eve::scene::SceneHost::markTransformDirty()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00899">reload()</a>.</p>
+
+</div>
+</div>
+<a id="a958330c0eee2520cee0d1aa8cbfdc070" name="a958330c0eee2520cee0d1aa8cbfdc070"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958330c0eee2520cee0d1aa8cbfdc070">&#9670;&#160;</a></span>buildNodeDesc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> eve::sceneloader::SceneLoader::buildNodeDesc </td>
+          <td>(</td>
+          <td class="paramtype">const aiScene *&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> *&#160;</td>
+          <td class="paramname"><em>slotsOut</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flatten an Assimp scene into a <a class="el" href="structeve_1_1scene_1_1NodeDesc.html" title="Declarative scene-node description (build once / on dirty → flatten into SceneHost::Tree)....">scene::NodeDesc</a> tree (id = object id). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00593">593</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00923">diff()</a>.</p>
+
+</div>
+</div>
+<a id="ac976ad10c0b9088cb9cd339d4d946be4" name="ac976ad10c0b9088cb9cd339d4d946be4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac976ad10c0b9088cb9cd339d4d946be4">&#9670;&#160;</a></span>camera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> * eve::sceneloader::SceneLoader::camera </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01084">1084</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd6e47cc2050500aa6c261537244d9dc" name="afd6e47cc2050500aa6c261537244d9dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd6e47cc2050500aa6c261537244d9dc">&#9670;&#160;</a></span>cameraCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sceneloader::SceneLoader::cameraCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of imported Camera3D entities for <code>path</code>; 0 if none / disabled. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01079">1079</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32bd3ce19626caf016f492d7c89be4f8" name="a32bd3ce19626caf016f492d7c89be4f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32bd3ce19626caf016f492d7c89be4f8">&#9670;&#160;</a></span>clearPrewarm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::sceneloader::SceneLoader::clearPrewarm </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop a decoded prewarm result and release its CPU scene. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01053">1053</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9162d011e61721a112cb411597be1dca" name="a9162d011e61721a112cb411597be1dca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9162d011e61721a112cb411597be1dca">&#9670;&#160;</a></span>clip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> * eve::sceneloader::SceneLoader::clip </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01102">1102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00966">unload()</a>.</p>
+
+</div>
+</div>
+<a id="a61b46c1e62efec726ae1683572dd79d7" name="a61b46c1e62efec726ae1683572dd79d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61b46c1e62efec726ae1683572dd79d7">&#9670;&#160;</a></span>diff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> eve::sceneloader::SceneLoader::diff </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dry-run diff for <code>path</code> against the currently mounted tree (no mutation). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00923">923</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00aec211f7c20af43e742bf2570c3cb84f9">eve::sceneloader::SceneDiffEntry::Add</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00593">buildNodeDesc()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00601">diffTree()</a>, <a class="el" href="Resource_8cpp_source.html#l00008">eve::ResourceManager::getInstance()</a>, <a class="el" href="ModelData_8cpp_source.html#l00065">eve::model3d::ModelData::getScene()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00175">parent</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00126">eve::ResourceManager::reload()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00635">applyTreeDiff()</a> , 以及 <a class="el" href="SceneLoader_8cpp_source.html#l00899">reload()</a>.</p>
+
+</div>
+</div>
+<a id="abea55f236223151fa9d1a1044c5aacb3" name="abea55f236223151fa9d1a1044c5aacb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abea55f236223151fa9d1a1044c5aacb3">&#9670;&#160;</a></span>diffTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> eve::sceneloader::SceneLoader::diffTree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene_1_1NodeDesc.html">scene::NodeDesc</a> &amp;&#160;</td>
+          <td class="paramname"><em>newRoot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Diff a mounted host tree against a freshly built NodeDesc tree. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00601">601</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="SceneLoader_8h_source.html#l00066">eve::sceneloader::SceneDiff::entries</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00954">host()</a>, <a class="el" href="SceneHost_8h_source.html#l00040">eve::scene::SceneNode::id</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a1063e38cb53d94d386f21227fcd84717">eve::sceneloader::SceneDiffEntry::Remove</a> , 以及 <a class="el" href="SceneLoader_8h_source.html#l00068">eve::sceneloader::SceneDiff::removed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00923">diff()</a> , 以及 <a class="el" href="SceneLoader_8cpp_source.html#l00899">reload()</a>.</p>
+
+</div>
+</div>
+<a id="abe56d4ba994c2b28c7e0619adfb964c9" name="abe56d4ba994c2b28c7e0619adfb964c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe56d4ba994c2b28c7e0619adfb964c9">&#9670;&#160;</a></span>fillSceneBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::sceneloader::SceneLoader::fillSceneBounds </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1sceneloader.html#ac4c3ce517bc3502b726ac0f5bd05acfa">MeshSlotMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>slots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fill node bounds from Assimp mesh AABBs (mesh GameObjects get the exact local-space AABB; ancestors get the union of their children in local space), so picking / frustum culling work on loaded models. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00748">748</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00954">host()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00635">applyTreeDiff()</a>.</p>
+
+</div>
+</div>
+<a id="a6c5a56515982531a1eae081386f1de96" name="a6c5a56515982531a1eae081386f1de96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c5a56515982531a1eae081386f1de96">&#9670;&#160;</a></span>host()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> * eve::sceneloader::SceneLoader::host </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The mounted host for <code>path</code>, or nullptr if not loaded. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00954">954</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00635">applyTreeDiff()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00601">diffTree()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00748">fillSceneBounds()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00873">load()</a> , 以及 <a class="el" href="SceneLoader_8cpp_source.html#l00959">nodeCount()</a>.</p>
+
+</div>
+</div>
+<a id="a31a3a26e66ade7a670a868e83e26ae2b" name="a31a3a26e66ade7a670a868e83e26ae2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31a3a26e66ade7a670a868e83e26ae2b">&#9670;&#160;</a></span>light()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">graphics::Light3D</a> * eve::sceneloader::SceneLoader::light </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01071">1071</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a8e9426a9c795ff401423183327ebbe" name="a3a8e9426a9c795ff401423183327ebbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a8e9426a9c795ff401423183327ebbe">&#9670;&#160;</a></span>lightCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sceneloader::SceneLoader::lightCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of imported Light3D entities for <code>path</code>; 0 if none / disabled. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01066">1066</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5cb975ba484fd4cc7a9e0712b173e80e" name="a5cb975ba484fd4cc7a9e0712b173e80e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cb975ba484fd4cc7a9e0712b173e80e">&#9670;&#160;</a></span>load() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> * eve::sceneloader::SceneLoader::load </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>linkRenderables</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Full load: build the GameObject tree from <code>path</code>, mount it, return host. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00873">873</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneHost_8cpp_source.html#l00122">eve::scene::SceneHost::createHost()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00954">host()</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6">eve::Loaded</a>, <a class="el" href="SceneHost_8cpp_source.html#l00137">eve::scene::SceneHost::setTree()</a> , 以及 <a class="el" href="TransformSystem_8cpp_source.html#l00115">eve::scene::TransformSystem::updateHost()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00895">load()</a> , 以及 <a class="el" href="SceneLoader_8cpp_source.html#l00899">reload()</a>.</p>
+
+</div>
+</div>
+<a id="a2c7007f1a8aaff29855265389ae9a8a9" name="a2c7007f1a8aaff29855265389ae9a8a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7007f1a8aaff29855265389ae9a8a9">&#9670;&#160;</a></span>load() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> * eve::sceneloader::SceneLoader::load </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00895">895</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00873">load()</a>.</p>
+
+</div>
+</div>
+<a id="a007b1d4ac4eb8861635ea20a0605cdfb" name="a007b1d4ac4eb8861635ea20a0605cdfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a007b1d4ac4eb8861635ea20a0605cdfb">&#9670;&#160;</a></span>loadAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::loadAsync </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(<a class="el" href="classeve_1_1scene_1_1SceneHost.html">scene::SceneHost</a> *)&gt;&#160;</td>
+          <td class="paramname"><em>done</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode <code>path</code> on a worker thread, then apply it on the main thread the next time <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370" title="Mount every decoded-but-not-applied scene. Must be called on the main / render thread....">pollAsync()</a> is called (GPU upload + ECS mount happen there). <code>done</code> fires on the main thread during <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370" title="Mount every decoded-but-not-applied scene. Must be called on the main / render thread....">pollAsync()</a> with the mounted host. Returns false when a load for <code>path</code> is already in flight. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00988">988</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="a83f1fcd956ae7b18b6f7dee208fe24b9" name="a83f1fcd956ae7b18b6f7dee208fe24b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83f1fcd956ae7b18b6f7dee208fe24b9">&#9670;&#160;</a></span>loaded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::loaded </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if <code>path</code> is currently loaded. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00964">964</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a017ac8fad179bebc2a0889221394773e" name="a017ac8fad179bebc2a0889221394773e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a017ac8fad179bebc2a0889221394773e">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sceneloader::SceneLoader::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">SceneLoader</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac7d1cd366a79b65f250eaa0e77dd8e77" name="ac7d1cd366a79b65f250eaa0e77dd8e77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7d1cd366a79b65f250eaa0e77dd8e77">&#9670;&#160;</a></span>nodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sceneloader::SceneLoader::nodeCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of GameObjects (SceneNodes) currently mounted for <code>path</code>; 0 if none. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00959">959</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a> , 以及 <a class="el" href="SceneLoader_8cpp_source.html#l00954">host()</a>.</p>
+
+</div>
+</div>
+<a id="a063026e11a6030ecf753c29ab3f8c8f7" name="a063026e11a6030ecf753c29ab3f8c8f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a063026e11a6030ecf753c29ab3f8c8f7">&#9670;&#160;</a></span>pendingAsyncCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sceneloader::SceneLoader::pendingAsyncCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of async loads still waiting to be mounted. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01059">1059</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8b6a62c7ae5d89b28b4e059d1277370" name="ae8b6a62c7ae5d89b28b4e059d1277370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8b6a62c7ae5d89b28b4e059d1277370">&#9670;&#160;</a></span>pollAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sceneloader::SceneLoader::pollAsync </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mount every decoded-but-not-applied scene. Must be called on the main / render thread. Returns the number of scenes applied this call. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01010">1010</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+</div>
+</div>
+<a id="a5c0e8341bbd8459e6132e88099d22ae6" name="a5c0e8341bbd8459e6132e88099d22ae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c0e8341bbd8459e6132e88099d22ae6">&#9670;&#160;</a></span>prewarmAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::prewarmAsync </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode and retain a scene without creating ECS/GPU objects. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01028">1028</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="ac4dec923708f6389131ea70d5c26e58b" name="ac4dec923708f6389131ea70d5c26e58b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4dec923708f6389131ea70d5c26e58b">&#9670;&#160;</a></span>prewarmed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::prewarmed </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when a decoded scene is ready for <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e" title="Full load: build the GameObject tree from path, mount it, return host.">load()</a> to consume. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01049">1049</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a62612f4c6919abe23cd36a74be264e17" name="a62612f4c6919abe23cd36a74be264e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62612f4c6919abe23cd36a74be264e17">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::reload </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1sceneloader_1_1SceneDiff.html">SceneDiff</a> *&#160;</td>
+          <td class="paramname"><em>out</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1sceneloader_1_1LoadOptions.html">LoadOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hot-reload <code>path</code>. Re-decodes, diffs, and applies only what changed. Returns false if the file failed to decode (old scene is kept) or nothing changed. When <code>out</code> is non-null it is filled with the applied diff. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00899">899</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00635">applyTreeDiff()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00923">diff()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00601">diffTree()</a>, <a class="el" href="SceneLoader_8h_source.html#l00072">eve::sceneloader::SceneDiff::empty()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00873">load()</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6">eve::Loaded</a> , 以及 <a class="el" href="TransformSystem_8cpp_source.html#l00115">eve::scene::TransformSystem::updateHost()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8h_source.html#l00157">reloadChecked()</a>.</p>
+
+</div>
+</div>
+<a id="ab18e48476feb8633aee68c32a14ef63f" name="ab18e48476feb8633aee68c32a14ef63f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab18e48476feb8633aee68c32a14ef63f">&#9670;&#160;</a></span>reloadChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sceneloader::SceneLoader::reloadChecked </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Script-friendly reload: returns true when anything was updated. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a> 第 <a class="el" href="SceneLoader_8h_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneLoader_8cpp_source.html#l00899">reload()</a>.</p>
+
+</div>
+</div>
+<a id="a7df1751c157e0e30cae69572315ba793" name="a7df1751c157e0e30cae69572315ba793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7df1751c157e0e30cae69572315ba793">&#9670;&#160;</a></span>skeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> * eve::sceneloader::SceneLoader::skeleton </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Imported skeleton for <code>path</code> (nullptr when the scene has no animations). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l01097">1097</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac45f0c558e514c68e3b1544e5c9a14d7" name="ac45f0c558e514c68e3b1544e5c9a14d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac45f0c558e514c68e3b1544e5c9a14d7">&#9670;&#160;</a></span>unload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::sceneloader::SceneLoader::unload </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop the loaded scene for <code>path</code>, destroying linked Renderable3D objects. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a> 第 <a class="el" href="SceneLoader_8cpp_source.html#l00966">966</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01102">clip()</a>, <a class="el" href="SceneLink_8cpp_source.html#l00039">eve::scene::findLinkKind()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/sceneloader/<a class="el" href="SceneLoader_8h_source.html">SceneLoader.h</a></li>
+<li>src/modules/sceneloader/<a class="el" href="SceneLoader_8cpp_source.html">SceneLoader.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

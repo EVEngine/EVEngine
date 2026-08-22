@@ -1,0 +1,217 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1Building.html">Building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::building::Building 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#ac5115b5989d8f0b76b07214fb8361431">Building</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a76d11f97f4118498cef7c7aa4ac92b21">buildingHasTag</a>(const std::string &amp;buildingId, const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a70bcb79e725821e56a94ff2ff5839c65">clearBuildingDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a9e4808a2b0d928a133f2761d3f290746">clearChangeEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a8443cd762d61efe9a47cccfc3dcfc364">getBuildingCategory</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a8be1335858661df1812dd70539ddf2fe">getBuildingChannel</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a7a8d396e842ba21058b9c87c4bd5030b">getBuildingCost</a>(const std::string &amp;buildingId, const std::string &amp;resource)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#adef4c6a7204dc842bf0cdf256e5b5fa8">getBuildingDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a0da683e6303b84840643ec5fec97e750">getBuildingDisplayName</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a761ea1e96eb9ad6b5f40970bd47289d0">getBuildingExtra</a>(const std::string &amp;buildingId, const std::string &amp;key, const std::string &amp;fallback={})</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a98ba04c2232c3f676f2b522ccc00dee3">getBuildingFootprintH</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a4ce7c4c6ad864502f2ca9ee650a77eca">getBuildingFootprintW</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#aaff7abf75bcc51f452d30caaa3422c8c">getBuildingRenderMode</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a00a940b11e8f28ac932b95df9db2cd52">getBuildingRotationMode</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a7399ae0f7c17affc9e6648031defba58">getBuildingSnapMode</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#accc841e15b452407afc2a98e9fc5855d">getBuildingValidateRule</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a99a6e751b724bdaf713953687ac544ba">getBuildingVisual2d</a>(const std::string &amp;buildingId, const std::string &amp;key, const std::string &amp;fallback={})</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a1f50558beaf659626f9fb60a93c0d1bc">getBuildingVisual3d</a>(const std::string &amp;buildingId, const std::string &amp;key, const std::string &amp;fallback={})</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a9643e85d482fa04df3ba350afae0de3c">getChangeEventAction</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a1e72ef7e12e3d67de26e2b2dda459df7">getChangeEventBuildingId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a97774dee5f9a29cd4d2674a964030d65">getChangeEventCellX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a7836e85a9b734a9479bbc5de20bd3deb">getChangeEventCellY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#abe1f0814cc5422cf1ec221534c7b0c5b">getChangeEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a0720d1a6864b6b43b748cae1a4321013">getChangeEventInstanceId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#aeb4ba20fde4ed3bdc37ff5e600e2b88c">getChangeEventOtherCellX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#ab91234a3b4f62969731dada15eac5b42">getChangeEventOtherCellY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a3c514f8021d80182a3a1dbe1d08a58bc">getChangeEventRotation</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a9811bdccffef3090fab6dac053f03b2b">getChangeEventWorldId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a77469918770817f8551c0392b185110c">getPlaneSurfaceHeight</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a6cc7c8daa9f21bff2c903c5d2a531737">getSurfaceCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#abb00dc158e08e945a27860519ee3f626">getSurfaceName</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#ad9e2e94960ad5009cc037e0f210987a2">hasBuildingDefinition</a>(const std::string &amp;buildingId)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a018338514b353623a21e360e7a661d2c">hasSnapRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#ac89c53c385d045c1ff7fdba97eb5381b">hasSurface</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a31a29aaa7a203826cb4afbbc0d128b88">hasValidateRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a8666bbb41f7acc9c84e4de0bd6bf1c4a">Module_REG</a>(Building)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#af077a2937d519372a3216d0063c34e4a">newGhost</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a8e3dba2c447b7c3840c9fa35a0ed5c05">newSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#af8564385fec1f8c5359d4e81afe693c8">newWorld</a>(int width, int height, float cellSize=32.f)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a0160aa11be14dfb5f31a329245e0a97c">registerBuildingsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a12c8bf9d3b7debc8530c26450bcb57ef">setPlaneSurfaceHeight</a>(float h)</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html#a28bb20ef875e1d91f2cbe1fb388487a4">~Building</a>() override=default</td><td class="entry"><a class="el" href="classeve_1_1building_1_1Building.html">eve::building::Building</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

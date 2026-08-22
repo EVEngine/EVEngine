@@ -1,0 +1,419 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/grid/GridProjection.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e6ce728d19727bba77d787a548f224ca.html">grid</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GridProjection.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GridProjection_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="GridProjection_8h.html">grid/GridProjection.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1grid.html">eve::grid</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keywordtype">bool</span> staggerDoShift(<span class="keyword">const</span> GridConfig &amp;cfg, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> major = (cfg.staggerAxis == <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6a57cec4137b614c87cb4e24a3d003a3e0">StaggerAxis::Y</a>) ? <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> : <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> odd = (major &amp; 1) != 0;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> cfg.staggerIndex == <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#aaf6b155ab24d52705325d7d90d936fdea37b6bd7fe61d651735cec3d3b0356c66">StaggerIndex::Odd</a> ? odd : !odd;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// odd-r offset（staggerAxis=Y, odd）pointy-top hex &lt;-&gt; cube。</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keywordtype">void</span> offsetToCube(<span class="keywordtype">int</span> col, <span class="keywordtype">int</span> row, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = col - (<a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a> - (<a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a> &amp; 1)) / 2;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = <a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = -<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> - <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">void</span> cubeToOffset(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> &amp;col, <span class="keywordtype">int</span> &amp;row) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a> = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    col = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + (<a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a> - (<a class="code hl_function" href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">row</a> &amp; 1)) / 2;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1grid.html#a2bf84089c970d0c117611de48a4a6a32">   30</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1grid.html#a2bf84089c970d0c117611de48a4a6a32">cellToWorld</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1grid_1_1GridConfig.html">GridConfig</a> &amp;cfg, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">float</span> &amp;py) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> tw = <a class="code hl_function" href="namespaceeve_1_1grid.html#ac412911e6a1073b1e3fbe2b8252c7e39">cellPitchX</a>(cfg);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> th = <a class="code hl_function" href="namespaceeve_1_1grid.html#abd76ab0d4d0079ab0afde5ebf88482b9">cellPitchY</a>(cfg);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">switch</span> (cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a0d7d0c9c0122114a8b7bd977fdf42ba7">layout</a>) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">GridLayout::Rectangle</a>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) * tw;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            py = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) * th;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca93fe1f7c5ca2e09af063aca96d0625cc">GridLayout::Isometric</a>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cadc8dc724c78acb80f3a350ec583b3c84">GridLayout::IsometricZAsY</a>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="comment">// 菱形投影（IsometricZAsY 在 v1 与 Isometric 同构，Z-as-Y 由平面轴承担）。</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) * tw * 0.5f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            py = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> + <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) * th * 0.5f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55caf421d06a10620aa57ae6ebaec46cffe9">GridLayout::Staggered</a>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca125e13c182697c5a282e4de6d7999eb0">GridLayout::Hexagon</a>: {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> hex = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a0d7d0c9c0122114a8b7bd977fdf42ba7">layout</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca125e13c182697c5a282e4de6d7999eb0">GridLayout::Hexagon</a> &amp;&amp; cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aea7864e9fae158a87a17fe65d0a1897f">hexSideLength</a> &gt; 0.f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">if</span> (cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#ad2873838d999ece4555a738b48f9ae36">staggerAxis</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6a57cec4137b614c87cb4e24a3d003a3e0">StaggerAxis::Y</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> pitchY = hex ? (th + cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aea7864e9fae158a87a17fe65d0a1897f">hexSideLength</a>) * 0.5f : th * 0.5f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) * tw +</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                     (staggerDoShift(cfg, <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) ? tw * 0.5f : 0.f);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                py = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) * pitchY;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> pitchX = hex ? (tw + cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aea7864e9fae158a87a17fe65d0a1897f">hexSideLength</a>) * 0.5f : tw * 0.5f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>) * pitchX;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                py = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a> + float(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) * th +</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                     (staggerDoShift(cfg, <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) ? th * 0.5f : 0.f);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceeve_1_1grid.html#a9ef10b819ce8178d924099df114df6b8">   63</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1grid.html#a9ef10b819ce8178d924099df114df6b8">cellToDepthY</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1grid_1_1GridConfig.html">GridConfig</a> &amp;cfg, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = 0.f, py = 0.f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_function" href="namespaceeve_1_1grid.html#a2bf84089c970d0c117611de48a4a6a32">cellToWorld</a>(cfg, <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, py);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> py + cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">cellH</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespaceeve_1_1grid.html#a6201643db8c253a164fbcde129741fa3">   69</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1grid.html#a6201643db8c253a164fbcde129741fa3">worldToCell</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1grid_1_1GridConfig.html">GridConfig</a> &amp;cfg, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">float</span> py, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">int</span> mapW,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                 <span class="keywordtype">int</span> mapH) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">switch</span> (cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a0d7d0c9c0122114a8b7bd977fdf42ba7">layout</a>) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">GridLayout::Rectangle</a>: {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> lx = <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> - cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> ly = py - cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> tw = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a44260b66e8883e7f950a9b1b13e5c650">cellW</a> &gt; 0.f ? <a class="code hl_function" href="namespaceeve_1_1grid.html#ac412911e6a1073b1e3fbe2b8252c7e39">cellPitchX</a>(cfg) : 1.f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> th = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">cellH</a> &gt; 0.f ? <a class="code hl_function" href="namespaceeve_1_1grid.html#abd76ab0d4d0079ab0afde5ebf88482b9">cellPitchY</a>(cfg) : 1.f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = int(std::floor(lx / tw));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = int(std::floor(ly / th));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca93fe1f7c5ca2e09af063aca96d0625cc">GridLayout::Isometric</a>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cadc8dc724c78acb80f3a350ec583b3c84">GridLayout::IsometricZAsY</a>: {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> lx = <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> - cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">originX</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> ly = py - cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">originY</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> tw = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a44260b66e8883e7f950a9b1b13e5c650">cellW</a> &gt; 0.f ? cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a44260b66e8883e7f950a9b1b13e5c650">cellW</a> * 0.5f : 1.f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> th = cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">cellH</a> &gt; 0.f ? cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">cellH</a> * 0.5f : 1.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = lx / tw;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = ly / th;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = int(std::floor((<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> + <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) * 0.5f));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = int(std::floor((<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) * 0.5f));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">default</span>: {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="comment">// 最近格中心（staggered / hex）。</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = 0;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = 0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordtype">float</span> best = 1e30f;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = std::max(1, mapW);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = std::max(1, mapH);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>; ++<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0; <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>; ++<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    <span class="keywordtype">float</span> wx = 0.f, wy = 0.f;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                    <a class="code hl_function" href="namespaceeve_1_1grid.html#a2bf84089c970d0c117611de48a4a6a32">cellToWorld</a>(cfg, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, wx, wy);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    wx += cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#a44260b66e8883e7f950a9b1b13e5c650">cellW</a> * 0.5f;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                    wy += cfg.<a class="code hl_variable" href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">cellH</a> * 0.5f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> dx = wx - <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> dy = wy - py;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = dx * dx + dy * dy;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                    <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> &lt; best) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                        best = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                        <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                        <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="}">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="namespaceeve_1_1grid.html#a83b1438d6778d1062057e47780a866c9">  121</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1grid.html#a83b1438d6778d1062057e47780a866c9">foreachRotatedFootprint</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, <span class="keyword">const</span> std::vector&lt;uint8_t&gt; &amp;mask, <span class="keywordtype">int</span> steps,</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                             <span class="keywordtype">bool</span> hexMode, <span class="keyword">const</span> std::function&lt;<span class="keywordtype">void</span>(<span class="keywordtype">int</span> lx, <span class="keywordtype">int</span> ly)&gt; &amp;<a class="code hl_variable" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> &lt;= 0) <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = 1;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt;= 0) <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = 1;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="comment">// 1. 收集实心局部格。</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::vector&lt;std::pair&lt;int, int&gt;&gt; solid;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ly = 0; ly &lt; <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>; ++ly) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lx = 0; lx &lt; <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>; ++lx) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            <span class="keywordtype">bool</span> solidCell = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <span class="keywordflow">if</span> (!mask.empty()) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a> = size_t(ly) * size_t(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>) + size_t(lx);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                solidCell = <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a> &lt; mask.size() &amp;&amp; mask[<a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>] != 0;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            <span class="keywordflow">if</span> (solidCell) solid.emplace_back(lx, ly);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (solid.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="comment">// 2. 旋转到归一化局部坐标。</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    std::vector&lt;std::pair&lt;int, int&gt;&gt; rotated;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    rotated.reserve(solid.size());</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">int</span> minX = 1 &lt;&lt; 30, minY = 1 &lt;&lt; 30;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : solid) {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordtype">int</span> rx = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.first;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordtype">int</span> ry = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.second;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">if</span> (hexMode) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = 0;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            offsetToCube(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.first, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.second, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> = ((steps % 6) + 6) % 6;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>; ++i) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> nx = -<a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> ny = -<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> nz = -<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = nx;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = ny;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = nz;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            cubeToOffset(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, rx, ry);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> q = ((steps % 4) + 4) % 4;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <span class="keywordflow">switch</span> (q) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                <span class="keywordflow">case</span> 1:  <span class="comment">// 90° CCW</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                    rx = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.second;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                    ry = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> - 1 - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.first;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                <span class="keywordflow">case</span> 2:  <span class="comment">// 180°</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                    rx = <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> - 1 - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.first;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                    ry = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 1 - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.second;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                <span class="keywordflow">case</span> 3:  <span class="comment">// 270° CCW / 90° CW</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                    rx = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - 1 - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.second;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                    ry = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.first;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        rotated.emplace_back(rx, ry);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        minX = std::min(minX, rx);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        minY = std::min(minY, ry);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : rotated) <a class="code hl_variable" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.first - minX, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.second - minY);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>}</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="foldopen" id="foldopen00187" data-start="{" data-end="}">
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="namespaceeve_1_1grid.html#aac3639d2433d5a25117abee6a11b6a32">  187</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1grid.html#aac3639d2433d5a25117abee6a11b6a32">rotatedFootprintSize</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, <span class="keyword">const</span> std::vector&lt;uint8_t&gt; &amp;mask, <span class="keywordtype">int</span> steps,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                          <span class="keywordtype">bool</span> hexMode, <span class="keywordtype">int</span> &amp;outW, <span class="keywordtype">int</span> &amp;outH) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">int</span> maxX = -1;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordtype">int</span> maxY = -1;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <a class="code hl_function" href="namespaceeve_1_1grid.html#a83b1438d6778d1062057e47780a866c9">foreachRotatedFootprint</a>(<a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, mask, steps, hexMode, [&amp;](<span class="keywordtype">int</span> lx, <span class="keywordtype">int</span> ly) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        maxX = std::max(maxX, lx);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        maxY = std::max(maxY, ly);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    });</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    outW = maxX + 1;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    outH = maxY + 1;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>}</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>}  <span class="comment">// namespace eve::grid</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00031">CardTypes.cpp:31</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00032">CardTypes.cpp:32</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGridProjection_8h_html"><div class="ttname"><a href="GridProjection_8h.html">GridProjection.h</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00652">ImageData.cpp:652</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ae40354a1051342eb5a9db005715dcfa9"><div class="ttname"><a href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a></div><div class="ttdeci">int idx</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00290">Pathfinder.cpp:290</a></div></div>
+<div class="ttc" id="aSettlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_a6f364afbe132c4ecfea48bde1b0618ba"><div class="ttname"><a href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a></div><div class="ttdeci">int d</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html"><div class="ttname"><a href="namespaceeve_1_1grid.html">eve::grid</a></div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8cpp_source.html#l00003">GridConfig.cpp:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a2bf84089c970d0c117611de48a4a6a32"><div class="ttname"><a href="namespaceeve_1_1grid.html#a2bf84089c970d0c117611de48a4a6a32">eve::grid::cellToWorld</a></div><div class="ttdeci">void cellToWorld(const GridConfig &amp;cfg, int cx, int cy, float &amp;px, float &amp;py)</div><div class="ttdef"><b>Definition</b> <a href="GridProjection_8cpp_source.html#l00030">GridProjection.cpp:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a6201643db8c253a164fbcde129741fa3"><div class="ttname"><a href="namespaceeve_1_1grid.html#a6201643db8c253a164fbcde129741fa3">eve::grid::worldToCell</a></div><div class="ttdeci">void worldToCell(const GridConfig &amp;cfg, float px, float py, int &amp;cx, int &amp;cy, int mapW, int mapH)</div><div class="ttdef"><b>Definition</b> <a href="GridProjection_8cpp_source.html#l00069">GridProjection.cpp:69</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a755c2c13f33458c2bc52891730e5d8b6a57cec4137b614c87cb4e24a3d003a3e0"><div class="ttname"><a href="namespaceeve_1_1grid.html#a755c2c13f33458c2bc52891730e5d8b6a57cec4137b614c87cb4e24a3d003a3e0">eve::grid::StaggerAxis::Y</a></div><div class="ttdeci">@ Y</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a8020a5f93f7d9f56fd48eae980d3a55ca125e13c182697c5a282e4de6d7999eb0"><div class="ttname"><a href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca125e13c182697c5a282e4de6d7999eb0">eve::grid::GridLayout::Hexagon</a></div><div class="ttdeci">@ Hexagon</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a8020a5f93f7d9f56fd48eae980d3a55ca93fe1f7c5ca2e09af063aca96d0625cc"><div class="ttname"><a href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55ca93fe1f7c5ca2e09af063aca96d0625cc">eve::grid::GridLayout::Isometric</a></div><div class="ttdeci">@ Isometric</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e"><div class="ttname"><a href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">eve::grid::GridLayout::Rectangle</a></div><div class="ttdeci">@ Rectangle</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a8020a5f93f7d9f56fd48eae980d3a55cadc8dc724c78acb80f3a350ec583b3c84"><div class="ttname"><a href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cadc8dc724c78acb80f3a350ec583b3c84">eve::grid::GridLayout::IsometricZAsY</a></div><div class="ttdeci">@ IsometricZAsY</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a8020a5f93f7d9f56fd48eae980d3a55caf421d06a10620aa57ae6ebaec46cffe9"><div class="ttname"><a href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55caf421d06a10620aa57ae6ebaec46cffe9">eve::grid::GridLayout::Staggered</a></div><div class="ttdeci">@ Staggered</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a83b1438d6778d1062057e47780a866c9"><div class="ttname"><a href="namespaceeve_1_1grid.html#a83b1438d6778d1062057e47780a866c9">eve::grid::foreachRotatedFootprint</a></div><div class="ttdeci">void foreachRotatedFootprint(int w, int h, const std::vector&lt; uint8_t &gt; &amp;mask, int steps, bool hexMode, const std::function&lt; void(int lx, int ly)&gt; &amp;fn)</div><div class="ttdef"><b>Definition</b> <a href="GridProjection_8cpp_source.html#l00121">GridProjection.cpp:121</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_a9ef10b819ce8178d924099df114df6b8"><div class="ttname"><a href="namespaceeve_1_1grid.html#a9ef10b819ce8178d924099df114df6b8">eve::grid::cellToDepthY</a></div><div class="ttdeci">float cellToDepthY(const GridConfig &amp;cfg, int cx, int cy)</div><div class="ttdef"><b>Definition</b> <a href="GridProjection_8cpp_source.html#l00063">GridProjection.cpp:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_aac3639d2433d5a25117abee6a11b6a32"><div class="ttname"><a href="namespaceeve_1_1grid.html#aac3639d2433d5a25117abee6a11b6a32">eve::grid::rotatedFootprintSize</a></div><div class="ttdeci">void rotatedFootprintSize(int w, int h, const std::vector&lt; uint8_t &gt; &amp;mask, int steps, bool hexMode, int &amp;outW, int &amp;outH)</div><div class="ttdef"><b>Definition</b> <a href="GridProjection_8cpp_source.html#l00187">GridProjection.cpp:187</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_aaf6b155ab24d52705325d7d90d936fdea37b6bd7fe61d651735cec3d3b0356c66"><div class="ttname"><a href="namespaceeve_1_1grid.html#aaf6b155ab24d52705325d7d90d936fdea37b6bd7fe61d651735cec3d3b0356c66">eve::grid::StaggerIndex::Odd</a></div><div class="ttdeci">@ Odd</div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_abd76ab0d4d0079ab0afde5ebf88482b9"><div class="ttname"><a href="namespaceeve_1_1grid.html#abd76ab0d4d0079ab0afde5ebf88482b9">eve::grid::cellPitchY</a></div><div class="ttdeci">float cellPitchY(const GridConfig &amp;cfg)</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00044">GridConfig.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html_ac412911e6a1073b1e3fbe2b8252c7e39"><div class="ttname"><a href="namespaceeve_1_1grid.html#ac412911e6a1073b1e3fbe2b8252c7e39">eve::grid::cellPitchX</a></div><div class="ttdeci">float cellPitchX(const GridConfig &amp;cfg)</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00043">GridConfig.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_afbec5b50c99f45d58f40e7fb45c9a1a0"><div class="ttname"><a href="namespaceeve_1_1ui.html#afbec5b50c99f45d58f40e7fb45c9a1a0">eve::ui::row</a></div><div class="ttdeci">WidgetDesc row(std::vector&lt; WidgetDesc &gt; children, std::string id)</div><div class="ttdoc">Horizontal elastic layout row.</div><div class="ttdef"><b>Definition</b> <a href="Widget_8cpp_source.html#l00431">Widget.cpp:431</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html">eve::grid::GridConfig</a></div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00023">GridConfig.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_a0d7d0c9c0122114a8b7bd977fdf42ba7"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#a0d7d0c9c0122114a8b7bd977fdf42ba7">eve::grid::GridConfig::layout</a></div><div class="ttdeci">GridLayout layout</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00024">GridConfig.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_a210a414c441320ceabb293648d8b9094"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#a210a414c441320ceabb293648d8b9094">eve::grid::GridConfig::originY</a></div><div class="ttdeci">float originY</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00031">GridConfig.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_a44260b66e8883e7f950a9b1b13e5c650"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#a44260b66e8883e7f950a9b1b13e5c650">eve::grid::GridConfig::cellW</a></div><div class="ttdeci">float cellW</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00026">GridConfig.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_a80aeb87591571ccb18a12398c696f512"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#a80aeb87591571ccb18a12398c696f512">eve::grid::GridConfig::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00030">GridConfig.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_aad75a5aee4036e050438ee4828117695"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#aad75a5aee4036e050438ee4828117695">eve::grid::GridConfig::cellH</a></div><div class="ttdeci">float cellH</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00027">GridConfig.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_ad2873838d999ece4555a738b48f9ae36"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#ad2873838d999ece4555a738b48f9ae36">eve::grid::GridConfig::staggerAxis</a></div><div class="ttdeci">StaggerAxis staggerAxis</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00032">GridConfig.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html_aea7864e9fae158a87a17fe65d0a1897f"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html#aea7864e9fae158a87a17fe65d0a1897f">eve::grid::GridConfig::hexSideLength</a></div><div class="ttdeci">float hexSideLength</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00034">GridConfig.h:34</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

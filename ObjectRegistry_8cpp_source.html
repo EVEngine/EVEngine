@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/ObjectRegistry.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ObjectRegistry.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ObjectRegistry_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ObjectRegistry_8h.html">ui/ObjectRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Runtime_8h.html">common/Runtime.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">   10</a></span><a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a>&amp; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">ObjectRegistry::instance</a>() {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> registry;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">return</span> registry;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a3330a768371f00d1e9307dbe68689a8e">   15</a></span>uint64_t <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a3330a768371f00d1e9307dbe68689a8e">ObjectRegistry::create</a>(<span class="keyword">const</span> std::string&amp; className) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (className.empty()) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_class" href="classeve_1_1Runtime.html">Runtime</a>* rt = <a class="code hl_function" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">ModuleManager::runtime</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (!rt) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a2cae02245295241a9d4e6e02d9dc59f2">registerObject</a>(className, rt-&gt;<a class="code hl_function" href="classeve_1_1Runtime.html#a50181ddcef6007cbc108a542ea6621c3">createInstance</a>(className));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a2cae02245295241a9d4e6e02d9dc59f2">   26</a></span>uint64_t <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a2cae02245295241a9d4e6e02d9dc59f2">ObjectRegistry::registerObject</a>(<span class="keyword">const</span> std::string&amp; className,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                        <span class="keyword">const</span> ssq::Object&amp; <span class="keywordtype">object</span>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                        <span class="keyword">const</span> std::string&amp; label) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (<span class="keywordtype">object</span>.getType() != ssq::Type::INSTANCE) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::string <a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a> = className;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>.empty()) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_class" href="classeve_1_1Runtime.html">Runtime</a>* rt = <a class="code hl_function" href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">ModuleManager::runtime</a>();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span> (!rt) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a> = rt-&gt;<a class="code hl_function" href="classeve_1_1Runtime.html#abea875d656892416c50124b067e04c22">classNameOf</a>(<span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>.empty()) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> uint64_t <span class="keywordtype">id</span> = nextId_++;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">entry</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">entry</a>.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a448ca381289e2e0ee86bce7e5726135c">id</a> = <a class="code hl_variable" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">entry</a>.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">className</a> = <a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">entry</a>.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">object</a> = object;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">entry</a>.<a class="code hl_variable" href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">label</a> = label.empty() ? <a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a> + <span class="stringliteral">&quot; #&quot;</span> + std::to_string(<a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">count</a>(<a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>) + 1)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                : label;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    byClass_[<a class="code hl_variable" href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a>].push_back(std::move(<a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">entry</a>));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a651519d6831149c6ea42de9bf5d42373">   48</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a651519d6831149c6ea42de9bf5d42373">ObjectRegistry::unregister</a>(uint64_t <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; pair : byClass_) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">auto</span>&amp; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a> = pair.second;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keyword">auto</span> it = std::find_if(<a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a>.begin(), <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a>.end(),</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                     [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a>&amp; e) { return e.id == id; });</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">if</span> (it == <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a>.end()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a>.erase(it);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a>.empty()) byClass_.erase(pair.first);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">   61</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">ObjectRegistry::clear</a>(<span class="keyword">const</span> std::string&amp; className) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    byClass_.erase(className);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">   65</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">ObjectRegistry::clearAll</a>() {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    byClass_.clear();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">   69</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">ObjectRegistry::classNames</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::vector&lt;std::string&gt; names;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    names.reserve(byClass_.size());</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; pair : byClass_) names.push_back(pair.first);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> names;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">   76</a></span>std::vector&lt;ObjectEntry&gt; <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">ObjectRegistry::entries</a>(<span class="keyword">const</span> std::string&amp; className)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = byClass_.find(className);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> found == byClass_.end() ? std::vector&lt;ObjectEntry&gt;()</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                   : found-&gt;second;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">   82</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a>* <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">ObjectRegistry::entry</a>(uint64_t <span class="keywordtype">id</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; pair : byClass_) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a>&amp; e : pair.second) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">if</span> (e.id == <span class="keywordtype">id</span>) <span class="keywordflow">return</span> &amp;e;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">   91</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">ObjectRegistry::count</a>(<span class="keyword">const</span> std::string&amp; className)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = byClass_.find(className);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> found == byClass_.end() ? 0 : found-&gt;second.size();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00450">EditorHost.cpp:450</a></div></div>
+<div class="ttc" id="aKernelGen_8cpp_html_a967f32b09229cf78f9fce6befb619a6c"><div class="ttname"><a href="KernelGen_8cpp.html#a967f32b09229cf78f9fce6befb619a6c">group</a></div><div class="ttdeci">const FusedGroup &amp; group</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8cpp_source.html#l00122">KernelGen.cpp:122</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aObjectRegistry_8h_html"><div class="ttname"><a href="ObjectRegistry_8h.html">ObjectRegistry.h</a></div></div>
+<div class="ttc" id="aRuntime_8h_html"><div class="ttname"><a href="Runtime_8h.html">Runtime.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1ModuleManager_html_a4d5e99add5d64228d6098297913690f5"><div class="ttname"><a href="classeve_1_1ModuleManager.html#a4d5e99add5d64228d6098297913690f5">eve::ModuleManager::runtime</a></div><div class="ttdeci">static Runtime * runtime()</div><div class="ttdoc">Active runtime associated with the last expose() call, or nullptr.</div><div class="ttdef"><b>Definition</b> <a href="Module_8cpp_source.html#l00075">Module.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1Runtime_html"><div class="ttname"><a href="classeve_1_1Runtime.html">eve::Runtime</a></div><div class="ttdef"><b>Definition</b> <a href="Runtime_8h_source.html#l00168">Runtime.h:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1Runtime_html_a50181ddcef6007cbc108a542ea6621c3"><div class="ttname"><a href="classeve_1_1Runtime.html#a50181ddcef6007cbc108a542ea6621c3">eve::Runtime::createInstance</a></div><div class="ttdeci">ssq::Object createInstance(const std::string &amp;name, const std::string &amp;source={})</div><div class="ttdoc">Creates a live instance of a script class (default constructor).</div><div class="ttdef"><b>Definition</b> <a href="Runtime_8cpp_source.html#l00595">Runtime.cpp:595</a></div></div>
+<div class="ttc" id="aclasseve_1_1Runtime_html_abea875d656892416c50124b067e04c22"><div class="ttname"><a href="classeve_1_1Runtime.html#abea875d656892416c50124b067e04c22">eve::Runtime::classNameOf</a></div><div class="ttdeci">std::string classNameOf(const ssq::Object &amp;instance) const</div><div class="ttdoc">Name of the script class of a live instance (&quot;&quot; when unknown).</div><div class="ttdef"><b>Definition</b> <a href="Runtime_8cpp_source.html#l01171">Runtime.cpp:1171</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html">eve::ui::ObjectRegistry</a></div><div class="ttdoc">Reflectable script-object registry backing the database panel.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00030">ObjectRegistry.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a25013d406a8b0c60ed8431921df48afd"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">eve::ui::ObjectRegistry::clearAll</a></div><div class="ttdeci">void clearAll()</div><div class="ttdoc">Removes every entry.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00065">ObjectRegistry.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a2cae02245295241a9d4e6e02d9dc59f2"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a2cae02245295241a9d4e6e02d9dc59f2">eve::ui::ObjectRegistry::registerObject</a></div><div class="ttdeci">uint64_t registerObject(const std::string &amp;className, const ssq::Object &amp;object, const std::string &amp;label={})</div><div class="ttdoc">Registers an existing live script instance.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00026">ObjectRegistry.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a3330a768371f00d1e9307dbe68689a8e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a3330a768371f00d1e9307dbe68689a8e">eve::ui::ObjectRegistry::create</a></div><div class="ttdeci">uint64_t create(const std::string &amp;className)</div><div class="ttdoc">Creates a class instance through the active Runtime and registers it.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00015">ObjectRegistry.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a5b290e894ddd623bbded199a7f40987e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">eve::ui::ObjectRegistry::count</a></div><div class="ttdeci">size_t count(const std::string &amp;className) const</div><div class="ttdoc">Number of entries of a class.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00091">ObjectRegistry.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a651519d6831149c6ea42de9bf5d42373"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a651519d6831149c6ea42de9bf5d42373">eve::ui::ObjectRegistry::unregister</a></div><div class="ttdeci">bool unregister(uint64_t id)</div><div class="ttdoc">Removes an entry by id (the object itself stays alive).</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00048">ObjectRegistry.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a7b6721c7536edf4dd51bade916c8a6c2"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">eve::ui::ObjectRegistry::instance</a></div><div class="ttdeci">static ObjectRegistry &amp; instance()</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00010">ObjectRegistry.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a88e3f5db4b3737e94992c77eb8fbaa5e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">eve::ui::ObjectRegistry::classNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; classNames() const</div><div class="ttdoc">Class names with at least one entry, sorted.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00069">ObjectRegistry.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_a937c17f4f453b5a7391a4a3a283848c5"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">eve::ui::ObjectRegistry::clear</a></div><div class="ttdeci">void clear(const std::string &amp;className)</div><div class="ttdoc">Removes every entry of a class.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00061">ObjectRegistry.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_aa71d9a6cffbc00c9d1997a6d18d0e87e"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">eve::ui::ObjectRegistry::entries</a></div><div class="ttdeci">std::vector&lt; ObjectEntry &gt; entries(const std::string &amp;className) const</div><div class="ttdoc">Entries of a class, in registration order.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00076">ObjectRegistry.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1ObjectRegistry_html_abde2006c5218276a2a1d94041683a2ea"><div class="ttname"><a href="classeve_1_1ui_1_1ObjectRegistry.html#abde2006c5218276a2a1d94041683a2ea">eve::ui::ObjectRegistry::entry</a></div><div class="ttdeci">const ObjectEntry * entry(uint64_t id) const</div><div class="ttdoc">Look up one entry by id; nullptr when unknown.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00082">ObjectRegistry.cpp:82</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html">eve::ui::ObjectEntry</a></div><div class="ttdoc">One registered live script instance.</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00015">ObjectRegistry.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a0602f7a53d5d58d573558bf0b9861f26"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a0602f7a53d5d58d573558bf0b9861f26">eve::ui::ObjectEntry::object</a></div><div class="ttdeci">ssq::Object object</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00019">ObjectRegistry.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a14921272ecc5808ed6ec1fe6d0d22645"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a14921272ecc5808ed6ec1fe6d0d22645">eve::ui::ObjectEntry::className</a></div><div class="ttdeci">std::string className</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00017">ObjectRegistry.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_a448ca381289e2e0ee86bce7e5726135c"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#a448ca381289e2e0ee86bce7e5726135c">eve::ui::ObjectEntry::id</a></div><div class="ttdeci">uint64_t id</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00016">ObjectRegistry.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ObjectEntry_html_adaf5a5e8bfaab49334ecd06738a63550"><div class="ttname"><a href="structeve_1_1ui_1_1ObjectEntry.html#adaf5a5e8bfaab49334ecd06738a63550">eve::ui::ObjectEntry::label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8h_source.html#l00018">ObjectRegistry.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

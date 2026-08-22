@@ -1,0 +1,236 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tensor/CpuKernels.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_782bbf0976eacdfd5fcf4a27f0d60777.html">tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">CpuKernels.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="CpuKernels_8h_source.html">tensor/CpuKernels.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Tensor_8h_source.html">tensor/Tensor.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Exception_8h_source.html">common/Exception.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="CpuKernels_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor" id="r_namespaceeve_1_1tensor"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html">eve::tensor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor_1_1kernels" id="r_namespaceeve_1_1tensor_1_1kernels"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html">eve::tensor::kernels</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ad194096e1f6b77d36234827646206e77" id="r_ad194096e1f6b77d36234827646206e77"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#ad194096e1f6b77d36234827646206e77">eve::tensor::kernels::applyUnary</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> t, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float s0, float s1)</td></tr>
+<tr class="separator:ad194096e1f6b77d36234827646206e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d6b3971e7e40929cac50629ecc4050d" id="r_a7d6b3971e7e40929cac50629ecc4050d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a7d6b3971e7e40929cac50629ecc4050d">eve::tensor::kernels::isElementwiseOp</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> t)</td></tr>
+<tr class="separator:a7d6b3971e7e40929cac50629ecc4050d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a35402951c833f9a9acdbabdc20c85" id="r_a72a35402951c833f9a9acdbabdc20c85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a72a35402951c833f9a9acdbabdc20c85">eve::tensor::kernels::broadcastShape</a> (const int *aDims, int aRank, const int *bDims, int bRank, int *outDims, int &amp;outRank)</td></tr>
+<tr class="separator:a72a35402951c833f9a9acdbabdc20c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a448f3ddad4d6ff434f089454803f8d" id="r_a4a448f3ddad4d6ff434f089454803f8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a4a448f3ddad4d6ff434f089454803f8d">eve::tensor::kernels::binaryOp</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const float *<a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const int *aDims, int aRank, const float *<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const int *bDims, int bRank, float *out, const int *outDims, int outRank)</td></tr>
+<tr class="separator:a4a448f3ddad4d6ff434f089454803f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ec6f349a0c3b8e21b2555f7a5dda1c" id="r_ae2ec6f349a0c3b8e21b2555f7a5dda1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#ae2ec6f349a0c3b8e21b2555f7a5dda1c">eve::tensor::kernels::unaryOp</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const float *in, int count, float *out, float s0, float s1)</td></tr>
+<tr class="separator:ae2ec6f349a0c3b8e21b2555f7a5dda1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d05940bab81929d2fa08d84776c1c68" id="r_a0d05940bab81929d2fa08d84776c1c68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a0d05940bab81929d2fa08d84776c1c68">eve::tensor::kernels::softmax</a> (const float *in, const int *dims, int rank, int axis, bool logMode, float *out)</td></tr>
+<tr class="separator:a0d05940bab81929d2fa08d84776c1c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeb50c2bd358197135224c1a55846fe5" id="r_abeb50c2bd358197135224c1a55846fe5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#abeb50c2bd358197135224c1a55846fe5">eve::tensor::kernels::layernorm</a> (const float *in, int rows, int cols, const float *<a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>, const float *bias, float eps, float *out)</td></tr>
+<tr class="separator:abeb50c2bd358197135224c1a55846fe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac056fb980e30dcc53e70afaa6e8718b0" id="r_ac056fb980e30dcc53e70afaa6e8718b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#ac056fb980e30dcc53e70afaa6e8718b0">eve::tensor::kernels::rmsnorm</a> (const float *in, int rows, int cols, const float *<a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>, float eps, float *out)</td></tr>
+<tr class="separator:ac056fb980e30dcc53e70afaa6e8718b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae03a6e7d8cc2a9022c6fbdad52c6114c" id="r_ae03a6e7d8cc2a9022c6fbdad52c6114c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#ae03a6e7d8cc2a9022c6fbdad52c6114c">eve::tensor::kernels::conv1d</a> (const float *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int *xDims, const float *<a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, const int *wDims, const float *bias, int stride, int pad, float *out)</td></tr>
+<tr class="separator:ae03a6e7d8cc2a9022c6fbdad52c6114c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a133f58ddd6d5f6c2de14b44d8720a86b" id="r_a133f58ddd6d5f6c2de14b44d8720a86b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a133f58ddd6d5f6c2de14b44d8720a86b">eve::tensor::kernels::conv2d</a> (const float *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int *xDims, const float *<a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, const int *wDims, const float *bias, int stride, int pad, float *out)</td></tr>
+<tr class="separator:a133f58ddd6d5f6c2de14b44d8720a86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b095274261d0be42d348427f255b4ec" id="r_a0b095274261d0be42d348427f255b4ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a0b095274261d0be42d348427f255b4ec">eve::tensor::kernels::maxpool2d</a> (const float *in, const int *dims, int ksize, int stride, int pad, float *out)</td></tr>
+<tr class="separator:a0b095274261d0be42d348427f255b4ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a425f70ffda63c11e311fbd653cdc3a90" id="r_a425f70ffda63c11e311fbd653cdc3a90"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a425f70ffda63c11e311fbd653cdc3a90">eve::tensor::kernels::avgpool2d</a> (const float *in, const int *dims, int ksize, int stride, int pad, float *out)</td></tr>
+<tr class="separator:a425f70ffda63c11e311fbd653cdc3a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a541aa401f24ea91c9a8695684ce5f2" id="r_a2a541aa401f24ea91c9a8695684ce5f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a2a541aa401f24ea91c9a8695684ce5f2">eve::tensor::kernels::embedding</a> (const float *table, int vocab, int dim, const float *indices, int count, float *out)</td></tr>
+<tr class="separator:a2a541aa401f24ea91c9a8695684ce5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4557d9ae4a78542e57153b99d2c416" id="r_acd4557d9ae4a78542e57153b99d2c416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#acd4557d9ae4a78542e57153b99d2c416">eve::tensor::kernels::concat</a> (const float *const *ins, const int *const *inDims, const int *inRanks, int <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, int axis, float *out, const int *outDims, int outRank)</td></tr>
+<tr class="separator:acd4557d9ae4a78542e57153b99d2c416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a266752949f81dacd4200bda04ad372e4" id="r_a266752949f81dacd4200bda04ad372e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a266752949f81dacd4200bda04ad372e4">eve::tensor::kernels::sliceOp</a> (const float *in, const int *inDims, int inRank, int axis, int begin, int end, float *out, const int *outDims, int outRank)</td></tr>
+<tr class="separator:a266752949f81dacd4200bda04ad372e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b9b8877f4fd44c16a448c487c7f63f8" id="r_a5b9b8877f4fd44c16a448c487c7f63f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a5b9b8877f4fd44c16a448c487c7f63f8">eve::tensor::kernels::permute</a> (const float *in, const int *inDims, int rank, const int *order, float *out, const int *outDims)</td></tr>
+<tr class="separator:a5b9b8877f4fd44c16a448c487c7f63f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ef1a9b5b9b0b3f4650c72c8781d1731" id="r_a6ef1a9b5b9b0b3f4650c72c8781d1731"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a6ef1a9b5b9b0b3f4650c72c8781d1731">eve::tensor::kernels::reduceAxis</a> (<a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> <a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, const float *in, const int *dims, int rank, int axis, float *out, const int *outDims, int outRank)</td></tr>
+<tr class="separator:a6ef1a9b5b9b0b3f4650c72c8781d1731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae1073be5386adf185bcef7ea6053ebe" id="r_aae1073be5386adf185bcef7ea6053ebe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#aae1073be5386adf185bcef7ea6053ebe">eve::tensor::kernels::argmax</a> (const float *in, const int *dims, int rank, int axis, float *out, const int *outDims, int outRank)</td></tr>
+<tr class="separator:aae1073be5386adf185bcef7ea6053ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ba5e33713009552b0930ad4e7b831c9" id="r_a1ba5e33713009552b0930ad4e7b831c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a1ba5e33713009552b0930ad4e7b831c9">eve::tensor::kernels::sdpa</a> (const float *q, const float *k, const float *<a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>, const float *mask, int B, int H, int T, int S, int D, float <a class="el" href="TreeMesh_8cpp.html#a1d28dec57cce925ad92342891bd71e7c">scale</a>, float *out)</td></tr>
+<tr class="separator:a1ba5e33713009552b0930ad4e7b831c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb35be6607192c3a5c484e68059cd535" id="r_aeb35be6607192c3a5c484e68059cd535"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#aeb35be6607192c3a5c484e68059cd535">eve::tensor::kernels::resize2d</a> (const float *in, const int *inDims, int outW, int outH, int mode, float *out)</td></tr>
+<tr class="separator:aeb35be6607192c3a5c484e68059cd535"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

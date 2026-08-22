@@ -1,0 +1,327 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 张量模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">张量模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>张量模块</h1>
+<p><b>脚本入口：</b> <code>eve.TF()</code></p>
+<p>执行 eager 张量运算，或用 Func 构图、编译并重复运行。编译管线采用类似 AITemplate 的静态编译思路：按图生成专用 GPU kernel、融合元素级算子链、静态 内存规划复用缓冲区、对 matmul 做自动调优。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local tf = eve.TF();</div>
+<div class="line">local a = tf.ones2(2, 3);</div>
+<div class="line">local b = tf.fill2(2, 3, 2.0);</div>
+<div class="line">local c = tf.add(a, b);</div>
+<div class="line">print(c.get2(0, 0) + &quot;\n&quot;);</div>
+</div><!-- fragment --><div class="fragment"><div class="line">// 编译一个可复用的“游戏 AI”策略网络：x @ W1 + b -&gt; relu -&gt; @ W2 -&gt; softmax</div>
+<div class="line">local fn = tf.func();</div>
+<div class="line">local x  = fn.input1(4);</div>
+<div class="line">local h  = tf.matmul(tf.reshape2(x, 1, 4), W1);   // W1 等 eager 张量会被捕获为常量</div>
+<div class="line">h = tf.add(h, b1);</div>
+<div class="line">h = tf.relu(h);</div>
+<div class="line">h = tf.matmul(h, W2);</div>
+<div class="line">h = tf.softmax(h, 1);</div>
+<div class="line">fn.setOutput(h);</div>
+<div class="line">local compiled = fn.compile();                     // 融合 + 生成专用 kernel + 内存规划</div>
+<div class="line">local out = compiled.run1(state);                  // 每帧只做 feed + dispatch + 读回</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>TF</code> 创建 eager Tensor 或 Func；Func 中的 Tensor 是 symbolic；<code>compile()</code> 返回 CompiledFunction；run 接收 eager feed 并返回 eager 输出。shape 与 dtype 必须匹配。</p>
+<h2>AITemplate 风格编译管线</h2>
+<p><code>compile()</code> 不再按“固定算子 + opcode”解释执行，而是：</p>
+<ol type="1">
+<li>**图优化**（<code>Optimizer</code>）：DCE、常量折叠、元素级链融合、matmul/conv 的 bias + 激活后置融合、按生命周期做静态内存规划（不重叠的中间结果复用同一块 显存）。</li>
+<li>**专用 kernel 代码生成**（<code>KernelGen</code>）：每个融合组生成一份形状全部烘焙为 常量的 GLSL；softmax/layernorm 使用两遍 kernel；SDPA 使用共享内存的融合 attention；matmul 提供 naive 与 16x16 tiled 两种模板。</li>
+<li>**进程内 GLSL→SPIR-V 编译**：Windows 上链接 Vulkan SDK 的 shaderc （glslang + SPIRV-Tools）静态库，不依赖外部 glslc.exe；找不到 shaderc 时回退 到调用 glslc。</li>
+<li>**matmul 自动调优**：编译时对 naive / tiled 两种变体各计时 5 次，选择更快者。</li>
+<li>**整图单次提交**（<code>GpuBackend</code> + <code>gpgpu::Sequence</code>）：一次 <code>run()</code> 把 placeholder 上传、所有融合组的 kernel dispatch、输出回读录制进同一个 command buffer，<code>submit()</code> 一次完成——而不是每个 kernel 各提交等待一次。 对 transformer 这类几十个 kernel 的推理图，可省掉几十次 GPU 提交往返。</li>
+</ol>
+<p>当没有 Vulkan 设备或图无法降级到 GPU 时，<code>compile()</code> 自动回退到 CPU 参考解释器， <code>getDevice()</code> 返回 <code>"gpu"</code> 或 <code>"cpu"</code>。</p>
+<h2>目标导向指南</h2>
+<h3>游戏离线 AI（策略/行为模型）</h3>
+<p>用 <code>func()</code> 构图一次、每帧 <code>run</code>：<code>matmul</code> → <code>add</code>/<code>addScalar</code>（bias）→ <code>relu</code>/<code>gelu</code>/<code>silu</code> → <code>softmax</code> 得到动作概率，再用 <code>argmax</code> 取动作、用 <code>embedding</code> 查表。rank 3 的 <code>matmul</code> 支持批处理多个智能体。</p>
+<h3>常用 GPGPU 计算</h3>
+<p>广播二元运算（<code>[N,C] + [C]</code> 等）、<code>sumAxis/meanAxis/minAxis/maxAxis</code>、 <code>where</code>、<code>clamp</code> 都既支持 eager 也支持构图编译；大张量全量归约 （<code>reduceSum</code> 等）在超过 16384 元素时自动走 GPU reduction。</p>
+<h3>游戏中运行离线语音模型</h3>
+<p>语音模型常用算子都已内置：<code>conv1d</code>（特征提取）、<code>layernorm</code>/<code>rmsnorm</code>、 <code>gelu</code>/<code>silu</code>、<code>sdpa</code>/<code>sdpaMasked</code>（融合 attention，自带 softmax 与 mask）、 <code>embedding</code>、<code>slice</code>/<code>concat</code>/<code>permute</code>。<code>cast(x, "int32")</code> 得到索引张量供 <code>embedding</code> 使用。SDPA 限制 S ≤ 2048、D ≤ 512，超出自动回退 CPU。</p>
+<h3>快速计算地形地貌</h3>
+<p><code>conv2d</code>/<code>maxpool2d</code>/<code>avgpool2d</code> 用于平滑、侵蚀、降采样；<code>resize2d</code>（最近邻 / 双线性）用于高度图放大；<code>where</code> + 比较组合实现掩膜；<code>randomUniform*</code> 提供种子化 噪声。这些都能构图后在 GPU 上批量处理整块地形。</p>
+<h3>大规模模拟</h3>
+<p>把模拟状态组织成批张量，用广播运算一次推进整批：<code>mulScalar</code>（时间步长）、 <code>add</code>/<code>sub</code>（状态更新）、<code>clamp</code>（边界）、<code>reduceSum</code>（统计）。把每帧固定形状 的更新写成 Func 编译一次，避免脚本侧逐元素循环。</p>
+<h3>跑一个真实的 mini LLM（TinyStories-gpt2-3M）</h3>
+<p>用预训练权重实测整个推理管线：<code>calum/tinystories-gpt2-3M</code>（8 层、d=64、16 头、 GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/tensor_llm.cpp] (../../../test/tensor_llm.cpp) 用 TF 算子逐层搭出完整 GPT-2 图： <code>embedding</code>（token + 位置）→ 8 × { <code>layernormWB</code> → 多头 <code>sdpaMasked</code>（因果 mask） → 残差 → MLP(<code>gelu</code>) → 残差 } → <code>layernormWB</code> → <code>matmul(lm_head)</code> → <code>argmax</code> 贪婪采样。验证结果：</p>
+<ul>
+<li>与 numpy 参考实现逐位置对比 softmax 概率：最大差 3e-7，top-1 一致 16/16；</li>
+<li>编译路径（<code>func()</code> + <code>compile()</code>）与 eager 完全一致（logit 差 0），device 为 cpu 或 gpu（有 Vulkan 窗口时）；</li>
+<li>贪婪生成与 numpy 参考 24/24 token 一致，CPU eager 约 100 ms/token。</li>
+</ul>
+<p>示例输出（prompt：*Once upon a time, there was a little*）：</p>
+<blockquote class="doxtable">
+<p>&zwj;Once upon a time, there was a little girl named Lily. She loved to play with her toys and make things. One day, she found a big box in... </p>
+</blockquote>
+<p>资产（约 47 MB）已 gitignore，按以下步骤重建：</p>
+<div class="fragment"><div class="line"># 1) 从 https://huggingface.co/calum/tinystories-gpt2-3M 下载 4 个文件到</div>
+<div class="line">#    test/assets/mini_llm/：pytorch_model.bin / config.json / vocab.json / merges.txt</div>
+<div class="line">#    （文件名带 tinystories_ 前缀）</div>
+<div class="line"># 2) 导出引擎权重包 + token 表 + numpy 参考输出：</div>
+<div class="line">python scripts/export_tiny_gpt2.py</div>
+<div class="line"># 3) 运行测试：</div>
+<div class="line">build/test/unit_test.exe --testcase=&quot;tensor.llm.*&quot;</div>
+</div><!-- fragment --><h3>权重量化（fp16 / fp8 / fp4 / int8 / int4）</h3>
+<p>推理管线内置权重-only 量化：把 eager 权重打包成紧凑 dtype，构图时捕获为量化 Const，CPU 解释器与 GPU kernel 都在使用点反量化，激活保持 fp32。</p>
+<div class="fragment"><div class="line">local wq = tf.quantizeWeight(W, &quot;int8&quot;, 64);   // 每 64 个元素一个 block scale</div>
+<div class="line">local wq = tf.quantizeWeight(W, &quot;fp16&quot;);        // fp16 为纯 half 存储，无 scale</div>
+</div><!-- fragment --><p>格式与布局（<code>Tensor.get(i)</code> 直接返回反量化后的值，<code>isQuantized()</code> 可查询）：</p>
+<ul>
+<li><code>fp16</code>：IEEE half，2 字节/元素，无 scale；</li>
+<li><code>fp8</code>：e4m3（1 字节）+ per-group block scale；</li>
+<li><code>fp4</code>：e2m1（2 元素/字节）+ per-group block scale；</li>
+<li><code>int8</code> / <code>int4</code>：对称量化 + per-group block scale（int4 两元素/字节）。</li>
+</ul>
+<p>支持量化的使用点：matmul 的权重输入（B）、embedding 表、lm_head（transpose 后）。 GPU 侧在生成的 GLSL kernel 内联反量化（naive matmul 与 embedding），不落回 fp32 缓冲；LN 的 scale/bias 与线性 bias 建议保持 fp32（测试默认如此）。</p>
+<p>TinyStories 模型全矩阵量化（group=64）实测（top-1 贪婪一致率 vs fp32，16 个 预测位；权重体积 vs fp32 27.6 MB）：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">dtype   </th><th class="markdownTableHeadNone">概率最大差   </th><th class="markdownTableHeadNone">top-1   </th><th class="markdownTableHeadNone">体积    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">fp16   </td><td class="markdownTableBodyNone">0.0004   </td><td class="markdownTableBodyNone">16/16   </td><td class="markdownTableBodyNone">13.2 MB    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">int8   </td><td class="markdownTableBodyNone">0.0103   </td><td class="markdownTableBodyNone">16/16   </td><td class="markdownTableBodyNone">7.0 MB    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">fp8   </td><td class="markdownTableBodyNone">0.0716   </td><td class="markdownTableBodyNone">15/16   </td><td class="markdownTableBodyNone">6.6 MB    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">int4   </td><td class="markdownTableBodyNone">0.1767   </td><td class="markdownTableBodyNone">16/16   </td><td class="markdownTableBodyNone">3.7 MB    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">fp4   </td><td class="markdownTableBodyNone">0.3961   </td><td class="markdownTableBodyNone">16/16   </td><td class="markdownTableBodyNone">3.3 MB   </td></tr>
+</table>
+<p>fp8/fp4 的 block scale 取 <code>maxAbs / 格式最大幅值</code>（e4m3=240、e2m1=6），让归一化 值铺满整个格式动态范围——若只归一化到 [0,1]，e2m1 会浪费 2/3/4/6 等电平，误差 会大一个数量级（早期版本的 0.94 就是这样来的）。 量化正确性由 <code>tensor.quant.*</code> 与 <code>tensor.llm.quantizedDtypes</code> 测试覆盖（含 GPU 编译路径），资产缺失时自动跳过。</p>
+<h2>常见问题</h2>
+<ul>
+<li>对 symbolic Tensor 调用 <code>get()</code>。</li>
+<li>matmul 内维度不一致；rank 3 批处理要求 batch 相同。</li>
+<li>每帧重新 func/compile，而不是复用 CompiledFunction。</li>
+<li>GPU 编译需要已创建 Vulkan 窗口（<code>gpgpu.isAvailable()</code> 为真）；否则回退 CPU。</li>
+<li><code>argmax</code>/<code>cast("int32")</code> 得到 int32 dtype 张量，脚本读取仍返回 float。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>Tensor</code>、 <code>Func</code>、<code>CompiledFunction</code>）的方法也列在这里。</p>
+<h3>TF（<code>tf.</code> 方法）</h3>
+<ul>
+<li><code>abs()</code>、<code>add()</code>、<code>addScalar()</code>、<code>arange()</code>、<code>argmax()</code></li>
+<li><code>avgpool2d()</code>、<code>cast()</code>、<code>clamp()</code>、<code>concat2()</code>、<code>concat3()</code>、<code>concat4()</code></li>
+<li><code>constantScalar()</code>、<code>conv1d()</code>、<code>conv1dBias()</code>、<code>conv2d()</code>、<code>conv2dBias()</code></li>
+<li><code>cos()</code>、<code>div()</code>、<code>divScalar()</code>、<code>embedding()</code>、<code>exp()</code>、<code><a class="el" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye()</a></code></li>
+<li><code>fill1()</code>、<code>fill2()</code>、<code>fill3()</code>、<code>fill4()</code>、<code>flatten()</code>、<code>func()</code></li>
+<li><code>gelu()</code>、<code>getRandomSeed()</code>、<code>layernorm()</code>、<code>layernormWB()</code>、<code>linspace()</code></li>
+<li><code>log()</code>、<code>logSoftmax()</code>、<code>matmul()</code>、<code>maxAxis()</code>、<code>maximumScalar()</code></li>
+<li><code>maxpool2d()</code>、<code>meanAxis()</code>、<code>minAxis()</code>、<code>minimumScalar()</code></li>
+<li><code>mulScalar()</code>、<code>multiply()</code>、<code>neg()</code>、<code>ones1()</code>、<code>ones2()</code>、<code>ones3()</code></li>
+<li><code>ones4()</code>、<code>ones5()</code>、<code>ones6()</code>、<code>permute2()</code>、<code>permute3()</code>、<code>permute4()</code></li>
+<li><code>permute5()</code>、<code>permute6()</code>、<code>powScalar()</code>、<code>rand1()</code>、<code>rand2()</code>、<code>rand3()</code></li>
+<li><code>quantizeWeight()</code>、<code>rand4()</code>、<code>randn1()</code>、<code>randn2()</code>、<code>randn3()</code>、<code>randn4()</code>、<code>randomNormal1()</code></li>
+<li><code>randomNormal2()</code>、<code>randomNormal3()</code>、<code>randomNormal4()</code>、<code>randomUniform1()</code></li>
+<li><code>randomUniform2()</code>、<code>randomUniform3()</code>、<code>randomUniform4()</code></li>
+<li><code>reduceMax()</code>、<code>reduceMean()</code>、<code>reduceMin()</code>、<code>reduceSum()</code>、<code>relu()</code></li>
+<li><code>reshape1()</code>、<code>reshape2()</code>、<code>reshape3()</code>、<code>reshape4()</code>、<code>reshape5()</code></li>
+<li><code>reshape6()</code>、<code>resize2d()</code>、<code>rmsnorm()</code>、<code>rmsnormW()</code>、<code>sdpa()</code></li>
+<li><code>sdpaMasked()</code>、<code>setRandomSeed()</code>、<code>sigmoid()</code>、<code>silu()</code>、<code>sin()</code></li>
+<li><code>slice()</code>、<code>softmax()</code>、<code>sqrt()</code>、<code>sub()</code>、<code>subScalar()</code>、<code>sumAxis()</code></li>
+<li><code>tanh()</code>、<code>transpose()</code>、<code>where()</code>、<code>zeros1()</code>、<code>zeros2()</code>、<code>zeros3()</code></li>
+<li><code>zeros4()</code>、<code>zeros5()</code>、<code>zeros6()</code></li>
+</ul>
+<p>量化相关：<code>quantizeWeight(t, "fp16"/"fp8"/"fp4"/"int8"/"int4", group)</code>； <code>t.isQuantized()</code>；量化张量的 <code>get(i)</code> 返回反量化值。</p>
+<h3>Tensor（<code>tf.*</code> 返回对象的 <code>t.</code> 方法）</h3>
+<ul>
+<li><code>abs()</code>、<code>add()</code>、<code>addInPlace()</code>、<code>addScalar()</code>、<code>addScalarInPlace()</code></li>
+<li><code>clone()</code>、<code>copyFrom()</code>、<code>cos()</code>、<code>div()</code>、<code>divScalar()</code>、<code>dot()</code></li>
+<li><code>exp()</code>、<code>fill()</code>、<code>flatten()</code>、<code>gelu()</code>、<code>get()</code>、<code>get1()</code>、<code>get2()</code></li>
+<li><code>get3()</code>、<code>get4()</code>、<code>get5()</code>、<code>get6()</code>、<code>getDevice()</code>、<code>getDim()</code></li>
+<li><code>getDim0()</code>、<code>getDim1()</code>、<code>getDim2()</code>、<code>getDim3()</code>、<code>getDim4()</code>、<code>getDim5()</code></li>
+<li><code>getDtype()</code>、<code>getRank()</code>、<code>getSize()</code>、<code>isEager()</code>、<code>isSymbolic()</code>、<code>log()</code></li>
+<li><code>matmul()</code>、<code>maximumScalar()</code>、<code>minimumScalar()</code>、<code>mulScalar()</code></li>
+<li><code>mulScalarInPlace()</code>、<code>multiply()</code>、<code>multiplyInPlace()</code>、<code>neg()</code></li>
+<li><code>powScalar()</code>、<code>reduceMax()</code>、<code>reduceMean()</code>、<code>reduceMin()</code>、<code>reduceSum()</code></li>
+<li><code>relu()</code>、<code>reluInPlace()</code>、<code>reshape1()</code>、<code>reshape2()</code>、<code>reshape3()</code></li>
+<li><code>reshape4()</code>、<code>reshape5()</code>、<code>reshape6()</code>、<code>set()</code>、<code>set1()</code>、<code>set2()</code></li>
+<li><code>set3()</code>、<code>set4()</code>、<code>set5()</code>、<code>set6()</code>、<code>sigmoid()</code>、<code>silu()</code>、<code>sin()</code></li>
+<li><code>sqrt()</code>、<code>sub()</code>、<code>subScalar()</code>、<code>tanh()</code>、<code>transpose()</code></li>
+</ul>
+<h3>Func（<code>tf.func()</code> 返回对象的 <code>fn.</code> 方法）</h3>
+<ul>
+<li><code>compile()</code>、<code>input1()</code>、<code>input2()</code>、<code>input3()</code>、<code>input4()</code>、<code>input5()</code></li>
+<li><code>input6()</code>、<code>setOutput()</code></li>
+</ul>
+<h3>CompiledFunction（<code>fn.compile()</code> 返回对象的 <code>c.</code> 方法）</h3>
+<ul>
+<li><code>getDevice()</code>、<code>getPlaceholderCount()</code>、<code>run0()</code>、<code>run1()</code>、<code>run2()</code></li>
+<li><code>run3()</code>、<code>run4()</code>、<code>run5()</code>、<code>run6()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+<li>张量支持 rank 1–6，dtype 为 float32 / int32；二元运算支持广播。</li>
+<li>GPU 路径：<code>compile()</code> 需要已初始化的 Vulkan Graphics（先创建窗口）。Windows 上 GLSL→SPIR-V 由链接进引擎的 shaderc 静态库完成，不需要安装 glslc。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/tensor/"><code>src/modules/tensor/</code></a>（含 <code>Optimizer</code> 图优化/融合、<code>KernelGen</code> 专用 kernel 生成、<code>GpuBackend</code> GPU 运行时） <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>tensor</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

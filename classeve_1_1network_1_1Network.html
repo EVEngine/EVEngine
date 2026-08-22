@@ -1,0 +1,1156 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network::Network类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1network_1_1Network-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::network::Network类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1network_1_1Network.html" title="Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....">Network</a> module: TCP/UDP/HTTP factories, background worker, and completion event plumbing. Script: <code>net &lt;- eve.Network();</code>  
+ <a href="classeve_1_1network_1_1Network.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Network_8h_source.html">Network.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::network::Network 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1network_1_1Network.png" usemap="#eve::network::Network_map" alt=""/>
+  <map id="eve::network::Network_map" name="eve::network::Network_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,136,24"/>
+<area href="classeve_1_1service_1_1INetwork.html" title="Minimal synchronous HTTP request surface. Providers: eve::network::Network. Mocks return canned statu..." alt="eve::service::INetwork" shape="rect" coords="146,0,282,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad2bec8d0b5f203c74f9ccfb1a3aa7ecc" id="r_ad2bec8d0b5f203c74f9ccfb1a3aa7ecc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ad2bec8d0b5f203c74f9ccfb1a3aa7ecc">Module_REG</a> (<a class="el" href="classeve_1_1network_1_1Network.html">Network</a>)</td></tr>
+<tr class="separator:ad2bec8d0b5f203c74f9ccfb1a3aa7ecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc7a28a6c4e8f10d421ae07ebaf42266" id="r_adc7a28a6c4e8f10d421ae07ebaf42266"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#adc7a28a6c4e8f10d421ae07ebaf42266">Network</a> ()</td></tr>
+<tr class="separator:adc7a28a6c4e8f10d421ae07ebaf42266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa50288ed52d5bde8c72a9da4f952c063" id="r_aa50288ed52d5bde8c72a9da4f952c063"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#aa50288ed52d5bde8c72a9da4f952c063">~Network</a> () override</td></tr>
+<tr class="separator:aa50288ed52d5bde8c72a9da4f952c063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7908efcdf3a28856bf866d6c6307a9c" id="r_ae7908efcdf3a28856bf866d6c6307a9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ae7908efcdf3a28856bf866d6c6307a9c">newTcp</a> ()</td></tr>
+<tr class="memdesc:ae7908efcdf3a28856bf866d6c6307a9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new TCP socket (client or server).  <br /></td></tr>
+<tr class="separator:ae7908efcdf3a28856bf866d6c6307a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade1afd80ee40c8581fd72a06a17462d1" id="r_ade1afd80ee40c8581fd72a06a17462d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ade1afd80ee40c8581fd72a06a17462d1">newUdp</a> ()</td></tr>
+<tr class="memdesc:ade1afd80ee40c8581fd72a06a17462d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new UDP socket.  <br /></td></tr>
+<tr class="separator:ade1afd80ee40c8581fd72a06a17462d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a833c665de6229e86c92620d16412110c" id="r_a833c665de6229e86c92620d16412110c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1HttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a833c665de6229e86c92620d16412110c">newHttp</a> (std::string method, std::string url)</td></tr>
+<tr class="memdesc:a833c665de6229e86c92620d16412110c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new HTTP request (method e.g. "GET"/"POST", full URL).  <br /></td></tr>
+<tr class="separator:a833c665de6229e86c92620d16412110c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afae798209a187fe1ffd0d8bb5985787f" id="r_afae798209a187fe1ffd0d8bb5985787f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#afae798209a187fe1ffd0d8bb5985787f">newChannel</a> (<a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *socket)</td></tr>
+<tr class="memdesc:afae798209a187fe1ffd0d8bb5985787f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a length-prefixed <a class="el" href="classeve_1_1network_1_1Channel.html" title="Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...">Channel</a> over a TCP socket.  <br /></td></tr>
+<tr class="separator:afae798209a187fe1ffd0d8bb5985787f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a77b45b08baeabe3d7c15ab71c81c5c" id="r_a3a77b45b08baeabe3d7c15ab71c81c5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1Session.html">Session</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a3a77b45b08baeabe3d7c15ab71c81c5c">newSession</a> ()</td></tr>
+<tr class="memdesc:a3a77b45b08baeabe3d7c15ab71c81c5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a named-channel session container.  <br /></td></tr>
+<tr class="separator:a3a77b45b08baeabe3d7c15ab71c81c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8686a804baa7cb7055ea39bfca00675" id="r_ad8686a804baa7cb7055ea39bfca00675"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1NetWriter.html">NetWriter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ad8686a804baa7cb7055ea39bfca00675">newWriter</a> ()</td></tr>
+<tr class="memdesc:ad8686a804baa7cb7055ea39bfca00675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a streaming byte writer.  <br /></td></tr>
+<tr class="separator:ad8686a804baa7cb7055ea39bfca00675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b6376c852e1619a4feeff8d040409c9" id="r_a2b6376c852e1619a4feeff8d040409c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1NetReader.html">NetReader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a2b6376c852e1619a4feeff8d040409c9">newReader</a> (std::string bytes)</td></tr>
+<tr class="memdesc:a2b6376c852e1619a4feeff8d040409c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a streaming byte reader over a string buffer.  <br /></td></tr>
+<tr class="separator:a2b6376c852e1619a4feeff8d040409c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626a087a1fbb520f25f2b5303cce11c3" id="r_a626a087a1fbb520f25f2b5303cce11c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a626a087a1fbb520f25f2b5303cce11c3">newUdpLink</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *socket)</td></tr>
+<tr class="memdesc:a626a087a1fbb520f25f2b5303cce11c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a framed UDP link over a socket.  <br /></td></tr>
+<tr class="separator:a626a087a1fbb520f25f2b5303cce11c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2c6f57ebdb983af65850250fefc8d55" id="r_ad2c6f57ebdb983af65850250fefc8d55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1NetRpc.html">NetRpc</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ad2c6f57ebdb983af65850250fefc8d55">newRpc</a> (<a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> *link)</td></tr>
+<tr class="memdesc:ad2c6f57ebdb983af65850250fefc8d55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an RPC client over a UDP link.  <br /></td></tr>
+<tr class="separator:ad2c6f57ebdb983af65850250fefc8d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2339abe22bc38c4d1cfb08fe177ab98f" id="r_a2339abe22bc38c4d1cfb08fe177ab98f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1NetHost.html">NetHost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a2339abe22bc38c4d1cfb08fe177ab98f">newHost</a> ()</td></tr>
+<tr class="memdesc:a2339abe22bc38c4d1cfb08fe177ab98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a UDP host (peer discovery / broadcast).  <br /></td></tr>
+<tr class="separator:a2339abe22bc38c4d1cfb08fe177ab98f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32cbb89dd26d035266421dcb2bdc2ac1" id="r_a32cbb89dd26d035266421dcb2bdc2ac1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a32cbb89dd26d035266421dcb2bdc2ac1">setTimeout</a> (int ms)</td></tr>
+<tr class="memdesc:a32cbb89dd26d035266421dcb2bdc2ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default socket/HTTP timeout in milliseconds.  <br /></td></tr>
+<tr class="separator:a32cbb89dd26d035266421dcb2bdc2ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f782f6298798e28229f41adc7bf3c69" id="r_a9f782f6298798e28229f41adc7bf3c69"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a9f782f6298798e28229f41adc7bf3c69">getTimeout</a> () const</td></tr>
+<tr class="separator:a9f782f6298798e28229f41adc7bf3c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7529107784f9f3f364931fcd5d2a33d2" id="r_a7529107784f9f3f364931fcd5d2a33d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a7529107784f9f3f364931fcd5d2a33d2">setVerifySsl</a> (bool verify)</td></tr>
+<tr class="memdesc:a7529107784f9f3f364931fcd5d2a33d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether TLS peer certificates are verified (default true).  <br /></td></tr>
+<tr class="separator:a7529107784f9f3f364931fcd5d2a33d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30d7bbf3fe7e0c9aca9fdf974060ebfe" id="r_a30d7bbf3fe7e0c9aca9fdf974060ebfe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a30d7bbf3fe7e0c9aca9fdf974060ebfe">getVerifySsl</a> () const</td></tr>
+<tr class="separator:a30d7bbf3fe7e0c9aca9fdf974060ebfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4439b95566a3c93b6d20ad407319fd8" id="r_ad4439b95566a3c93b6d20ad407319fd8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8">pump</a> ()</td></tr>
+<tr class="memdesc:ad4439b95566a3c93b6d20ad407319fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drains worker completions and emits them as events; call per frame.  <br /></td></tr>
+<tr class="separator:ad4439b95566a3c93b6d20ad407319fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3b833417d3d5f94a789a944f03ec6a6" id="r_af3b833417d3d5f94a789a944f03ec6a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#af3b833417d3d5f94a789a944f03ec6a6">post</a> (<a class="el" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a> <a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)</td></tr>
+<tr class="memdesc:af3b833417d3d5f94a789a944f03ec6a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Posts a completion to the worker queue (thread-safe).  <br /></td></tr>
+<tr class="separator:af3b833417d3d5f94a789a944f03ec6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56536519514d859183b05821cbf76b4" id="r_ae56536519514d859183b05821cbf76b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ae56536519514d859183b05821cbf76b4">drainForTest</a> (std::vector&lt; <a class="el" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a> &gt; &amp;out)</td></tr>
+<tr class="memdesc:ae56536519514d859183b05821cbf76b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test helper: drains pending completions into out.  <br /></td></tr>
+<tr class="separator:ae56536519514d859183b05821cbf76b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a3edc292f79d10c10921ede17d20d8e" id="r_a7a3edc292f79d10c10921ede17d20d8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1NetWorker.html">NetWorker</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a7a3edc292f79d10c10921ede17d20d8e">worker</a> () const</td></tr>
+<tr class="memdesc:a7a3edc292f79d10c10921ede17d20d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Background worker thread handle (advanced).  <br /></td></tr>
+<tr class="separator:a7a3edc292f79d10c10921ede17d20d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78510cf408868b49dfb728f76afbcb67" id="r_a78510cf408868b49dfb728f76afbcb67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a78510cf408868b49dfb728f76afbcb67">httpRequest</a> (const std::string &amp;method, const std::string &amp;url, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, int timeoutMs, int &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#a7f6a03c6c8e79a334b53f883363aec3a">status</a>, std::string &amp;responseBody) override</td></tr>
+<tr class="memdesc:a78510cf408868b49dfb728f76afbcb67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronous HTTP request (blocks up to timeoutMs on the worker).  <br /></td></tr>
+<tr class="separator:a78510cf408868b49dfb728f76afbcb67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53b166f738d2670d798e0a36076fd57f" id="r_a53b166f738d2670d798e0a36076fd57f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a53b166f738d2670d798e0a36076fd57f">watchTcp</a> (<a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *sock)</td></tr>
+<tr class="memdesc:a53b166f738d2670d798e0a36076fd57f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: register/unregister sockets for pump polling.  <br /></td></tr>
+<tr class="separator:a53b166f738d2670d798e0a36076fd57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8616c059df4243a7cdcfe975a2a8d02" id="r_ae8616c059df4243a7cdcfe975a2a8d02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ae8616c059df4243a7cdcfe975a2a8d02">unwatchTcp</a> (<a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *sock)</td></tr>
+<tr class="separator:ae8616c059df4243a7cdcfe975a2a8d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdd42a2175104fa8e7a067ab7c89a2d0" id="r_abdd42a2175104fa8e7a067ab7c89a2d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#abdd42a2175104fa8e7a067ab7c89a2d0">watchUdp</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *sock)</td></tr>
+<tr class="separator:abdd42a2175104fa8e7a067ab7c89a2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a724fa08df29b3cbc93e51a88ceb4ada3" id="r_a724fa08df29b3cbc93e51a88ceb4ada3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a724fa08df29b3cbc93e51a88ceb4ada3">unwatchUdp</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *sock)</td></tr>
+<tr class="separator:a724fa08df29b3cbc93e51a88ceb4ada3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae08db7992bd03d5c8b38c8d36e1b2049" id="r_ae08db7992bd03d5c8b38c8d36e1b2049"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ae08db7992bd03d5c8b38c8d36e1b2049">pollSockets</a> ()</td></tr>
+<tr class="memdesc:ae08db7992bd03d5c8b38c8d36e1b2049"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: polls watched sockets; called from the <a class="el" href="classeve_1_1network_1_1NetWorker.html" title="Background thread that runs blocking socket I/O and HTTP jobs. Completions are queued and drained by ...">NetWorker</a> thread.  <br /></td></tr>
+<tr class="separator:ae08db7992bd03d5c8b38c8d36e1b2049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7957d36ccc258f7385b0adddbc35aa" id="r_a7e7957d36ccc258f7385b0adddbc35aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a7e7957d36ccc258f7385b0adddbc35aa">bindChannel</a> (<a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *sock, <a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a> *ch)</td></tr>
+<tr class="memdesc:a7e7957d36ccc258f7385b0adddbc35aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: bind a <a class="el" href="classeve_1_1network_1_1Channel.html" title="Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...">Channel</a> to its socket (and reverse lookup).  <br /></td></tr>
+<tr class="separator:a7e7957d36ccc258f7385b0adddbc35aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af598844699afe909565e5099dbe375d6" id="r_af598844699afe909565e5099dbe375d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#af598844699afe909565e5099dbe375d6">unbindChannel</a> (<a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *sock)</td></tr>
+<tr class="separator:af598844699afe909565e5099dbe375d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac86f3c1b43b89dca598caa711d8ae6b3" id="r_ac86f3c1b43b89dca598caa711d8ae6b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ac86f3c1b43b89dca598caa711d8ae6b3">channelFor</a> (<a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *sock) const</td></tr>
+<tr class="separator:ac86f3c1b43b89dca598caa711d8ae6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a953a61b015dcfd186a4d9167dd0e611e" id="r_a953a61b015dcfd186a4d9167dd0e611e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a953a61b015dcfd186a4d9167dd0e611e">bindUdpLink</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *sock, <a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> *link)</td></tr>
+<tr class="separator:a953a61b015dcfd186a4d9167dd0e611e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a556f2f68cb16928a816525ec6e5cc52f" id="r_a556f2f68cb16928a816525ec6e5cc52f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#a556f2f68cb16928a816525ec6e5cc52f">unbindUdpLink</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *sock)</td></tr>
+<tr class="separator:a556f2f68cb16928a816525ec6e5cc52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd98634b05758af1f491403a1f0ec3f3" id="r_afd98634b05758af1f491403a1f0ec3f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#afd98634b05758af1f491403a1f0ec3f3">bindUdpHost</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *sock, <a class="el" href="classeve_1_1network_1_1NetHost.html">NetHost</a> *host)</td></tr>
+<tr class="separator:afd98634b05758af1f491403a1f0ec3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac29a6a084ea53b94343ff1b093fe2c20" id="r_ac29a6a084ea53b94343ff1b093fe2c20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1Network.html#ac29a6a084ea53b94343ff1b093fe2c20">unbindUdpHost</a> (<a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *sock)</td></tr>
+<tr class="separator:ac29a6a084ea53b94343ff1b093fe2c20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1service_1_1INetwork"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1service_1_1INetwork')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a></td></tr>
+<tr class="memitem:a6e2802da543ba8780780232e83cd7c36 inherit pub_methods_classeve_1_1service_1_1INetwork" id="r_a6e2802da543ba8780780232e83cd7c36"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1service_1_1INetwork.html#a6e2802da543ba8780780232e83cd7c36">~INetwork</a> ()=default</td></tr>
+<tr class="separator:a6e2802da543ba8780780232e83cd7c36 inherit pub_methods_classeve_1_1service_1_1INetwork"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1service_1_1INetwork"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1service_1_1INetwork')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a></td></tr>
+<tr class="memitem:a5e043b9e90722bfe3801e274dc7b099c inherit pub_static_attribs_classeve_1_1service_1_1INetwork" id="r_a5e043b9e90722bfe3801e274dc7b099c"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1service_1_1INetwork.html#a5e043b9e90722bfe3801e274dc7b099c">capabilityName</a> = &quot;INetwork&quot;</td></tr>
+<tr class="separator:a5e043b9e90722bfe3801e274dc7b099c inherit pub_static_attribs_classeve_1_1service_1_1INetwork"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1network_1_1Network.html" title="Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....">Network</a> module: TCP/UDP/HTTP factories, background worker, and completion event plumbing. Script: <code>net &lt;- eve.Network();</code> </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8h_source.html">Network.h</a> 第 <a class="el" href="Network_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="adc7a28a6c4e8f10d421ae07ebaf42266" name="adc7a28a6c4e8f10d421ae07ebaf42266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc7a28a6c4e8f10d421ae07ebaf42266">&#9670;&#160;</a></span>Network()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::Network::Network </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+</div>
+</div>
+<a id="aa50288ed52d5bde8c72a9da4f952c063" name="aa50288ed52d5bde8c72a9da4f952c063"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa50288ed52d5bde8c72a9da4f952c063">&#9670;&#160;</a></span>~Network()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::Network::~Network </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7e7957d36ccc258f7385b0adddbc35aa" name="a7e7957d36ccc258f7385b0adddbc35aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e7957d36ccc258f7385b0adddbc35aa">&#9670;&#160;</a></span>bindChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::bindChannel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a> *&#160;</td>
+          <td class="paramname"><em>ch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: bind a <a class="el" href="classeve_1_1network_1_1Channel.html" title="Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...">Channel</a> to its socket (and reverse lookup). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00116">newChannel()</a>.</p>
+
+</div>
+</div>
+<a id="afd98634b05758af1f491403a1f0ec3f3" name="afd98634b05758af1f491403a1f0ec3f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd98634b05758af1f491403a1f0ec3f3">&#9670;&#160;</a></span>bindUdpHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::bindUdpHost </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1NetHost.html">NetHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetHost_8cpp_source.html#l00021">eve::network::NetHost::start()</a>.</p>
+
+</div>
+</div>
+<a id="a953a61b015dcfd186a4d9167dd0e611e" name="a953a61b015dcfd186a4d9167dd0e611e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a953a61b015dcfd186a4d9167dd0e611e">&#9670;&#160;</a></span>bindUdpLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::bindUdpLink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> *&#160;</td>
+          <td class="paramname"><em>link</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00137">newUdpLink()</a>.</p>
+
+</div>
+</div>
+<a id="ac86f3c1b43b89dca598caa711d8ae6b3" name="ac86f3c1b43b89dca598caa711d8ae6b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac86f3c1b43b89dca598caa711d8ae6b3">&#9670;&#160;</a></span>channelFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a> * eve::network::Network::channelFor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae56536519514d859183b05821cbf76b4" name="ae56536519514d859183b05821cbf76b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae56536519514d859183b05821cbf76b4">&#9670;&#160;</a></span>drainForTest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::drainForTest </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test helper: drains pending completions into out. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00088">httpRequest()</a>.</p>
+
+</div>
+</div>
+<a id="a9f782f6298798e28229f41adc7bf3c69" name="a9f782f6298798e28229f41adc7bf3c69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f782f6298798e28229f41adc7bf3c69">&#9670;&#160;</a></span>getTimeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::network::Network::getTimeout </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HttpRequest_8cpp_source.html#l00048">eve::network::HttpRequest::submit()</a>.</p>
+
+</div>
+</div>
+<a id="a30d7bbf3fe7e0c9aca9fdf974060ebfe" name="a30d7bbf3fe7e0c9aca9fdf974060ebfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30d7bbf3fe7e0c9aca9fdf974060ebfe">&#9670;&#160;</a></span>getVerifySsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::Network::getVerifySsl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HttpRequest_8cpp_source.html#l00048">eve::network::HttpRequest::submit()</a>.</p>
+
+</div>
+</div>
+<a id="a78510cf408868b49dfb728f76afbcb67" name="a78510cf408868b49dfb728f76afbcb67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78510cf408868b49dfb728f76afbcb67">&#9670;&#160;</a></span>httpRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::Network::httpRequest </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>timeoutMs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>responseBody</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Synchronous HTTP request (blocks up to timeoutMs on the worker). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1service_1_1INetwork.html#adadfe509073e67b0d2de80acc9165e48">eve::service::INetwork</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00159">body</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="Network_8cpp_source.html#l00188">drainForTest()</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ac0a9183a9cead1223db09d1df06b25e6">eve::network::HttpResp</a>, <a class="el" href="Network_8cpp_source.html#l00084">newHttp()</a>, <a class="el" href="HttpRequest_8cpp_source.html#l00036">eve::network::HttpRequest::setBodyString()</a>, <a class="el" href="HttpRequest_8cpp_source.html#l00040">eve::network::HttpRequest::setTimeout()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00164">status</a> , 以及 <a class="el" href="HttpRequest_8cpp_source.html#l00048">eve::network::HttpRequest::submit()</a>.</p>
+
+</div>
+</div>
+<a id="ad2bec8d0b5f203c74f9ccfb1a3aa7ecc" name="ad2bec8d0b5f203c74f9ccfb1a3aa7ecc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2bec8d0b5f203c74f9ccfb1a3aa7ecc">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::Network::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afae798209a187fe1ffd0d8bb5985787f" name="afae798209a187fe1ffd0d8bb5985787f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afae798209a187fe1ffd0d8bb5985787f">&#9670;&#160;</a></span>newChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1Channel.html">Channel</a> * eve::network::Network::newChannel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td>
+          <td class="paramname"><em>socket</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a length-prefixed <a class="el" href="classeve_1_1network_1_1Channel.html" title="Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...">Channel</a> over a TCP socket. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Network_8cpp_source.html#l00214">bindChannel()</a>.</p>
+
+</div>
+</div>
+<a id="a2339abe22bc38c4d1cfb08fe177ab98f" name="a2339abe22bc38c4d1cfb08fe177ab98f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2339abe22bc38c4d1cfb08fe177ab98f">&#9670;&#160;</a></span>newHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1NetHost.html">NetHost</a> * eve::network::Network::newHost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a UDP host (peer discovery / broadcast). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a833c665de6229e86c92620d16412110c" name="a833c665de6229e86c92620d16412110c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a833c665de6229e86c92620d16412110c">&#9670;&#160;</a></span>newHttp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1HttpRequest.html">HttpRequest</a> * eve::network::Network::newHttp </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>url</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new HTTP request (method e.g. "GET"/"POST", full URL). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00088">httpRequest()</a>.</p>
+
+</div>
+</div>
+<a id="a2b6376c852e1619a4feeff8d040409c9" name="a2b6376c852e1619a4feeff8d040409c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b6376c852e1619a4feeff8d040409c9">&#9670;&#160;</a></span>newReader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1NetReader.html">NetReader</a> * eve::network::Network::newReader </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a streaming byte reader over a string buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2c6f57ebdb983af65850250fefc8d55" name="ad2c6f57ebdb983af65850250fefc8d55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2c6f57ebdb983af65850250fefc8d55">&#9670;&#160;</a></span>newRpc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1NetRpc.html">NetRpc</a> * eve::network::Network::newRpc </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> *&#160;</td>
+          <td class="paramname"><em>link</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an RPC client over a UDP link. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a77b45b08baeabe3d7c15ab71c81c5c" name="a3a77b45b08baeabe3d7c15ab71c81c5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a77b45b08baeabe3d7c15ab71c81c5c">&#9670;&#160;</a></span>newSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1Session.html">Session</a> * eve::network::Network::newSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a named-channel session container. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7908efcdf3a28856bf866d6c6307a9c" name="ae7908efcdf3a28856bf866d6c6307a9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7908efcdf3a28856bf866d6c6307a9c">&#9670;&#160;</a></span>newTcp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> * eve::network::Network::newTcp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new TCP socket (client or server). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade1afd80ee40c8581fd72a06a17462d1" name="ade1afd80ee40c8581fd72a06a17462d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade1afd80ee40c8581fd72a06a17462d1">&#9670;&#160;</a></span>newUdp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> * eve::network::Network::newUdp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new UDP socket. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetHost_8cpp_source.html#l00021">eve::network::NetHost::start()</a>.</p>
+
+</div>
+</div>
+<a id="a626a087a1fbb520f25f2b5303cce11c3" name="a626a087a1fbb520f25f2b5303cce11c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626a087a1fbb520f25f2b5303cce11c3">&#9670;&#160;</a></span>newUdpLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a> * eve::network::Network::newUdpLink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>socket</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a framed UDP link over a socket. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Network_8cpp_source.html#l00152">bindUdpLink()</a>.</p>
+
+</div>
+</div>
+<a id="ad8686a804baa7cb7055ea39bfca00675" name="ad8686a804baa7cb7055ea39bfca00675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8686a804baa7cb7055ea39bfca00675">&#9670;&#160;</a></span>newWriter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1NetWriter.html">NetWriter</a> * eve::network::Network::newWriter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a streaming byte writer. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae08db7992bd03d5c8b38c8d36e1b2049" name="ae08db7992bd03d5c8b38c8d36e1b2049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08db7992bd03d5c8b38c8d36e1b2049">&#9670;&#160;</a></span>pollSockets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::pollSockets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: polls watched sockets; called from the <a class="el" href="classeve_1_1network_1_1NetWorker.html" title="Background thread that runs blocking socket I/O and HTTP jobs. Completions are queued and drained by ...">NetWorker</a> thread. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9aa32417899e2db4290fb0d3634d33c9a3">eve::network::Conn</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9af6068daa29dbb05a7ead1e3b5a48bbee">eve::network::Data</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00248">eve::network::TcpSocket::getPeer()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Network_8cpp_source.html#l00184">post()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00043">eve::network::TcpSocket::pushAccepted()</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520">eve::network::Tcp</a>, <a class="el" href="NetTypes_8h_source.html#l00034">eve::network::NetCompletion::type</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca81baba40274ccb30f9fdfa2c73cf0482">eve::network::Udp</a>, <a class="el" href="Network_8cpp_source.html#l00198">unwatchTcp()</a> , 以及 <a class="el" href="Network_8cpp_source.html#l00192">watchTcp()</a>.</p>
+
+</div>
+</div>
+<a id="af3b833417d3d5f94a789a944f03ec6a6" name="af3b833417d3d5f94a789a944f03ec6a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3b833417d3d5f94a789a944f03ec6a6">&#9670;&#160;</a></span>post()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::post </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Posts a completion to the worker queue (thread-safe). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UdpSocket_8cpp_source.html#l00022">eve::network::UdpSocket::bind()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00047">eve::network::UdpSocket::connect()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00177">eve::network::TcpSocket::flushSend()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00106">eve::network::TcpSocket::listen()</a>, <a class="el" href="Network_8cpp_source.html#l00230">pollSockets()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00146">eve::network::TcpSocket::queueSend()</a> , 以及 <a class="el" href="network_2Channel_8cpp_source.html#l00038">eve::network::Channel::sendMsg()</a>.</p>
+
+</div>
+</div>
+<a id="ad4439b95566a3c93b6d20ad407319fd8" name="ad4439b95566a3c93b6d20ad407319fd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4439b95566a3c93b6d20ad407319fd8">&#9670;&#160;</a></span>pump()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::pump </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drains worker completions and emits them as events; call per frame. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9af6068daa29dbb05a7ead1e3b5a48bbee">eve::network::Data</a> , 以及 <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca81baba40274ccb30f9fdfa2c73cf0482">eve::network::Udp</a>.</p>
+
+</div>
+</div>
+<a id="a32cbb89dd26d035266421dcb2bdc2ac1" name="a32cbb89dd26d035266421dcb2bdc2ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32cbb89dd26d035266421dcb2bdc2ac1">&#9670;&#160;</a></span>setTimeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::setTimeout </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Default socket/HTTP timeout in milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7529107784f9f3f364931fcd5d2a33d2" name="a7529107784f9f3f364931fcd5d2a33d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7529107784f9f3f364931fcd5d2a33d2">&#9670;&#160;</a></span>setVerifySsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::setVerifySsl </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verify</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether TLS peer certificates are verified (default true). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af598844699afe909565e5099dbe375d6" name="af598844699afe909565e5099dbe375d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af598844699afe909565e5099dbe375d6">&#9670;&#160;</a></span>unbindChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::unbindChannel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="network_2Channel_8cpp_source.html#l00034">eve::network::Channel::~Channel()</a>.</p>
+
+</div>
+</div>
+<a id="ac29a6a084ea53b94343ff1b093fe2c20" name="ac29a6a084ea53b94343ff1b093fe2c20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac29a6a084ea53b94343ff1b093fe2c20">&#9670;&#160;</a></span>unbindUdpHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::unbindUdpHost </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetHost_8cpp_source.html#l00011">eve::network::NetHost::~NetHost()</a>.</p>
+
+</div>
+</div>
+<a id="a556f2f68cb16928a816525ec6e5cc52f" name="a556f2f68cb16928a816525ec6e5cc52f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a556f2f68cb16928a816525ec6e5cc52f">&#9670;&#160;</a></span>unbindUdpLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::unbindUdpLink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8616c059df4243a7cdcfe975a2a8d02" name="ae8616c059df4243a7cdcfe975a2a8d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8616c059df4243a7cdcfe975a2a8d02">&#9670;&#160;</a></span>unwatchTcp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::unwatchTcp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00227">eve::network::TcpSocket::close()</a> , 以及 <a class="el" href="Network_8cpp_source.html#l00230">pollSockets()</a>.</p>
+
+</div>
+</div>
+<a id="a724fa08df29b3cbc93e51a88ceb4ada3" name="a724fa08df29b3cbc93e51a88ceb4ada3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a724fa08df29b3cbc93e51a88ceb4ada3">&#9670;&#160;</a></span>unwatchUdp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::unwatchUdp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UdpSocket_8cpp_source.html#l00129">eve::network::UdpSocket::close()</a>.</p>
+
+</div>
+</div>
+<a id="a53b166f738d2670d798e0a36076fd57f" name="a53b166f738d2670d798e0a36076fd57f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53b166f738d2670d798e0a36076fd57f">&#9670;&#160;</a></span>watchTcp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::watchTcp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: register/unregister sockets for pump polling. </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00106">eve::network::TcpSocket::listen()</a> , 以及 <a class="el" href="Network_8cpp_source.html#l00230">pollSockets()</a>.</p>
+
+</div>
+</div>
+<a id="abdd42a2175104fa8e7a067ab7c89a2d0" name="abdd42a2175104fa8e7a067ab7c89a2d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdd42a2175104fa8e7a067ab7c89a2d0">&#9670;&#160;</a></span>watchUdp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::Network::watchUdp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a> *&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Network_8cpp_source.html">Network.cpp</a> 第 <a class="el" href="Network_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UdpSocket_8cpp_source.html#l00022">eve::network::UdpSocket::bind()</a> , 以及 <a class="el" href="UdpSocket_8cpp_source.html#l00047">eve::network::UdpSocket::connect()</a>.</p>
+
+</div>
+</div>
+<a id="a7a3edc292f79d10c10921ede17d20d8e" name="a7a3edc292f79d10c10921ede17d20d8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3edc292f79d10c10921ede17d20d8e">&#9670;&#160;</a></span>worker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1NetWorker.html">NetWorker</a> * eve::network::Network::worker </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Background worker thread handle (advanced). </p>
+
+<p class="definition">在文件 <a class="el" href="Network_8h_source.html">Network.h</a> 第 <a class="el" href="Network_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00056">eve::network::TcpSocket::connect()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00100">eve::network::UdpSocket::send()</a> , 以及 <a class="el" href="UdpSocket_8cpp_source.html#l00070">eve::network::UdpSocket::sendTo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/network/<a class="el" href="Network_8h_source.html">Network.h</a></li>
+<li>src/modules/network/<a class="el" href="Network_8cpp_source.html">Network.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

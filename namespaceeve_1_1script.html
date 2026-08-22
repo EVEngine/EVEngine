@@ -1,0 +1,589 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::script 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1script.html">script</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::script 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured snapshot of a script error: message, throw site and stack.  <a href="structeve_1_1script_1_1ScriptErrorContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One call-stack frame captured while the script error is still live.  <a href="structeve_1_1script_1_1ScriptFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:af4516336dad9ff1bf639224b132dbe40" id="r_af4516336dad9ff1bf639224b132dbe40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#af4516336dad9ff1bf639224b132dbe40">captureScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:af4516336dad9ff1bf639224b132dbe40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the pending runtime error from inside the Squirrel error handler.  <br /></td></tr>
+<tr class="separator:af4516336dad9ff1bf639224b132dbe40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8739bb9996f823d27176f428ebf6a780" id="r_a8739bb9996f823d27176f428ebf6a780"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a8739bb9996f823d27176f428ebf6a780">captureCompileError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a8739bb9996f823d27176f428ebf6a780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the last compilation error recorded by the VM.  <br /></td></tr>
+<tr class="separator:a8739bb9996f823d27176f428ebf6a780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e0dbba701b6a06f8976321656d1ae20" id="r_a6e0dbba701b6a06f8976321656d1ae20"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a6e0dbba701b6a06f8976321656d1ae20">parseCompileError</a> (const std::string &amp;text, std::string *source, int *<a class="el" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, int *column, std::string *message)</td></tr>
+<tr class="memdesc:a6e0dbba701b6a06f8976321656d1ae20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the ssq compile message "Compile error at source:line:column msg".  <br /></td></tr>
+<tr class="separator:a6e0dbba701b6a06f8976321656d1ae20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab411be247b49af0635c475f833c1dea6" id="r_ab411be247b49af0635c475f833c1dea6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#ab411be247b49af0635c475f833c1dea6">sourceLineText</a> (const std::string &amp;sourceText, int <a class="el" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>)</td></tr>
+<tr class="memdesc:ab411be247b49af0635c475f833c1dea6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts one 1-based line from script source text.  <br /></td></tr>
+<tr class="separator:ab411be247b49af0635c475f833c1dea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85e135fa8c3150b8b4b5edb55b1a192b" id="r_a85e135fa8c3150b8b4b5edb55b1a192b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a85e135fa8c3150b8b4b5edb55b1a192b">formatStackTrace</a> (const std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a> &gt; &amp;frames)</td></tr>
+<tr class="memdesc:a85e135fa8c3150b8b4b5edb55b1a192b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats just the call-stack portion of a context.  <br /></td></tr>
+<tr class="separator:a85e135fa8c3150b8b4b5edb55b1a192b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b28e5c5a2007a4101192399cdca32b" id="r_aa0b28e5c5a2007a4101192399cdca32b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#aa0b28e5c5a2007a4101192399cdca32b">formatScriptError</a> (const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> &amp;ctx)</td></tr>
+<tr class="memdesc:aa0b28e5c5a2007a4101192399cdca32b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats a context into a human-readable multi-line report.  <br /></td></tr>
+<tr class="separator:aa0b28e5c5a2007a4101192399cdca32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e3512388ca2ea62b7192fca394f049" id="r_ae3e3512388ca2ea62b7192fca394f049"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#ae3e3512388ca2ea62b7192fca394f049">setLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> ctx)</td></tr>
+<tr class="memdesc:ae3e3512388ca2ea62b7192fca394f049"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the last error for a VM (thread-local, synchronous consumers).  <br /></td></tr>
+<tr class="separator:ae3e3512388ca2ea62b7192fca394f049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adacef053fceccd6b9d6b1bcf1ecc8e6a" id="r_adacef053fceccd6b9d6b1bcf1ecc8e6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#adacef053fceccd6b9d6b1bcf1ecc8e6a">takeLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:adacef053fceccd6b9d6b1bcf1ecc8e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumes and clears the last recorded error for a VM.  <br /></td></tr>
+<tr class="separator:adacef053fceccd6b9d6b1bcf1ecc8e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ecd7ae71c077d8bca20c54b9e5c5887" id="r_a3ecd7ae71c077d8bca20c54b9e5c5887"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a3ecd7ae71c077d8bca20c54b9e5c5887">peekLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a3ecd7ae71c077d8bca20c54b9e5c5887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Peeks at the last recorded error for a VM without clearing it.  <br /></td></tr>
+<tr class="separator:a3ecd7ae71c077d8bca20c54b9e5c5887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0177a458528b1489b47218ba2388ef68" id="r_a0177a458528b1489b47218ba2388ef68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html#a0177a458528b1489b47218ba2388ef68">clearLastScriptError</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a0177a458528b1489b47218ba2388ef68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops any recorded error for a VM.  <br /></td></tr>
+<tr class="separator:a0177a458528b1489b47218ba2388ef68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a8739bb9996f823d27176f428ebf6a780" name="a8739bb9996f823d27176f428ebf6a780"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8739bb9996f823d27176f428ebf6a780">&#9670;&#160;</a></span>captureCompileError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> eve::script::captureCompileError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the last compilation error recorded by the VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM whose compile just failed (ssq's compiler handler stores it). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Context with message, source, line and column. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8h_source.html#l00030">eve::script::ScriptErrorContext::column</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptError_8cpp_source.html#l00120">parseCompileError()</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConsolePanel_8cpp_source.html#l00217">eve::dev::ConsolePanel::eval()</a> , 以及 <a class="el" href="Debugger_8cpp_source.html#l00888">eve::dev::Debugger::evaluate()</a>.</p>
+
+</div>
+</div>
+<a id="af4516336dad9ff1bf639224b132dbe40" name="af4516336dad9ff1bf639224b132dbe40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4516336dad9ff1bf639224b132dbe40">&#9670;&#160;</a></span>captureScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> eve::script::captureScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the pending runtime error from inside the Squirrel error handler. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM whose error handler is executing (error value at stack slot 2). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Context with the message and the still-live call stack. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8h_source.html#l00015">eve::script::ScriptFrame::function</a>, <a class="el" href="ScriptError_8h_source.html#l00028">eve::script::ScriptErrorContext::function</a>, <a class="el" href="ScriptError_8h_source.html#l00016">eve::script::ScriptFrame::line</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptError_8h_source.html#l00014">eve::script::ScriptFrame::source</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a>, <a class="el" href="ScriptError_8h_source.html#l00032">eve::script::ScriptErrorContext::stack</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a0177a458528b1489b47218ba2388ef68" name="a0177a458528b1489b47218ba2388ef68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0177a458528b1489b47218ba2388ef68">&#9670;&#160;</a></span>clearLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::clearLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drops any recorded error for a VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM whose pending error should be forgotten. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00432">eve::Runtime::shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="aa0b28e5c5a2007a4101192399cdca32b" name="aa0b28e5c5a2007a4101192399cdca32b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b28e5c5a2007a4101192399cdca32b">&#9670;&#160;</a></span>formatScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::script::formatScriptError </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Formats a context into a human-readable multi-line report. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>Context to format. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>"source:line (function): message" plus optional hint and stack. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8cpp_source.html#l00175">formatStackTrace()</a>, <a class="el" href="ScriptError_8h_source.html#l00028">eve::script::ScriptErrorContext::function</a>, <a class="el" href="ScriptError_8h_source.html#l00031">eve::script::ScriptErrorContext::hint</a>, <a class="el" href="ScriptError_8h_source.html#l00029">eve::script::ScriptErrorContext::line</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="ScriptError_8h_source.html#l00027">eve::script::ScriptErrorContext::source</a> , 以及 <a class="el" href="ScriptError_8h_source.html#l00032">eve::script::ScriptErrorContext::stack</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConsolePanel_8cpp_source.html#l00217">eve::dev::ConsolePanel::eval()</a>, <a class="el" href="Debugger_8cpp_source.html#l00888">eve::dev::Debugger::evaluate()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">eve::Runtime::execute()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00301">eve::ScriptException::ScriptException()</a>.</p>
+
+</div>
+</div>
+<a id="a85e135fa8c3150b8b4b5edb55b1a192b" name="a85e135fa8c3150b8b4b5edb55b1a192b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85e135fa8c3150b8b4b5edb55b1a192b">&#9670;&#160;</a></span>formatStackTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::script::formatStackTrace </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>frames</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Formats just the call-stack portion of a context. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frames</td><td>Frames to render, innermost first. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>One "source:line in function" line per frame, newline separated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptError_8cpp_source.html#l00189">formatScriptError()</a>.</p>
+
+</div>
+</div>
+<a id="a6e0dbba701b6a06f8976321656d1ae20" name="a6e0dbba701b6a06f8976321656d1ae20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e0dbba701b6a06f8976321656d1ae20">&#9670;&#160;</a></span>parseCompileError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::parseCompileError </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses the ssq compile message "Compile error at source:line:column msg". </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text</td><td>Message produced by ssq::CompileException::what(). </td></tr>
+    <tr><td class="paramname">source</td><td>Receives the source name (may be nullptr). </td></tr>
+    <tr><td class="paramname">line</td><td>Receives the 1-based line (may be nullptr). </td></tr>
+    <tr><td class="paramname">column</td><td>Receives the 1-based column (may be nullptr). </td></tr>
+    <tr><td class="paramname">message</td><td>Receives the raw compiler description (may be nullptr). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the message matched the expected layout. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptError_8cpp_source.html#l00103">captureCompileError()</a>.</p>
+
+</div>
+</div>
+<a id="a3ecd7ae71c077d8bca20c54b9e5c5887" name="a3ecd7ae71c077d8bca20c54b9e5c5887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ecd7ae71c077d8bca20c54b9e5c5887">&#9670;&#160;</a></span>peekLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> * eve::script::peekLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Peeks at the last recorded error for a VM without clearing it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM the error belongs to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Pointer to the stored context, or nullptr when none is pending. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="ae3e3512388ca2ea62b7192fca394f049" name="ae3e3512388ca2ea62b7192fca394f049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3e3512388ca2ea62b7192fca394f049">&#9670;&#160;</a></span>setLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::setLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a>&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records the last error for a VM (thread-local, synchronous consumers). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM the error belongs to. </td></tr>
+    <tr><td class="paramname">ctx</td><td>Context to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="ab411be247b49af0635c475f833c1dea6" name="ab411be247b49af0635c475f833c1dea6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab411be247b49af0635c475f833c1dea6">&#9670;&#160;</a></span>sourceLineText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::script::sourceLineText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sourceText</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>line</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts one 1-based line from script source text. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sourceText</td><td>Full script source. </td></tr>
+    <tr><td class="paramname">line</td><td>1-based line number. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The line without trailing newline, or empty when out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00019">line</a>.</p>
+
+</div>
+</div>
+<a id="adacef053fceccd6b9d6b1bcf1ecc8e6a" name="adacef053fceccd6b9d6b1bcf1ecc8e6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adacef053fceccd6b9d6b1bcf1ecc8e6a">&#9670;&#160;</a></span>takeLastScriptError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> eve::script::takeLastScriptError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Consumes and clears the last recorded error for a VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>VM the error belongs to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The stored context, or an empty context when none is pending. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptError_8cpp_source.html">ScriptError.cpp</a> 第 <a class="el" href="ScriptError_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00595">eve::Runtime::createInstance()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00217">eve::dev::ConsolePanel::eval()</a>, <a class="el" href="Debugger_8cpp_source.html#l00888">eve::dev::Debugger::evaluate()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00515">eve::Runtime::execute()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

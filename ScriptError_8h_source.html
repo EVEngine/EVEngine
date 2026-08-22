@@ -1,0 +1,251 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ScriptError.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ScriptError.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ScriptError_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;squirrel.h&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1script.html">eve::script</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptFrame.html">   13</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1script_1_1ScriptFrame.html">ScriptFrame</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptFrame.html#aef6047519bbc1ad6f0f6d05534881c9d">   14</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptFrame.html#aef6047519bbc1ad6f0f6d05534881c9d">source</a>;    </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptFrame.html#a51347513b223382ed809a23bd19fe592">   15</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptFrame.html#a51347513b223382ed809a23bd19fe592">function</a>;  </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptFrame.html#a0fa9764f852fb58d54c163b8499de5f1">   16</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a> = -1;         </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html">   25</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1script_1_1ScriptErrorContext.html">ScriptErrorContext</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#aa7fefab1abae64529a5d71eecee6a2b3">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#aa7fefab1abae64529a5d71eecee6a2b3">message</a>;   </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#acca716bf6593d96b14074d615c5f513e">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#acca716bf6593d96b14074d615c5f513e">source</a>;    </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#a3b76a0afeba34596dbc46b7f699a4029">   28</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#a3b76a0afeba34596dbc46b7f699a4029">function</a>;  </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#a25e26b17dd792eb3216519a08ccbaaed">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a> = -1;         </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#a84ec5a5f82b1bc3d43c5a5ec3b63d73c">   30</a></span>    <span class="keywordtype">int</span> column = -1;       </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#aa2c7699a7349fee1daff49accb4076f7">   31</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#aa2c7699a7349fee1daff49accb4076f7">hint</a>;      </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#abeed8cc63a42fd0656beb2ce12745520">   32</a></span>    std::vector&lt;ScriptFrame&gt; <a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#abeed8cc63a42fd0656beb2ce12745520">stack</a>;  </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#a418f2652f15e70dfc5687d8281ac36c5">   33</a></span>    <span class="keywordtype">bool</span> reported = <span class="keyword">false</span>; </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptErrorContext.html#a98b75c098c992747f2916b1af0b1ddfe">   36</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1script_1_1ScriptErrorContext.html#a98b75c098c992747f2916b1af0b1ddfe">empty</a>() const noexcept { <span class="keywordflow">return</span> message.empty() &amp;&amp; stack.empty(); }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> ScriptErrorContext <a class="code hl_function" href="namespaceeve_1_1script.html#af4516336dad9ff1bf639224b132dbe40">captureScriptError</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> ScriptErrorContext <a class="code hl_function" href="namespaceeve_1_1script.html#a8739bb9996f823d27176f428ebf6a780">captureCompileError</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a6e0dbba701b6a06f8976321656d1ae20">parseCompileError</a>(<span class="keyword">const</span> std::string&amp; text, std::string* source,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                    <span class="keywordtype">int</span>* <a class="code hl_variable" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, <span class="keywordtype">int</span>* column, std::string* message);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> std::string <a class="code hl_function" href="namespaceeve_1_1script.html#ab411be247b49af0635c475f833c1dea6">sourceLineText</a>(<span class="keyword">const</span> std::string&amp; sourceText, <span class="keywordtype">int</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> std::string <a class="code hl_function" href="namespaceeve_1_1script.html#aa0b28e5c5a2007a4101192399cdca32b">formatScriptError</a>(<span class="keyword">const</span> ScriptErrorContext&amp; ctx);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> std::string <a class="code hl_function" href="namespaceeve_1_1script.html#a85e135fa8c3150b8b4b5edb55b1a192b">formatStackTrace</a>(<span class="keyword">const</span> std::vector&lt;ScriptFrame&gt;&amp; frames);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ae3e3512388ca2ea62b7192fca394f049">setLastScriptError</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, ScriptErrorContext ctx);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> ScriptErrorContext <a class="code hl_function" href="namespaceeve_1_1script.html#adacef053fceccd6b9d6b1bcf1ecc8e6a">takeLastScriptError</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <span class="keyword">const</span> ScriptErrorContext* <a class="code hl_function" href="namespaceeve_1_1script.html#a3ecd7ae71c077d8bca20c54b9e5c5887">peekLastScriptError</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a0177a458528b1489b47218ba2388ef68">clearLastScriptError</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}  <span class="comment">// namespace eve::script</span></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a41ebd28ef1d7c6ade45642cb6acc1039"><div class="ttname"><a href="DnutParser_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a></div><div class="ttdeci">int line</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00019">DnutParser.cpp:19</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html"><div class="ttname"><a href="namespaceeve_1_1script.html">eve::script</a></div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00010">ScriptError.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a0177a458528b1489b47218ba2388ef68"><div class="ttname"><a href="namespaceeve_1_1script.html#a0177a458528b1489b47218ba2388ef68">eve::script::clearLastScriptError</a></div><div class="ttdeci">void clearLastScriptError(HSQUIRRELVM vm)</div><div class="ttdoc">Drops any recorded error for a VM.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00226">ScriptError.cpp:226</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a3ecd7ae71c077d8bca20c54b9e5c5887"><div class="ttname"><a href="namespaceeve_1_1script.html#a3ecd7ae71c077d8bca20c54b9e5c5887">eve::script::peekLastScriptError</a></div><div class="ttdeci">const ScriptErrorContext * peekLastScriptError(HSQUIRRELVM vm)</div><div class="ttdoc">Peeks at the last recorded error for a VM without clearing it.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00220">ScriptError.cpp:220</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a6e0dbba701b6a06f8976321656d1ae20"><div class="ttname"><a href="namespaceeve_1_1script.html#a6e0dbba701b6a06f8976321656d1ae20">eve::script::parseCompileError</a></div><div class="ttdeci">bool parseCompileError(const std::string &amp;text, std::string *source, int *line, int *column, std::string *message)</div><div class="ttdoc">Parses the ssq compile message &quot;Compile error at source:line:column msg&quot;.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00120">ScriptError.cpp:120</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a85e135fa8c3150b8b4b5edb55b1a192b"><div class="ttname"><a href="namespaceeve_1_1script.html#a85e135fa8c3150b8b4b5edb55b1a192b">eve::script::formatStackTrace</a></div><div class="ttdeci">std::string formatStackTrace(const std::vector&lt; ScriptFrame &gt; &amp;frames)</div><div class="ttdoc">Formats just the call-stack portion of a context.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00175">ScriptError.cpp:175</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a8739bb9996f823d27176f428ebf6a780"><div class="ttname"><a href="namespaceeve_1_1script.html#a8739bb9996f823d27176f428ebf6a780">eve::script::captureCompileError</a></div><div class="ttdeci">ScriptErrorContext captureCompileError(HSQUIRRELVM vm)</div><div class="ttdoc">Captures the last compilation error recorded by the VM.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00103">ScriptError.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_aa0b28e5c5a2007a4101192399cdca32b"><div class="ttname"><a href="namespaceeve_1_1script.html#aa0b28e5c5a2007a4101192399cdca32b">eve::script::formatScriptError</a></div><div class="ttdeci">std::string formatScriptError(const ScriptErrorContext &amp;ctx)</div><div class="ttdoc">Formats a context into a human-readable multi-line report.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00189">ScriptError.cpp:189</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ab411be247b49af0635c475f833c1dea6"><div class="ttname"><a href="namespaceeve_1_1script.html#ab411be247b49af0635c475f833c1dea6">eve::script::sourceLineText</a></div><div class="ttdeci">std::string sourceLineText(const std::string &amp;sourceText, int line)</div><div class="ttdoc">Extracts one 1-based line from script source text.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00159">ScriptError.cpp:159</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_adacef053fceccd6b9d6b1bcf1ecc8e6a"><div class="ttname"><a href="namespaceeve_1_1script.html#adacef053fceccd6b9d6b1bcf1ecc8e6a">eve::script::takeLastScriptError</a></div><div class="ttdeci">ScriptErrorContext takeLastScriptError(HSQUIRRELVM vm)</div><div class="ttdoc">Consumes and clears the last recorded error for a VM.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00211">ScriptError.cpp:211</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae3e3512388ca2ea62b7192fca394f049"><div class="ttname"><a href="namespaceeve_1_1script.html#ae3e3512388ca2ea62b7192fca394f049">eve::script::setLastScriptError</a></div><div class="ttdeci">void setLastScriptError(HSQUIRRELVM vm, ScriptErrorContext ctx)</div><div class="ttdoc">Records the last error for a VM (thread-local, synchronous consumers).</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00206">ScriptError.cpp:206</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_af4516336dad9ff1bf639224b132dbe40"><div class="ttname"><a href="namespaceeve_1_1script.html#af4516336dad9ff1bf639224b132dbe40">eve::script::captureScriptError</a></div><div class="ttdeci">ScriptErrorContext captureScriptError(HSQUIRRELVM vm)</div><div class="ttdoc">Captures the pending runtime error from inside the Squirrel error handler.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00080">ScriptError.cpp:80</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html">eve::script::ScriptErrorContext</a></div><div class="ttdoc">Structured snapshot of a script error: message, throw site and stack.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00025">ScriptError.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_a3b76a0afeba34596dbc46b7f699a4029"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#a3b76a0afeba34596dbc46b7f699a4029">eve::script::ScriptErrorContext::function</a></div><div class="ttdeci">std::string function</div><div class="ttdoc">Function of the throwing frame.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00028">ScriptError.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_a98b75c098c992747f2916b1af0b1ddfe"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#a98b75c098c992747f2916b1af0b1ddfe">eve::script::ScriptErrorContext::empty</a></div><div class="ttdeci">bool empty() const noexcept</div><div class="ttdoc">True when no error payload was captured.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00036">ScriptError.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_aa2c7699a7349fee1daff49accb4076f7"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#aa2c7699a7349fee1daff49accb4076f7">eve::script::ScriptErrorContext::hint</a></div><div class="ttdeci">std::string hint</div><div class="ttdoc">Optional source snippet shown under the message.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00031">ScriptError.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_aa7fefab1abae64529a5d71eecee6a2b3"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#aa7fefab1abae64529a5d71eecee6a2b3">eve::script::ScriptErrorContext::message</a></div><div class="ttdeci">std::string message</div><div class="ttdoc">Raw error value (&quot;kaboom&quot;, &quot;42&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00026">ScriptError.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_abeed8cc63a42fd0656beb2ce12745520"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#abeed8cc63a42fd0656beb2ce12745520">eve::script::ScriptErrorContext::stack</a></div><div class="ttdeci">std::vector&lt; ScriptFrame &gt; stack</div><div class="ttdoc">Call stack, innermost frame first.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00032">ScriptError.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_acca716bf6593d96b14074d615c5f513e"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#acca716bf6593d96b14074d615c5f513e">eve::script::ScriptErrorContext::source</a></div><div class="ttdeci">std::string source</div><div class="ttdoc">Source of the throwing frame.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00027">ScriptError.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptFrame_html"><div class="ttname"><a href="structeve_1_1script_1_1ScriptFrame.html">eve::script::ScriptFrame</a></div><div class="ttdoc">One call-stack frame captured while the script error is still live.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00013">ScriptError.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptFrame_html_a51347513b223382ed809a23bd19fe592"><div class="ttname"><a href="structeve_1_1script_1_1ScriptFrame.html#a51347513b223382ed809a23bd19fe592">eve::script::ScriptFrame::function</a></div><div class="ttdeci">std::string function</div><div class="ttdoc">Function name, when Squirrel debug info knows it.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00015">ScriptError.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptFrame_html_aef6047519bbc1ad6f0f6d05534881c9d"><div class="ttname"><a href="structeve_1_1script_1_1ScriptFrame.html#aef6047519bbc1ad6f0f6d05534881c9d">eve::script::ScriptFrame::source</a></div><div class="ttdeci">std::string source</div><div class="ttdoc">Source name of the frame (&quot;main.nut&quot;, &quot;buffer&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00014">ScriptError.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::network::Network 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a7e7957d36ccc258f7385b0adddbc35aa">bindChannel</a>(TcpSocket *sock, Channel *ch)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#afd98634b05758af1f491403a1f0ec3f3">bindUdpHost</a>(UdpSocket *sock, NetHost *host)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a953a61b015dcfd186a4d9167dd0e611e">bindUdpLink</a>(UdpSocket *sock, UdpLink *link)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1service_1_1INetwork.html#a5e043b9e90722bfe3801e274dc7b099c">capabilityName</a></td><td class="entry"><a class="el" href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ac86f3c1b43b89dca598caa711d8ae6b3">channelFor</a>(TcpSocket *sock) const</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ae56536519514d859183b05821cbf76b4">drainForTest</a>(std::vector&lt; NetCompletion &gt; &amp;out)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a9f782f6298798e28229f41adc7bf3c69">getTimeout</a>() const</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a30d7bbf3fe7e0c9aca9fdf974060ebfe">getVerifySsl</a>() const</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a78510cf408868b49dfb728f76afbcb67">httpRequest</a>(const std::string &amp;method, const std::string &amp;url, const std::string &amp;body, int timeoutMs, int &amp;status, std::string &amp;responseBody) override</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ad2bec8d0b5f203c74f9ccfb1a3aa7ecc">Module_REG</a>(Network)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#adc7a28a6c4e8f10d421ae07ebaf42266">Network</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#afae798209a187fe1ffd0d8bb5985787f">newChannel</a>(TcpSocket *socket)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a2339abe22bc38c4d1cfb08fe177ab98f">newHost</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a833c665de6229e86c92620d16412110c">newHttp</a>(std::string method, std::string url)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a2b6376c852e1619a4feeff8d040409c9">newReader</a>(std::string bytes)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ad2c6f57ebdb983af65850250fefc8d55">newRpc</a>(UdpLink *link)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a3a77b45b08baeabe3d7c15ab71c81c5c">newSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ae7908efcdf3a28856bf866d6c6307a9c">newTcp</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ade1afd80ee40c8581fd72a06a17462d1">newUdp</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a626a087a1fbb520f25f2b5303cce11c3">newUdpLink</a>(UdpSocket *socket)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ad8686a804baa7cb7055ea39bfca00675">newWriter</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ae08db7992bd03d5c8b38c8d36e1b2049">pollSockets</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#af3b833417d3d5f94a789a944f03ec6a6">post</a>(NetCompletion c)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8">pump</a>()</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a32cbb89dd26d035266421dcb2bdc2ac1">setTimeout</a>(int ms)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a7529107784f9f3f364931fcd5d2a33d2">setVerifySsl</a>(bool verify)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#af598844699afe909565e5099dbe375d6">unbindChannel</a>(TcpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ac29a6a084ea53b94343ff1b093fe2c20">unbindUdpHost</a>(UdpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a556f2f68cb16928a816525ec6e5cc52f">unbindUdpLink</a>(UdpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#ae8616c059df4243a7cdcfe975a2a8d02">unwatchTcp</a>(TcpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a724fa08df29b3cbc93e51a88ceb4ada3">unwatchUdp</a>(UdpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a53b166f738d2670d798e0a36076fd57f">watchTcp</a>(TcpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#abdd42a2175104fa8e7a067ab7c89a2d0">watchUdp</a>(UdpSocket *sock)</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#a7a3edc292f79d10c10921ede17d20d8e">worker</a>() const</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1service_1_1INetwork.html#a6e2802da543ba8780780232e83cd7c36">~INetwork</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html#aa50288ed52d5bde8c72a9da4f952c063">~Network</a>() override</td><td class="entry"><a class="el" href="classeve_1_1network_1_1Network.html">eve::network::Network</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

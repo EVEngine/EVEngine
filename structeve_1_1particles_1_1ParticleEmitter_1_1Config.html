@@ -1,0 +1,1587 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::particles::ParticleEmitter::Config结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1particles.html">particles</a></li><li class="navelem"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a></li><li class="navelem"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">Config</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::particles::ParticleEmitter::Config结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1Burst.html">Burst</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timed burst emission (fired once while the emitter is active).  <a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1Burst.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1ForceField.html">ForceField</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Radial attract/repel force fields (strength &gt; 0 attract, &lt; 0 repel).  <a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1ForceField.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1LightCfg.html">LightCfg</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emitter-level 2D light emission (pooled Light2D entities).  <a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1LightCfg.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1SubEmitter.html">SubEmitter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-linked sub-emitters (birth / death / collision triggers).  <a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1SubEmitter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab44405b601f5ce83e243fdfa0070be5e" id="r_ab44405b601f5ce83e243fdfa0070be5e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab44405b601f5ce83e243fdfa0070be5e">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab44405b601f5ce83e243fdfa0070be5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b618df4ba36f44ca930e1a810db3e66" id="r_a8b618df4ba36f44ca930e1a810db3e66"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a8b618df4ba36f44ca930e1a810db3e66">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8b618df4ba36f44ca930e1a810db3e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a7bf89daac9db67adfc01e3f1440014" id="r_a7a7bf89daac9db67adfc01e3f1440014"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a7a7bf89daac9db67adfc01e3f1440014">emissionRate</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7a7bf89daac9db67adfc01e3f1440014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac5373b829329bfd3c0c80562b7f1e4b" id="r_aac5373b829329bfd3c0c80562b7f1e4b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aac5373b829329bfd3c0c80562b7f1e4b">lifeMin</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aac5373b829329bfd3c0c80562b7f1e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9fc17b3b23ae432785a2ea54a0cee1" id="r_a3a9fc17b3b23ae432785a2ea54a0cee1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a3a9fc17b3b23ae432785a2ea54a0cee1">lifeMax</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3a9fc17b3b23ae432785a2ea54a0cee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bc5273a7cfda9e6bd9379b5e58bf512" id="r_a3bc5273a7cfda9e6bd9379b5e58bf512"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a3bc5273a7cfda9e6bd9379b5e58bf512">emitterLife</a> = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3bc5273a7cfda9e6bd9379b5e58bf512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a131e97be3df0deead0bceece17595d72" id="r_a131e97be3df0deead0bceece17595d72"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a131e97be3df0deead0bceece17595d72">direction</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a131e97be3df0deead0bceece17595d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ef59a0effe5c7096e0ad58829e01e02" id="r_a6ef59a0effe5c7096e0ad58829e01e02"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6ef59a0effe5c7096e0ad58829e01e02">spread</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6ef59a0effe5c7096e0ad58829e01e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa32220f6a14ea9ffa91a2b57d8c817ae" id="r_aa32220f6a14ea9ffa91a2b57d8c817ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aa32220f6a14ea9ffa91a2b57d8c817ae">speedMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa32220f6a14ea9ffa91a2b57d8c817ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8027f725140a08b2a5301cbaa2f8790" id="r_ad8027f725140a08b2a5301cbaa2f8790"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ad8027f725140a08b2a5301cbaa2f8790">speedMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad8027f725140a08b2a5301cbaa2f8790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c8691bd0fac356421c94f961f8e4d07" id="r_a8c8691bd0fac356421c94f961f8e4d07"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a8c8691bd0fac356421c94f961f8e4d07">accelXMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8c8691bd0fac356421c94f961f8e4d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a458e9448b481eda4598140f16296ea97" id="r_a458e9448b481eda4598140f16296ea97"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a458e9448b481eda4598140f16296ea97">accelYMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a458e9448b481eda4598140f16296ea97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7729c572bcd9710d4e68d4365614bec1" id="r_a7729c572bcd9710d4e68d4365614bec1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a7729c572bcd9710d4e68d4365614bec1">accelXMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7729c572bcd9710d4e68d4365614bec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01fe90d1ccb765cd10f8f48cffdd2358" id="r_a01fe90d1ccb765cd10f8f48cffdd2358"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a01fe90d1ccb765cd10f8f48cffdd2358">accelYMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a01fe90d1ccb765cd10f8f48cffdd2358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfefeedd58be1ebe761ac498b1e7303a" id="r_adfefeedd58be1ebe761ac498b1e7303a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#adfefeedd58be1ebe761ac498b1e7303a">radialMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:adfefeedd58be1ebe761ac498b1e7303a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3b81857f07dcb6ed45a78d8f9594877" id="r_af3b81857f07dcb6ed45a78d8f9594877"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#af3b81857f07dcb6ed45a78d8f9594877">radialMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af3b81857f07dcb6ed45a78d8f9594877"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd96d9ddaa9838545d56d95e983f0c00" id="r_acd96d9ddaa9838545d56d95e983f0c00"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#acd96d9ddaa9838545d56d95e983f0c00">tangentialMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acd96d9ddaa9838545d56d95e983f0c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0efdf283433c6adf8367e63d19665523" id="r_a0efdf283433c6adf8367e63d19665523"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a0efdf283433c6adf8367e63d19665523">tangentialMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0efdf283433c6adf8367e63d19665523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c6c1a06167cf2da5738b0ae4abdd863" id="r_a4c6c1a06167cf2da5738b0ae4abdd863"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a4c6c1a06167cf2da5738b0ae4abdd863">particleW</a> = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4c6c1a06167cf2da5738b0ae4abdd863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeda8a1db903a1216db46d4186e2cb8e9" id="r_aeda8a1db903a1216db46d4186e2cb8e9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aeda8a1db903a1216db46d4186e2cb8e9">particleH</a> = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aeda8a1db903a1216db46d4186e2cb8e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a037240aa746c1f7cb9a027390d2290e9" id="r_a037240aa746c1f7cb9a027390d2290e9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a037240aa746c1f7cb9a027390d2290e9">sizeStart</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a037240aa746c1f7cb9a027390d2290e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96c6d4c1478ea05b1400d936a9e8b3f2" id="r_a96c6d4c1478ea05b1400d936a9e8b3f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a96c6d4c1478ea05b1400d936a9e8b3f2">sizeEnd</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a96c6d4c1478ea05b1400d936a9e8b3f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41e94aab9ab1eb7463642c1752b9c646" id="r_a41e94aab9ab1eb7463642c1752b9c646"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a41e94aab9ab1eb7463642c1752b9c646">sizeVariation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a41e94aab9ab1eb7463642c1752b9c646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c7c07a746a29c4685996321354b417" id="r_aa0c7c07a746a29c4685996321354b417"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aa0c7c07a746a29c4685996321354b417">spinMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa0c7c07a746a29c4685996321354b417"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1f164b96d92b562fe44a1029ab6213b" id="r_ab1f164b96d92b562fe44a1029ab6213b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab1f164b96d92b562fe44a1029ab6213b">spinMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab1f164b96d92b562fe44a1029ab6213b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aead3434ddd6f85ea456331a312b3bd6e" id="r_aead3434ddd6f85ea456331a312b3bd6e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aead3434ddd6f85ea456331a312b3bd6e">gravityX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aead3434ddd6f85ea456331a312b3bd6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gravity applied every step (world units/s²).  <br /></td></tr>
+<tr class="separator:aead3434ddd6f85ea456331a312b3bd6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61825bc647714c32cfbf570eba29723f" id="r_a61825bc647714c32cfbf570eba29723f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a61825bc647714c32cfbf570eba29723f">gravityY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a61825bc647714c32cfbf570eba29723f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7195ea9837ccaf6736ec73f7a0662ba" id="r_ac7195ea9837ccaf6736ec73f7a0662ba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ac7195ea9837ccaf6736ec73f7a0662ba">damping</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ac7195ea9837ccaf6736ec73f7a0662ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-second velocity damping fraction in [0,1].  <br /></td></tr>
+<tr class="separator:ac7195ea9837ccaf6736ec73f7a0662ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a006efc124bfd1040ba921e4ddc457dfc" id="r_a006efc124bfd1040ba921e4ddc457dfc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a006efc124bfd1040ba921e4ddc457dfc">limitVelocity</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a006efc124bfd1040ba921e4ddc457dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max speed; 0 = unlimited. Applied after forces each step.  <br /></td></tr>
+<tr class="separator:a006efc124bfd1040ba921e4ddc457dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f2e26161b4a6fc0e7c40cf6407539a5" id="r_a7f2e26161b4a6fc0e7c40cf6407539a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a7f2e26161b4a6fc0e7c40cf6407539a5">velocityCurve</a></td></tr>
+<tr class="memdesc:a7f2e26161b4a6fc0e7c40cf6407539a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional speed multiplier curve over lifetime.  <br /></td></tr>
+<tr class="separator:a7f2e26161b4a6fc0e7c40cf6407539a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9ed0bcf95ba4021f6562fb439152370" id="r_ab9ed0bcf95ba4021f6562fb439152370"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab9ed0bcf95ba4021f6562fb439152370">inheritVelocity</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ab9ed0bcf95ba4021f6562fb439152370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction [0,1] of the emitter's current velocity added to new particles.  <br /></td></tr>
+<tr class="separator:ab9ed0bcf95ba4021f6562fb439152370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cdbfd0c8a0c014264371d21b3c1471a" id="r_a4cdbfd0c8a0c014264371d21b3c1471a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a4cdbfd0c8a0c014264371d21b3c1471a">simSpace</a> = &quot;world&quot;</td></tr>
+<tr class="memdesc:a4cdbfd0c8a0c014264371d21b3c1471a"><td class="mdescLeft">&#160;</td><td class="mdescRight">"world" (default) or "local" (particles track the emitter).  <br /></td></tr>
+<tr class="separator:a4cdbfd0c8a0c014264371d21b3c1471a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2597b364ff0709619f286116fbeb0a87" id="r_a2597b364ff0709619f286116fbeb0a87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a2597b364ff0709619f286116fbeb0a87">noiseStrength</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a2597b364ff0709619f286116fbeb0a87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turbulence: random per-particle acceleration scaled by strength.  <br /></td></tr>
+<tr class="separator:a2597b364ff0709619f286116fbeb0a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a1a527f4f860c098159d7ab1c2f9dae" id="r_a2a1a527f4f860c098159d7ab1c2f9dae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a2a1a527f4f860c098159d7ab1c2f9dae">noiseFrequency</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2a1a527f4f860c098159d7ab1c2f9dae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a630f64d9bc4a0a8755b915562f21b0d0" id="r_a630f64d9bc4a0a8755b915562f21b0d0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a630f64d9bc4a0a8755b915562f21b0d0">noiseSpeed</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a630f64d9bc4a0a8755b915562f21b0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af81db211c06d3c93ef7e2ff1fadc6f22" id="r_af81db211c06d3c93ef7e2ff1fadc6f22"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#af81db211c06d3c93ef7e2ff1fadc6f22">collisionMode</a> = &quot;none&quot;</td></tr>
+<tr class="memdesc:af81db211c06d3c93ef7e2ff1fadc6f22"><td class="mdescLeft">&#160;</td><td class="mdescRight">"none" | "kill" | "bounce" | "stop" on collision.  <br /></td></tr>
+<tr class="separator:af81db211c06d3c93ef7e2ff1fadc6f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ac803c07415b232e581c1d01da8b94d" id="r_a9ac803c07415b232e581c1d01da8b94d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a9ac803c07415b232e581c1d01da8b94d">collisionRadius</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9ac803c07415b232e581c1d01da8b94d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf09f53b31abc3c38328c5a10a5c003b" id="r_acf09f53b31abc3c38328c5a10a5c003b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#acf09f53b31abc3c38328c5a10a5c003b">collisionRestitution</a> = 0.6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acf09f53b31abc3c38328c5a10a5c003b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8173d4315f4952e1b253ef6866a7964" id="r_ac8173d4315f4952e1b253ef6866a7964"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ac8173d4315f4952e1b253ef6866a7964">collisionLifetimeLoss</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac8173d4315f4952e1b253ef6866a7964"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5795167893c0001f7e2f4d6591a5ce19" id="r_a5795167893c0001f7e2f4d6591a5ce19"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a5795167893c0001f7e2f4d6591a5ce19">collisionBoundsEnabled</a> = false</td></tr>
+<tr class="separator:a5795167893c0001f7e2f4d6591a5ce19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7124390b795c045f1b2afeb3375fecad" id="r_a7124390b795c045f1b2afeb3375fecad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a7124390b795c045f1b2afeb3375fecad">boundsMinX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7124390b795c045f1b2afeb3375fecad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd862c10f045cafb6ef631b7ba677a4a" id="r_acd862c10f045cafb6ef631b7ba677a4a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#acd862c10f045cafb6ef631b7ba677a4a">boundsMinY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acd862c10f045cafb6ef631b7ba677a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb966f5f7f61301d28ae73e21a1012df" id="r_acb966f5f7f61301d28ae73e21a1012df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#acb966f5f7f61301d28ae73e21a1012df">boundsMaxX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acb966f5f7f61301d28ae73e21a1012df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfc476937782732a73e3cb97918cd992" id="r_abfc476937782732a73e3cb97918cd992"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#abfc476937782732a73e3cb97918cd992">boundsMaxY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abfc476937782732a73e3cb97918cd992"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeea7fc935448cd125b3633ec5ef1d89a" id="r_aeea7fc935448cd125b3633ec5ef1d89a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aeea7fc935448cd125b3633ec5ef1d89a">worldCollision</a> = false</td></tr>
+<tr class="memdesc:aeea7fc935448cd125b3633ec5ef1d89a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the engine-level world collision resolver each step.  <br /></td></tr>
+<tr class="separator:aeea7fc935448cd125b3633ec5ef1d89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff73e54f37ea2492f0146a14bf6f8811" id="r_aff73e54f37ea2492f0146a14bf6f8811"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aff73e54f37ea2492f0146a14bf6f8811">renderMode</a> = &quot;billboard&quot;</td></tr>
+<tr class="memdesc:aff73e54f37ea2492f0146a14bf6f8811"><td class="mdescLeft">&#160;</td><td class="mdescRight">"billboard" (default) | "stretched" (elongate along velocity).  <br /></td></tr>
+<tr class="separator:aff73e54f37ea2492f0146a14bf6f8811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358b728bab3f835ea7680add7030f814" id="r_a358b728bab3f835ea7680add7030f814"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a358b728bab3f835ea7680add7030f814">stretchFactor</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a358b728bab3f835ea7680add7030f814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f0ae2dc3f070a511a715787a5ff867" id="r_a77f0ae2dc3f070a511a715787a5ff867"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a77f0ae2dc3f070a511a715787a5ff867">overflowMode</a> = &quot;drop&quot;</td></tr>
+<tr class="memdesc:a77f0ae2dc3f070a511a715787a5ff867"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer-full strategy: "drop" (default) | "pause" | "warn".  <br /></td></tr>
+<tr class="separator:a77f0ae2dc3f070a511a715787a5ff867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c9c3adccc14c56b85ab81cf20b30862" id="r_a1c9c3adccc14c56b85ab81cf20b30862"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">maxDeltaTime</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a1c9c3adccc14c56b85ab81cf20b30862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cap per-step delta time (0 = unlimited).  <br /></td></tr>
+<tr class="separator:a1c9c3adccc14c56b85ab81cf20b30862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05835a0c27f3baec165657850a17e4e5" id="r_a05835a0c27f3baec165657850a17e4e5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a05835a0c27f3baec165657850a17e4e5">prewarmSeconds</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a05835a0c27f3baec165657850a17e4e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prewarm seconds simulated in <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab38271c268d7333ebe1381e40cecab00">start()</a> so the effect is pre-filled.  <br /></td></tr>
+<tr class="separator:a05835a0c27f3baec165657850a17e4e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36a13aeccbd3bfc67463b85352b40536" id="r_a36a13aeccbd3bfc67463b85352b40536"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a36a13aeccbd3bfc67463b85352b40536">gpuSimulation</a> = false</td></tr>
+<tr class="memdesc:a36a13aeccbd3bfc67463b85352b40536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opt-in GPU-accelerated simulation (falls back to CPU when unavailable).  <br /></td></tr>
+<tr class="separator:a36a13aeccbd3bfc67463b85352b40536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6064e212cff308d693f5fb6de2b9945d" id="r_a6064e212cff308d693f5fb6de2b9945d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1Burst.html">Burst</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6064e212cff308d693f5fb6de2b9945d">bursts</a></td></tr>
+<tr class="separator:a6064e212cff308d693f5fb6de2b9945d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7cbfffe47b56f8f5fca69fced01062" id="r_a8e7cbfffe47b56f8f5fca69fced01062"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1ForceField.html">ForceField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a8e7cbfffe47b56f8f5fca69fced01062">forceFields</a></td></tr>
+<tr class="separator:a8e7cbfffe47b56f8f5fca69fced01062"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eb2b0a1e29882f6f576508e57500b7e" id="r_a9eb2b0a1e29882f6f576508e57500b7e"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1LightCfg.html">eve::particles::ParticleEmitter::Config::LightCfg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a9eb2b0a1e29882f6f576508e57500b7e">lights</a></td></tr>
+<tr class="separator:a9eb2b0a1e29882f6f576508e57500b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace56942d85fe221102f0ea15542e2496" id="r_ace56942d85fe221102f0ea15542e2496"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1SubEmitter.html">SubEmitter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ace56942d85fe221102f0ea15542e2496">subEmitters</a></td></tr>
+<tr class="separator:ace56942d85fe221102f0ea15542e2496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75633d1f0329fb8e0ba967db3c373058" id="r_a75633d1f0329fb8e0ba967db3c373058"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a75633d1f0329fb8e0ba967db3c373058">startRotMin</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a75633d1f0329fb8e0ba967db3c373058"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial rotation in degrees (random between min/max; radians at sim time).  <br /></td></tr>
+<tr class="separator:a75633d1f0329fb8e0ba967db3c373058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89cefb4bf404859222c6fa12d8d15622" id="r_a89cefb4bf404859222c6fa12d8d15622"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a89cefb4bf404859222c6fa12d8d15622">startRotMax</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a89cefb4bf404859222c6fa12d8d15622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1193e9e04918b0d423dbd259f40346e5" id="r_a1193e9e04918b0d423dbd259f40346e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1193e9e04918b0d423dbd259f40346e5">hframes</a> = 1</td></tr>
+<tr class="memdesc:a1193e9e04918b0d423dbd259f40346e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flipbook grid. 1x1 = static full texture. frameRate = frames/sec (0 = static).  <br /></td></tr>
+<tr class="separator:a1193e9e04918b0d423dbd259f40346e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8827ce1b41c486b9ad42b905c54fa6d8" id="r_a8827ce1b41c486b9ad42b905c54fa6d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a8827ce1b41c486b9ad42b905c54fa6d8">vframes</a> = 1</td></tr>
+<tr class="separator:a8827ce1b41c486b9ad42b905c54fa6d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a636a4e79c524daf34e535d13090f425a" id="r_a636a4e79c524daf34e535d13090f425a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a636a4e79c524daf34e535d13090f425a">frameRate</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a636a4e79c524daf34e535d13090f425a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45e7003647682706f39f1d73e8b28d4c" id="r_a45e7003647682706f39f1d73e8b28d4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a45e7003647682706f39f1d73e8b28d4c">frameRandomStart</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a45e7003647682706f39f1d73e8b28d4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">0..1 fraction: randomize the starting frame up to this fraction of the sheet.  <br /></td></tr>
+<tr class="separator:a45e7003647682706f39f1d73e8b28d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a818f514dc6be57285f153d25ed171f86" id="r_a818f514dc6be57285f153d25ed171f86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleGradient.html">ParticleGradient</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a818f514dc6be57285f153d25ed171f86">colorGradient</a></td></tr>
+<tr class="memdesc:a818f514dc6be57285f153d25ed171f86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional multi-stop gradient; overrides colorStart/colorEnd when non-empty.  <br /></td></tr>
+<tr class="separator:a818f514dc6be57285f153d25ed171f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e21902d93c6afa0bd066c02452f796d" id="r_a6e21902d93c6afa0bd066c02452f796d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6e21902d93c6afa0bd066c02452f796d">sizeCurve</a></td></tr>
+<tr class="memdesc:a6e21902d93c6afa0bd066c02452f796d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional size scale curve over lifetime; overrides sizeStart/sizeEnd.  <br /></td></tr>
+<tr class="separator:a6e21902d93c6afa0bd066c02452f796d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a589a4c7e18777c0d35d9ae0fb7c32ca4" id="r_a589a4c7e18777c0d35d9ae0fb7c32ca4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a589a4c7e18777c0d35d9ae0fb7c32ca4">rotationCurve</a></td></tr>
+<tr class="memdesc:a589a4c7e18777c0d35d9ae0fb7c32ca4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional extra rotation (degrees) over lifetime; added on top of spin.  <br /></td></tr>
+<tr class="separator:a589a4c7e18777c0d35d9ae0fb7c32ca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f51ca327778d67da8e007658bfb3b8" id="r_a81f51ca327778d67da8e007658bfb3b8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a81f51ca327778d67da8e007658bfb3b8">areaType</a> = &quot;none&quot;</td></tr>
+<tr class="memdesc:a81f51ca327778d67da8e007658bfb3b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">"none" | "ellipse" | "rect" (≤15).  <br /></td></tr>
+<tr class="separator:a81f51ca327778d67da8e007658bfb3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ca8f7f0a45778badc61a5a1cd84f19" id="r_aa2ca8f7f0a45778badc61a5a1cd84f19"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#aa2ca8f7f0a45778badc61a5a1cd84f19">areaX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa2ca8f7f0a45778badc61a5a1cd84f19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae21ed7e5c20226eac58ae3060e8d5c5a" id="r_ae21ed7e5c20226eac58ae3060e8d5c5a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ae21ed7e5c20226eac58ae3060e8d5c5a">areaY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae21ed7e5c20226eac58ae3060e8d5c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adccc3ee23ebe20a9138a36ae31291a07" id="r_adccc3ee23ebe20a9138a36ae31291a07"><td class="memItemLeft" align="right" valign="top">Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#adccc3ee23ebe20a9138a36ae31291a07">colorStart</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:adccc3ee23ebe20a9138a36ae31291a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16ee568b270cb5bf449e277cbef4e553" id="r_a16ee568b270cb5bf449e277cbef4e553"><td class="memItemLeft" align="right" valign="top">Color&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a16ee568b270cb5bf449e277cbef4e553">colorEnd</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a16ee568b270cb5bf449e277cbef4e553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c9b8ab97df72c3058f7c37391bbf9e0" id="r_a6c9b8ab97df72c3058f7c37391bbf9e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6c9b8ab97df72c3058f7c37391bbf9e0">entity</a> = nullptr</td></tr>
+<tr class="separator:a6c9b8ab97df72c3058f7c37391bbf9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00076">76</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a7729c572bcd9710d4e68d4365614bec1" name="a7729c572bcd9710d4e68d4365614bec1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7729c572bcd9710d4e68d4365614bec1">&#9670;&#160;</a></span>accelXMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::accelXMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c8691bd0fac356421c94f961f8e4d07" name="a8c8691bd0fac356421c94f961f8e4d07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c8691bd0fac356421c94f961f8e4d07">&#9670;&#160;</a></span>accelXMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::accelXMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01fe90d1ccb765cd10f8f48cffdd2358" name="a01fe90d1ccb765cd10f8f48cffdd2358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01fe90d1ccb765cd10f8f48cffdd2358">&#9670;&#160;</a></span>accelYMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::accelYMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a458e9448b481eda4598140f16296ea97" name="a458e9448b481eda4598140f16296ea97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a458e9448b481eda4598140f16296ea97">&#9670;&#160;</a></span>accelYMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::accelYMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81f51ca327778d67da8e007658bfb3b8" name="a81f51ca327778d67da8e007658bfb3b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f51ca327778d67da8e007658bfb3b8">&#9670;&#160;</a></span>areaType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEmitter::Config::areaType = &quot;none&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"none" | "ellipse" | "rect" (≤15). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa2ca8f7f0a45778badc61a5a1cd84f19" name="aa2ca8f7f0a45778badc61a5a1cd84f19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2ca8f7f0a45778badc61a5a1cd84f19">&#9670;&#160;</a></span>areaX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::areaX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae21ed7e5c20226eac58ae3060e8d5c5a" name="ae21ed7e5c20226eac58ae3060e8d5c5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae21ed7e5c20226eac58ae3060e8d5c5a">&#9670;&#160;</a></span>areaY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::areaY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb966f5f7f61301d28ae73e21a1012df" name="acb966f5f7f61301d28ae73e21a1012df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb966f5f7f61301d28ae73e21a1012df">&#9670;&#160;</a></span>boundsMaxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::boundsMaxX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="abfc476937782732a73e3cb97918cd992" name="abfc476937782732a73e3cb97918cd992"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfc476937782732a73e3cb97918cd992">&#9670;&#160;</a></span>boundsMaxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::boundsMaxY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a7124390b795c045f1b2afeb3375fecad" name="a7124390b795c045f1b2afeb3375fecad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7124390b795c045f1b2afeb3375fecad">&#9670;&#160;</a></span>boundsMinX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::boundsMinX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="acd862c10f045cafb6ef631b7ba677a4a" name="acd862c10f045cafb6ef631b7ba677a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd862c10f045cafb6ef631b7ba677a4a">&#9670;&#160;</a></span>boundsMinY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::boundsMinY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a6064e212cff308d693f5fb6de2b9945d" name="a6064e212cff308d693f5fb6de2b9945d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6064e212cff308d693f5fb6de2b9945d">&#9670;&#160;</a></span>bursts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1Burst.html">Burst</a>&gt; eve::particles::ParticleEmitter::Config::bursts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a5795167893c0001f7e2f4d6591a5ce19" name="a5795167893c0001f7e2f4d6591a5ce19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5795167893c0001f7e2f4d6591a5ce19">&#9670;&#160;</a></span>collisionBoundsEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEmitter::Config::collisionBoundsEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="ac8173d4315f4952e1b253ef6866a7964" name="ac8173d4315f4952e1b253ef6866a7964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8173d4315f4952e1b253ef6866a7964">&#9670;&#160;</a></span>collisionLifetimeLoss</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::collisionLifetimeLoss = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="af81db211c06d3c93ef7e2ff1fadc6f22" name="af81db211c06d3c93ef7e2ff1fadc6f22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81db211c06d3c93ef7e2ff1fadc6f22">&#9670;&#160;</a></span>collisionMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEmitter::Config::collisionMode = &quot;none&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"none" | "kill" | "bounce" | "stop" on collision. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a9ac803c07415b232e581c1d01da8b94d" name="a9ac803c07415b232e581c1d01da8b94d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ac803c07415b232e581c1d01da8b94d">&#9670;&#160;</a></span>collisionRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::collisionRadius = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="acf09f53b31abc3c38328c5a10a5c003b" name="acf09f53b31abc3c38328c5a10a5c003b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf09f53b31abc3c38328c5a10a5c003b">&#9670;&#160;</a></span>collisionRestitution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::collisionRestitution = 0.6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a16ee568b270cb5bf449e277cbef4e553" name="a16ee568b270cb5bf449e277cbef4e553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16ee568b270cb5bf449e277cbef4e553">&#9670;&#160;</a></span>colorEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Color eve::particles::ParticleEmitter::Config::colorEnd {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00192">192</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a818f514dc6be57285f153d25ed171f86" name="a818f514dc6be57285f153d25ed171f86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a818f514dc6be57285f153d25ed171f86">&#9670;&#160;</a></span>colorGradient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleGradient.html">ParticleGradient</a> eve::particles::ParticleEmitter::Config::colorGradient</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional multi-stop gradient; overrides colorStart/colorEnd when non-empty. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adccc3ee23ebe20a9138a36ae31291a07" name="adccc3ee23ebe20a9138a36ae31291a07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adccc3ee23ebe20a9138a36ae31291a07">&#9670;&#160;</a></span>colorStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Color eve::particles::ParticleEmitter::Config::colorStart {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00191">191</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7195ea9837ccaf6736ec73f7a0662ba" name="ac7195ea9837ccaf6736ec73f7a0662ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7195ea9837ccaf6736ec73f7a0662ba">&#9670;&#160;</a></span>damping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::damping = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-second velocity damping fraction in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a131e97be3df0deead0bceece17595d72" name="a131e97be3df0deead0bceece17595d72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a131e97be3df0deead0bceece17595d72">&#9670;&#160;</a></span>direction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::direction = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a7bf89daac9db67adfc01e3f1440014" name="a7a7bf89daac9db67adfc01e3f1440014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a7bf89daac9db67adfc01e3f1440014">&#9670;&#160;</a></span>emissionRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::emissionRate = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a3bc5273a7cfda9e6bd9379b5e58bf512" name="a3bc5273a7cfda9e6bd9379b5e58bf512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bc5273a7cfda9e6bd9379b5e58bf512">&#9670;&#160;</a></span>emitterLife</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::emitterLife = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a6c9b8ab97df72c3058f7c37391bbf9e0" name="a6c9b8ab97df72c3058f7c37391bbf9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c9b8ab97df72c3058f7c37391bbf9e0">&#9670;&#160;</a></span>entity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a>* eve::particles::ParticleEmitter::Config::entity = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">eve::particles::spawnParticle()</a>.</p>
+
+</div>
+</div>
+<a id="a8e7cbfffe47b56f8f5fca69fced01062" name="a8e7cbfffe47b56f8f5fca69fced01062"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e7cbfffe47b56f8f5fca69fced01062">&#9670;&#160;</a></span>forceFields</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1ForceField.html">ForceField</a>&gt; eve::particles::ParticleEmitter::Config::forceFields</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a>.</p>
+
+</div>
+</div>
+<a id="a45e7003647682706f39f1d73e8b28d4c" name="a45e7003647682706f39f1d73e8b28d4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45e7003647682706f39f1d73e8b28d4c">&#9670;&#160;</a></span>frameRandomStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::frameRandomStart = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>0..1 fraction: randomize the starting frame up to this fraction of the sheet. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00180">180</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a636a4e79c524daf34e535d13090f425a" name="a636a4e79c524daf34e535d13090f425a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a636a4e79c524daf34e535d13090f425a">&#9670;&#160;</a></span>frameRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::frameRate = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a36a13aeccbd3bfc67463b85352b40536" name="a36a13aeccbd3bfc67463b85352b40536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36a13aeccbd3bfc67463b85352b40536">&#9670;&#160;</a></span>gpuSimulation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEmitter::Config::gpuSimulation = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opt-in GPU-accelerated simulation (falls back to CPU when unavailable). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aead3434ddd6f85ea456331a312b3bd6e" name="aead3434ddd6f85ea456331a312b3bd6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aead3434ddd6f85ea456331a312b3bd6e">&#9670;&#160;</a></span>gravityX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::gravityX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gravity applied every step (world units/s²). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a61825bc647714c32cfbf570eba29723f" name="a61825bc647714c32cfbf570eba29723f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61825bc647714c32cfbf570eba29723f">&#9670;&#160;</a></span>gravityY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::gravityY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a1193e9e04918b0d423dbd259f40346e5" name="a1193e9e04918b0d423dbd259f40346e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1193e9e04918b0d423dbd259f40346e5">&#9670;&#160;</a></span>hframes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::ParticleEmitter::Config::hframes = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flipbook grid. 1x1 = static full texture. frameRate = frames/sec (0 = static). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00176">176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9ed0bcf95ba4021f6562fb439152370" name="ab9ed0bcf95ba4021f6562fb439152370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9ed0bcf95ba4021f6562fb439152370">&#9670;&#160;</a></span>inheritVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::inheritVelocity = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fraction [0,1] of the emitter's current velocity added to new particles. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a3a9fc17b3b23ae432785a2ea54a0cee1" name="a3a9fc17b3b23ae432785a2ea54a0cee1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a9fc17b3b23ae432785a2ea54a0cee1">&#9670;&#160;</a></span>lifeMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::lifeMax = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac5373b829329bfd3c0c80562b7f1e4b" name="aac5373b829329bfd3c0c80562b7f1e4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac5373b829329bfd3c0c80562b7f1e4b">&#9670;&#160;</a></span>lifeMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::lifeMin = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9eb2b0a1e29882f6f576508e57500b7e" name="a9eb2b0a1e29882f6f576508e57500b7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eb2b0a1e29882f6f576508e57500b7e">&#9670;&#160;</a></span>lights</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1LightCfg.html">eve::particles::ParticleEmitter::Config::LightCfg</a> eve::particles::ParticleEmitter::Config::lights</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a006efc124bfd1040ba921e4ddc457dfc" name="a006efc124bfd1040ba921e4ddc457dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a006efc124bfd1040ba921e4ddc457dfc">&#9670;&#160;</a></span>limitVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::limitVelocity = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Max speed; 0 = unlimited. Applied after forces each step. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a1c9c3adccc14c56b85ab81cf20b30862" name="a1c9c3adccc14c56b85ab81cf20b30862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c9c3adccc14c56b85ab81cf20b30862">&#9670;&#160;</a></span>maxDeltaTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::maxDeltaTime = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cap per-step delta time (0 = unlimited). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a2a1a527f4f860c098159d7ab1c2f9dae" name="a2a1a527f4f860c098159d7ab1c2f9dae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a1a527f4f860c098159d7ab1c2f9dae">&#9670;&#160;</a></span>noiseFrequency</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::noiseFrequency = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a630f64d9bc4a0a8755b915562f21b0d0" name="a630f64d9bc4a0a8755b915562f21b0d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a630f64d9bc4a0a8755b915562f21b0d0">&#9670;&#160;</a></span>noiseSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::noiseSpeed = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a2597b364ff0709619f286116fbeb0a87" name="a2597b364ff0709619f286116fbeb0a87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2597b364ff0709619f286116fbeb0a87">&#9670;&#160;</a></span>noiseStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::noiseStrength = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Turbulence: random per-particle acceleration scaled by strength. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a77f0ae2dc3f070a511a715787a5ff867" name="a77f0ae2dc3f070a511a715787a5ff867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77f0ae2dc3f070a511a715787a5ff867">&#9670;&#160;</a></span>overflowMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEmitter::Config::overflowMode = &quot;drop&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Buffer-full strategy: "drop" (default) | "pause" | "warn". </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="aeda8a1db903a1216db46d4186e2cb8e9" name="aeda8a1db903a1216db46d4186e2cb8e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeda8a1db903a1216db46d4186e2cb8e9">&#9670;&#160;</a></span>particleH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::particleH = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a4c6c1a06167cf2da5738b0ae4abdd863" name="a4c6c1a06167cf2da5738b0ae4abdd863"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c6c1a06167cf2da5738b0ae4abdd863">&#9670;&#160;</a></span>particleW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::particleW = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a05835a0c27f3baec165657850a17e4e5" name="a05835a0c27f3baec165657850a17e4e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05835a0c27f3baec165657850a17e4e5">&#9670;&#160;</a></span>prewarmSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::prewarmSeconds = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prewarm seconds simulated in <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab38271c268d7333ebe1381e40cecab00">start()</a> so the effect is pre-filled. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00142">142</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3b81857f07dcb6ed45a78d8f9594877" name="af3b81857f07dcb6ed45a78d8f9594877"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3b81857f07dcb6ed45a78d8f9594877">&#9670;&#160;</a></span>radialMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::radialMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adfefeedd58be1ebe761ac498b1e7303a" name="adfefeedd58be1ebe761ac498b1e7303a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfefeedd58be1ebe761ac498b1e7303a">&#9670;&#160;</a></span>radialMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::radialMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff73e54f37ea2492f0146a14bf6f8811" name="aff73e54f37ea2492f0146a14bf6f8811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff73e54f37ea2492f0146a14bf6f8811">&#9670;&#160;</a></span>renderMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEmitter::Config::renderMode = &quot;billboard&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"billboard" (default) | "stretched" (elongate along velocity). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a589a4c7e18777c0d35d9ae0fb7c32ca4" name="a589a4c7e18777c0d35d9ae0fb7c32ca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a589a4c7e18777c0d35d9ae0fb7c32ca4">&#9670;&#160;</a></span>rotationCurve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a> eve::particles::ParticleEmitter::Config::rotationCurve</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional extra rotation (degrees) over lifetime; added on top of spin. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cdbfd0c8a0c014264371d21b3c1471a" name="a4cdbfd0c8a0c014264371d21b3c1471a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cdbfd0c8a0c014264371d21b3c1471a">&#9670;&#160;</a></span>simSpace</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEmitter::Config::simSpace = &quot;world&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"world" (default) or "local" (particles track the emitter). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a6e21902d93c6afa0bd066c02452f796d" name="a6e21902d93c6afa0bd066c02452f796d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e21902d93c6afa0bd066c02452f796d">&#9670;&#160;</a></span>sizeCurve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a> eve::particles::ParticleEmitter::Config::sizeCurve</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional size scale curve over lifetime; overrides sizeStart/sizeEnd. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96c6d4c1478ea05b1400d936a9e8b3f2" name="a96c6d4c1478ea05b1400d936a9e8b3f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96c6d4c1478ea05b1400d936a9e8b3f2">&#9670;&#160;</a></span>sizeEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::sizeEnd = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a037240aa746c1f7cb9a027390d2290e9" name="a037240aa746c1f7cb9a027390d2290e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a037240aa746c1f7cb9a027390d2290e9">&#9670;&#160;</a></span>sizeStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::sizeStart = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a41e94aab9ab1eb7463642c1752b9c646" name="a41e94aab9ab1eb7463642c1752b9c646"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41e94aab9ab1eb7463642c1752b9c646">&#9670;&#160;</a></span>sizeVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::sizeVariation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8027f725140a08b2a5301cbaa2f8790" name="ad8027f725140a08b2a5301cbaa2f8790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8027f725140a08b2a5301cbaa2f8790">&#9670;&#160;</a></span>speedMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::speedMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa32220f6a14ea9ffa91a2b57d8c817ae" name="aa32220f6a14ea9ffa91a2b57d8c817ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa32220f6a14ea9ffa91a2b57d8c817ae">&#9670;&#160;</a></span>speedMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::speedMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1f164b96d92b562fe44a1029ab6213b" name="ab1f164b96d92b562fe44a1029ab6213b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f164b96d92b562fe44a1029ab6213b">&#9670;&#160;</a></span>spinMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::spinMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0c7c07a746a29c4685996321354b417" name="aa0c7c07a746a29c4685996321354b417"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c7c07a746a29c4685996321354b417">&#9670;&#160;</a></span>spinMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::spinMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ef59a0effe5c7096e0ad58829e01e02" name="a6ef59a0effe5c7096e0ad58829e01e02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ef59a0effe5c7096e0ad58829e01e02">&#9670;&#160;</a></span>spread</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::spread = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89cefb4bf404859222c6fa12d8d15622" name="a89cefb4bf404859222c6fa12d8d15622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89cefb4bf404859222c6fa12d8d15622">&#9670;&#160;</a></span>startRotMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::startRotMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75633d1f0329fb8e0ba967db3c373058" name="a75633d1f0329fb8e0ba967db3c373058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75633d1f0329fb8e0ba967db3c373058">&#9670;&#160;</a></span>startRotMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::startRotMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initial rotation in degrees (random between min/max; radians at sim time). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a358b728bab3f835ea7680add7030f814" name="a358b728bab3f835ea7680add7030f814"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a358b728bab3f835ea7680add7030f814">&#9670;&#160;</a></span>stretchFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::stretchFactor = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ace56942d85fe221102f0ea15542e2496" name="ace56942d85fe221102f0ea15542e2496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace56942d85fe221102f0ea15542e2496">&#9670;&#160;</a></span>subEmitters</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config_1_1SubEmitter.html">SubEmitter</a>&gt; eve::particles::ParticleEmitter::Config::subEmitters</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0efdf283433c6adf8367e63d19665523" name="a0efdf283433c6adf8367e63d19665523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0efdf283433c6adf8367e63d19665523">&#9670;&#160;</a></span>tangentialMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::tangentialMax = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd96d9ddaa9838545d56d95e983f0c00" name="acd96d9ddaa9838545d56d95e983f0c00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd96d9ddaa9838545d56d95e983f0c00">&#9670;&#160;</a></span>tangentialMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::tangentialMin = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7f2e26161b4a6fc0e7c40cf6407539a5" name="a7f2e26161b4a6fc0e7c40cf6407539a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f2e26161b4a6fc0e7c40cf6407539a5">&#9670;&#160;</a></span>velocityCurve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleCurve.html">ParticleCurve</a> eve::particles::ParticleEmitter::Config::velocityCurve</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional speed multiplier curve over lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a>.</p>
+
+</div>
+</div>
+<a id="a8827ce1b41c486b9ad42b905c54fa6d8" name="a8827ce1b41c486b9ad42b905c54fa6d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8827ce1b41c486b9ad42b905c54fa6d8">&#9670;&#160;</a></span>vframes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::ParticleEmitter::Config::vframes = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00177">177</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeea7fc935448cd125b3633ec5ef1d89a" name="aeea7fc935448cd125b3633ec5ef1d89a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea7fc935448cd125b3633ec5ef1d89a">&#9670;&#160;</a></span>worldCollision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEmitter::Config::worldCollision = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query the engine-level world collision resolver each step. </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="ab44405b601f5ce83e243fdfa0070be5e" name="ab44405b601f5ce83e243fdfa0070be5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab44405b601f5ce83e243fdfa0070be5e">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">eve::particles::spawnParticle()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00324">eve::particles::spawnParticleAt()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a8b618df4ba36f44ca930e1a810db3e66" name="a8b618df4ba36f44ca930e1a810db3e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b618df4ba36f44ca930e1a810db3e66">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Config::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00336">eve::particles::spawnParticle()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/particles/<a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

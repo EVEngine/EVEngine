@@ -1,0 +1,449 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/SceneInspect.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneInspect.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneInspect_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="SceneInspect_8hpp.html">devtools/SceneInspect.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="RenderCapture_8h.html">common/RenderCapture.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SceneQuery_8h.html">common/SceneQuery.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Poco/JSON/Array.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;Poco/JSON/Object.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;Poco/JSON/Parser.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;Poco/JSON/Stringifier.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;filesystem&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>std::string writeTextFile(<span class="keyword">const</span> std::string&amp; path, <span class="keyword">const</span> std::string&amp; text) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> std::filesystem::path <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>(path);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::error_code             ec;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::filesystem::create_directories(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.parent_path(), ec);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    std::ofstream out(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, std::ios::binary);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!out.good()) <span class="keywordflow">return</span> <span class="stringliteral">&quot;cannot open output file: &quot;</span> + path;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    out.write(<a class="code hl_function" href="namespaceeve_1_1ui.html#a331f182920f18ad1b8b4ea57e2bd33ea">text</a>.data(), <span class="keyword">static_cast&lt;</span>std::streamsize<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeve_1_1ui.html#a331f182920f18ad1b8b4ea57e2bd33ea">text</a>.size()));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    out.flush();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> out.good() ? std::string() : <span class="stringliteral">&quot;failed writing: &quot;</span> + path;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#aab3c8cc8864f5ce15841733ae42ddf1e">   37</a></span><a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#aab3c8cc8864f5ce15841733ae42ddf1e">SceneInspect::instance</a>() {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1dev_1_1SceneInspect.html">SceneInspect</a> inst;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> inst;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><a class="code hl_class" href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a>* SceneInspect::captureIface() { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">eve::cap::query&lt;eve::IRenderCapture&gt;</a>(); }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><a class="code hl_class" href="classeve_1_1ISceneQuery.html">eve::ISceneQuery</a>* SceneInspect::scene() { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">eve::cap::query&lt;eve::ISceneQuery&gt;</a>(); }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keywordtype">bool</span> SceneInspect::ensureCamera() {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span>* cap = captureIface();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> cap &amp;&amp; cap-&gt;ensureCamera();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#aedf92744886275efb9a00966b23fab1a">   51</a></span>std::vector&lt;InspectView&gt; <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#aedf92744886275efb9a00966b23fab1a">SceneInspect::generateViews</a>(<span class="keyword">const</span> glm::vec3&amp; center, <span class="keywordtype">float</span> fov) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::vector&lt;InspectView&gt; out;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>              base = fov &gt; 0.f ? fov : 60.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">name</a>    = <span class="stringliteral">&quot;along_road&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.kind    = <span class="stringliteral">&quot;沿路平视&quot;</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye     = center + glm::vec3(0.f, 1.8f, -6.f);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target  = center + glm::vec3(0.f, 1.2f, 0.f);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.fovYDeg = base;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        out.push_back(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">name</a>    = <span class="stringliteral">&quot;bird_eye&quot;</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.kind    = <span class="stringliteral">&quot;高空俯拍&quot;</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye     = center + glm::vec3(0.f, 30.f, 0.f);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target  = center;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.fovYDeg = std::min(base * 1.2f, 100.f);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        out.push_back(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">name</a>    = <span class="stringliteral">&quot;corner_close&quot;</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.kind    = <span class="stringliteral">&quot;拐角特写&quot;</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye     = center + glm::vec3(2.4f, 1.2f, 2.4f);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target  = center + glm::vec3(0.f, 0.8f, 0.f);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.fovYDeg = std::max(base * 0.8f, 25.f);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        out.push_back(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">name</a>    = <span class="stringliteral">&quot;vista&quot;</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.kind    = <span class="stringliteral">&quot;远景视角&quot;</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye     = center + glm::vec3(0.f, 14.f, -22.f);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target  = center;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.fovYDeg = std::max(base * 0.85f, 35.f);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        out.push_back(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#ab6c5188d49a479765d1864ff8c3d44d3">   94</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#ab6c5188d49a479765d1864ff8c3d44d3">SceneInspect::setCameraPose</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>, <span class="keyword">const</span> glm::vec3&amp; rotYawPitch,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                 <span class="keywordtype">float</span> fov) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">auto</span>* cap = captureIface();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (!cap) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">return</span> cap-&gt;setCameraPoseYawPitch(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>.x, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>.y, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>.z, rotYawPitch.x, rotYawPitch.y, fov);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a9ff7c9862885ea984262e91bf15c4893">  101</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a9ff7c9862885ea984262e91bf15c4893">SceneInspect::setCameraView</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1InspectView.html">InspectView</a>&amp; <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">auto</span>* cap = captureIface();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!cap) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">return</span> cap-&gt;setCameraPose(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye.x, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye.y, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.eye.z, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target.x, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target.y, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.target.z, <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.fovYDeg);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a85dc3d97ec1bd12f01ad1dba3176add3">  107</a></span>std::string <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a85dc3d97ec1bd12f01ad1dba3176add3">SceneInspect::defaultCacheDir</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::string root = std::filesystem::current_path().string();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">for</span> (<span class="keywordtype">char</span>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : root)</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> == <span class="charliteral">&#39;\\&#39;</span>) <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <span class="charliteral">&#39;/&#39;</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!root.empty() &amp;&amp; root.back() == <span class="charliteral">&#39;/&#39;</span>) root.pop_back();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> root + <span class="stringliteral">&quot;/eve_inspect_cache&quot;</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="}">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a9e3c6b5eb4430aedfc7e726cc58c3d6b">  115</a></span><a class="code hl_struct" href="structeve_1_1dev_1_1InspectCapture.html">InspectCapture</a> <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a9e3c6b5eb4430aedfc7e726cc58c3d6b">SceneInspect::capture</a>(<span class="keyword">const</span> std::string&amp; outDir, <span class="keyword">const</span> std::string&amp; tag,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                                     <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; buffers) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1InspectCapture.html">InspectCapture</a> result;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">auto</span>*          cap = captureIface();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">if</span> (!cap) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">error</a> = <span class="stringliteral">&quot;Graphics module not available&quot;</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">bool</span> wantColor = buffers.empty();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">bool</span> wantDepth = <span class="keyword">false</span>, wantNormal = <span class="keyword">false</span>, wantId = <span class="keyword">false</span>, wantShadow = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> : buffers) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == <span class="stringliteral">&quot;color&quot;</span>) wantColor = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == <span class="stringliteral">&quot;depth&quot;</span>) wantDepth = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == <span class="stringliteral">&quot;normal&quot;</span>) wantNormal = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == <span class="stringliteral">&quot;id&quot;</span>) wantId = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == <span class="stringliteral">&quot;shadow&quot;</span>) wantShadow = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">if</span> (!wantColor) wantColor = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    ensureCamera();</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    cap-&gt;setReadbackEnabled(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    std::string <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> = outDir;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.empty()) {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> = <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a68e891d3045bf5b0fa9577e349f2a741">cacheDir</a>();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.empty()) <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> = <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a85dc3d97ec1bd12f01ad1dba3176add3">defaultCacheDir</a>();</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">for</span> (<span class="keywordtype">char</span>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> == <span class="charliteral">&#39;\\&#39;</span>) <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <span class="charliteral">&#39;/&#39;</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keyword">const</span> std::string safeTag       = tag.empty() ? <span class="stringliteral">&quot;frame&quot;</span> : tag;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">const</span> std::string pngPath       = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> + <span class="stringliteral">&quot;/&quot;</span> + safeTag + <span class="stringliteral">&quot;.png&quot;</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keyword">const</span> std::string jsonPath      = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> + <span class="stringliteral">&quot;/&quot;</span> + safeTag + <span class="stringliteral">&quot;.json&quot;</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">const</span> std::string depthPngPath  = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> + <span class="stringliteral">&quot;/&quot;</span> + safeTag + <span class="stringliteral">&quot;_depth.png&quot;</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keyword">const</span> std::string normalPngPath = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> + <span class="stringliteral">&quot;/&quot;</span> + safeTag + <span class="stringliteral">&quot;_normal.png&quot;</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keyword">const</span> std::string idPngPath     = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> + <span class="stringliteral">&quot;/&quot;</span> + safeTag + <span class="stringliteral">&quot;_id.png&quot;</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">const</span> std::string idJsonPath    = <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> + <span class="stringliteral">&quot;/&quot;</span> + safeTag + <span class="stringliteral">&quot;_id.json&quot;</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    std::string err;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> (!cap-&gt;savePng(pngPath, &amp;result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a47a0d8bc0eeba8cb9294652c8a368046">width</a>, &amp;result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#afbfdc9e7a2c76447e535104578c304f6">height</a>, &amp;err)) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">error</a> = err;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">const</span> std::string geoJson = <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a9b7c7def0906a8e386ad02a2380c9558">visibleEntitiesJson</a>();</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> std::string werr = writeTextFile(jsonPath, geoJson); !werr.empty()) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">error</a> = werr;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a193a7059a00f87c8fc3e1fa03fd6aac3">entityCount</a> = 0;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>     = geoJson.find(<span class="stringliteral">&quot;\&quot;count\&quot;:&quot;</span>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a> != std::string::npos) result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a193a7059a00f87c8fc3e1fa03fd6aac3">entityCount</a> = std::atoi(geoJson.c_str() + <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a> + 9);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">if</span> (wantDepth) {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        std::string berr;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">if</span> (cap-&gt;gbufferPng(<span class="stringliteral">&quot;depth&quot;</span>, depthPngPath, &amp;berr))</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a6c98c83d1868ea2ba52c462292f6c52e">depthPngPath</a> = depthPngPath;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">unsupported</a>.push_back(<span class="stringliteral">&quot;depth&quot;</span>);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">if</span> (wantNormal) {</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        std::string berr;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">if</span> (cap-&gt;gbufferPng(<span class="stringliteral">&quot;normal&quot;</span>, normalPngPath, &amp;berr))</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a79e473969f20fbcb5b7ae02fff5813e4">normalPngPath</a> = normalPngPath;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">unsupported</a>.push_back(<span class="stringliteral">&quot;normal&quot;</span>);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">if</span> (wantShadow) result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">unsupported</a>.push_back(<span class="stringliteral">&quot;shadow&quot;</span>);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">if</span> (wantId) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordtype">int</span>               iw = 0, ih = 0;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordtype">bool</span>              <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keyword">const</span> std::string idJson = cap-&gt;entityIdMaskJson(&amp;iw, &amp;ih, &amp;<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">unsupported</a>.push_back(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            std::string perr;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <span class="keywordflow">if</span> (cap-&gt;entityIdMaskPng(idPngPath, &amp;perr)) result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a165074ed352ec0a0d5c6cd1d0dbfb40b">idPngPath</a> = idPngPath;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            <span class="keywordflow">if</span> (writeTextFile(idJsonPath, idJson).empty()) result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#a2c0d01b7d0f9390589768225931a9fc9">idJsonPath</a> = idJsonPath;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#ace60d531d2c40859c1602159dd561952">ok</a>       = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#aef5bba1e01b1dffe175a345ca96c8c83">pngPath</a>  = pngPath;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    result.<a class="code hl_variable" href="structeve_1_1dev_1_1InspectCapture.html#afdf478417b7a8b063b53cc0bd9c16c29">jsonPath</a> = jsonPath;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    lastPngPath_    = pngPath;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    lastJsonPath_   = jsonPath;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>}</div>
+</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="foldopen" id="foldopen00206" data-start="{" data-end="}">
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a1af7aacc0006a92715c68ac24d8890f9">  206</a></span>std::string <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a1af7aacc0006a92715c68ac24d8890f9">SceneInspect::currentPoseJson</a>() {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">auto</span>* cap = captureIface();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keywordflow">return</span> cap ? cap-&gt;cameraPoseJson() : <span class="stringliteral">&quot;{\&quot;error\&quot;:\&quot;Graphics module not available\&quot;}&quot;</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>}</div>
+</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="foldopen" id="foldopen00211" data-start="{" data-end="}">
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1SceneInspect.html#a9b7c7def0906a8e386ad02a2380c9558">  211</a></span>std::string <a class="code hl_function" href="classeve_1_1dev_1_1SceneInspect.html#a9b7c7def0906a8e386ad02a2380c9558">SceneInspect::visibleEntitiesJson</a>(<span class="keyword">const</span> glm::vec3* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>, <span class="keyword">const</span> glm::vec3* target,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                                              <span class="keywordtype">float</span> fov) {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keyword">auto</span>* cap = captureIface();</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">if</span> (!cap) <span class="keywordflow">return</span> <span class="stringliteral">&quot;{\&quot;error\&quot;:\&quot;Graphics module not available\&quot;}&quot;</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a> &amp;&amp; target)</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">return</span> cap-&gt;visibleEntitiesJsonAt(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>-&gt;x, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>-&gt;y, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>-&gt;z, target-&gt;x, target-&gt;y, target-&gt;z, fov, &amp;<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">return</span> cap-&gt;visibleEntitiesJson(fov, &amp;<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>}</div>
+</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aRenderCapture_8h_html"><div class="ttname"><a href="RenderCapture_8h.html">RenderCapture.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a420d8d8ece65c00c51be184d896cdca9"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a></div><div class="ttdeci">glm::vec3 eye</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00484">RenderSystem3D.cpp:484</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00444">RenderSystem3D.cpp:444</a></div></div>
+<div class="ttc" id="aSceneInspect_8hpp_html"><div class="ttname"><a href="SceneInspect_8hpp.html">SceneInspect.hpp</a></div></div>
+<div class="ttc" id="aSceneQuery_8h_html"><div class="ttname"><a href="SceneQuery_8h.html">SceneQuery.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00121">TreeMesh.cpp:121</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a5438a597ee291f523ae04a9fe355924f"><div class="ttname"><a href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a></div><div class="ttdeci">size_t pos</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00058">UdpLink.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1IRenderCapture_html"><div class="ttname"><a href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a></div><div class="ttdoc">Frame capture + camera + visible-entity inspection (graphics).</div><div class="ttdef"><b>Definition</b> <a href="RenderCapture_8h_source.html#l00022">RenderCapture.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1ISceneQuery_html"><div class="ttname"><a href="classeve_1_1ISceneQuery.html">eve::ISceneQuery</a></div><div class="ttdoc">Scene graph query/mutation surface (provided by the scene module).</div><div class="ttdef"><b>Definition</b> <a href="SceneQuery_8h_source.html#l00030">SceneQuery.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html">eve::dev::SceneInspect</a></div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00053">SceneInspect.hpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a1af7aacc0006a92715c68ac24d8890f9"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a1af7aacc0006a92715c68ac24d8890f9">eve::dev::SceneInspect::currentPoseJson</a></div><div class="ttdeci">std::string currentPoseJson()</div><div class="ttdoc">当前激活相机位姿 JSON（eye/target/fov/viewport）。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00206">SceneInspect.cpp:206</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a68e891d3045bf5b0fa9577e349f2a741"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a68e891d3045bf5b0fa9577e349f2a741">eve::dev::SceneInspect::cacheDir</a></div><div class="ttdeci">const std::string &amp; cacheDir() const</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00105">SceneInspect.hpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a85dc3d97ec1bd12f01ad1dba3176add3"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a85dc3d97ec1bd12f01ad1dba3176add3">eve::dev::SceneInspect::defaultCacheDir</a></div><div class="ttdeci">std::string defaultCacheDir() const</div><div class="ttdoc">默认缓存目录：&lt;gameRoot&gt;/eve_inspect_cache。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00107">SceneInspect.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a9b7c7def0906a8e386ad02a2380c9558"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a9b7c7def0906a8e386ad02a2380c9558">eve::dev::SceneInspect::visibleEntitiesJson</a></div><div class="ttdeci">std::string visibleEntitiesJson(const glm::vec3 *eye=nullptr, const glm::vec3 *target=nullptr, float fov=0.f)</div><div class="ttdoc">生成当前视锥内可见实体的结构化 JSON： { camera, viewport, entities:[ { id, asset, world_aabb:{min,...</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00211">SceneInspect.cpp:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a9e3c6b5eb4430aedfc7e726cc58c3d6b"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a9e3c6b5eb4430aedfc7e726cc58c3d6b">eve::dev::SceneInspect::capture</a></div><div class="ttdeci">InspectCapture capture(const std::string &amp;outDir={}, const std::string &amp;tag=&quot;frame&quot;, const std::vector&lt; std::string &gt; &amp;buffers={})</div><div class="ttdoc">锁定当前相机 → 捕获渲染帧 PNG → 立刻导出配套可见实体几何 JSON。 两者共享同一相机位姿，杜绝图片与实体数据错位。 outDir 为空时使用缓存目录。返回文件路径与图像尺寸。 buffers...</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00115">SceneInspect.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_a9ff7c9862885ea984262e91bf15c4893"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#a9ff7c9862885ea984262e91bf15c4893">eve::dev::SceneInspect::setCameraView</a></div><div class="ttdeci">bool setCameraView(const InspectView &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00101">SceneInspect.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_aab3c8cc8864f5ce15841733ae42ddf1e"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#aab3c8cc8864f5ce15841733ae42ddf1e">eve::dev::SceneInspect::instance</a></div><div class="ttdeci">static SceneInspect &amp; instance()</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00037">SceneInspect.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_ab6c5188d49a479765d1864ff8c3d44d3"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#ab6c5188d49a479765d1864ff8c3d44d3">eve::dev::SceneInspect::setCameraPose</a></div><div class="ttdeci">bool setCameraPose(const glm::vec3 &amp;eye, const glm::vec3 &amp;rotYawPitch, float fov=0.f)</div><div class="ttdoc">以 pos + 欧拉角 rot 设置相机位姿。 rot = [yawDeg, pitchDeg]（与 firstperson 约定一致，Y-up）。 fov &lt;= 0 时保持当前 FOV。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00094">SceneInspect.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1SceneInspect_html_aedf92744886275efb9a00966b23fab1a"><div class="ttname"><a href="classeve_1_1dev_1_1SceneInspect.html#aedf92744886275efb9a00966b23fab1a">eve::dev::SceneInspect::generateViews</a></div><div class="ttdeci">static std::vector&lt; InspectView &gt; generateViews(const glm::vec3 &amp;center, float fov=60.f)</div><div class="ttdoc">围绕 center 自动生成一组标准化巡检机位：</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8cpp_source.html#l00051">SceneInspect.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cap_html_a4f15b92e22dafc466a09ee40fdca7050"><div class="ttname"><a href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">eve::cap::query</a></div><div class="ttdeci">I * query()</div><div class="ttdef"><b>Definition</b> <a href="Capability_8h_source.html#l00077">Capability.h:77</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AiPanel_8cpp_source.html#l00008">AiPanel.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a331f182920f18ad1b8b4ea57e2bd33ea"><div class="ttname"><a href="namespaceeve_1_1ui.html#a331f182920f18ad1b8b4ea57e2bd33ea">eve::ui::text</a></div><div class="ttdeci">WidgetDesc text(std::string content, std::string id)</div><div class="ttdoc">Static text label.</div><div class="ttdef"><b>Definition</b> <a href="Widget_8cpp_source.html#l00235">Widget.cpp:235</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html">eve::dev::InspectCapture</a></div><div class="ttdoc">一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00037">SceneInspect.hpp:37</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a060a5d7dbe87e101cab331b8a5b55624"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a060a5d7dbe87e101cab331b8a5b55624">eve::dev::InspectCapture::error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00039">SceneInspect.hpp:39</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a165074ed352ec0a0d5c6cd1d0dbfb40b"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a165074ed352ec0a0d5c6cd1d0dbfb40b">eve::dev::InspectCapture::idPngPath</a></div><div class="ttdeci">std::string idPngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00048">SceneInspect.hpp:48</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a193a7059a00f87c8fc3e1fa03fd6aac3"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a193a7059a00f87c8fc3e1fa03fd6aac3">eve::dev::InspectCapture::entityCount</a></div><div class="ttdeci">int entityCount</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00044">SceneInspect.hpp:44</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a2c0d01b7d0f9390589768225931a9fc9"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a2c0d01b7d0f9390589768225931a9fc9">eve::dev::InspectCapture::idJsonPath</a></div><div class="ttdeci">std::string idJsonPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00049">SceneInspect.hpp:49</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a47a0d8bc0eeba8cb9294652c8a368046"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a47a0d8bc0eeba8cb9294652c8a368046">eve::dev::InspectCapture::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00042">SceneInspect.hpp:42</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a6c98c83d1868ea2ba52c462292f6c52e"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a6c98c83d1868ea2ba52c462292f6c52e">eve::dev::InspectCapture::depthPngPath</a></div><div class="ttdeci">std::string depthPngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00046">SceneInspect.hpp:46</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a79e473969f20fbcb5b7ae02fff5813e4"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a79e473969f20fbcb5b7ae02fff5813e4">eve::dev::InspectCapture::normalPngPath</a></div><div class="ttdeci">std::string normalPngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00047">SceneInspect.hpp:47</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_a7aef02baa403497de59f56d5161a1f26"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#a7aef02baa403497de59f56d5161a1f26">eve::dev::InspectCapture::unsupported</a></div><div class="ttdeci">std::vector&lt; std::string &gt; unsupported</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00050">SceneInspect.hpp:50</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_ace60d531d2c40859c1602159dd561952"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#ace60d531d2c40859c1602159dd561952">eve::dev::InspectCapture::ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00038">SceneInspect.hpp:38</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_aef5bba1e01b1dffe175a345ca96c8c83"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#aef5bba1e01b1dffe175a345ca96c8c83">eve::dev::InspectCapture::pngPath</a></div><div class="ttdeci">std::string pngPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00040">SceneInspect.hpp:40</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_afbfdc9e7a2c76447e535104578c304f6"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#afbfdc9e7a2c76447e535104578c304f6">eve::dev::InspectCapture::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00043">SceneInspect.hpp:43</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectCapture_html_afdf478417b7a8b063b53cc0bd9c16c29"><div class="ttname"><a href="structeve_1_1dev_1_1InspectCapture.html#afdf478417b7a8b063b53cc0bd9c16c29">eve::dev::InspectCapture::jsonPath</a></div><div class="ttdeci">std::string jsonPath</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00041">SceneInspect.hpp:41</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectView_html"><div class="ttname"><a href="structeve_1_1dev_1_1InspectView.html">eve::dev::InspectView</a></div><div class="ttdoc">场景巡检工具集（MCP 底层数据底座）。</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00028">SceneInspect.hpp:28</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1InspectView_html_ac700fb8491f6116c2cb4708f4f444ec0"><div class="ttname"><a href="structeve_1_1dev_1_1InspectView.html#ac700fb8491f6116c2cb4708f4f444ec0">eve::dev::InspectView::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="SceneInspect_8hpp_source.html#l00029">SceneInspect.hpp:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

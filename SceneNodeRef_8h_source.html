@@ -1,0 +1,281 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/scene/SceneNodeRef.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_ec6971fd057795f74726f2442b6b5463.html">scene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneNodeRef.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneNodeRef_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1scene.html">eve::scene</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Scene;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneNodeRef.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1scene_1_1SceneNodeRef.html">SceneNodeRef</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneNodeRef.html#aacee011350f135a3f4974f504a8c2e51">   18</a></span>    <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#aacee011350f135a3f4974f504a8c2e51">SceneNodeRef</a>() = <span class="keywordflow">default</span>;</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneNodeRef.html#a0f370812dc18af0507126ee09d33d449">   19</a></span>    <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a0f370812dc18af0507126ee09d33d449">SceneNodeRef</a>(std::string hostName, std::string nodeId)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        : hostName_(std::move(hostName)), nodeId_(std::move(nodeId)) {}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneNodeRef.html#a17c839314ab38d5859c59c95a70f9765">   22</a></span>    std::string <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a17c839314ab38d5859c59c95a70f9765">getHostName</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> hostName_; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1SceneNodeRef.html#a4ccfc8f493b828ae806947a5a4a188b0">   23</a></span>    std::string <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a4ccfc8f493b828ae806947a5a4a188b0">getNodeId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nodeId_; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a16b30b4c0e6fac55f33e64ed1dc6d2df">isValid</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_class" href="classeve_1_1scene_1_1Scene.html">Scene</a> *<a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a75e5fb92488bbea98cf8969749a56819">getScene</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="comment">// --- local transform ---</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#aad96edba0498e67d3edfe83fb1834c42">setPosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a0367ecc0f7672733910c9abae30cb038">getPositionX</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ab222748732e0cf45380b0277d91670a9">getPositionY</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#af9b732ea980cdf889f48319f5d62f812">getPositionZ</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a8ca85556407d1b632f1c43f3c2a02ab0">getPosition</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#aeb2d0e600dc9879564e1d7834f820f21">setRotation</a>(<span class="keywordtype">float</span> yaw, <span class="keywordtype">float</span> pitch, <span class="keywordtype">float</span> roll);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a254cbdb88924707d3d7a41580aab9cca">getRotationYaw</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a42610475185e592d4e48ac4cf586248e">getRotationPitch</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ab96ca6527fa5744fe1d1b882702471e3">getRotationRoll</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#aaa131db5e8ae8594f9da96a63cc2a87c">getRotation</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ab22cf540ce1da71067b3317f3ed94aac">setScale</a>(<span class="keywordtype">float</span> sx, <span class="keywordtype">float</span> sy, <span class="keywordtype">float</span> sz);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a63e8a949f08093cc0663a15ae5a2cd2e">getScaleX</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ad276fb383ed330fbbd09765549f8826d">getScaleY</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a5c1b2ef7275370f3b4a111994d0798c5">getScaleZ</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#abf7b51d305f30440d4f25ad308d83dd8">getScale</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a48ac26d6b65485be12408a8b272ca123">setVisible</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#acc7415331a28c9f8f8a6e420065fec78">isVisible</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// --- world (requires transforms updated via updateTransforms / scene.update) ---</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a1a967e376ac3f2d44c3e963a27f6def6">getWorldPositionX</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a2e5c986e95e2dd4c2309e47f221d0e5f">getWorldPositionY</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a0666840a311b13ecd3d7785093f229e4">getWorldPositionZ</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a9e7574ecfee80128814e120e9464a88d">getWorldPosition</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#afda44aee86c3b41ee8cb92a8abcfd3ac">getWorldMatrix</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a097d8df0a3cad21f13701777c4b79c6f">getForward</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#af0ea484e7a11d5bace7ea9c0ba2c3862">getRight</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::vector&lt;float&gt; <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ae4c54840d6d8ea7b1bd6ade10f44737b">getUp</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="comment">// --- structure ---</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::string <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ae1088247a4dec8a5bfc3615ca42c8997">getParentId</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#ac575ce83c872e50b130d1e684bcc6f5a">getChildCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a8410f9de39c8a79072d6d81808df3849">getChildIdAt</a>(<span class="keywordtype">int</span> ordinal) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::string <a class="code hl_function" href="classeve_1_1scene_1_1SceneNodeRef.html#a7fed78767e829636a99f661c7c3171c8">getPath</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::string hostName_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::string nodeId_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}  <span class="comment">// namespace eve::scene</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html">eve::scene::SceneNodeRef</a></div><div class="ttdoc">Script handle to a scene node (hostName + nodeId). Deliberately holds strings rather than arena point...</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8h_source.html#l00016">SceneNodeRef.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a0367ecc0f7672733910c9abae30cb038"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a0367ecc0f7672733910c9abae30cb038">eve::scene::SceneNodeRef::getPositionX</a></div><div class="ttdeci">float getPositionX() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00050">SceneNodeRef.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a0666840a311b13ecd3d7785093f229e4"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a0666840a311b13ecd3d7785093f229e4">eve::scene::SceneNodeRef::getWorldPositionZ</a></div><div class="ttdeci">float getWorldPositionZ() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00159">SceneNodeRef.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a097d8df0a3cad21f13701777c4b79c6f"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a097d8df0a3cad21f13701777c4b79c6f">eve::scene::SceneNodeRef::getForward</a></div><div class="ttdeci">std::vector&lt; float &gt; getForward() const</div><div class="ttdoc">Normalized local axes in world space (forward = +Z).</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00180">SceneNodeRef.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a0f370812dc18af0507126ee09d33d449"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a0f370812dc18af0507126ee09d33d449">eve::scene::SceneNodeRef::SceneNodeRef</a></div><div class="ttdeci">SceneNodeRef(std::string hostName, std::string nodeId)</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8h_source.html#l00019">SceneNodeRef.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a16b30b4c0e6fac55f33e64ed1dc6d2df"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a16b30b4c0e6fac55f33e64ed1dc6d2df">eve::scene::SceneNodeRef::isValid</a></div><div class="ttdeci">bool isValid() const</div><div class="ttdoc">True when host + node currently resolve.</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00035">SceneNodeRef.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a17c839314ab38d5859c59c95a70f9765"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a17c839314ab38d5859c59c95a70f9765">eve::scene::SceneNodeRef::getHostName</a></div><div class="ttdeci">std::string getHostName() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8h_source.html#l00022">SceneNodeRef.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a1a967e376ac3f2d44c3e963a27f6def6"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a1a967e376ac3f2d44c3e963a27f6def6">eve::scene::SceneNodeRef::getWorldPositionX</a></div><div class="ttdeci">float getWorldPositionX() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00149">SceneNodeRef.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a254cbdb88924707d3d7a41580aab9cca"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a254cbdb88924707d3d7a41580aab9cca">eve::scene::SceneNodeRef::getRotationYaw</a></div><div class="ttdeci">float getRotationYaw() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00082">SceneNodeRef.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a2e5c986e95e2dd4c2309e47f221d0e5f"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a2e5c986e95e2dd4c2309e47f221d0e5f">eve::scene::SceneNodeRef::getWorldPositionY</a></div><div class="ttdeci">float getWorldPositionY() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00154">SceneNodeRef.cpp:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a42610475185e592d4e48ac4cf586248e"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a42610475185e592d4e48ac4cf586248e">eve::scene::SceneNodeRef::getRotationPitch</a></div><div class="ttdeci">float getRotationPitch() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00087">SceneNodeRef.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a48ac26d6b65485be12408a8b272ca123"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a48ac26d6b65485be12408a8b272ca123">eve::scene::SceneNodeRef::setVisible</a></div><div class="ttdeci">bool setVisible(bool v)</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00135">SceneNodeRef.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a4ccfc8f493b828ae806947a5a4a188b0"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a4ccfc8f493b828ae806947a5a4a188b0">eve::scene::SceneNodeRef::getNodeId</a></div><div class="ttdeci">std::string getNodeId() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8h_source.html#l00023">SceneNodeRef.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a5c1b2ef7275370f3b4a111994d0798c5"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a5c1b2ef7275370f3b4a111994d0798c5">eve::scene::SceneNodeRef::getScaleZ</a></div><div class="ttdeci">float getScaleZ() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00124">SceneNodeRef.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a63e8a949f08093cc0663a15ae5a2cd2e"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a63e8a949f08093cc0663a15ae5a2cd2e">eve::scene::SceneNodeRef::getScaleX</a></div><div class="ttdeci">float getScaleX() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00114">SceneNodeRef.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a75e5fb92488bbea98cf8969749a56819"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a75e5fb92488bbea98cf8969749a56819">eve::scene::SceneNodeRef::getScene</a></div><div class="ttdeci">Scene * getScene() const</div><div class="ttdoc">The eve.Scene module instance (for entity binding forwarding).</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00037">SceneNodeRef.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a7fed78767e829636a99f661c7c3171c8"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a7fed78767e829636a99f661c7c3171c8">eve::scene::SceneNodeRef::getPath</a></div><div class="ttdeci">std::string getPath() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00220">SceneNodeRef.cpp:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a8410f9de39c8a79072d6d81808df3849"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a8410f9de39c8a79072d6d81808df3849">eve::scene::SceneNodeRef::getChildIdAt</a></div><div class="ttdeci">std::string getChildIdAt(int ordinal) const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00213">SceneNodeRef.cpp:213</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a8ca85556407d1b632f1c43f3c2a02ab0"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a8ca85556407d1b632f1c43f3c2a02ab0">eve::scene::SceneNodeRef::getPosition</a></div><div class="ttdeci">std::vector&lt; float &gt; getPosition() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00065">SceneNodeRef.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_a9e7574ecfee80128814e120e9464a88d"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#a9e7574ecfee80128814e120e9464a88d">eve::scene::SceneNodeRef::getWorldPosition</a></div><div class="ttdeci">std::vector&lt; float &gt; getWorldPosition() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00164">SceneNodeRef.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_aaa131db5e8ae8594f9da96a63cc2a87c"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#aaa131db5e8ae8594f9da96a63cc2a87c">eve::scene::SceneNodeRef::getRotation</a></div><div class="ttdeci">std::vector&lt; float &gt; getRotation() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00097">SceneNodeRef.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_aacee011350f135a3f4974f504a8c2e51"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#aacee011350f135a3f4974f504a8c2e51">eve::scene::SceneNodeRef::SceneNodeRef</a></div><div class="ttdeci">SceneNodeRef()=default</div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_aad96edba0498e67d3edfe83fb1834c42"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#aad96edba0498e67d3edfe83fb1834c42">eve::scene::SceneNodeRef::setPosition</a></div><div class="ttdeci">bool setPosition(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00039">SceneNodeRef.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ab222748732e0cf45380b0277d91670a9"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ab222748732e0cf45380b0277d91670a9">eve::scene::SceneNodeRef::getPositionY</a></div><div class="ttdeci">float getPositionY() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00055">SceneNodeRef.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ab22cf540ce1da71067b3317f3ed94aac"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ab22cf540ce1da71067b3317f3ed94aac">eve::scene::SceneNodeRef::setScale</a></div><div class="ttdeci">bool setScale(float sx, float sy, float sz)</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00103">SceneNodeRef.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ab96ca6527fa5744fe1d1b882702471e3"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ab96ca6527fa5744fe1d1b882702471e3">eve::scene::SceneNodeRef::getRotationRoll</a></div><div class="ttdeci">float getRotationRoll() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00092">SceneNodeRef.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_abf7b51d305f30440d4f25ad308d83dd8"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#abf7b51d305f30440d4f25ad308d83dd8">eve::scene::SceneNodeRef::getScale</a></div><div class="ttdeci">std::vector&lt; float &gt; getScale() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00129">SceneNodeRef.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ac575ce83c872e50b130d1e684bcc6f5a"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ac575ce83c872e50b130d1e684bcc6f5a">eve::scene::SceneNodeRef::getChildCount</a></div><div class="ttdeci">int getChildCount() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00208">SceneNodeRef.cpp:208</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_acc7415331a28c9f8f8a6e420065fec78"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#acc7415331a28c9f8f8a6e420065fec78">eve::scene::SceneNodeRef::isVisible</a></div><div class="ttdeci">bool isVisible() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00144">SceneNodeRef.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ad276fb383ed330fbbd09765549f8826d"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ad276fb383ed330fbbd09765549f8826d">eve::scene::SceneNodeRef::getScaleY</a></div><div class="ttdeci">float getScaleY() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00119">SceneNodeRef.cpp:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ae1088247a4dec8a5bfc3615ca42c8997"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ae1088247a4dec8a5bfc3615ca42c8997">eve::scene::SceneNodeRef::getParentId</a></div><div class="ttdeci">std::string getParentId() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00201">SceneNodeRef.cpp:201</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_ae4c54840d6d8ea7b1bd6ade10f44737b"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#ae4c54840d6d8ea7b1bd6ade10f44737b">eve::scene::SceneNodeRef::getUp</a></div><div class="ttdeci">std::vector&lt; float &gt; getUp() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00194">SceneNodeRef.cpp:194</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_aeb2d0e600dc9879564e1d7834f820f21"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#aeb2d0e600dc9879564e1d7834f820f21">eve::scene::SceneNodeRef::setRotation</a></div><div class="ttdeci">bool setRotation(float yaw, float pitch, float roll)</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00071">SceneNodeRef.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_af0ea484e7a11d5bace7ea9c0ba2c3862"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#af0ea484e7a11d5bace7ea9c0ba2c3862">eve::scene::SceneNodeRef::getRight</a></div><div class="ttdeci">std::vector&lt; float &gt; getRight() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00187">SceneNodeRef.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_af9b732ea980cdf889f48319f5d62f812"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#af9b732ea980cdf889f48319f5d62f812">eve::scene::SceneNodeRef::getPositionZ</a></div><div class="ttdeci">float getPositionZ() const</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00060">SceneNodeRef.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneNodeRef_html_afda44aee86c3b41ee8cb92a8abcfd3ac"><div class="ttname"><a href="classeve_1_1scene_1_1SceneNodeRef.html#afda44aee86c3b41ee8cb92a8abcfd3ac">eve::scene::SceneNodeRef::getWorldMatrix</a></div><div class="ttdeci">std::vector&lt; float &gt; getWorldMatrix() const</div><div class="ttdoc">Column-major 4x4 world matrix, 16 floats.</div><div class="ttdef"><b>Definition</b> <a href="SceneNodeRef_8cpp_source.html#l00170">SceneNodeRef.cpp:170</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></div><div class="ttdoc">Declarative scene module (eve.Scene).</div><div class="ttdef"><b>Definition</b> <a href="Scene_8h_source.html#l00048">Scene.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html"><div class="ttname"><a href="namespaceeve_1_1scene.html">eve::scene</a></div><div class="ttdef"><b>Definition</b> <a href="ScenePicking_8cpp_source.html#l00022">ScenePicking.cpp:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

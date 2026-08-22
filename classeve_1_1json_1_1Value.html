@@ -1,0 +1,1001 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::json::Value类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1json.html">json</a></li><li class="navelem"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1json_1_1Value-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::json::Value类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Json_8h_source.html">Json.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6ae696bd658d5875f313ec9dc7fc78b9" id="r_a6ae696bd658d5875f313ec9dc7fc78b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a6ae696bd658d5875f313ec9dc7fc78b9">Value</a> ()=default</td></tr>
+<tr class="separator:a6ae696bd658d5875f313ec9dc7fc78b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eeb18453074f46b0d741e6b30cbabd2" id="r_a3eeb18453074f46b0d741e6b30cbabd2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a3eeb18453074f46b0d741e6b30cbabd2">operator bool</a> () const</td></tr>
+<tr class="separator:a3eeb18453074f46b0d741e6b30cbabd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c11d045ef14ff2900af7a947cf69e15" id="r_a6c11d045ef14ff2900af7a947cf69e15"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a6c11d045ef14ff2900af7a947cf69e15">isNull</a> () const</td></tr>
+<tr class="separator:a6c11d045ef14ff2900af7a947cf69e15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4e5b5d08b8825b51b27d70d27a31b9c" id="r_ac4e5b5d08b8825b51b27d70d27a31b9c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#ac4e5b5d08b8825b51b27d70d27a31b9c">isBool</a> () const</td></tr>
+<tr class="separator:ac4e5b5d08b8825b51b27d70d27a31b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8675fa24590abc0b8f56a123e833dc" id="r_a6c8675fa24590abc0b8f56a123e833dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a6c8675fa24590abc0b8f56a123e833dc">isNumber</a> () const</td></tr>
+<tr class="separator:a6c8675fa24590abc0b8f56a123e833dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50421ef4724b705aa82d7bd12f63b0a8" id="r_a50421ef4724b705aa82d7bd12f63b0a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">isString</a> () const</td></tr>
+<tr class="separator:a50421ef4724b705aa82d7bd12f63b0a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a160d4ef6354c4ce50d082713f765f7b1" id="r_a160d4ef6354c4ce50d082713f765f7b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a160d4ef6354c4ce50d082713f765f7b1">isObject</a> () const</td></tr>
+<tr class="separator:a160d4ef6354c4ce50d082713f765f7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a440dafbb98ed79ac46e027ea76db21c6" id="r_a440dafbb98ed79ac46e027ea76db21c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a440dafbb98ed79ac46e027ea76db21c6">isArray</a> () const</td></tr>
+<tr class="separator:a440dafbb98ed79ac46e027ea76db21c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18babe27bfc2f30059fa9ebe6c3bf695" id="r_a18babe27bfc2f30059fa9ebe6c3bf695"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a18babe27bfc2f30059fa9ebe6c3bf695">has</a> (const char *key) const</td></tr>
+<tr class="separator:a18babe27bfc2f30059fa9ebe6c3bf695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d38b8a1288cf4abea73258ee8cb4088" id="r_a2d38b8a1288cf4abea73258ee8cb4088"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a2d38b8a1288cf4abea73258ee8cb4088">get</a> (const char *key) const</td></tr>
+<tr class="separator:a2d38b8a1288cf4abea73258ee8cb4088"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad65f4097065cebbc372989b69ddfb9a4" id="r_ad65f4097065cebbc372989b69ddfb9a4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#ad65f4097065cebbc372989b69ddfb9a4">keys</a> () const</td></tr>
+<tr class="separator:ad65f4097065cebbc372989b69ddfb9a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e94f9421a7d2fb33eae471930ea1022" id="r_a3e94f9421a7d2fb33eae471930ea1022"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a3e94f9421a7d2fb33eae471930ea1022">size</a> () const</td></tr>
+<tr class="separator:a3e94f9421a7d2fb33eae471930ea1022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5e8df6017be47cd59ce02413eb91d0" id="r_a4a5e8df6017be47cd59ce02413eb91d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a4a5e8df6017be47cd59ce02413eb91d0">at</a> (size_t index) const</td></tr>
+<tr class="separator:a4a5e8df6017be47cd59ce02413eb91d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e0ecb2871f83290f6d2a7f5a8fe3846" id="r_a8e0ecb2871f83290f6d2a7f5a8fe3846"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a8e0ecb2871f83290f6d2a7f5a8fe3846">asBool</a> (bool fallback=false) const</td></tr>
+<tr class="separator:a8e0ecb2871f83290f6d2a7f5a8fe3846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d5c997c3f8fb7ce952d19af431a5cbe" id="r_a7d5c997c3f8fb7ce952d19af431a5cbe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a7d5c997c3f8fb7ce952d19af431a5cbe">asInt</a> (int fallback=0) const</td></tr>
+<tr class="separator:a7d5c997c3f8fb7ce952d19af431a5cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c1226fd6109235f496e0027b41ba136" id="r_a0c1226fd6109235f496e0027b41ba136"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a0c1226fd6109235f496e0027b41ba136">asFloat</a> (float fallback=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="separator:a0c1226fd6109235f496e0027b41ba136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20364170242b383eaa33659f91d46746" id="r_a20364170242b383eaa33659f91d46746"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a20364170242b383eaa33659f91d46746">asDouble</a> (double fallback=0.0) const</td></tr>
+<tr class="separator:a20364170242b383eaa33659f91d46746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ca732c1eb360785f569912ed68e921" id="r_ae2ca732c1eb360785f569912ed68e921"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#ae2ca732c1eb360785f569912ed68e921">asString</a> (const std::string &amp;fallback={}) const</td></tr>
+<tr class="separator:ae2ca732c1eb360785f569912ed68e921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f84eae28887e02183fe820bca8e62ef" id="r_a0f84eae28887e02183fe820bca8e62ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a0f84eae28887e02183fe820bca8e62ef">getBool</a> (const char *key, bool fallback=false) const</td></tr>
+<tr class="separator:a0f84eae28887e02183fe820bca8e62ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e9f42246889a6721880f9ad970e1a2f" id="r_a5e9f42246889a6721880f9ad970e1a2f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a5e9f42246889a6721880f9ad970e1a2f">getInt</a> (const char *key, int fallback=0) const</td></tr>
+<tr class="separator:a5e9f42246889a6721880f9ad970e1a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5615dfe6de47a949eefcd3ad087f06de" id="r_a5615dfe6de47a949eefcd3ad087f06de"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a5615dfe6de47a949eefcd3ad087f06de">getFloat</a> (const char *key, float fallback=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="separator:a5615dfe6de47a949eefcd3ad087f06de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa10f9b5504fb26da58e62384cf87ce7e" id="r_aa10f9b5504fb26da58e62384cf87ce7e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#aa10f9b5504fb26da58e62384cf87ce7e">getDouble</a> (const char *key, double fallback=0.0) const</td></tr>
+<tr class="separator:aa10f9b5504fb26da58e62384cf87ce7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73d4f09c29c05bdf0ecceda86e243c6d" id="r_a73d4f09c29c05bdf0ecceda86e243c6d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a73d4f09c29c05bdf0ecceda86e243c6d">getString</a> (const char *key, const std::string &amp;fallback={}) const</td></tr>
+<tr class="separator:a73d4f09c29c05bdf0ecceda86e243c6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a805f6901d8cc7917a8252e613a3b5d5d" id="r_a805f6901d8cc7917a8252e613a3b5d5d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a805f6901d8cc7917a8252e613a3b5d5d">getStringArray</a> (const char *key) const</td></tr>
+<tr class="separator:a805f6901d8cc7917a8252e613a3b5d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af93ede4f1178e8959b931c0e427d1de0" id="r_af93ede4f1178e8959b931c0e427d1de0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#af93ede4f1178e8959b931c0e427d1de0">getIntArray</a> (const char *key) const</td></tr>
+<tr class="separator:af93ede4f1178e8959b931c0e427d1de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc4f617bf9f908c5ed45473efbf999b6" id="r_afc4f617bf9f908c5ed45473efbf999b6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#afc4f617bf9f908c5ed45473efbf999b6">getFloatArray</a> (const char *key) const</td></tr>
+<tr class="separator:afc4f617bf9f908c5ed45473efbf999b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d95d3f859dcca23858176dc8b868a7" id="r_af3d95d3f859dcca23858176dc8b868a7"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#af3d95d3f859dcca23858176dc8b868a7">getStringMap</a> (const char *key) const</td></tr>
+<tr class="separator:af3d95d3f859dcca23858176dc8b868a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5b8e8f0fdf376aa043b4bf089800967" id="r_ae5b8e8f0fdf376aa043b4bf089800967"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#ae5b8e8f0fdf376aa043b4bf089800967">getIntMap</a> (const char *key) const</td></tr>
+<tr class="separator:ae5b8e8f0fdf376aa043b4bf089800967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb4326e8495d1cbc358d3ac06eed457c" id="r_afb4326e8495d1cbc358d3ac06eed457c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#afb4326e8495d1cbc358d3ac06eed457c">toStringArray</a> () const</td></tr>
+<tr class="separator:afb4326e8495d1cbc358d3ac06eed457c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a883538034e58fc5c0de7d4e4cab3cef7" id="r_a883538034e58fc5c0de7d4e4cab3cef7"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1json_1_1Value.html#a883538034e58fc5c0de7d4e4cab3cef7">Document</a></td></tr>
+<tr class="separator:a883538034e58fc5c0de7d4e4cab3cef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Handle to one node of a parsed <a class="el" href="classeve_1_1json_1_1Document.html">Document</a>. Cheap to copy, but only valid while the owning <a class="el" href="classeve_1_1json_1_1Document.html">Document</a> is alive. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8h_source.html">Json.h</a> 第 <a class="el" href="Json_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6ae696bd658d5875f313ec9dc7fc78b9" name="a6ae696bd658d5875f313ec9dc7fc78b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ae696bd658d5875f313ec9dc7fc78b9">&#9670;&#160;</a></span>Value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::json::Value::Value </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00323">at()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8e0ecb2871f83290f6d2a7f5a8fe3846" name="a8e0ecb2871f83290f6d2a7f5a8fe3846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e0ecb2871f83290f6d2a7f5a8fe3846">&#9670;&#160;</a></span>asBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::asBool </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>false</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034">eve::json::Node::Bool</a>, <a class="el" href="Json_8cpp_source.html#l00019">eve::json::Node::boolVal</a>, <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f">eve::json::Node::Number</a>, <a class="el" href="Json_8cpp_source.html#l00020">eve::json::Node::numberVal</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98">eve::json::Node::String</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00024">eve::json::Node::stringVal</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00384">getBool()</a>.</p>
+
+</div>
+</div>
+<a id="a20364170242b383eaa33659f91d46746" name="a20364170242b383eaa33659f91d46746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20364170242b383eaa33659f91d46746">&#9670;&#160;</a></span>asDouble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::json::Value::asDouble </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0.0</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034">eve::json::Node::Bool</a>, <a class="el" href="Json_8cpp_source.html#l00019">eve::json::Node::boolVal</a>, <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f">eve::json::Node::Number</a>, <a class="el" href="Json_8cpp_source.html#l00020">eve::json::Node::numberVal</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98">eve::json::Node::String</a>, <a class="el" href="Json_8cpp_source.html#l00024">eve::json::Node::stringVal</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00370">asFloat()</a>, <a class="el" href="Json_8cpp_source.html#l00355">asInt()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00387">getDouble()</a>.</p>
+
+</div>
+</div>
+<a id="a0c1226fd6109235f496e0027b41ba136" name="a0c1226fd6109235f496e0027b41ba136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c1226fd6109235f496e0027b41ba136">&#9670;&#160;</a></span>asFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::json::Value::asFloat </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00342">asDouble()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00386">getFloat()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00415">getFloatArray()</a>.</p>
+
+</div>
+</div>
+<a id="a7d5c997c3f8fb7ce952d19af431a5cbe" name="a7d5c997c3f8fb7ce952d19af431a5cbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d5c997c3f8fb7ce952d19af431a5cbe">&#9670;&#160;</a></span>asInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::json::Value::asInt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00342">asDouble()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Json_8cpp_source.html#l00022">eve::json::Node::integral</a>, <a class="el" href="Json_8cpp_source.html#l00023">eve::json::Node::intVal</a>, <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f">eve::json::Node::Number</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00385">getInt()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00406">getIntArray()</a>.</p>
+
+</div>
+</div>
+<a id="ae2ca732c1eb360785f569912ed68e921" name="ae2ca732c1eb360785f569912ed68e921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2ca732c1eb360785f569912ed68e921">&#9670;&#160;</a></span>asString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::json::Value::asString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034">eve::json::Node::Bool</a>, <a class="el" href="Json_8cpp_source.html#l00019">eve::json::Node::boolVal</a>, <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f">eve::json::Node::Number</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98">eve::json::Node::String</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00024">eve::json::Node::stringVal</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00390">getString()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00394">toStringArray()</a>.</p>
+
+</div>
+</div>
+<a id="a4a5e8df6017be47cd59ce02413eb91d0" name="a4a5e8df6017be47cd59ce02413eb91d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a5e8df6017be47cd59ce02413eb91d0">&#9670;&#160;</a></span>at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::json::Value::at </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Element at index, or a null <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> when out of range / not an array. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17">eve::json::Node::Array</a>, <a class="el" href="Json_8cpp_source.html#l00026">eve::json::Node::elements</a>, <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a> , 以及 <a class="el" href="classeve_1_1json_1_1Value.html#a6ae696bd658d5875f313ec9dc7fc78b9">Value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00415">getFloatArray()</a>, <a class="el" href="Json_8cpp_source.html#l00406">getIntArray()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00126">eve::building::BuildingRegistry::loadFromJson()</a>, <a class="el" href="Item_8cpp_source.html#l00084">eve::inventory::ItemRegistry::loadFromJson()</a>, <a class="el" href="Effect_8cpp_source.html#l00071">eve::rpg::EffectRegistry::loadFromJson()</a> , 以及 <a class="el" href="Skill_8cpp_source.html#l00067">eve::rpg::SkillRegistry::loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a2d38b8a1288cf4abea73258ee8cb4088" name="a2d38b8a1288cf4abea73258ee8cb4088"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d38b8a1288cf4abea73258ee8cb4088">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::json::Value::get </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Member value, or a null <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> when absent / not an object. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Json_8cpp_source.html#l00025">eve::json::Node::members</a>, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b">eve::json::Node::Object</a> , 以及 <a class="el" href="classeve_1_1json_1_1Value.html#a6ae696bd658d5875f313ec9dc7fc78b9">Value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00384">getBool()</a>, <a class="el" href="Json_8cpp_source.html#l00387">getDouble()</a>, <a class="el" href="Json_8cpp_source.html#l00386">getFloat()</a>, <a class="el" href="Json_8cpp_source.html#l00415">getFloatArray()</a>, <a class="el" href="Json_8cpp_source.html#l00385">getInt()</a>, <a class="el" href="Json_8cpp_source.html#l00406">getIntArray()</a>, <a class="el" href="Json_8cpp_source.html#l00432">getIntMap()</a>, <a class="el" href="Json_8cpp_source.html#l00390">getString()</a>, <a class="el" href="Json_8cpp_source.html#l00402">getStringArray()</a>, <a class="el" href="Json_8cpp_source.html#l00424">getStringMap()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00299">has()</a>.</p>
+
+</div>
+</div>
+<a id="a0f84eae28887e02183fe820bca8e62ef" name="a0f84eae28887e02183fe820bca8e62ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f84eae28887e02183fe820bca8e62ef">&#9670;&#160;</a></span>getBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::getBool </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00329">asBool()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+</div>
+</div>
+<a id="aa10f9b5504fb26da58e62384cf87ce7e" name="aa10f9b5504fb26da58e62384cf87ce7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa10f9b5504fb26da58e62384cf87ce7e">&#9670;&#160;</a></span>getDouble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::json::Value::getDouble </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00342">asDouble()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+</div>
+</div>
+<a id="a5615dfe6de47a949eefcd3ad087f06de" name="a5615dfe6de47a949eefcd3ad087f06de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5615dfe6de47a949eefcd3ad087f06de">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::json::Value::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00386">386</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00370">asFloat()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+</div>
+</div>
+<a id="afc4f617bf9f908c5ed45473efbf999b6" name="afc4f617bf9f908c5ed45473efbf999b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc4f617bf9f908c5ed45473efbf999b6">&#9670;&#160;</a></span>getFloatArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; eve::json::Value::getFloatArray </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00370">asFloat()</a>, <a class="el" href="Json_8cpp_source.html#l00323">at()</a>, <a class="el" href="Json_8cpp_source.html#l00301">get()</a>, <a class="el" href="Json_8cpp_source.html#l00297">isArray()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00316">size()</a>.</p>
+
+</div>
+</div>
+<a id="a5e9f42246889a6721880f9ad970e1a2f" name="a5e9f42246889a6721880f9ad970e1a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e9f42246889a6721880f9ad970e1a2f">&#9670;&#160;</a></span>getInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::json::Value::getInt </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00355">asInt()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00432">getIntMap()</a>.</p>
+
+</div>
+</div>
+<a id="af93ede4f1178e8959b931c0e427d1de0" name="af93ede4f1178e8959b931c0e427d1de0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af93ede4f1178e8959b931c0e427d1de0">&#9670;&#160;</a></span>getIntArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; eve::json::Value::getIntArray </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00355">asInt()</a>, <a class="el" href="Json_8cpp_source.html#l00323">at()</a>, <a class="el" href="Json_8cpp_source.html#l00301">get()</a>, <a class="el" href="Json_8cpp_source.html#l00297">isArray()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00316">size()</a>.</p>
+
+</div>
+</div>
+<a id="ae5b8e8f0fdf376aa043b4bf089800967" name="ae5b8e8f0fdf376aa043b4bf089800967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b8e8f0fdf376aa043b4bf089800967">&#9670;&#160;</a></span>getIntMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::string, int &gt; eve::json::Value::getIntMap </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>, <a class="el" href="Json_8cpp_source.html#l00385">getInt()</a>, <a class="el" href="Json_8cpp_source.html#l00296">isObject()</a>, <a class="el" href="Json_8cpp_source.html#l00308">keys()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a73d4f09c29c05bdf0ecceda86e243c6d" name="a73d4f09c29c05bdf0ecceda86e243c6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73d4f09c29c05bdf0ecceda86e243c6d">&#9670;&#160;</a></span>getString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::json::Value::getString </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00374">asString()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00424">getStringMap()</a>.</p>
+
+</div>
+</div>
+<a id="a805f6901d8cc7917a8252e613a3b5d5d" name="a805f6901d8cc7917a8252e613a3b5d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a805f6901d8cc7917a8252e613a3b5d5d">&#9670;&#160;</a></span>getStringArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::json::Value::getStringArray </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00402">402</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00301">get()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00394">toStringArray()</a>.</p>
+
+</div>
+</div>
+<a id="af3d95d3f859dcca23858176dc8b868a7" name="af3d95d3f859dcca23858176dc8b868a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d95d3f859dcca23858176dc8b868a7">&#9670;&#160;</a></span>getStringMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::string, std::string &gt; eve::json::Value::getStringMap </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>, <a class="el" href="Json_8cpp_source.html#l00390">getString()</a>, <a class="el" href="Json_8cpp_source.html#l00296">isObject()</a>, <a class="el" href="Json_8cpp_source.html#l00308">keys()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a18babe27bfc2f30059fa9ebe6c3bf695" name="a18babe27bfc2f30059fa9ebe6c3bf695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18babe27bfc2f30059fa9ebe6c3bf695">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::has </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00301">get()</a>.</p>
+
+</div>
+</div>
+<a id="a440dafbb98ed79ac46e027ea76db21c6" name="a440dafbb98ed79ac46e027ea76db21c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a440dafbb98ed79ac46e027ea76db21c6">&#9670;&#160;</a></span>isArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::isArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17">eve::json::Node::Array</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00415">getFloatArray()</a>, <a class="el" href="Json_8cpp_source.html#l00406">getIntArray()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00126">eve::building::BuildingRegistry::loadFromJson()</a>, <a class="el" href="Item_8cpp_source.html#l00084">eve::inventory::ItemRegistry::loadFromJson()</a>, <a class="el" href="Effect_8cpp_source.html#l00071">eve::rpg::EffectRegistry::loadFromJson()</a> , 以及 <a class="el" href="Skill_8cpp_source.html#l00067">eve::rpg::SkillRegistry::loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="ac4e5b5d08b8825b51b27d70d27a31b9c" name="ac4e5b5d08b8825b51b27d70d27a31b9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4e5b5d08b8825b51b27d70d27a31b9c">&#9670;&#160;</a></span>isBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::isBool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034">eve::json::Node::Bool</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>.</p>
+
+</div>
+</div>
+<a id="a6c11d045ef14ff2900af7a947cf69e15" name="a6c11d045ef14ff2900af7a947cf69e15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c11d045ef14ff2900af7a947cf69e15">&#9670;&#160;</a></span>isNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::isNull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eabbb93ef26e3c101ff11cdd21cab08a94">eve::json::Node::Null</a>.</p>
+
+</div>
+</div>
+<a id="a6c8675fa24590abc0b8f56a123e833dc" name="a6c8675fa24590abc0b8f56a123e833dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c8675fa24590abc0b8f56a123e833dc">&#9670;&#160;</a></span>isNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::isNumber </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f">eve::json::Node::Number</a>.</p>
+
+</div>
+</div>
+<a id="a160d4ef6354c4ce50d082713f765f7b1" name="a160d4ef6354c4ce50d082713f765f7b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a160d4ef6354c4ce50d082713f765f7b1">&#9670;&#160;</a></span>isObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::isObject </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b">eve::json::Node::Object</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00432">getIntMap()</a>, <a class="el" href="Json_8cpp_source.html#l00424">getStringMap()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00126">eve::building::BuildingRegistry::loadFromJson()</a>, <a class="el" href="Item_8cpp_source.html#l00084">eve::inventory::ItemRegistry::loadFromJson()</a>, <a class="el" href="Effect_8cpp_source.html#l00071">eve::rpg::EffectRegistry::loadFromJson()</a> , 以及 <a class="el" href="Skill_8cpp_source.html#l00067">eve::rpg::SkillRegistry::loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a50421ef4724b705aa82d7bd12f63b0a8" name="a50421ef4724b705aa82d7bd12f63b0a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50421ef4724b705aa82d7bd12f63b0a8">&#9670;&#160;</a></span>isString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Value::isString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98">eve::json::Node::String</a>.</p>
+
+</div>
+</div>
+<a id="ad65f4097065cebbc372989b69ddfb9a4" name="ad65f4097065cebbc372989b69ddfb9a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad65f4097065cebbc372989b69ddfb9a4">&#9670;&#160;</a></span>keys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::json::Value::keys </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Member names in document order; empty when not an object. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Json_8cpp_source.html#l00025">eve::json::Node::members</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b">eve::json::Node::Object</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00432">getIntMap()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00424">getStringMap()</a>.</p>
+
+</div>
+</div>
+<a id="a3eeb18453074f46b0d741e6b30cbabd2" name="a3eeb18453074f46b0d741e6b30cbabd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3eeb18453074f46b0d741e6b30cbabd2">&#9670;&#160;</a></span>operator bool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::json::Value::operator bool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True when this handle refers to an actual node. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8h_source.html">Json.h</a> 第 <a class="el" href="Json_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e94f9421a7d2fb33eae471930ea1022" name="a3e94f9421a7d2fb33eae471930ea1022"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e94f9421a7d2fb33eae471930ea1022">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::json::Value::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Element count for arrays, member count for objects, else 0. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17">eve::json::Node::Array</a>, <a class="el" href="Json_8cpp_source.html#l00026">eve::json::Node::elements</a>, <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>, <a class="el" href="Json_8cpp_source.html#l00025">eve::json::Node::members</a> , 以及 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b">eve::json::Node::Object</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00415">getFloatArray()</a>, <a class="el" href="Json_8cpp_source.html#l00406">getIntArray()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00126">eve::building::BuildingRegistry::loadFromJson()</a>, <a class="el" href="Item_8cpp_source.html#l00084">eve::inventory::ItemRegistry::loadFromJson()</a>, <a class="el" href="Effect_8cpp_source.html#l00071">eve::rpg::EffectRegistry::loadFromJson()</a> , 以及 <a class="el" href="Skill_8cpp_source.html#l00067">eve::rpg::SkillRegistry::loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="afb4326e8495d1cbc358d3ac06eed457c" name="afb4326e8495d1cbc358d3ac06eed457c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb4326e8495d1cbc358d3ac06eed457c">&#9670;&#160;</a></span>toStringArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::json::Value::toStringArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This node read as an array of strings (for a <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> already in hand). </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17">eve::json::Node::Array</a>, <a class="el" href="Json_8cpp_source.html#l00374">asString()</a>, <a class="el" href="Json_8cpp_source.html#l00026">eve::json::Node::elements</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00018">eve::json::Node::kind</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00402">getStringArray()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a883538034e58fc5c0de7d4e4cab3cef7" name="a883538034e58fc5c0de7d4e4cab3cef7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a883538034e58fc5c0de7d4e4cab3cef7">&#9670;&#160;</a></span>Document</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1json_1_1Document.html">Document</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8h_source.html">Json.h</a> 第 <a class="el" href="Json_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Json_8h_source.html">Json.h</a></li>
+<li>src/engine/common/<a class="el" href="Json_8cpp_source.html">Json.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

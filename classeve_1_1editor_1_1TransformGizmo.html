@@ -1,0 +1,1955 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::TransformGizmo类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html">TransformGizmo</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1TransformGizmo-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::TransformGizmo类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>3D transform gizmo (Three.js TransformControls + ImGuizmo style). Owns TRS + optional local bounds; interaction via world-space rays. Host renders using getPart* descriptors — no GPU dependency.  
+ <a href="classeve_1_1editor_1_1TransformGizmo.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a470a4433f5ad5403543bd49f6dba7c32" id="r_a470a4433f5ad5403543bd49f6dba7c32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a470a4433f5ad5403543bd49f6dba7c32">TransformGizmo</a> ()</td></tr>
+<tr class="separator:a470a4433f5ad5403543bd49f6dba7c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad298d5e26d5cfb55e107fdae4f4fb3f3" id="r_ad298d5e26d5cfb55e107fdae4f4fb3f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad298d5e26d5cfb55e107fdae4f4fb3f3">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="separator:ad298d5e26d5cfb55e107fdae4f4fb3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cdc71ed4659a643de60ad306c5961cb" id="r_a5cdc71ed4659a643de60ad306c5961cb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a5cdc71ed4659a643de60ad306c5961cb">getMode</a> () const</td></tr>
+<tr class="separator:a5cdc71ed4659a643de60ad306c5961cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affe9b7f451bc976163f54224936654dc" id="r_affe9b7f451bc976163f54224936654dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#affe9b7f451bc976163f54224936654dc">setSpace</a> (const std::string &amp;space)</td></tr>
+<tr class="separator:affe9b7f451bc976163f54224936654dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb6e3374832ebe373c4de83ce9580cab" id="r_adb6e3374832ebe373c4de83ce9580cab"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#adb6e3374832ebe373c4de83ce9580cab">getSpace</a> () const</td></tr>
+<tr class="separator:adb6e3374832ebe373c4de83ce9580cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a86c1e8a8421fc515e019343e8bc36e" id="r_a7a86c1e8a8421fc515e019343e8bc36e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a7a86c1e8a8421fc515e019343e8bc36e">setSize</a> (float size)</td></tr>
+<tr class="separator:a7a86c1e8a8421fc515e019343e8bc36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44ebbe0e01159f65a37856472c44b16b" id="r_a44ebbe0e01159f65a37856472c44b16b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a44ebbe0e01159f65a37856472c44b16b">getSize</a> () const</td></tr>
+<tr class="separator:a44ebbe0e01159f65a37856472c44b16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba8e158ad91989a8fdfd7bc3622b57c8" id="r_aba8e158ad91989a8fdfd7bc3622b57c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aba8e158ad91989a8fdfd7bc3622b57c8">setPosition</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:aba8e158ad91989a8fdfd7bc3622b57c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe167f4e7226243fb3bb3f8d1a3e9878" id="r_afe167f4e7226243fb3bb3f8d1a3e9878"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#afe167f4e7226243fb3bb3f8d1a3e9878">getPositionX</a> () const</td></tr>
+<tr class="separator:afe167f4e7226243fb3bb3f8d1a3e9878"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2947fffe31eb0512d1328368e7cecb12" id="r_a2947fffe31eb0512d1328368e7cecb12"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a2947fffe31eb0512d1328368e7cecb12">getPositionY</a> () const</td></tr>
+<tr class="separator:a2947fffe31eb0512d1328368e7cecb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dfaf4267399400393908a9174bac13" id="r_aa5dfaf4267399400393908a9174bac13"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aa5dfaf4267399400393908a9174bac13">getPositionZ</a> () const</td></tr>
+<tr class="separator:aa5dfaf4267399400393908a9174bac13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad04cc1e6e4a58b10ab87a916ef5d227c" id="r_ad04cc1e6e4a58b10ab87a916ef5d227c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad04cc1e6e4a58b10ab87a916ef5d227c">setRotationEuler</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="memdesc:ad04cc1e6e4a58b10ab87a916ef5d227c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Euler radians, XYZ order.  <br /></td></tr>
+<tr class="separator:ad04cc1e6e4a58b10ab87a916ef5d227c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d08c2ba3c8ae005650a8e4de0b30036" id="r_a4d08c2ba3c8ae005650a8e4de0b30036"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4d08c2ba3c8ae005650a8e4de0b30036">getRotationX</a> () const</td></tr>
+<tr class="separator:a4d08c2ba3c8ae005650a8e4de0b30036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f01b432fea4cc9915369f6d5948caf" id="r_ad8f01b432fea4cc9915369f6d5948caf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad8f01b432fea4cc9915369f6d5948caf">getRotationY</a> () const</td></tr>
+<tr class="separator:ad8f01b432fea4cc9915369f6d5948caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a286dfa92da62b70cdcba4bdce4781526" id="r_a286dfa92da62b70cdcba4bdce4781526"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a286dfa92da62b70cdcba4bdce4781526">getRotationZ</a> () const</td></tr>
+<tr class="separator:a286dfa92da62b70cdcba4bdce4781526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add06565a3658a0888c7f7d6df7ed4d76" id="r_add06565a3658a0888c7f7d6df7ed4d76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#add06565a3658a0888c7f7d6df7ed4d76">setScale</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:add06565a3658a0888c7f7d6df7ed4d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab3737e49b5a23b4677183b5be154990" id="r_aab3737e49b5a23b4677183b5be154990"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aab3737e49b5a23b4677183b5be154990">getScaleX</a> () const</td></tr>
+<tr class="separator:aab3737e49b5a23b4677183b5be154990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab997df158a8cba26627589a089cf09b2" id="r_ab997df158a8cba26627589a089cf09b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ab997df158a8cba26627589a089cf09b2">getScaleY</a> () const</td></tr>
+<tr class="separator:ab997df158a8cba26627589a089cf09b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa077f649e2f9126b0faac27414cd6043" id="r_aa077f649e2f9126b0faac27414cd6043"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aa077f649e2f9126b0faac27414cd6043">getScaleZ</a> () const</td></tr>
+<tr class="separator:aa077f649e2f9126b0faac27414cd6043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83a29fe44c4dcdbd4f4b4169d72353ad" id="r_a83a29fe44c4dcdbd4f4b4169d72353ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a83a29fe44c4dcdbd4f4b4169d72353ad">setBounds</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="memdesc:a83a29fe44c4dcdbd4f4b4169d72353ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local AABB extents for bound mode (relative to object origin).  <br /></td></tr>
+<tr class="separator:a83a29fe44c4dcdbd4f4b4169d72353ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57e156fa08f7f58cdc04fabd39ac2bb5" id="r_a57e156fa08f7f58cdc04fabd39ac2bb5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a57e156fa08f7f58cdc04fabd39ac2bb5">getBoundsMinX</a> () const</td></tr>
+<tr class="separator:a57e156fa08f7f58cdc04fabd39ac2bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15c8154a690df7486e666d91bc88b21e" id="r_a15c8154a690df7486e666d91bc88b21e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a15c8154a690df7486e666d91bc88b21e">getBoundsMinY</a> () const</td></tr>
+<tr class="separator:a15c8154a690df7486e666d91bc88b21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34253f89ea434d095a0657c7f65e4afc" id="r_a34253f89ea434d095a0657c7f65e4afc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a34253f89ea434d095a0657c7f65e4afc">getBoundsMinZ</a> () const</td></tr>
+<tr class="separator:a34253f89ea434d095a0657c7f65e4afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8bddad7c66974daae4b479efa992b38" id="r_ad8bddad7c66974daae4b479efa992b38"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ad8bddad7c66974daae4b479efa992b38">getBoundsMaxX</a> () const</td></tr>
+<tr class="separator:ad8bddad7c66974daae4b479efa992b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afccb818a7811d8434ad4efbefa8563e0" id="r_afccb818a7811d8434ad4efbefa8563e0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#afccb818a7811d8434ad4efbefa8563e0">getBoundsMaxY</a> () const</td></tr>
+<tr class="separator:afccb818a7811d8434ad4efbefa8563e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6de09f6c6983c411a0afa353d317ae4a" id="r_a6de09f6c6983c411a0afa353d317ae4a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a6de09f6c6983c411a0afa353d317ae4a">getBoundsMaxZ</a> () const</td></tr>
+<tr class="separator:a6de09f6c6983c411a0afa353d317ae4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e565e5672514c6b0d80317168a36968" id="r_a9e565e5672514c6b0d80317168a36968"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a9e565e5672514c6b0d80317168a36968">setSnapTranslate</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:a9e565e5672514c6b0d80317168a36968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22c48e00f6c34f7085a25ed2a7658796" id="r_a22c48e00f6c34f7085a25ed2a7658796"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a22c48e00f6c34f7085a25ed2a7658796">setSnapRotate</a> (float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>)</td></tr>
+<tr class="separator:a22c48e00f6c34f7085a25ed2a7658796"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16e20da91572858da4e91732d94a8304" id="r_a16e20da91572858da4e91732d94a8304"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a16e20da91572858da4e91732d94a8304">setSnapScale</a> (float <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="separator:a16e20da91572858da4e91732d94a8304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd00c941fb07c7c4f55a77561e4dec42" id="r_acd00c941fb07c7c4f55a77561e4dec42"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#acd00c941fb07c7c4f55a77561e4dec42">getSnapTranslateX</a> () const</td></tr>
+<tr class="separator:acd00c941fb07c7c4f55a77561e4dec42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1362a5b81834b039ec374a3d4a405b62" id="r_a1362a5b81834b039ec374a3d4a405b62"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a1362a5b81834b039ec374a3d4a405b62">getSnapTranslateY</a> () const</td></tr>
+<tr class="separator:a1362a5b81834b039ec374a3d4a405b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ff5898a70b71341363d649f8ff066be" id="r_a1ff5898a70b71341363d649f8ff066be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a1ff5898a70b71341363d649f8ff066be">getSnapTranslateZ</a> () const</td></tr>
+<tr class="separator:a1ff5898a70b71341363d649f8ff066be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f50daed92bef0a8db45e288bd35eb49" id="r_a7f50daed92bef0a8db45e288bd35eb49"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a7f50daed92bef0a8db45e288bd35eb49">getSnapRotate</a> () const</td></tr>
+<tr class="separator:a7f50daed92bef0a8db45e288bd35eb49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb30a3019525665b715eb638b84c9135" id="r_adb30a3019525665b715eb638b84c9135"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#adb30a3019525665b715eb638b84c9135">getSnapScale</a> () const</td></tr>
+<tr class="separator:adb30a3019525665b715eb638b84c9135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f9f466ab8b83ef488e4008dbab5c4d9" id="r_a6f9f466ab8b83ef488e4008dbab5c4d9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a6f9f466ab8b83ef488e4008dbab5c4d9">getMatrix</a> (int index) const</td></tr>
+<tr class="memdesc:a6f9f466ab8b83ef488e4008dbab5c4d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Column-major matrix element 0..15 of current TRS.  <br /></td></tr>
+<tr class="separator:a6f9f466ab8b83ef488e4008dbab5c4d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a82f7687104a21f2af861e631e89f7" id="r_a49a82f7687104a21f2af861e631e89f7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a49a82f7687104a21f2af861e631e89f7">pick</a> (float ox, float oy, float oz, float dx, float dy, float dz)</td></tr>
+<tr class="memdesc:a49a82f7687104a21f2af861e631e89f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ray pick against active mode handles. Returns axis id: "x"|"y"|"z"|"xy"|"yz"|"xz"|"xyz"|"bx"|…|"bz"|"" .  <br /></td></tr>
+<tr class="separator:a49a82f7687104a21f2af861e631e89f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b37e212cfa7c445eb37b285d0dc1434" id="r_a8b37e212cfa7c445eb37b285d0dc1434"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a8b37e212cfa7c445eb37b285d0dc1434">beginDrag</a> (const std::string &amp;axis, float ox, float oy, float oz, float dx, float dy, float dz)</td></tr>
+<tr class="separator:a8b37e212cfa7c445eb37b285d0dc1434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac45a0997ff8e93087a43f578550cfb58" id="r_ac45a0997ff8e93087a43f578550cfb58"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ac45a0997ff8e93087a43f578550cfb58">updateDrag</a> (float ox, float oy, float oz, float dx, float dy, float dz)</td></tr>
+<tr class="separator:ac45a0997ff8e93087a43f578550cfb58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d0dcccd2994566d6d888d4de036e43f" id="r_a5d0dcccd2994566d6d888d4de036e43f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a5d0dcccd2994566d6d888d4de036e43f">endDrag</a> ()</td></tr>
+<tr class="separator:a5d0dcccd2994566d6d888d4de036e43f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31f7c1339117e3cd9ed7061b3382d40d" id="r_a31f7c1339117e3cd9ed7061b3382d40d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a31f7c1339117e3cd9ed7061b3382d40d">isDragging</a> () const</td></tr>
+<tr class="separator:a31f7c1339117e3cd9ed7061b3382d40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a80a061c941d1ce8cc6284ed65aec6d" id="r_a4a80a061c941d1ce8cc6284ed65aec6d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4a80a061c941d1ce8cc6284ed65aec6d">isHovered</a> () const</td></tr>
+<tr class="separator:a4a80a061c941d1ce8cc6284ed65aec6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6975b58071d8b07f00a83d3caec7515" id="r_aa6975b58071d8b07f00a83d3caec7515"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#aa6975b58071d8b07f00a83d3caec7515">getActiveAxis</a> () const</td></tr>
+<tr class="separator:aa6975b58071d8b07f00a83d3caec7515"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1435b7408737c605f06a366a8edd458e" id="r_a1435b7408737c605f06a366a8edd458e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a1435b7408737c605f06a366a8edd458e">getHoverAxis</a> () const</td></tr>
+<tr class="separator:a1435b7408737c605f06a366a8edd458e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a323b3495282a2029458b2651795d9763" id="r_a323b3495282a2029458b2651795d9763"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a323b3495282a2029458b2651795d9763">rebuildParts</a> ()</td></tr>
+<tr class="memdesc:a323b3495282a2029458b2651795d9763"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild draw parts for current mode/space (call after TRS/mode change).  <br /></td></tr>
+<tr class="separator:a323b3495282a2029458b2651795d9763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdf1c83b7aa72e8b1a59987334800074" id="r_afdf1c83b7aa72e8b1a59987334800074"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#afdf1c83b7aa72e8b1a59987334800074">getPartCount</a> () const</td></tr>
+<tr class="separator:afdf1c83b7aa72e8b1a59987334800074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54875f132e5c99b3f0ad6d3f9a4e454e" id="r_a54875f132e5c99b3f0ad6d3f9a4e454e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a54875f132e5c99b3f0ad6d3f9a4e454e">getPartKind</a> (int index) const</td></tr>
+<tr class="separator:a54875f132e5c99b3f0ad6d3f9a4e454e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8246b8fabaeb789148ff6ac373a7496" id="r_ae8246b8fabaeb789148ff6ac373a7496"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ae8246b8fabaeb789148ff6ac373a7496">getPartAxis</a> (int index) const</td></tr>
+<tr class="separator:ae8246b8fabaeb789148ff6ac373a7496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2532ed9f26b11d9bc306dd6b17f498c7" id="r_a2532ed9f26b11d9bc306dd6b17f498c7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a2532ed9f26b11d9bc306dd6b17f498c7">getPartColorR</a> (int index) const</td></tr>
+<tr class="separator:a2532ed9f26b11d9bc306dd6b17f498c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c3ae1e1eab129e90c6695afaaf48adb" id="r_a7c3ae1e1eab129e90c6695afaaf48adb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a7c3ae1e1eab129e90c6695afaaf48adb">getPartColorG</a> (int index) const</td></tr>
+<tr class="separator:a7c3ae1e1eab129e90c6695afaaf48adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85c21470dad78023c863bd0ce205ce8b" id="r_a85c21470dad78023c863bd0ce205ce8b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a85c21470dad78023c863bd0ce205ce8b">getPartColorB</a> (int index) const</td></tr>
+<tr class="separator:a85c21470dad78023c863bd0ce205ce8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2b32c66de62c18b70018a6cce9fb9d1" id="r_ac2b32c66de62c18b70018a6cce9fb9d1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ac2b32c66de62c18b70018a6cce9fb9d1">getPartColorA</a> (int index) const</td></tr>
+<tr class="separator:ac2b32c66de62c18b70018a6cce9fb9d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acda927e636d46cd3530e6ba1fe0028f1" id="r_acda927e636d46cd3530e6ba1fe0028f1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#acda927e636d46cd3530e6ba1fe0028f1">getPartOriginX</a> (int index) const</td></tr>
+<tr class="separator:acda927e636d46cd3530e6ba1fe0028f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d33b6ce7c58f9dbe2edf9a502c58326" id="r_a9d33b6ce7c58f9dbe2edf9a502c58326"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a9d33b6ce7c58f9dbe2edf9a502c58326">getPartOriginY</a> (int index) const</td></tr>
+<tr class="separator:a9d33b6ce7c58f9dbe2edf9a502c58326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af290f43e53e448b88bb01934f4e976b2" id="r_af290f43e53e448b88bb01934f4e976b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#af290f43e53e448b88bb01934f4e976b2">getPartOriginZ</a> (int index) const</td></tr>
+<tr class="separator:af290f43e53e448b88bb01934f4e976b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429959af02ef251ba7a34aadfbe5b7d8" id="r_a429959af02ef251ba7a34aadfbe5b7d8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a429959af02ef251ba7a34aadfbe5b7d8">getPartDirX</a> (int index) const</td></tr>
+<tr class="separator:a429959af02ef251ba7a34aadfbe5b7d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0926ae49b78770a09e1dbdba417b5ef0" id="r_a0926ae49b78770a09e1dbdba417b5ef0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a0926ae49b78770a09e1dbdba417b5ef0">getPartDirY</a> (int index) const</td></tr>
+<tr class="separator:a0926ae49b78770a09e1dbdba417b5ef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e21d31caa21e1728194b9fb787491ac" id="r_a4e21d31caa21e1728194b9fb787491ac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4e21d31caa21e1728194b9fb787491ac">getPartDirZ</a> (int index) const</td></tr>
+<tr class="separator:a4e21d31caa21e1728194b9fb787491ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3802c21f888c0ddb5fa79be081ef995" id="r_ab3802c21f888c0ddb5fa79be081ef995"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#ab3802c21f888c0ddb5fa79be081ef995">getPartLength</a> (int index) const</td></tr>
+<tr class="separator:ab3802c21f888c0ddb5fa79be081ef995"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67427066ab0f01cf02925497e090f84e" id="r_a67427066ab0f01cf02925497e090f84e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a67427066ab0f01cf02925497e090f84e">getPartRadius</a> (int index) const</td></tr>
+<tr class="separator:a67427066ab0f01cf02925497e090f84e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>3D transform gizmo (Three.js TransformControls + ImGuizmo style). Owns TRS + optional local bounds; interaction via world-space rays. Host renders using getPart* descriptors — no GPU dependency. </p>
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a470a4433f5ad5403543bd49f6dba7c32" name="a470a4433f5ad5403543bd49f6dba7c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a470a4433f5ad5403543bd49f6dba7c32">&#9670;&#160;</a></span>TransformGizmo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::TransformGizmo::TransformGizmo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8b37e212cfa7c445eb37b285d0dc1434" name="a8b37e212cfa7c445eb37b285d0dc1434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b37e212cfa7c445eb37b285d0dc1434">&#9670;&#160;</a></span>beginDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::TransformGizmo::beginDrag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>axis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8cpp_source.html#l00071">eve::editor::GizmoManager::beginDrag()</a>.</p>
+
+</div>
+</div>
+<a id="a5d0dcccd2994566d6d888d4de036e43f" name="a5d0dcccd2994566d6d888d4de036e43f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d0dcccd2994566d6d888d4de036e43f">&#9670;&#160;</a></span>endDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::endDrag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00571">571</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8cpp_source.html#l00014">eve::editor::GizmoManager::detach()</a> , 以及 <a class="el" href="GizmoManager_8cpp_source.html#l00082">eve::editor::GizmoManager::endDrag()</a>.</p>
+
+</div>
+</div>
+<a id="aa6975b58071d8b07f00a83d3caec7515" name="aa6975b58071d8b07f00a83d3caec7515"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6975b58071d8b07f00a83d3caec7515">&#9670;&#160;</a></span>getActiveAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::getActiveAxis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8bddad7c66974daae4b479efa992b38" name="ad8bddad7c66974daae4b479efa992b38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8bddad7c66974daae4b479efa992b38">&#9670;&#160;</a></span>getBoundsMaxX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getBoundsMaxX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afccb818a7811d8434ad4efbefa8563e0" name="afccb818a7811d8434ad4efbefa8563e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afccb818a7811d8434ad4efbefa8563e0">&#9670;&#160;</a></span>getBoundsMaxY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getBoundsMaxY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6de09f6c6983c411a0afa353d317ae4a" name="a6de09f6c6983c411a0afa353d317ae4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6de09f6c6983c411a0afa353d317ae4a">&#9670;&#160;</a></span>getBoundsMaxZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getBoundsMaxZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57e156fa08f7f58cdc04fabd39ac2bb5" name="a57e156fa08f7f58cdc04fabd39ac2bb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57e156fa08f7f58cdc04fabd39ac2bb5">&#9670;&#160;</a></span>getBoundsMinX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getBoundsMinX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a15c8154a690df7486e666d91bc88b21e" name="a15c8154a690df7486e666d91bc88b21e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15c8154a690df7486e666d91bc88b21e">&#9670;&#160;</a></span>getBoundsMinY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getBoundsMinY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34253f89ea434d095a0657c7f65e4afc" name="a34253f89ea434d095a0657c7f65e4afc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34253f89ea434d095a0657c7f65e4afc">&#9670;&#160;</a></span>getBoundsMinZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getBoundsMinZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1435b7408737c605f06a366a8edd458e" name="a1435b7408737c605f06a366a8edd458e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1435b7408737c605f06a366a8edd458e">&#9670;&#160;</a></span>getHoverAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::getHoverAxis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f9f466ab8b83ef488e4008dbab5c4d9" name="a6f9f466ab8b83ef488e4008dbab5c4d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f9f466ab8b83ef488e4008dbab5c4d9">&#9670;&#160;</a></span>getMatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getMatrix </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Column-major matrix element 0..15 of current TRS. </p>
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>.</p>
+
+</div>
+</div>
+<a id="a5cdc71ed4659a643de60ad306c5961cb" name="a5cdc71ed4659a643de60ad306c5961cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cdc71ed4659a643de60ad306c5961cb">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8246b8fabaeb789148ff6ac373a7496" name="ae8246b8fabaeb789148ff6ac373a7496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8246b8fabaeb789148ff6ac373a7496">&#9670;&#160;</a></span>getPartAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::getPartAxis </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00585">585</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2b32c66de62c18b70018a6cce9fb9d1" name="ac2b32c66de62c18b70018a6cce9fb9d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2b32c66de62c18b70018a6cce9fb9d1">&#9670;&#160;</a></span>getPartColorA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartColorA </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00601">601</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85c21470dad78023c863bd0ce205ce8b" name="a85c21470dad78023c863bd0ce205ce8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85c21470dad78023c863bd0ce205ce8b">&#9670;&#160;</a></span>getPartColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartColorB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00597">597</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c3ae1e1eab129e90c6695afaaf48adb" name="a7c3ae1e1eab129e90c6695afaaf48adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3ae1e1eab129e90c6695afaaf48adb">&#9670;&#160;</a></span>getPartColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartColorG </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00593">593</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2532ed9f26b11d9bc306dd6b17f498c7" name="a2532ed9f26b11d9bc306dd6b17f498c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2532ed9f26b11d9bc306dd6b17f498c7">&#9670;&#160;</a></span>getPartColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartColorR </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00589">589</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afdf1c83b7aa72e8b1a59987334800074" name="afdf1c83b7aa72e8b1a59987334800074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdf1c83b7aa72e8b1a59987334800074">&#9670;&#160;</a></span>getPartCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::TransformGizmo::getPartCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a429959af02ef251ba7a34aadfbe5b7d8" name="a429959af02ef251ba7a34aadfbe5b7d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a429959af02ef251ba7a34aadfbe5b7d8">&#9670;&#160;</a></span>getPartDirX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartDirX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00617">617</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0926ae49b78770a09e1dbdba417b5ef0" name="a0926ae49b78770a09e1dbdba417b5ef0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0926ae49b78770a09e1dbdba417b5ef0">&#9670;&#160;</a></span>getPartDirY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartDirY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00621">621</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e21d31caa21e1728194b9fb787491ac" name="a4e21d31caa21e1728194b9fb787491ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e21d31caa21e1728194b9fb787491ac">&#9670;&#160;</a></span>getPartDirZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartDirZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00625">625</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54875f132e5c99b3f0ad6d3f9a4e454e" name="a54875f132e5c99b3f0ad6d3f9a4e454e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54875f132e5c99b3f0ad6d3f9a4e454e">&#9670;&#160;</a></span>getPartKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::getPartKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00581">581</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3802c21f888c0ddb5fa79be081ef995" name="ab3802c21f888c0ddb5fa79be081ef995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3802c21f888c0ddb5fa79be081ef995">&#9670;&#160;</a></span>getPartLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartLength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00629">629</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acda927e636d46cd3530e6ba1fe0028f1" name="acda927e636d46cd3530e6ba1fe0028f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acda927e636d46cd3530e6ba1fe0028f1">&#9670;&#160;</a></span>getPartOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartOriginX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00605">605</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d33b6ce7c58f9dbe2edf9a502c58326" name="a9d33b6ce7c58f9dbe2edf9a502c58326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d33b6ce7c58f9dbe2edf9a502c58326">&#9670;&#160;</a></span>getPartOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartOriginY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00609">609</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af290f43e53e448b88bb01934f4e976b2" name="af290f43e53e448b88bb01934f4e976b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af290f43e53e448b88bb01934f4e976b2">&#9670;&#160;</a></span>getPartOriginZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartOriginZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00613">613</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67427066ab0f01cf02925497e090f84e" name="a67427066ab0f01cf02925497e090f84e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67427066ab0f01cf02925497e090f84e">&#9670;&#160;</a></span>getPartRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPartRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00633">633</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe167f4e7226243fb3bb3f8d1a3e9878" name="afe167f4e7226243fb3bb3f8d1a3e9878"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe167f4e7226243fb3bb3f8d1a3e9878">&#9670;&#160;</a></span>getPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPositionX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2947fffe31eb0512d1328368e7cecb12" name="a2947fffe31eb0512d1328368e7cecb12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2947fffe31eb0512d1328368e7cecb12">&#9670;&#160;</a></span>getPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPositionY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa5dfaf4267399400393908a9174bac13" name="aa5dfaf4267399400393908a9174bac13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dfaf4267399400393908a9174bac13">&#9670;&#160;</a></span>getPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getPositionZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d08c2ba3c8ae005650a8e4de0b30036" name="a4d08c2ba3c8ae005650a8e4de0b30036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d08c2ba3c8ae005650a8e4de0b30036">&#9670;&#160;</a></span>getRotationX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getRotationX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8f01b432fea4cc9915369f6d5948caf" name="ad8f01b432fea4cc9915369f6d5948caf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8f01b432fea4cc9915369f6d5948caf">&#9670;&#160;</a></span>getRotationY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getRotationY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a286dfa92da62b70cdcba4bdce4781526" name="a286dfa92da62b70cdcba4bdce4781526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a286dfa92da62b70cdcba4bdce4781526">&#9670;&#160;</a></span>getRotationZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getRotationZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab3737e49b5a23b4677183b5be154990" name="aab3737e49b5a23b4677183b5be154990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab3737e49b5a23b4677183b5be154990">&#9670;&#160;</a></span>getScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getScaleX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab997df158a8cba26627589a089cf09b2" name="ab997df158a8cba26627589a089cf09b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab997df158a8cba26627589a089cf09b2">&#9670;&#160;</a></span>getScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getScaleY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa077f649e2f9126b0faac27414cd6043" name="aa077f649e2f9126b0faac27414cd6043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa077f649e2f9126b0faac27414cd6043">&#9670;&#160;</a></span>getScaleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getScaleZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a44ebbe0e01159f65a37856472c44b16b" name="a44ebbe0e01159f65a37856472c44b16b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44ebbe0e01159f65a37856472c44b16b">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7f50daed92bef0a8db45e288bd35eb49" name="a7f50daed92bef0a8db45e288bd35eb49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f50daed92bef0a8db45e288bd35eb49">&#9670;&#160;</a></span>getSnapRotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getSnapRotate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb30a3019525665b715eb638b84c9135" name="adb30a3019525665b715eb638b84c9135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb30a3019525665b715eb638b84c9135">&#9670;&#160;</a></span>getSnapScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getSnapScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd00c941fb07c7c4f55a77561e4dec42" name="acd00c941fb07c7c4f55a77561e4dec42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd00c941fb07c7c4f55a77561e4dec42">&#9670;&#160;</a></span>getSnapTranslateX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getSnapTranslateX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1362a5b81834b039ec374a3d4a405b62" name="a1362a5b81834b039ec374a3d4a405b62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1362a5b81834b039ec374a3d4a405b62">&#9670;&#160;</a></span>getSnapTranslateY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getSnapTranslateY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ff5898a70b71341363d649f8ff066be" name="a1ff5898a70b71341363d649f8ff066be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ff5898a70b71341363d649f8ff066be">&#9670;&#160;</a></span>getSnapTranslateZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::TransformGizmo::getSnapTranslateZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb6e3374832ebe373c4de83ce9580cab" name="adb6e3374832ebe373c4de83ce9580cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb6e3374832ebe373c4de83ce9580cab">&#9670;&#160;</a></span>getSpace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::getSpace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31f7c1339117e3cd9ed7061b3382d40d" name="a31f7c1339117e3cd9ed7061b3382d40d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31f7c1339117e3cd9ed7061b3382d40d">&#9670;&#160;</a></span>isDragging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::TransformGizmo::isDragging </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8h_source.html#l00041">eve::editor::GizmoManager::isDragging()</a>.</p>
+
+</div>
+</div>
+<a id="a4a80a061c941d1ce8cc6284ed65aec6d" name="a4a80a061c941d1ce8cc6284ed65aec6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a80a061c941d1ce8cc6284ed65aec6d">&#9670;&#160;</a></span>isHovered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::TransformGizmo::isHovered </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a> 第 <a class="el" href="TransformGizmo_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8h_source.html#l00042">eve::editor::GizmoManager::isHovered()</a>.</p>
+
+</div>
+</div>
+<a id="a49a82f7687104a21f2af861e631e89f7" name="a49a82f7687104a21f2af861e631e89f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a82f7687104a21f2af861e631e89f7">&#9670;&#160;</a></span>pick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::TransformGizmo::pick </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ray pick against active mode handles. Returns axis id: "x"|"y"|"z"|"xy"|"yz"|"xz"|"xyz"|"bx"|…|"bz"|"" . </p>
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8cpp_source.html#l00045">eve::editor::GizmoManager::pick()</a>.</p>
+
+</div>
+</div>
+<a id="a323b3495282a2029458b2651795d9763" name="a323b3495282a2029458b2651795d9763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a323b3495282a2029458b2651795d9763">&#9670;&#160;</a></span>rebuildParts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::rebuildParts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuild draw parts for current mode/space (call after TRS/mode change). </p>
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="DnutParser_8cpp_source.html#l00017">kind</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00234">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TransformGizmo_8cpp_source.html#l00431">beginDrag()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00571">endDrag()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00335">pick()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00072">setBounds()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00035">setMode()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00057">setPosition()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00062">setRotationEuler()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00067">setScale()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00051">setSize()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00043">setSpace()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00033">TransformGizmo()</a> , 以及 <a class="el" href="TransformGizmo_8cpp_source.html#l00488">updateDrag()</a>.</p>
+
+</div>
+</div>
+<a id="a83a29fe44c4dcdbd4f4b4169d72353ad" name="a83a29fe44c4dcdbd4f4b4169d72353ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83a29fe44c4dcdbd4f4b4169d72353ad">&#9670;&#160;</a></span>setBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setBounds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local AABB extents for bound mode (relative to object origin). </p>
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+</div>
+</div>
+<a id="ad298d5e26d5cfb55e107fdae4f4fb3f3" name="ad298d5e26d5cfb55e107fdae4f4fb3f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad298d5e26d5cfb55e107fdae4f4fb3f3">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8cpp_source.html#l00007">eve::editor::GizmoManager::GizmoManager()</a> , 以及 <a class="el" href="GizmoManager_8cpp_source.html#l00045">eve::editor::GizmoManager::pick()</a>.</p>
+
+</div>
+</div>
+<a id="aba8e158ad91989a8fdfd7bc3622b57c8" name="aba8e158ad91989a8fdfd7bc3622b57c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba8e158ad91989a8fdfd7bc3622b57c8">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="ad04cc1e6e4a58b10ab87a916ef5d227c" name="ad04cc1e6e4a58b10ab87a916ef5d227c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad04cc1e6e4a58b10ab87a916ef5d227c">&#9670;&#160;</a></span>setRotationEuler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setRotationEuler </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Euler radians, XYZ order. </p>
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="add06565a3658a0888c7f7d6df7ed4d76" name="add06565a3658a0888c7f7d6df7ed4d76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add06565a3658a0888c7f7d6df7ed4d76">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a7a86c1e8a8421fc515e019343e8bc36e" name="a7a86c1e8a8421fc515e019343e8bc36e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a86c1e8a8421fc515e019343e8bc36e">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+</div>
+</div>
+<a id="a22c48e00f6c34f7085a25ed2a7658796" name="a22c48e00f6c34f7085a25ed2a7658796"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22c48e00f6c34f7085a25ed2a7658796">&#9670;&#160;</a></span>setSnapRotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setSnapRotate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">degrees</a>.</p>
+
+</div>
+</div>
+<a id="a16e20da91572858da4e91732d94a8304" name="a16e20da91572858da4e91732d94a8304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16e20da91572858da4e91732d94a8304">&#9670;&#160;</a></span>setSnapScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setSnapScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+</div>
+</div>
+<a id="a9e565e5672514c6b0d80317168a36968" name="a9e565e5672514c6b0d80317168a36968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e565e5672514c6b0d80317168a36968">&#9670;&#160;</a></span>setSnapTranslate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setSnapTranslate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="affe9b7f451bc976163f54224936654dc" name="affe9b7f451bc976163f54224936654dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affe9b7f451bc976163f54224936654dc">&#9670;&#160;</a></span>setSpace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::TransformGizmo::setSpace </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>space</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a>.</p>
+
+</div>
+</div>
+<a id="ac45a0997ff8e93087a43f578550cfb58" name="ac45a0997ff8e93087a43f578550cfb58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac45a0997ff8e93087a43f578550cfb58">&#9670;&#160;</a></span>updateDrag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::TransformGizmo::updateDrag </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a> 第 <a class="el" href="TransformGizmo_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00137">rebuildParts()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GizmoManager_8cpp_source.html#l00077">eve::editor::GizmoManager::updateDrag()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="TransformGizmo_8h_source.html">TransformGizmo.h</a></li>
+<li>src/modules/editor/<a class="el" href="TransformGizmo_8cpp_source.html">TransformGizmo.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

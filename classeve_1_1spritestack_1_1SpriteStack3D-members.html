@@ -1,0 +1,212 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1spritestack.html">spritestack</a></li><li class="navelem"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">SpriteStack3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::spritestack::SpriteStack3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a1777512fec71dc87d5b89da9aa6af5c5">getCastShadow</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#addb710e536ca52154b36866ab67208e2">getGbufferEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a4eaafbc6969df6b06261ccee14cbd7bc">getHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a47565d9b3d8323a983a43e93b3e2af8e">getLayerCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a6a0b4f0f9a455be6a9ce212e9bd572e5">getLayerTexture</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#acf635d04321067687ab0b716f76b6f47">getMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a40ba7ae244ee2c0413a722e11494ad1a">getOutlineWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#aec86d47da361b384d914352de2c36f36">getShadowEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a3239b437916ba2e55b14bf7631ef3a56">getThickness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a6d0757d9904679a69cf3b66915656559">getVersion</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#af56aecb6e83fc55259ee7392a432d293">getVisible</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a0cab4b8e0ea27f52ba397a6b1a5e39a1">getWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a02a5221d3db83ab13b4db7fe23eb9c1b">operator=</a>(const SpriteStack3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a42db9378f93cd19710da4a18236c2a80">render</a>(graphics::Graphics *gfx, graphics::Camera3D *camera=nullptr) const</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a93d8326ef77a81aefa91821f9b23fee0">setAlphaCutoff</a>(float cutoff)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac1cb817f0057652268ff75a0ccd38ee8">setCastShadow</a>(bool cast)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ab08cd1113ea6789611ae0f17663b3827">setGbufferEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ad8f3d01fcf9f9ce3639d22b22749a92f">setLayerCount</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a7ec1e75544c533ea0af0d6af2fea459d">setLayerFile</a>(graphics::Graphics *gfx, const std::string &amp;path, int index)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a313c95c94fe3bd2840c55903931d6774">setLayerImage</a>(graphics::Graphics *gfx, image::ImageData *img, int index)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#aed41879299efe2933d51c7ffe826b801">setLayersFromAtlas</a>(graphics::Graphics *gfx, graphics::Texture *atlas, int layerCount)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a55fe314dee462779bf0017979f28096f">setLayerTexture</a>(graphics::Texture *texture, int index)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a7da498adf25a4765dbccdd1d4819d3c3">setMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#aa774c8611ccbec7434c944b858e5c3ad">setOutline</a>(float width, float r=0.f, float g=0.f, float b=0.f)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a14f9fc8b85f547803e732e7446a0881e">setOutlineColor</a>(float r, float g, float b)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a6520e735e40e2d58049c02b453080370">setPosition</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac526567e61c69ba0380667507f69efbe">setShadowEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a18851cea4a4873a05faeac20ac686b46">setShadowLight</a>(float dx, float dy, float dz)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac92a5f9b46452a77cc8d0a173baf4353">setShadowOpacity</a>(float opacity)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#af862eaa9ff07301b3a1a028bd4079930">setShadowPlaneY</a>(float y)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a53f3423d423475be949c452deac1c06f">setSize</a>(float width, float height)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#af6506f5e62ed6694a4da8e3a5c032963">setThickness</a>(float thickness)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a429cd8868dfc2643d2415ac9d4c1f3bc">setTint</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a2a85f5a4057491c92d23946a639e9b97">setVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ac864253b70ea14417f48b50bc1128f06">setYaw</a>(float radians)</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#ae2e708c8f635a6949a993160a25fe7ed">SpriteStack3D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#acb68f2ab0c4398cc4057ea6b3b813237">SpriteStack3D</a>(const SpriteStack3D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a2a4815a1028ad165a7a54f9520a0ab23">SpriteStackBatch</a></td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html#a55875e4e8aa8a1c469da3c4883a71e94">~SpriteStack3D</a>()</td><td class="entry"><a class="el" href="classeve_1_1spritestack_1_1SpriteStack3D.html">eve::spritestack::SpriteStack3D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

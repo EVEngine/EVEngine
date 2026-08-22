@@ -1,0 +1,313 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/MeshBuild.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshBuild.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshBuild_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#aced7805908a334a686ad8867defe7a00">    5</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#aced7805908a334a686ad8867defe7a00">MeshBuild::clear</a>() {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>    positions_.clear();</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    normals_.clear();</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    uvs_.clear();</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    indices_.clear();</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    meta_.clear();</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a4b3e5e014cf0c6652a58b3e141706943">   13</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a4b3e5e014cf0c6652a58b3e141706943">MeshBuild::reserve</a>(<span class="keywordtype">int</span> vertexCount, <span class="keywordtype">int</span> indexCount) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (vertexCount &gt; 0) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        positions_.reserve(<span class="keywordtype">size_t</span>(vertexCount) * 3u);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        normals_.reserve(<span class="keywordtype">size_t</span>(vertexCount) * 3u);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        uvs_.reserve(<span class="keywordtype">size_t</span>(vertexCount) * 2u);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (indexCount &gt; 0) indices_.reserve(<span class="keywordtype">size_t</span>(indexCount));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a14687d37244814c6cab6553e0e2a381c">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a14687d37244814c6cab6553e0e2a381c">MeshBuild::addVertex</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">float</span> py, <span class="keywordtype">float</span> pz, <span class="keywordtype">float</span> nx, <span class="keywordtype">float</span> ny, <span class="keywordtype">float</span> nz, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                          <span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    positions_.push_back(<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    positions_.push_back(py);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    positions_.push_back(pz);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    normals_.push_back(nx);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    normals_.push_back(ny);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    normals_.push_back(nz);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    uvs_.push_back(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    uvs_.push_back(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a3087df20f01036d4837c283e2b476e86">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a3087df20f01036d4837c283e2b476e86">MeshBuild::addTriangle</a>(uint32_t <a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, uint32_t <a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, uint32_t <a class="code hl_variable" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    indices_.push_back(<a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    indices_.push_back(<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    indices_.push_back(<a class="code hl_variable" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">   40</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">MeshBuild::getVertexCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(positions_.size() / 3u); }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">   41</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">MeshBuild::getIndexCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(indices_.size()); }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#ab47713d1443d0704e59004956cb22424">   42</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab47713d1443d0704e59004956cb22424">MeshBuild::empty</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> positions_.empty() || indices_.empty(); }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#afdb2c2cd0cff5394f9e25e61b8497565">   44</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#afdb2c2cd0cff5394f9e25e61b8497565">MeshBuild::getPositionX</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">return</span> positions_[size_t(i) * 3u];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a0ef87e0319e488b6ada75b71cf8042fc">   48</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a0ef87e0319e488b6ada75b71cf8042fc">MeshBuild::getPositionY</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> positions_[size_t(i) * 3u + 1u];</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a031e43f0ed4c7bb01703713ca1fff3ea">   52</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a031e43f0ed4c7bb01703713ca1fff3ea">MeshBuild::getPositionZ</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> positions_[size_t(i) * 3u + 2u];</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#ae349f0f9edcb653edf0d67c75bda3a44">   56</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ae349f0f9edcb653edf0d67c75bda3a44">MeshBuild::getNormalX</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> normals_[size_t(i) * 3u];</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a6224c244edacb722998f515b9d0a8692">   60</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a6224c244edacb722998f515b9d0a8692">MeshBuild::getNormalY</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> normals_[size_t(i) * 3u + 1u];</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a34d1b834ccf62f0688f8f09555f52d4e">   64</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a34d1b834ccf62f0688f8f09555f52d4e">MeshBuild::getNormalZ</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> normals_[size_t(i) * 3u + 2u];</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="}">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#aaf8a3e5073aad89b203cde4625b6a52d">   68</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#aaf8a3e5073aad89b203cde4625b6a52d">MeshBuild::getUvU</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> uvs_[size_t(i) * 2u];</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#adfda116e6286fa95d5f89f639b8325e6">   72</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#adfda116e6286fa95d5f89f639b8325e6">MeshBuild::getUvV</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> uvs_[size_t(i) * 2u + 1u];</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#aea52019975e09f80fee77a3b1e0fa50a">   76</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#aea52019975e09f80fee77a3b1e0fa50a">MeshBuild::getIndex</a>(<span class="keywordtype">int</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (i &lt; 0 || i &gt;= <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">getIndexCount</a>()) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> int(indices_[<span class="keywordtype">size_t</span>(i)]);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a4ea334aa491b117fa66801cf18e3461e">   81</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a4ea334aa491b117fa66801cf18e3461e">MeshBuild::setMeta</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) { meta_[key] = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>; }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshBuild.html#a1264f4b0553b4d58f55854b2eb665236">   83</a></span>std::string <a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a1264f4b0553b4d58f55854b2eb665236">MeshBuild::getMeta</a>(<span class="keyword">const</span> std::string &amp;key, <span class="keyword">const</span> std::string &amp;defaultValue)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">auto</span> it = meta_.find(key);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> it == meta_.end() ? defaultValue : it-&gt;second;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a3e5dec064fb5b002d1279f3a82ce8646"><div class="ttname"><a href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a></div><div class="ttdeci">uint32_t i1</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00062">Grass.cpp:62</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a46199b2ccc22981c9582e98fcb9ec416"><div class="ttname"><a href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a></div><div class="ttdeci">uint32_t i2</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00062">Grass.cpp:62</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a47ff32291cc26d3b91bb5cb7b45495f7"><div class="ttname"><a href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a></div><div class="ttdeci">uint32_t i0</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00062">Grass.cpp:62</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00234">Grass.cpp:234</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00652">ImageData.cpp:652</a></div></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a031e43f0ed4c7bb01703713ca1fff3ea"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a031e43f0ed4c7bb01703713ca1fff3ea">eve::procgen::MeshBuild::getPositionZ</a></div><div class="ttdeci">float getPositionZ(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00052">MeshBuild.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a0ef87e0319e488b6ada75b71cf8042fc"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a0ef87e0319e488b6ada75b71cf8042fc">eve::procgen::MeshBuild::getPositionY</a></div><div class="ttdeci">float getPositionY(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00048">MeshBuild.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a1264f4b0553b4d58f55854b2eb665236"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a1264f4b0553b4d58f55854b2eb665236">eve::procgen::MeshBuild::getMeta</a></div><div class="ttdeci">std::string getMeta(const std::string &amp;key, const std::string &amp;defaultValue) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00083">MeshBuild.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a14687d37244814c6cab6553e0e2a381c"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a14687d37244814c6cab6553e0e2a381c">eve::procgen::MeshBuild::addVertex</a></div><div class="ttdeci">void addVertex(float px, float py, float pz, float nx, float ny, float nz, float u, float v)</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00022">MeshBuild.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a3087df20f01036d4837c283e2b476e86"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a3087df20f01036d4837c283e2b476e86">eve::procgen::MeshBuild::addTriangle</a></div><div class="ttdeci">void addTriangle(uint32_t i0, uint32_t i1, uint32_t i2)</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00034">MeshBuild.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a34d1b834ccf62f0688f8f09555f52d4e"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a34d1b834ccf62f0688f8f09555f52d4e">eve::procgen::MeshBuild::getNormalZ</a></div><div class="ttdeci">float getNormalZ(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00064">MeshBuild.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a4b3e5e014cf0c6652a58b3e141706943"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a4b3e5e014cf0c6652a58b3e141706943">eve::procgen::MeshBuild::reserve</a></div><div class="ttdeci">void reserve(int vertexCount, int indexCount)</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00013">MeshBuild.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a4ea334aa491b117fa66801cf18e3461e"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a4ea334aa491b117fa66801cf18e3461e">eve::procgen::MeshBuild::setMeta</a></div><div class="ttdeci">void setMeta(const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00081">MeshBuild.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a6224c244edacb722998f515b9d0a8692"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a6224c244edacb722998f515b9d0a8692">eve::procgen::MeshBuild::getNormalY</a></div><div class="ttdeci">float getNormalY(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00060">MeshBuild.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a6f9256be5db1d30c5b5d3a9b8823fbe9"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">eve::procgen::MeshBuild::getIndexCount</a></div><div class="ttdeci">int getIndexCount() const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00041">MeshBuild.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_aaf8a3e5073aad89b203cde4625b6a52d"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#aaf8a3e5073aad89b203cde4625b6a52d">eve::procgen::MeshBuild::getUvU</a></div><div class="ttdeci">float getUvU(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00068">MeshBuild.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_ab0ad02c622f5d76e9fd304107d2031b6"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">eve::procgen::MeshBuild::getVertexCount</a></div><div class="ttdeci">int getVertexCount() const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00040">MeshBuild.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_ab47713d1443d0704e59004956cb22424"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#ab47713d1443d0704e59004956cb22424">eve::procgen::MeshBuild::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00042">MeshBuild.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_aced7805908a334a686ad8867defe7a00"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#aced7805908a334a686ad8867defe7a00">eve::procgen::MeshBuild::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00005">MeshBuild.cpp:5</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_adfda116e6286fa95d5f89f639b8325e6"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#adfda116e6286fa95d5f89f639b8325e6">eve::procgen::MeshBuild::getUvV</a></div><div class="ttdeci">float getUvV(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00072">MeshBuild.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_ae349f0f9edcb653edf0d67c75bda3a44"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#ae349f0f9edcb653edf0d67c75bda3a44">eve::procgen::MeshBuild::getNormalX</a></div><div class="ttdeci">float getNormalX(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00056">MeshBuild.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_aea52019975e09f80fee77a3b1e0fa50a"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#aea52019975e09f80fee77a3b1e0fa50a">eve::procgen::MeshBuild::getIndex</a></div><div class="ttdeci">int getIndex(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00076">MeshBuild.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_afdb2c2cd0cff5394f9e25e61b8497565"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#afdb2c2cd0cff5394f9e25e61b8497565">eve::procgen::MeshBuild::getPositionX</a></div><div class="ttdeci">float getPositionX(int i) const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00044">MeshBuild.cpp:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="BuiltinAlgorithms_8cpp_source.html#l00013">BuiltinAlgorithms.cpp:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

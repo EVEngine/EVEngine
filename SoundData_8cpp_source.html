@@ -1,0 +1,244 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sound/SoundData.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7921590f9b13e0977640d2e5a7f26e23.html">sound</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SoundData.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SoundData_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="SoundData_8h.html">SoundData.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>sound {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#afaac4d1e28ed3d7e7d66e5cff001c7cb">   10</a></span><a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#afaac4d1e28ed3d7e7d66e5cff001c7cb">SoundData::SoundData</a>(std::vector&lt;uint8_t&gt; pcm, <span class="keywordtype">int</span> sampleRate, <span class="keywordtype">int</span> bitDepth, <span class="keywordtype">int</span> channels)</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    : <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>(<span class="stringliteral">&quot;&quot;</span>), pcm(std::move(pcm)), sampleRate(sampleRate), bitDepth(bitDepth), channels(channels) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (sampleRate &lt;= 0)</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Invalid sample rate&quot;</span>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!(bitDepth == 8 || bitDepth == 16))</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Invalid bit depth (expected 8 or 16)&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (!(channels == 1 || channels == 2))</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Invalid channel count (expected 1 or 2)&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a2ba5a80c3ee6d006613a207fb95daf87">SoundData::~SoundData</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#a4e9e99940b7320cca8cb4e414c7e5b22">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a4e9e99940b7320cca8cb4e414c7e5b22">SoundData::adopt</a>(<a class="code hl_class" href="classeve_1_1Resource.html">eve::Resource</a> &amp;replacement) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> &amp;other = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeve_1_1sound_1_1SoundData.html">SoundData</a> &amp;<span class="keyword">&gt;</span>(replacement);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    std::swap(pcm, other.pcm);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    std::swap(sampleRate, other.sampleRate);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::swap(bitDepth, other.bitDepth);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::swap(channels, other.channels);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#aa04902513e52b0a3810a05b9897723e4">   30</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#aa04902513e52b0a3810a05b9897723e4">SoundData::getSampleCount</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (bitDepth &lt;= 0 || channels &lt;= 0)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(pcm.size() / (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(bitDepth / 8) * channels));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#a8fc8defc8f4fdb7907c1fff4a84765fa">   36</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a8fc8defc8f4fdb7907c1fff4a84765fa">SoundData::getSampleRate</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sampleRate; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#a62608b309472b770f27e772ff2916637">   37</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a62608b309472b770f27e772ff2916637">SoundData::getBitDepth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> bitDepth; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#a7d0e8a652b72c4d1a9447efb8e601d12">   38</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a7d0e8a652b72c4d1a9447efb8e601d12">SoundData::getChannelCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> channels; }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#a312df96268944702edefb4dbc97607bf">   40</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a312df96268944702edefb4dbc97607bf">SoundData::getDuration</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (sampleRate &lt;= 0)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#aa04902513e52b0a3810a05b9897723e4">getSampleCount</a>()) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sampleRate);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#a400651ba156823de760a325f508de09b">   46</a></span><span class="keywordtype">void</span> *<a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#a400651ba156823de760a325f508de09b">SoundData::getData</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">const_cast&lt;</span>uint8_t *<span class="keyword">&gt;</span>(pcm.data()); }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1SoundData.html#afa5b7354d551490377e30b82747fd9a5">   47</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1sound_1_1SoundData.html#afa5b7354d551490377e30b82747fd9a5">SoundData::getSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pcm.size(); }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}  <span class="comment">// namespace sound</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aSoundData_8h_html"><div class="ttname"><a href="SoundData_8h.html">SoundData.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html"><div class="ttname"><a href="classeve_1_1Resource.html">eve::Resource</a></div><div class="ttdoc">Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00035">Resource.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html">eve::sound::SoundData</a></div><div class="ttdoc">Raw PCM audio buffer with format metadata (samples/rate/bit depth/channels).</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8h_source.html#l00013">SoundData.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a2ba5a80c3ee6d006613a207fb95daf87"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a2ba5a80c3ee6d006613a207fb95daf87">eve::sound::SoundData::~SoundData</a></div><div class="ttdeci">~SoundData() override</div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a312df96268944702edefb4dbc97607bf"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a312df96268944702edefb4dbc97607bf">eve::sound::SoundData::getDuration</a></div><div class="ttdeci">double getDuration() const</div><div class="ttdoc">Duration in seconds.</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00040">SoundData.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a400651ba156823de760a325f508de09b"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a400651ba156823de760a325f508de09b">eve::sound::SoundData::getData</a></div><div class="ttdeci">void * getData() const</div><div class="ttdoc">Raw PCM access.</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00046">SoundData.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a4e9e99940b7320cca8cb4e414c7e5b22"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a4e9e99940b7320cca8cb4e414c7e5b22">eve::sound::SoundData::adopt</a></div><div class="ttdeci">void adopt(eve::Resource &amp;replacement) override</div><div class="ttdoc">Replace this buffer with replacement's (cache reload).</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00022">SoundData.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a62608b309472b770f27e772ff2916637"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a62608b309472b770f27e772ff2916637">eve::sound::SoundData::getBitDepth</a></div><div class="ttdeci">int getBitDepth() const</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00037">SoundData.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a7d0e8a652b72c4d1a9447efb8e601d12"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a7d0e8a652b72c4d1a9447efb8e601d12">eve::sound::SoundData::getChannelCount</a></div><div class="ttdeci">int getChannelCount() const</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00038">SoundData.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_a8fc8defc8f4fdb7907c1fff4a84765fa"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#a8fc8defc8f4fdb7907c1fff4a84765fa">eve::sound::SoundData::getSampleRate</a></div><div class="ttdeci">int getSampleRate() const</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00036">SoundData.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_aa04902513e52b0a3810a05b9897723e4"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#aa04902513e52b0a3810a05b9897723e4">eve::sound::SoundData::getSampleCount</a></div><div class="ttdeci">int getSampleCount() const</div><div class="ttdoc">Format metadata.</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00030">SoundData.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_afa5b7354d551490377e30b82747fd9a5"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#afa5b7354d551490377e30b82747fd9a5">eve::sound::SoundData::getSize</a></div><div class="ttdeci">size_t getSize() const</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00047">SoundData.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html_afaac4d1e28ed3d7e7d66e5cff001c7cb"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html#afaac4d1e28ed3d7e7d66e5cff001c7cb">eve::sound::SoundData::SoundData</a></div><div class="ttdeci">SoundData(std::vector&lt; uint8_t &gt; pcm, int sampleRate, int bitDepth, int channels)</div><div class="ttdoc">Takes ownership of the PCM bytes.</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8cpp_source.html#l00010">SoundData.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

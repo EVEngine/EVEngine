@@ -1,0 +1,533 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Object类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Object.html">Object</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1Object-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Object类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> is the base class for all game objects. It provides reference counting and dirty flag for update.  
+ <a href="classeve_1_1Object.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Object_8h_source.html">Object.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::Object 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1Object.png" usemap="#eve::Object_map" alt=""/>
+  <map id="eve::Object_map" name="eve::Object_map">
+<area href="classeve_1_1Data.html" alt="eve::Data" shape="rect" coords="0,56,165,80"/>
+<area href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance)." alt="eve::Model" shape="rect" coords="350,56,515,80"/>
+<area href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen..." alt="eve::Resource" shape="rect" coords="700,56,865,80"/>
+<area href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex..." alt="eve::audio::Source" shape="rect" coords="875,56,1040,80"/>
+<area href="classeve_1_1sound_1_1Decoder.html" title="Streaming audio decoder (medialoader-backed). Owns the raw encoded bytes and decodes incrementally vi..." alt="eve::sound::Decoder" shape="rect" coords="1050,56,1215,80"/>
+<area href="classeve_1_1data_1_1ByteData.html" title="In-memory byte buffer implementing eve::Data (ref-counted)." alt="eve::data::ByteData" shape="rect" coords="175,112,340,136"/>
+<area href="classeve_1_1data_1_1CompressedData.html" title="Stores byte data compressed via DataModule::compress." alt="eve::data::CompressedData" shape="rect" coords="175,168,340,192"/>
+<area href="classeve_1_1data_1_1DataView.html" title="Contains a reference to a subsection of an existing Data object." alt="eve::data::DataView" shape="rect" coords="175,224,340,248"/>
+<area href="classeve_1_1filesystem_1_1FileData.html" title="Data buffer paired with a filename (used for type identification)." alt="eve::filesystem::FileData" shape="rect" coords="175,280,340,304"/>
+<area href="classeve_1_1ModelClass.html" title="Model with a list of Squirrel attribute objects." alt="eve::ModelClass" shape="rect" coords="525,112,690,136"/>
+<area href="classeve_1_1ModelMap.html" title="Model that maps to a Squirrel table (key/value)." alt="eve::ModelMap" shape="rect" coords="525,168,690,192"/>
+<area href="classeve_1_1ModelVector.html" title="Model that maps to a Squirrel array." alt="eve::ModelVector" shape="rect" coords="525,224,690,248"/>
+<area href="classeve_1_1font_1_1FontData.html" title="CPU-side decoded font face (FreeType FT_Face + owned font bytes). Does not upload to GPU — rasterize ..." alt="eve::font::FontData" shape="rect" coords="875,112,1040,136"/>
+<area href="classeve_1_1image_1_1ImageData.html" title="Represents raw pixel data." alt="eve::image::ImageData" shape="rect" coords="875,168,1040,192"/>
+<area href="classeve_1_1model3d_1_1ModelData.html" title="CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ..." alt="eve::model3d::ModelData" shape="rect" coords="875,224,1040,248"/>
+<area href="classeve_1_1sound_1_1SoundData.html" title="Raw PCM audio buffer with format metadata (samples/rate/bit depth/channels)." alt="eve::sound::SoundData" shape="rect" coords="875,280,1040,304"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a513f705d32a37006f25d79b57cae7563" id="r_a513f705d32a37006f25d79b57cae7563"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a513f705d32a37006f25d79b57cae7563">Object</a> ()</td></tr>
+<tr class="separator:a513f705d32a37006f25d79b57cae7563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074c5f36236cc17f5c110f17be72b2b1" id="r_a074c5f36236cc17f5c110f17be72b2b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a074c5f36236cc17f5c110f17be72b2b1">setUpdate</a> (<a class="el" href="classeve_1_1Object.html">Object</a> *replacement)</td></tr>
+<tr class="memdesc:a074c5f36236cc17f5c110f17be72b2b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current object with a replacement. You don't need to care about the reference to the old object since it will be automatically updated in the ref smart pointer.  <br /></td></tr>
+<tr class="separator:a074c5f36236cc17f5c110f17be72b2b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:a50dcf4681be0179bbd04e911b33115cd" id="r_a50dcf4681be0179bbd04e911b33115cd"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a50dcf4681be0179bbd04e911b33115cd">~Object</a> ()</td></tr>
+<tr class="separator:a50dcf4681be0179bbd04e911b33115cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab010b8dc4a18ca9771e0b354042c7055" id="r_ab010b8dc4a18ca9771e0b354042c7055"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab010b8dc4a18ca9771e0b354042c7055">isDirty</a> () const</td></tr>
+<tr class="separator:ab010b8dc4a18ca9771e0b354042c7055"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af940d294ff10b6d828c1f52f8139937f" id="r_af940d294ff10b6d828c1f52f8139937f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#af940d294ff10b6d828c1f52f8139937f">getUpdate</a> () const</td></tr>
+<tr class="separator:af940d294ff10b6d828c1f52f8139937f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeddd56fdaabe8ddb3cb5ed1fc2857db0" id="r_aeddd56fdaabe8ddb3cb5ed1fc2857db0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#aeddd56fdaabe8ddb3cb5ed1fc2857db0">ref</a> ()</td></tr>
+<tr class="separator:aeddd56fdaabe8ddb3cb5ed1fc2857db0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4b9ac0bd673dc2582e13122cb7827d7" id="r_ab4b9ac0bd673dc2582e13122cb7827d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab4b9ac0bd673dc2582e13122cb7827d7">unref</a> ()</td></tr>
+<tr class="separator:ab4b9ac0bd673dc2582e13122cb7827d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a16b86af9dc497833e85daeddf7887d79" id="r_a16b86af9dc497833e85daeddf7887d79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a16b86af9dc497833e85daeddf7887d79">update</a></td></tr>
+<tr class="separator:a16b86af9dc497833e85daeddf7887d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9246cea7724ecf33485f595e1f2d20d9" id="r_a9246cea7724ecf33485f595e1f2d20d9"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a9246cea7724ecf33485f595e1f2d20d9">ref_count</a> = 0</td></tr>
+<tr class="separator:a9246cea7724ecf33485f595e1f2d20d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:aa59ad12cfd6911a82a11e5afc61c3a5a" id="r_aa59ad12cfd6911a82a11e5afc61c3a5a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa59ad12cfd6911a82a11e5afc61c3a5a"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#aa59ad12cfd6911a82a11e5afc61c3a5a">ref</a></td></tr>
+<tr class="separator:aa59ad12cfd6911a82a11e5afc61c3a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> is the base class for all game objects. It provides reference counting and dirty flag for update. </p>
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00018">18</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a513f705d32a37006f25d79b57cae7563" name="a513f705d32a37006f25d79b57cae7563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a513f705d32a37006f25d79b57cae7563">&#9670;&#160;</a></span>Object()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Object::Object </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Object_8h_source.html#l00044">update</a>.</p>
+
+</div>
+</div>
+<a id="a50dcf4681be0179bbd04e911b33115cd" name="a50dcf4681be0179bbd04e911b33115cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50dcf4681be0179bbd04e911b33115cd">&#9670;&#160;</a></span>~Object()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::Object::~Object </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af940d294ff10b6d828c1f52f8139937f" name="af940d294ff10b6d828c1f52f8139937f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af940d294ff10b6d828c1f52f8139937f">&#9670;&#160;</a></span>getUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Object.html">Object</a> * eve::Object::getUpdate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Object_8h_source.html#l00044">update</a>.</p>
+
+</div>
+</div>
+<a id="ab010b8dc4a18ca9771e0b354042c7055" name="ab010b8dc4a18ca9771e0b354042c7055"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab010b8dc4a18ca9771e0b354042c7055">&#9670;&#160;</a></span>isDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Object::isDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Object_8h_source.html#l00044">update</a>.</p>
+
+</div>
+</div>
+<a id="aeddd56fdaabe8ddb3cb5ed1fc2857db0" name="aeddd56fdaabe8ddb3cb5ed1fc2857db0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeddd56fdaabe8ddb3cb5ed1fc2857db0">&#9670;&#160;</a></span>ref()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Object::ref </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Object_8h_source.html#l00045">ref_count</a>.</p>
+
+</div>
+</div>
+<a id="a074c5f36236cc17f5c110f17be72b2b1" name="a074c5f36236cc17f5c110f17be72b2b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a074c5f36236cc17f5c110f17be72b2b1">&#9670;&#160;</a></span>setUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Object::setUpdate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td>
+          <td class="paramname"><em>replacement</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the current object with a replacement. You don't need to care about the reference to the old object since it will be automatically updated in the ref smart pointer. </p>
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="Object_8h_source.html#l00044">update</a>.</p>
+
+</div>
+</div>
+<a id="ab4b9ac0bd673dc2582e13122cb7827d7" name="ab4b9ac0bd673dc2582e13122cb7827d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4b9ac0bd673dc2582e13122cb7827d7">&#9670;&#160;</a></span>unref()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Object::unref </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Object_8h_source.html#l00045">ref_count</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="aa59ad12cfd6911a82a11e5afc61c3a5a" name="aa59ad12cfd6911a82a11e5afc61c3a5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa59ad12cfd6911a82a11e5afc61c3a5a">&#9670;&#160;</a></span>ref</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1ref.html">ref</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a9246cea7724ecf33485f595e1f2d20d9" name="a9246cea7724ecf33485f595e1f2d20d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9246cea7724ecf33485f595e1f2d20d9">&#9670;&#160;</a></span>ref_count</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::Object::ref_count = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Object_8h_source.html#l00041">ref()</a> , 以及 <a class="el" href="Object_8h_source.html#l00042">unref()</a>.</p>
+
+</div>
+</div>
+<a id="a16b86af9dc497833e85daeddf7887d79" name="a16b86af9dc497833e85daeddf7887d79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16b86af9dc497833e85daeddf7887d79">&#9670;&#160;</a></span>update</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Object.html">Object</a>* eve::Object::update</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Object_8h_source.html">Object.h</a> 第 <a class="el" href="Object_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Object_8h_source.html#l00039">getUpdate()</a>, <a class="el" href="Object_8h_source.html#l00038">isDirty()</a>, <a class="el" href="Object_8h_source.html#l00020">Object()</a> , 以及 <a class="el" href="Object_8h_source.html#l00027">setUpdate()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Object_8h_source.html">Object.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

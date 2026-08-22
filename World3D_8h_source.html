@@ -1,0 +1,294 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/World3D.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">World3D.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="World3D_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;box3d/id.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>Body3D;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Shape3D;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>(<span class="keywordtype">float</span> gravityX, <span class="keywordtype">float</span> gravityY, <span class="keywordtype">float</span> gravityZ, <span class="keywordtype">bool</span> sleep);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ad9cb025f6e741d1232e5d6d948af2d80">~World3D</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a33fbd30dff90eedbe486b6ba8ec78579">   23</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a33fbd30dff90eedbe486b6ba8ec78579">World3D</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a34ebff7bb605670d313e7aabec808089">   24</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;<a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a34ebff7bb605670d313e7aabec808089">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a1c31c82a42d1546903886f6f9c6e3a59">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#aaa44ab339620969837d8569921bff434">updateFull</a>(<span class="keywordtype">float</span> dt, <span class="keywordtype">int</span> subStepCount);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a01f07ed38b8f2779c874090a99bf2f91">setGravity</a>(<span class="keywordtype">float</span> gx, <span class="keywordtype">float</span> gy, <span class="keywordtype">float</span> gz);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a380d8200c7914d0f5d9ad1cf3632837a">getGravityX</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a5e1b0205baacc37a541b99d25666c53c">getGravityY</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ac1ea82415994eedd305644820f93a8ed">getGravityZ</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#adabd7a943e53c1325b4b9bc8799c3914">newBody</a>(<span class="keyword">const</span> std::string &amp;bodyType, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#aabb2cc2d3e019230f8f16d6720c36fbf">destroyBody</a>(<a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304">destroy</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a659f2e9255841237b9ed609aede4ce16">rayCast</a>(<span class="keywordtype">float</span> x1, <span class="keywordtype">float</span> y1, <span class="keywordtype">float</span> z1, <span class="keywordtype">float</span> x2, <span class="keywordtype">float</span> y2, <span class="keywordtype">float</span> z2);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a0c03010a8da1b2e13f0d458bc6df10f0">   50</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a0c03010a8da1b2e13f0d458bc6df10f0">hasRayHit</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitBodyId_ &gt;= 0; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#ad10369eb1a06121ed90d8c9274f5891d">   51</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ad10369eb1a06121ed90d8c9274f5891d">getRayHitBodyId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitBodyId_; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a21cb36cda6ec7c9fc2f18e56e928ad7a">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a21cb36cda6ec7c9fc2f18e56e928ad7a">getRayHitX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitX_; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a272f63b9e4b9111084ab396b5ffcc6ae">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a272f63b9e4b9111084ab396b5ffcc6ae">getRayHitY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitY_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#ac822df09477e052b88cfd88957c8ab91">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ac822df09477e052b88cfd88957c8ab91">getRayHitZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitZ_; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a40a63e08a65574fa4359d8a9473b55d1">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a40a63e08a65574fa4359d8a9473b55d1">getRayHitNormalX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitNormalX_; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#aecbb062ecb022440977182b1a7a6712f">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#aecbb062ecb022440977182b1a7a6712f">getRayHitNormalY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitNormalY_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a4991732ce4a0c33c7b3f5e505cc57606">   57</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a4991732ce4a0c33c7b3f5e505cc57606">getRayHitNormalZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitNormalZ_; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#ae2c26e60ef2b4d6cfca87bb524dee096">   58</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ae2c26e60ef2b4d6cfca87bb524dee096">getRayHitFraction</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rayHitFraction_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#aa940115b2c14ca82c5ec5931b8170d50">queryAABB</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a38b9d109f7f0c578a639ec9bf05018dc">   66</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a38b9d109f7f0c578a639ec9bf05018dc">getQueryCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(queryBodyIds_.size()); }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a031a1887020c97a5de0f8d9b5fb3cfa4">getQueryBodyId</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">bool</span>      <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a8f6bdc3370bac35a43fef5c76c645b02">isValid</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a8a486e8b174e10fb01b5d0a34f10f8c1">   73</a></span>    b3WorldId <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a8a486e8b174e10fb01b5d0a34f10f8c1">raw</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> worldId_; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a34607b0306c1264eb45be96ffbe646f6">forgetBody</a>(<a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ab09171109ef4afd0a5ef2ba4c805d9ea">forgetShape</a>(<a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *shape);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a3dc9c70c23e3ed5416c01215345a70a9">nextBodyId</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ada3ee4b4fe8562e94e3f332053af340b">emitContactEvents</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a75a7b4360539d56559cea72b031c19b0">   86</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#af7eeeccfebb7c89989403596fb771afd">   87</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    b3WorldId worldId_{};</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">bool</span>      destroyed_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">int</span>       nextId_    = 1;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::unordered_set&lt;Body3D *&gt;  bodies_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::unordered_set&lt;Shape3D *&gt; shapes_;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">int</span>   rayHitBodyId_   = -1;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> rayHitX_        = 0.f;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">float</span> rayHitY_        = 0.f;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span> rayHitZ_        = 0.f;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">float</span> rayHitNormalX_  = 0.f;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">float</span> rayHitNormalY_  = 0.f;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">float</span> rayHitNormalZ_  = 0.f;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">float</span> rayHitFraction_ = 0.f;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    std::vector&lt;int&gt; queryBodyIds_;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a503889937f87ab447382207f9d5cba56"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a></div><div class="ttdeci">JobFunc body</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00159">JobSystemThreadPool.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html">eve::physics::Body3D</a></div><div class="ttdoc">3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create sh...</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00016">Body3D.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Shape3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></div><div class="ttdoc">3D shape (box/sphere/capsule) attached to a Body3D with material settings. Created via Body3D::new*Sh...</div><div class="ttdef"><b>Definition</b> <a href="Shape3D_8h_source.html#l00014">Shape3D.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00018">World3D.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a01f07ed38b8f2779c874090a99bf2f91"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a01f07ed38b8f2779c874090a99bf2f91">eve::physics::World3D::setGravity</a></div><div class="ttdeci">void setGravity(float gx, float gy, float gz)</div><div class="ttdoc">Gravity in m/s².</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00076">World3D.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a031a1887020c97a5de0f8d9b5fb3cfa4"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a031a1887020c97a5de0f8d9b5fb3cfa4">eve::physics::World3D::getQueryBodyId</a></div><div class="ttdeci">int getQueryBodyId(int index) const</div><div class="ttdoc">Body id of the i-th query hit.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00204">World3D.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a0c03010a8da1b2e13f0d458bc6df10f0"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a0c03010a8da1b2e13f0d458bc6df10f0">eve::physics::World3D::hasRayHit</a></div><div class="ttdeci">bool hasRayHit() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a1c31c82a42d1546903886f6f9c6e3a59"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a1c31c82a42d1546903886f6f9c6e3a59">eve::physics::World3D::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Steps the simulation by dt seconds (default substep count).</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00065">World3D.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a21cb36cda6ec7c9fc2f18e56e928ad7a"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a21cb36cda6ec7c9fc2f18e56e928ad7a">eve::physics::World3D::getRayHitX</a></div><div class="ttdeci">float getRayHitX() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00052">World3D.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a272f63b9e4b9111084ab396b5ffcc6ae"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a272f63b9e4b9111084ab396b5ffcc6ae">eve::physics::World3D::getRayHitY</a></div><div class="ttdeci">float getRayHitY() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00053">World3D.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a33fbd30dff90eedbe486b6ba8ec78579"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a33fbd30dff90eedbe486b6ba8ec78579">eve::physics::World3D::World3D</a></div><div class="ttdeci">World3D(const World3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a34607b0306c1264eb45be96ffbe646f6"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a34607b0306c1264eb45be96ffbe646f6">eve::physics::World3D::forgetBody</a></div><div class="ttdeci">void forgetBody(Body3D *body)</div><div class="ttdoc">Internal: wrapper teardown bookkeeping.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00118">World3D.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a34ebff7bb605670d313e7aabec808089"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a34ebff7bb605670d313e7aabec808089">eve::physics::World3D::operator=</a></div><div class="ttdeci">World3D &amp; operator=(const World3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a380d8200c7914d0f5d9ad1cf3632837a"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a380d8200c7914d0f5d9ad1cf3632837a">eve::physics::World3D::getGravityX</a></div><div class="ttdeci">float getGravityX() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00081">World3D.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a38b9d109f7f0c578a639ec9bf05018dc"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a38b9d109f7f0c578a639ec9bf05018dc">eve::physics::World3D::getQueryCount</a></div><div class="ttdeci">int getQueryCount() const</div><div class="ttdoc">Number of bodies hit by the last queryAABB().</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00066">World3D.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a3dc9c70c23e3ed5416c01215345a70a9"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a3dc9c70c23e3ed5416c01215345a70a9">eve::physics::World3D::nextBodyId</a></div><div class="ttdeci">int nextBodyId()</div><div class="ttdoc">Internal: next stable body id.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00096">World3D.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a40a63e08a65574fa4359d8a9473b55d1"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a40a63e08a65574fa4359d8a9473b55d1">eve::physics::World3D::getRayHitNormalX</a></div><div class="ttdeci">float getRayHitNormalX() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00055">World3D.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a4991732ce4a0c33c7b3f5e505cc57606"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a4991732ce4a0c33c7b3f5e505cc57606">eve::physics::World3D::getRayHitNormalZ</a></div><div class="ttdeci">float getRayHitNormalZ() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00057">World3D.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a5e1b0205baacc37a541b99d25666c53c"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a5e1b0205baacc37a541b99d25666c53c">eve::physics::World3D::getGravityY</a></div><div class="ttdeci">float getGravityY() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00086">World3D.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a659f2e9255841237b9ed609aede4ce16"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a659f2e9255841237b9ed609aede4ce16">eve::physics::World3D::rayCast</a></div><div class="ttdeci">int rayCast(float x1, float y1, float z1, float x2, float y2, float z2)</div><div class="ttdoc">Closest raycast from (x1,y1,z1) to (x2,y2,z2) in meters. Returns hit body id, or -1....</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00146">World3D.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a8a486e8b174e10fb01b5d0a34f10f8c1"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a8a486e8b174e10fb01b5d0a34f10f8c1">eve::physics::World3D::raw</a></div><div class="ttdeci">b3WorldId raw() const</div><div class="ttdoc">Raw Box3D world id.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00073">World3D.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a8f6bdc3370bac35a43fef5c76c645b02"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a8f6bdc3370bac35a43fef5c76c645b02">eve::physics::World3D::isValid</a></div><div class="ttdeci">bool isValid() const</div><div class="ttdoc">True while the underlying Box3D world is alive.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00041">World3D.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_aa940115b2c14ca82c5ec5931b8170d50"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#aa940115b2c14ca82c5ec5931b8170d50">eve::physics::World3D::queryAABB</a></div><div class="ttdeci">int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</div><div class="ttdoc">Query shapes overlapping an AABB in meters (min/max corners). Returns match count; read ids with getQ...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00177">World3D.cpp:177</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_aaa44ab339620969837d8569921bff434"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#aaa44ab339620969837d8569921bff434">eve::physics::World3D::updateFull</a></div><div class="ttdeci">void updateFull(float dt, int subStepCount)</div><div class="ttdoc">Steps with an explicit substep count.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00067">World3D.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_aabb2cc2d3e019230f8f16d6720c36fbf"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#aabb2cc2d3e019230f8f16d6720c36fbf">eve::physics::World3D::destroyBody</a></div><div class="ttdeci">void destroyBody(Body3D *body)</div><div class="ttdoc">Destroys a body (null is ignored).</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00113">World3D.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ab09171109ef4afd0a5ef2ba4c805d9ea"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ab09171109ef4afd0a5ef2ba4c805d9ea">eve::physics::World3D::forgetShape</a></div><div class="ttdeci">void forgetShape(Shape3D *shape)</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00119">World3D.cpp:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ac1ea82415994eedd305644820f93a8ed"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ac1ea82415994eedd305644820f93a8ed">eve::physics::World3D::getGravityZ</a></div><div class="ttdeci">float getGravityZ() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00091">World3D.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ac6811005567b31807ae2255a17bda304"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304">eve::physics::World3D::destroy</a></div><div class="ttdeci">void destroy()</div><div class="ttdoc">Destroys the world and invalidates all wrappers.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00043">World3D.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ac822df09477e052b88cfd88957c8ab91"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ac822df09477e052b88cfd88957c8ab91">eve::physics::World3D::getRayHitZ</a></div><div class="ttdeci">float getRayHitZ() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00054">World3D.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ad10369eb1a06121ed90d8c9274f5891d"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ad10369eb1a06121ed90d8c9274f5891d">eve::physics::World3D::getRayHitBodyId</a></div><div class="ttdeci">int getRayHitBodyId() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00051">World3D.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ad9cb025f6e741d1232e5d6d948af2d80"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ad9cb025f6e741d1232e5d6d948af2d80">eve::physics::World3D::~World3D</a></div><div class="ttdeci">~World3D()</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00039">World3D.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ada3ee4b4fe8562e94e3f332053af340b"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ada3ee4b4fe8562e94e3f332053af340b">eve::physics::World3D::emitContactEvents</a></div><div class="ttdeci">void emitContactEvents()</div><div class="ttdoc">Internal: collects Box3D contact events into the event buffers.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00121">World3D.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_adabd7a943e53c1325b4b9bc8799c3914"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#adabd7a943e53c1325b4b9bc8799c3914">eve::physics::World3D::newBody</a></div><div class="ttdeci">Body3D * newBody(const std::string &amp;bodyType, float x, float y, float z)</div><div class="ttdoc">bodyType: &quot;static&quot; | &quot;kinematic&quot; | &quot;dynamic&quot;. Position in meters.</div><div class="ttdef"><b>Definition</b> <a href="World3D_8cpp_source.html#l00098">World3D.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ae2c26e60ef2b4d6cfca87bb524dee096"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ae2c26e60ef2b4d6cfca87bb524dee096">eve::physics::World3D::getRayHitFraction</a></div><div class="ttdeci">float getRayHitFraction() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00058">World3D.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_aecbb062ecb022440977182b1a7a6712f"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#aecbb062ecb022440977182b1a7a6712f">eve::physics::World3D::getRayHitNormalY</a></div><div class="ttdeci">float getRayHitNormalY() const</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00056">World3D.h:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdef"><b>Definition</b> <a href="Body_8cpp_source.html#l00011">Body.cpp:11</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

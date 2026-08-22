@@ -1,0 +1,1282 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#concepts">概念</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Build metadata (engine git commit, build time, third-party version).  
+<a href="namespaceeve.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1animation" id="r_namespaceeve_1_1animation"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation.html">animation</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1audio" id="r_namespaceeve_1_1audio"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html">audio</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1avatar" id="r_namespaceeve_1_1avatar"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1avatar.html">avatar</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1building" id="r_namespaceeve_1_1building"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building.html">building</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1building"><td class="mdescLeft">&#160;</td><td class="mdescRight">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1buildingfx" id="r_namespaceeve_1_1buildingfx"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1buildingfx.html">buildingfx</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1camera" id="r_namespaceeve_1_1camera"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1camera.html">camera</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1cap" id="r_namespaceeve_1_1cap"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html">cap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1caps" id="r_namespaceeve_1_1caps"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1caps.html">caps</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1card" id="r_namespaceeve_1_1card"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1card.html">card</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1cmd" id="r_namespaceeve_1_1cmd"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html">cmd</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1cmdline" id="r_namespaceeve_1_1cmdline"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmdline.html">cmdline</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1cmdline"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal streaming ZIP writer used by <code>eve zip</code> / <code>eve package</code> to produce a PhysFS-mountable game archive (.eve). Entries are DEFLATE-compressed (method 8) using zlib's raw deflate. The output is a standard ZIP readable by PhysFS. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1data" id="r_namespaceeve_1_1data"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1data.html">data</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1database" id="r_namespaceeve_1_1database"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1database.html">database</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1daynight" id="r_namespaceeve_1_1daynight"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1daynight.html">daynight</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1debug" id="r_namespaceeve_1_1debug"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1debug.html">debug</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1demo" id="r_namespaceeve_1_1demo"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1demo.html">demo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1dev" id="r_namespaceeve_1_1dev"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html">dev</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1dialogue" id="r_namespaceeve_1_1dialogue"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1editor" id="r_namespaceeve_1_1editor"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editor.html">editor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1event" id="r_namespaceeve_1_1event"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1event.html">event</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1filesystem" id="r_namespaceeve_1_1filesystem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1filesystem.html">filesystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1font" id="r_namespaceeve_1_1font"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1font.html">font</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1gpgpu" id="r_namespaceeve_1_1gpgpu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html">gpgpu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics" id="r_namespaceeve_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1grid" id="r_namespaceeve_1_1grid"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1grid.html">grid</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1housegen" id="r_namespaceeve_1_1housegen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen.html">housegen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1i18n" id="r_namespaceeve_1_1i18n"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1i18n.html">i18n</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1ik" id="r_namespaceeve_1_1ik"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ik.html">ik</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1image" id="r_namespaceeve_1_1image"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1image.html">image</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1inventory" id="r_namespaceeve_1_1inventory"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1inventory.html">inventory</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1inventory"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">InventorySystem</a> 提供；本类暴露便于脚本绑定的薄封装方法。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1joystick" id="r_namespaceeve_1_1joystick"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1joystick.html">joystick</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1json" id="r_namespaceeve_1_1json"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1json.html">json</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1keyboard" id="r_namespaceeve_1_1keyboard"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1keyboard.html">keyboard</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1map" id="r_namespaceeve_1_1map"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1map.html">map</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1map"><td class="mdescLeft">&#160;</td><td class="mdescRight">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectangle / iso / staggered / hex 与 XY/XZ 平面轴）。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1math" id="r_namespaceeve_1_1math"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1math.html">math</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1model3d" id="r_namespaceeve_1_1model3d"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html">model3d</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1mouse" id="r_namespaceeve_1_1mouse"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1mouse.html">mouse</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1network" id="r_namespaceeve_1_1network"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1network.html">network</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1particles" id="r_namespaceeve_1_1particles"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1particles.html">particles</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1physics" id="r_namespaceeve_1_1physics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html">physics</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1plugins" id="r_namespaceeve_1_1plugins"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1plugins.html">plugins</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1rpg" id="r_namespaceeve_1_1rpg"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1rpg"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1rx" id="r_namespaceeve_1_1rx"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rx.html">rx</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1scene" id="r_namespaceeve_1_1scene"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene.html">scene</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1sceneloader" id="r_namespaceeve_1_1sceneloader"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sceneloader.html">sceneloader</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1script" id="r_namespaceeve_1_1script"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1script.html">script</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1service" id="r_namespaceeve_1_1service"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1service.html">service</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1sound" id="r_namespaceeve_1_1sound"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sound.html">sound</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1spatial" id="r_namespaceeve_1_1spatial"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1spatial.html">spatial</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1spritestack" id="r_namespaceeve_1_1spritestack"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1spritestack.html">spritestack</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1stylize" id="r_namespaceeve_1_1stylize"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1system" id="r_namespaceeve_1_1system"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1system.html">system</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor" id="r_namespaceeve_1_1tensor"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1thread" id="r_namespaceeve_1_1thread"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1thread.html">thread</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1timer" id="r_namespaceeve_1_1timer"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1timer.html">timer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1touch" id="r_namespaceeve_1_1touch"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1touch.html">touch</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1ui" id="r_namespaceeve_1_1ui"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html">ui</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1virtualgeometry" id="r_namespaceeve_1_1virtualgeometry"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html">virtualgeometry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1voxel" id="r_namespaceeve_1_1voxel"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel.html">voxel</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1voxel"><td class="mdescLeft">&#160;</td><td class="mdescRight">方块类型定义：名字、各面图集纹理、方向性、组合声明。 方向性方块在注册时按 orientation 绕 Y 轴展开成多个"具体类型"变体， 每个变体持有旋转后的各面纹理；渲染端只消费纹理 id，不接触 orientation。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1weather" id="r_namespaceeve_1_1weather"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1weather.html">weather</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1window" id="r_namespaceeve_1_1window"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1window.html">window</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Data.html">Data</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Exception.html">Exception</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IAudioQuery.html">IAudioQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Audio control surface (provided by the audio module).  <a href="classeve_1_1IAudioQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html">IEditorHost</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative editor-host control (provided by the ui module).  <a href="classeve_1_1IEditorHost.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IParticlesQuery.html">IParticlesQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Particle system query surface (provided by the particles module).  <a href="classeve_1_1IParticlesQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IPhysicsQuery.html">IPhysicsQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D physics world query surface (provided by the physics module).  <a href="classeve_1_1IPhysicsQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IProcgenQuery.html">IProcgenQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Procedural generation query surface (provided by the procgen module).  <a href="classeve_1_1IProcgenQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html">IRenderCapture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame capture + camera + visible-entity inspection (graphics).  <a href="classeve_1_1IRenderCapture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html">ISceneQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scene graph query/mutation surface (provided by the scene module).  <a href="classeve_1_1ISceneQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html">IWindowSurfaceHost</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render-surface host for the window module (provided by graphics).  <a href="classeve_1_1IWindowSurfaceHost.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Model.html">Model</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-backed model: wraps a Squirrel object (table/class instance).  <a href="classeve_1_1Model.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModelClass.html">ModelClass</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> with a list of Squirrel attribute objects.  <a href="classeve_1_1ModelClass.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModelManager.html">ModelManager</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registry tracking <a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> → <a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> relationships.  <a href="classeve_1_1ModelManager.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModelMap.html">ModelMap</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> that maps to a Squirrel table (key/value).  <a href="classeve_1_1ModelMap.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModelVector.html">ModelVector</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> that maps to a Squirrel array.  <a href="classeve_1_1ModelVector.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html">Module</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ModuleManager.html">ModuleManager</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ModuleRegister.html">ModuleRegister</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html">Object</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> is the base class for all game objects. It provides reference counting and dirty flag for update.  <a href="classeve_1_1Object.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1RayHitInfo.html">RayHitInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ray-cast result (value type).  <a href="structeve_1_1RayHitInfo.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1Rect.html">Rect</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned integer rectangle (screen/tile space).  <a href="structeve_1_1Rect.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ref.html">ref</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">ref is a smart pointer that automatically calls <a class="el" href="classeve_1_1ref.html#a3ba517984132275b5cef4ba8ef835f81">ref()</a> and unref() on the object. Type T must be a subclass of <a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a>.  <a href="classeve_1_1ref.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ReflectedAttribute.html">ReflectedAttribute</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ReflectedMember.html">ReflectedMember</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed snapshot of one live instance property.  <a href="structeve_1_1ReflectedValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1RenderStatusInfo.html">RenderStatusInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render surface / frame state snapshot (value type).  <a href="structeve_1_1RenderStatusInfo.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Resource.html">Resource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> is a game object that is managed by the <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a>. It can be loaded from a file or generated at runtime. If the resource is loaded from file, a monitor will be created to watch the file changes. When the file is modified, the resource will be reloaded. If the resource is generated at runtime, it can depend on a few other resources and the <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> will update the resource when the dependencies are changed.  <a href="classeve_1_1Resource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html">ResourceManager</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> is a singleton that manages all resources in the game. It provides a way to load, reload, and unload resources.  <a href="classeve_1_1ResourceManager.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html">Runtime</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable snapshot of one scene node (value type, no scene types).  <a href="structeve_1_1SceneNodeInfo.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html">ScriptException</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Exception.html">Exception</a> raised at the public <a class="el" href="classeve_1_1Runtime.html">Runtime</a> boundary.  <a href="classeve_1_1ScriptException.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StartupStage.html">StartupStage</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html">StateValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">JSON-compatible state value tree used by state hot reload.  <a href="classeve_1_1StateValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+概念</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="concepteve_1_1DerivedFromObject.html">DerivedFromObject</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a7f045df5e781c9ba4e61ded11060cbe2" id="r_a7f045df5e781c9ba4e61ded11060cbe2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a7f045df5e781c9ba4e61ded11060cbe2">CppEntityViewFn</a> = std::function&lt; void(ssq::Array &amp;out)&gt;</td></tr>
+<tr class="memdesc:a7f045df5e781c9ba4e61ded11060cbe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ 实体 → 脚本 eve.view() 桥接。 用 registerCppEntityView(typeid(T*).hash_code(), fn) 登记 T 的收集函数； 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。  <br /></td></tr>
+<tr class="separator:a7f045df5e781c9ba4e61ded11060cbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68fd1e1964922b045a57d6f1a26a7e6c" id="r_a68fd1e1964922b045a57d6f1a26a7e6c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a68fd1e1964922b045a57d6f1a26a7e6c">PostEcsHook</a> = std::function&lt; void(ssq::Table &amp;table)&gt;</td></tr>
+<tr class="memdesc:a68fd1e1964922b045a57d6f1a26a7e6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。 模块用它注入"extends eve.Entity"的脚本基类（例如 eve.SceneEntity）。 在 exposeECS / exposeECSToVM 末尾运行，早于任何游戏脚本。  <br /></td></tr>
+<tr class="separator:a68fd1e1964922b045a57d6f1a26a7e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a61faae4d6488bb9756f624196fc503da" id="r_a61faae4d6488bb9756f624196fc503da"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503da">ScriptState</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa4ead4fdae2e4938c155e1db52aa1546d">Compiled</a>
+, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa5bda814c4aedb126839228f1a3d92f09">Running</a>
+, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6">Loaded</a>
+, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa62168dff2fc801c4ff6ee24619bc314c">Unloading</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daaa5ae20aa7fda5bd38bf0dce98e65bd2d">Unloaded</a>
+, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+<br />
+ }</td></tr>
+<tr class="separator:a61faae4d6488bb9756f624196fc503da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6df6fea82bc0dd802f0447de6726445" id="r_aa6df6fea82bc0dd802f0447de6726445"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a3de9387fc230ce74214446e58c4fefde">Compile</a>
+, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a40cd014b7b6251e3a22e6a45a73a64e1">Execute</a>
+, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a74de3e45e4491e956e8dc18d841d9b00">Reflect</a>
+, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445aae11d3ee071e72953c90b02bff1a19cb">Unload</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a1a4ebb180ba59b067782515ffee6e975">Shutdown</a>
+<br />
+ }</td></tr>
+<tr class="separator:aa6df6fea82bc0dd802f0447de6726445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac05a2d9228e0b283897b75b4c5cdaf2b" id="r_ac05a2d9228e0b283897b75b4c5cdaf2b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2b">ReflectedValueKind</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034">Bool</a> = 1
+, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2baa0faef0851b4294c06f2b94bb1cb2044">Integer</a> = 2
+, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b">Float</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98">String</a> = 4
+, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17">Array</a> = 5
+, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">Table</a> = 6
+, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bad9a17c1c9e8ef6866e4dbeef41c741b2">Instance</a> = 7
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba6311ae17c1ee52b36e68aaf4ad066387">Other</a> = 8
+<br />
+ }</td></tr>
+<tr class="memdesc:ac05a2d9228e0b283897b75b4c5cdaf2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runtime value kind read from a live script instance slot.  <a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2b">更多...</a><br /></td></tr>
+<tr class="separator:ac05a2d9228e0b283897b75b4c5cdaf2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a375a635284e43ac11f30fba07d8d142d" id="r_a375a635284e43ac11f30fba07d8d142d"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a375a635284e43ac11f30fba07d8d142d">b64_encode</a> (const char *src, size_t srclen, size_t linelen, size_t &amp;dstlen)</td></tr>
+<tr class="memdesc:a375a635284e43ac11f30fba07d8d142d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base64-encode data.  <br /></td></tr>
+<tr class="separator:a375a635284e43ac11f30fba07d8d142d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeef1d3fc095dd619af4509617f32aba" id="r_aeeef1d3fc095dd619af4509617f32aba"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aeeef1d3fc095dd619af4509617f32aba">b64_decode</a> (const char *src, size_t srclen, size_t &amp;dstlen)</td></tr>
+<tr class="memdesc:aeeef1d3fc095dd619af4509617f32aba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode base64 encoded data.  <br /></td></tr>
+<tr class="separator:aeeef1d3fc095dd619af4509617f32aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bc13169d49ee0797c83bee8db22f0f6" id="r_a4bc13169d49ee0797c83bee8db22f0f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a4bc13169d49ee0797c83bee8db22f0f6">exposeECS</a> (ssq::Table &amp;table)</td></tr>
+<tr class="memdesc:a4bc13169d49ee0797c83bee8db22f0f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">脚本侧 ECS：Entity / Component / System / ShaderSystem / view（见 ECS.cpp）。 C++ 游戏实体仍直接用 ECS.hpp 的 ENTITY / COMPONENT / View。 GPU System：eve.ShaderSystem + <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">gpgpu::ShaderSystem</a> / EcsGpu.h。  <br /></td></tr>
+<tr class="separator:a4bc13169d49ee0797c83bee8db22f0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafee3c4ce6d37660373883bdc7c3bdc9" id="r_aafee3c4ce6d37660373883bdc7c3bdc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aafee3c4ce6d37660373883bdc7c3bdc9">registerCppEntityView</a> (size_t typeHash, <a class="el" href="namespaceeve.html#a7f045df5e781c9ba4e61ded11060cbe2">CppEntityViewFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:aafee3c4ce6d37660373883bdc7c3bdc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3e5441fe87aef3d578223946e3cf2a" id="r_a4b3e5441fe87aef3d578223946e3cf2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a4b3e5441fe87aef3d578223946e3cf2a">registerPostEcsHook</a> (<a class="el" href="namespaceeve.html#a68fd1e1964922b045a57d6f1a26a7e6c">PostEcsHook</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:a4b3e5441fe87aef3d578223946e3cf2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ba90637eef1c974b29bee56582651d" id="r_a89ba90637eef1c974b29bee56582651d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a89ba90637eef1c974b29bee56582651d">exposeECSToVM</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a89ba90637eef1c974b29bee56582651d"><td class="mdescLeft">&#160;</td><td class="mdescRight">在 <a class="el" href="classeve_1_1ModuleManager.html#a4da730a6c4aaaa772c7465485044aefb" title="Exposes every registered module into the given runtime&#39;s root table.">ModuleManager::expose</a> 之后调用；保证 eve.Component 等不被其它模块覆盖。  <br /></td></tr>
+<tr class="separator:a89ba90637eef1c974b29bee56582651d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af08954c263f2016f3b9e66ab6faae2d7" id="r_af08954c263f2016f3b9e66ab6faae2d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#af08954c263f2016f3b9e66ab6faae2d7">exposeReflection</a> (<a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;runtime, ssq::Table eveTable)</td></tr>
+<tr class="memdesc:af08954c263f2016f3b9e66ab6faae2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes the <a class="el" href="classeve_1_1Runtime.html">Runtime</a> reflection API to scripts as <code>eve.reflect</code>.  <br /></td></tr>
+<tr class="separator:af08954c263f2016f3b9e66ab6faae2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85a0522891f0e4fba248a9d87b22b914" id="r_a85a0522891f0e4fba248a9d87b22b914"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a85a0522891f0e4fba248a9d87b22b914">reflectedFloatString</a> (double <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="memdesc:a85a0522891f0e4fba248a9d87b22b914"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shortest round-trip float formatting (portable).  <br /></td></tr>
+<tr class="separator:a85a0522891f0e4fba248a9d87b22b914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5784445aa2a3678666d3f8d0d55ffc2a" id="r_a5784445aa2a3678666d3f8d0d55ffc2a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a5784445aa2a3678666d3f8d0d55ffc2a">utf8_codepoint_count</a> (const std::string &amp;<a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="memdesc:a5784445aa2a3678666d3f8d0d55ffc2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count UTF-8 code points in a string. Invalid / truncated sequences stop the scan.  <br /></td></tr>
+<tr class="separator:a5784445aa2a3678666d3f8d0d55ffc2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae28932f9fbd25f916303c4c1b6a10368" id="r_ae28932f9fbd25f916303c4c1b6a10368"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ae28932f9fbd25f916303c4c1b6a10368">utf8_byte_offset_for_codepoints</a> (const std::string &amp;<a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>, size_t codepoints)</td></tr>
+<tr class="memdesc:ae28932f9fbd25f916303c4c1b6a10368"><td class="mdescLeft">&#160;</td><td class="mdescRight">Byte offset of the N-th UTF-8 code point (0-based count of code points). Returns s.size() if there are fewer than N code points.  <br /></td></tr>
+<tr class="separator:ae28932f9fbd25f916303c4c1b6a10368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294c4a992bfd917c8b6e03ab59725430" id="r_a294c4a992bfd917c8b6e03ab59725430"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a294c4a992bfd917c8b6e03ab59725430">gitCommit</a> ()</td></tr>
+<tr class="separator:a294c4a992bfd917c8b6e03ab59725430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6be398cbc96a9c93a59ca416e14b031" id="r_aa6be398cbc96a9c93a59ca416e14b031"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aa6be398cbc96a9c93a59ca416e14b031">thirdPartyVersion</a> ()</td></tr>
+<tr class="separator:aa6be398cbc96a9c93a59ca416e14b031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80201bdb1bd556fc3e710dd1a9ef540e" id="r_a80201bdb1bd556fc3e710dd1a9ef540e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a80201bdb1bd556fc3e710dd1a9ef540e">buildInfo</a> ()</td></tr>
+<tr class="memdesc:a80201bdb1bd556fc3e710dd1a9ef540e"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-line build metadata for diagnostics (printed by <code>eve --version</code>).  <br /></td></tr>
+<tr class="separator:a80201bdb1bd556fc3e710dd1a9ef540e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a14bf5e57aea12bfc58cedd7fe1473ced" id="r_a14bf5e57aea12bfc58cedd7fe1473ced"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a14bf5e57aea12bfc58cedd7fe1473ced">boot_content</a></td></tr>
+<tr class="memdesc:a14bf5e57aea12bfc58cedd7fe1473ced"><td class="mdescLeft">&#160;</td><td class="mdescRight">嵌入式脚本 / 着色器源码常量（构建时由集成脚本生成）。  <br /></td></tr>
+<tr class="separator:a14bf5e57aea12bfc58cedd7fe1473ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5505da6de1b608d73bf9363e4249099f" id="r_a5505da6de1b608d73bf9363e4249099f"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a5505da6de1b608d73bf9363e4249099f">load_content</a></td></tr>
+<tr class="separator:a5505da6de1b608d73bf9363e4249099f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a736a683bf3975b310f884f8a257b67b5" id="r_a736a683bf3975b310f884f8a257b67b5"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a736a683bf3975b310f884f8a257b67b5">module_list_content</a></td></tr>
+<tr class="separator:a736a683bf3975b310f884f8a257b67b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46eecd0b3a07068f619c081d0a7b99bb" id="r_a46eecd0b3a07068f619c081d0a7b99bb"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a46eecd0b3a07068f619c081d0a7b99bb">async_content</a></td></tr>
+<tr class="separator:a46eecd0b3a07068f619c081d0a7b99bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ac75cda875b82d0f827f52e9dc7dd32" id="r_a8ac75cda875b82d0f827f52e9dc7dd32"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a8ac75cda875b82d0f827f52e9dc7dd32">scene_director_content</a></td></tr>
+<tr class="separator:a8ac75cda875b82d0f827f52e9dc7dd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad57a04b0484d11f7b3cb3ec6179064bd" id="r_ad57a04b0484d11f7b3cb3ec6179064bd"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ad57a04b0484d11f7b3cb3ec6179064bd">demo_content</a></td></tr>
+<tr class="separator:ad57a04b0484d11f7b3cb3ec6179064bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70407b07921e6c573db42c3f496e5ad3" id="r_a70407b07921e6c573db42c3f496e5ad3"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a70407b07921e6c573db42c3f496e5ad3">vertex_content</a></td></tr>
+<tr class="separator:a70407b07921e6c573db42c3f496e5ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7470094950d998af3972db3e42f199a7" id="r_a7470094950d998af3972db3e42f199a7"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a7470094950d998af3972db3e42f199a7">fragment_content</a></td></tr>
+<tr class="separator:a7470094950d998af3972db3e42f199a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Build metadata (engine git commit, build time, third-party version). </p>
+</div><h2 class="groupheader">类型定义说明</h2>
+<a id="a7f045df5e781c9ba4e61ded11060cbe2" name="a7f045df5e781c9ba4e61ded11060cbe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f045df5e781c9ba4e61ded11060cbe2">&#9670;&#160;</a></span>CppEntityViewFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a7f045df5e781c9ba4e61ded11060cbe2">eve::CppEntityViewFn</a> = typedef std::function&lt;void(ssq::Array&amp; out)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>C++ 实体 → 脚本 eve.view() 桥接。 用 registerCppEntityView(typeid(T*).hash_code(), fn) 登记 T 的收集函数； 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。 </p>
+
+<p class="definition">在文件 <a class="el" href="ECS_8h_source.html">ECS.h</a> 第 <a class="el" href="ECS_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68fd1e1964922b045a57d6f1a26a7e6c" name="a68fd1e1964922b045a57d6f1a26a7e6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68fd1e1964922b045a57d6f1a26a7e6c">&#9670;&#160;</a></span>PostEcsHook</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a68fd1e1964922b045a57d6f1a26a7e6c">eve::PostEcsHook</a> = typedef std::function&lt;void(ssq::Table&amp; table)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。 模块用它注入"extends eve.Entity"的脚本基类（例如 eve.SceneEntity）。 在 exposeECS / exposeECSToVM 末尾运行，早于任何游戏脚本。 </p>
+
+<p class="definition">在文件 <a class="el" href="ECS_8h_source.html">ECS.h</a> 第 <a class="el" href="ECS_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ac05a2d9228e0b283897b75b4c5cdaf2b" name="ac05a2d9228e0b283897b75b4c5cdaf2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac05a2d9228e0b283897b75b4c5cdaf2b">&#9670;&#160;</a></span>ReflectedValueKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2b">eve::ReflectedValueKind</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> value kind read from a live script instance slot. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2ba6adf97f83acf6453d4a6a4b1070f3754" name="ac05a2d9228e0b283897b75b4c5cdaf2ba6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>Missing / null slot. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034" name="ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034"></a>Bool&#160;</td><td class="fielddoc"><p>OT_BOOL. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2baa0faef0851b4294c06f2b94bb1cb2044" name="ac05a2d9228e0b283897b75b4c5cdaf2baa0faef0851b4294c06f2b94bb1cb2044"></a>Integer&#160;</td><td class="fielddoc"><p>OT_INTEGER. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b" name="ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b"></a>Float&#160;</td><td class="fielddoc"><p>OT_FLOAT. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98" name="ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"><p>OT_STRING. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17" name="ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17"></a>Array&#160;</td><td class="fielddoc"><p>OT_ARRAY (not yet editable). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141" name="ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141"></a>Table&#160;</td><td class="fielddoc"><p>OT_TABLE (not yet editable). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2bad9a17c1c9e8ef6866e4dbeef41c741b2" name="ac05a2d9228e0b283897b75b4c5cdaf2bad9a17c1c9e8ef6866e4dbeef41c741b2"></a>Instance&#160;</td><td class="fielddoc"><p>Nested script instance (not yet editable). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac05a2d9228e0b283897b75b4c5cdaf2ba6311ae17c1ee52b36e68aaf4ad066387" name="ac05a2d9228e0b283897b75b4c5cdaf2ba6311ae17c1ee52b36e68aaf4ad066387"></a>Other&#160;</td><td class="fielddoc"><p>Any other slot kind. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6df6fea82bc0dd802f0447de6726445" name="aa6df6fea82bc0dd802f0447de6726445"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6df6fea82bc0dd802f0447de6726445">&#9670;&#160;</a></span>ScriptStage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">eve::ScriptStage</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa6df6fea82bc0dd802f0447de6726445a3de9387fc230ce74214446e58c4fefde" name="aa6df6fea82bc0dd802f0447de6726445a3de9387fc230ce74214446e58c4fefde"></a>Compile&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa6df6fea82bc0dd802f0447de6726445a40cd014b7b6251e3a22e6a45a73a64e1" name="aa6df6fea82bc0dd802f0447de6726445a40cd014b7b6251e3a22e6a45a73a64e1"></a>Execute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa6df6fea82bc0dd802f0447de6726445a74de3e45e4491e956e8dc18d841d9b00" name="aa6df6fea82bc0dd802f0447de6726445a74de3e45e4491e956e8dc18d841d9b00"></a>Reflect&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa6df6fea82bc0dd802f0447de6726445aae11d3ee071e72953c90b02bff1a19cb" name="aa6df6fea82bc0dd802f0447de6726445aae11d3ee071e72953c90b02bff1a19cb"></a>Unload&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa6df6fea82bc0dd802f0447de6726445a1a4ebb180ba59b067782515ffee6e975" name="aa6df6fea82bc0dd802f0447de6726445a1a4ebb180ba59b067782515ffee6e975"></a>Shutdown&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61faae4d6488bb9756f624196fc503da" name="a61faae4d6488bb9756f624196fc503da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61faae4d6488bb9756f624196fc503da">&#9670;&#160;</a></span>ScriptState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503da">eve::ScriptState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a61faae4d6488bb9756f624196fc503daa4ead4fdae2e4938c155e1db52aa1546d" name="a61faae4d6488bb9756f624196fc503daa4ead4fdae2e4938c155e1db52aa1546d"></a>Compiled&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61faae4d6488bb9756f624196fc503daa5bda814c4aedb126839228f1a3d92f09" name="a61faae4d6488bb9756f624196fc503daa5bda814c4aedb126839228f1a3d92f09"></a>Running&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6" name="a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6"></a>Loaded&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61faae4d6488bb9756f624196fc503daa62168dff2fc801c4ff6ee24619bc314c" name="a61faae4d6488bb9756f624196fc503daa62168dff2fc801c4ff6ee24619bc314c"></a>Unloading&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61faae4d6488bb9756f624196fc503daaa5ae20aa7fda5bd38bf0dce98e65bd2d" name="a61faae4d6488bb9756f624196fc503daaa5ae20aa7fda5bd38bf0dce98e65bd2d"></a>Unloaded&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61faae4d6488bb9756f624196fc503daad7c8c85bf79bbe1b7188497c32c3b0ca" name="a61faae4d6488bb9756f624196fc503daad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aeeef1d3fc095dd619af4509617f32aba" name="aeeef1d3fc095dd619af4509617f32aba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeef1d3fc095dd619af4509617f32aba">&#9670;&#160;</a></span>b64_decode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::b64_decode </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>srclen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>dstlen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode base64 encoded data. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">src</td><td>The string containing the base64 data. </td></tr>
+    <tr><td class="paramname">srclen</td><td>The length of the string. </td></tr>
+    <tr><td class="paramname">dstlen</td><td>The size of the binary data is stored here. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A chunk of memory containing the binary data (allocated with new[]). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="b64_8cpp_source.html">b64.cpp</a> 第 <a class="el" href="b64_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DataModule_8cpp_source.html#l00212">eve::data::decode()</a>.</p>
+
+</div>
+</div>
+<a id="a375a635284e43ac11f30fba07d8d142d" name="a375a635284e43ac11f30fba07d8d142d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a375a635284e43ac11f30fba07d8d142d">&#9670;&#160;</a></span>b64_encode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * eve::b64_encode </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>srclen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>linelen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t &amp;&#160;</td>
+          <td class="paramname"><em>dstlen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Base64-encode data. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">src</td><td>The data to encode. </td></tr>
+    <tr><td class="paramname">srclen</td><td>The size in bytes of the data. </td></tr>
+    <tr><td class="paramname">linelen</td><td>The maximum length of each line in the encoded string. 0 indicates no maximum length. </td></tr>
+    <tr><td class="paramname">dstlen</td><td>The length of the encoded string is stored here. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A string containing the base64-encoded data (allocated with new[]). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="b64_8cpp_source.html">b64.cpp</a> 第 <a class="el" href="b64_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DataModule_8cpp_source.html#l00204">eve::data::encode()</a>.</p>
+
+</div>
+</div>
+<a id="a80201bdb1bd556fc3e710dd1a9ef540e" name="a80201bdb1bd556fc3e710dd1a9ef540e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80201bdb1bd556fc3e710dd1a9ef540e">&#9670;&#160;</a></span>buildInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::buildInfo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>One-line build metadata for diagnostics (printed by <code>eve --version</code>). </p>
+<dl class="section return"><dt>返回</dt><dd>"v&lt;engine version&gt; git=&lt;commit&gt; built=&lt;time&gt; [&lt;build type&gt;] tp=&lt;third-party version&gt;" </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Version_8cpp_source.html">Version.cpp</a> 第 <a class="el" href="Version_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="cmdline_8cpp_source.html#l00043">eve::cmd::Cmdline::runArgs()</a>.</p>
+
+</div>
+</div>
+<a id="a4bc13169d49ee0797c83bee8db22f0f6" name="a4bc13169d49ee0797c83bee8db22f0f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc13169d49ee0797c83bee8db22f0f6">&#9670;&#160;</a></span>exposeECS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::exposeECS </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>脚本侧 ECS：Entity / Component / System / ShaderSystem / view（见 ECS.cpp）。 C++ 游戏实体仍直接用 ECS.hpp 的 ENTITY / COMPONENT / View。 GPU System：eve.ShaderSystem + <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">gpgpu::ShaderSystem</a> / EcsGpu.h。 </p>
+
+<p class="definition">在文件 <a class="el" href="ECS_8cpp_source.html">ECS.cpp</a> 第 <a class="el" href="ECS_8cpp_source.html#l00562">562</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00021">cls</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ECS_8cpp_source.html#l00598">exposeECSToVM()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00051">eve::ModuleManager::exposeVM()</a>.</p>
+
+</div>
+</div>
+<a id="a89ba90637eef1c974b29bee56582651d" name="a89ba90637eef1c974b29bee56582651d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ba90637eef1c974b29bee56582651d">&#9670;&#160;</a></span>exposeECSToVM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::exposeECSToVM </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1ModuleManager.html#a4da730a6c4aaaa772c7465485044aefb" title="Exposes every registered module into the given runtime&#39;s root table.">ModuleManager::expose</a> 之后调用；保证 eve.Component 等不被其它模块覆盖。 </p>
+
+<p class="definition">在文件 <a class="el" href="ECS_8cpp_source.html">ECS.cpp</a> 第 <a class="el" href="ECS_8cpp_source.html#l00598">598</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00562">exposeECS()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="af08954c263f2016f3b9e66ab6faae2d7" name="af08954c263f2016f3b9e66ab6faae2d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af08954c263f2016f3b9e66ab6faae2d7">&#9670;&#160;</a></span>exposeReflection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::exposeReflection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Table&#160;</td>
+          <td class="paramname"><em>eveTable</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exposes the <a class="el" href="classeve_1_1Runtime.html">Runtime</a> reflection API to scripts as <code>eve.reflect</code>. </p>
+<p>Adds a <code>reflect</code> sub-table to the <code>eve</code> table with class/instance introspection, typed property read/write and array/table member editing:</p>
+<div class="fragment"><div class="line">local info = <a class="code hl_namespace" href="namespaceeve.html">eve</a>.reflect.classInfo(<span class="stringliteral">&quot;Hero&quot;</span>)     <span class="comment">// class metadata table</span></div>
+<div class="line">local hero = <a class="code hl_namespace" href="namespaceeve.html">eve</a>.reflect.createInstance(<span class="stringliteral">&quot;Hero&quot;</span>)</div>
+<div class="line"><a class="code hl_namespace" href="namespaceeve.html">eve</a>.reflect.write(hero, <span class="stringliteral">&quot;hp&quot;</span>, 42.5)</div>
+<div class="line">local hp = <a class="code hl_namespace" href="namespaceeve.html">eve</a>.reflect.read(hero, <span class="stringliteral">&quot;hp&quot;</span>)        <span class="comment">// 42.5</span></div>
+<div class="line">local members = <a class="code hl_namespace" href="namespaceeve.html">eve</a>.reflect.inspect(hero)      <span class="comment">// member metadata + live values</span></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --><p>Scalar reads/writes keep the slot's own type (bool stays bool, integer stays integer, ...), mirroring <code><a class="el" href="classeve_1_1Runtime.html#a608cb4b117c0c44a0ff855164b50d6a5" title="Writes one property of a live instance.">Runtime::writeProperty</a></code>; array, table and instance slots are read as their live script objects. <code>classInfo()</code> returns null for an unknown class, and every mutator returns false instead of throwing when the member is missing, is a method, or is not editable.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">runtime</td><td><a class="el" href="classeve_1_1Runtime.html">Runtime</a> whose reflection data the bindings operate on. </td></tr>
+    <tr><td class="paramname">eveTable</td><td>Root <code>eve</code> table to add the <code>reflect</code> sub-table to. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectScript_8cpp_source.html">ReflectScript.cpp</a> 第 <a class="el" href="ReflectScript_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l00857">eve::Runtime::arrayAppend()</a>, <a class="el" href="Runtime_8cpp_source.html#l00877">eve::Runtime::arrayRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00829">eve::Runtime::arraySet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00786">eve::Runtime::arraySize()</a>, <a class="el" href="Runtime_8cpp_source.html#l01171">eve::Runtime::classNameOf()</a>, <a class="el" href="ECS_8cpp_source.html#l00021">cls</a>, <a class="el" href="Runtime_8cpp_source.html#l00595">eve::Runtime::createInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">eve::Runtime::handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="Runtime_8cpp_source.html#l00764">eve::Runtime::readObjectProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l01100">eve::Runtime::reflectedClass()</a>, <a class="el" href="Runtime_8cpp_source.html#l01105">eve::Runtime::reflectedClasses()</a>, <a class="el" href="Runtime_8cpp_source.html#l00635">eve::Runtime::reflectInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l01115">eve::Runtime::scanClasses()</a>, <a class="el" href="Runtime_8cpp_source.html#l01090">eve::Runtime::scripts()</a>, <a class="el" href="Runtime_8cpp_source.html#l00904">eve::Runtime::tableKeys()</a>, <a class="el" href="Runtime_8cpp_source.html#l01000">eve::Runtime::tableRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00958">eve::Runtime::tableSet()</a>, <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>, <a class="el" href="Runtime_8cpp_source.html#l00453">eve::Runtime::vm()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00701">eve::Runtime::writeProperty()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00411">eve::Runtime::initialize()</a>.</p>
+
+</div>
+</div>
+<a id="a294c4a992bfd917c8b6e03ab59725430" name="a294c4a992bfd917c8b6e03ab59725430"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a294c4a992bfd917c8b6e03ab59725430">&#9670;&#160;</a></span>gitCommit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::gitCommit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Short engine git commit, or "unknown" when not built from a git checkout. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Version_8cpp_source.html">Version.cpp</a> 第 <a class="el" href="Version_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85a0522891f0e4fba248a9d87b22b914" name="a85a0522891f0e4fba248a9d87b22b914"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85a0522891f0e4fba248a9d87b22b914">&#9670;&#160;</a></span>reflectedFloatString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::reflectedFloatString </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shortest round-trip float formatting (portable). </p>
+<p>std::to_chars(float/double) is unavailable on Apple platforms with an iOS deployment target below 16.3, so reflection/editor code must not use it. snprintf with max_digits10 guarantees round-tripping at the cost of not being the shortest spelling. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="aafee3c4ce6d37660373883bdc7c3bdc9" name="aafee3c4ce6d37660373883bdc7c3bdc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafee3c4ce6d37660373883bdc7c3bdc9">&#9670;&#160;</a></span>registerCppEntityView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::registerCppEntityView </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>typeHash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a7f045df5e781c9ba4e61ded11060cbe2">CppEntityViewFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ECS_8cpp_source.html">ECS.cpp</a> 第 <a class="el" href="ECS_8cpp_source.html#l00590">590</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>.</p>
+
+</div>
+</div>
+<a id="a4b3e5441fe87aef3d578223946e3cf2a" name="a4b3e5441fe87aef3d578223946e3cf2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b3e5441fe87aef3d578223946e3cf2a">&#9670;&#160;</a></span>registerPostEcsHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::registerPostEcsHook </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a68fd1e1964922b045a57d6f1a26a7e6c">PostEcsHook</a>&#160;</td>
+          <td class="paramname"><em>fn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ECS_8cpp_source.html">ECS.cpp</a> 第 <a class="el" href="ECS_8cpp_source.html#l00594">594</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>.</p>
+
+</div>
+</div>
+<a id="aa6be398cbc96a9c93a59ca416e14b031" name="aa6be398cbc96a9c93a59ca416e14b031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6be398cbc96a9c93a59ca416e14b031">&#9670;&#160;</a></span>thirdPartyVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::thirdPartyVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Third-party version this build was linked against (source&lt;commit&gt; / prebuilt&lt;commit&gt;). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Version_8cpp_source.html">Version.cpp</a> 第 <a class="el" href="Version_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae28932f9fbd25f916303c4c1b6a10368" name="ae28932f9fbd25f916303c4c1b6a10368"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae28932f9fbd25f916303c4c1b6a10368">&#9670;&#160;</a></span>utf8_byte_offset_for_codepoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::utf8_byte_offset_for_codepoints </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>codepoints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Byte offset of the N-th UTF-8 code point (0-based count of code points). Returns s.size() if there are fewer than N code points. </p>
+
+<p class="definition">在文件 <a class="el" href="utf8_8cpp_source.html">utf8.cpp</a> 第 <a class="el" href="utf8_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01227">eve::dialogue::Dialogue::getVisibleText()</a>.</p>
+
+</div>
+</div>
+<a id="a5784445aa2a3678666d3f8d0d55ffc2a" name="a5784445aa2a3678666d3f8d0d55ffc2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5784445aa2a3678666d3f8d0d55ffc2a">&#9670;&#160;</a></span>utf8_codepoint_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::utf8_codepoint_count </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count UTF-8 code points in a string. Invalid / truncated sequences stop the scan. </p>
+
+<p class="definition">在文件 <a class="el" href="utf8_8cpp_source.html">utf8.cpp</a> 第 <a class="el" href="utf8_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01227">eve::dialogue::Dialogue::getVisibleText()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01201">eve::dialogue::Dialogue::skipTyping()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01332">eve::dialogue::Dialogue::update()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a46eecd0b3a07068f619c081d0a7b99bb" name="a46eecd0b3a07068f619c081d0a7b99bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46eecd0b3a07068f619c081d0a7b99bb">&#9670;&#160;</a></span>async_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::async_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a14bf5e57aea12bfc58cedd7fe1473ced" name="a14bf5e57aea12bfc58cedd7fe1473ced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14bf5e57aea12bfc58cedd7fe1473ced">&#9670;&#160;</a></span>boot_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::boot_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>嵌入式脚本 / 着色器源码常量（构建时由集成脚本生成）。 </p>
+
+</div>
+</div>
+<a id="ad57a04b0484d11f7b3cb3ec6179064bd" name="ad57a04b0484d11f7b3cb3ec6179064bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad57a04b0484d11f7b3cb3ec6179064bd">&#9670;&#160;</a></span>demo_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::demo_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a7470094950d998af3972db3e42f199a7" name="a7470094950d998af3972db3e42f199a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7470094950d998af3972db3e42f199a7">&#9670;&#160;</a></span>fragment_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fragment_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5505da6de1b608d73bf9363e4249099f" name="a5505da6de1b608d73bf9363e4249099f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5505da6de1b608d73bf9363e4249099f">&#9670;&#160;</a></span>load_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::load_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00325">eve::cmd::RunArgs::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a736a683bf3975b310f884f8a257b67b5" name="a736a683bf3975b310f884f8a257b67b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a736a683bf3975b310f884f8a257b67b5">&#9670;&#160;</a></span>module_list_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::module_list_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Generated slot -&gt; class table for the modules in this build. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a8ac75cda875b82d0f827f52e9dc7dd32" name="a8ac75cda875b82d0f827f52e9dc7dd32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ac75cda875b82d0f827f52e9dc7dd32">&#9670;&#160;</a></span>scene_director_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::scene_director_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a70407b07921e6c573db42c3f496e5ad3" name="a70407b07921e6c573db42c3f496e5ad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70407b07921e6c573db42c3f496e5ad3">&#9670;&#160;</a></span>vertex_content</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::vertex_content</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

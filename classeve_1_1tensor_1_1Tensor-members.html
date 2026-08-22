@@ -1,0 +1,275 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">Tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::tensor::Tensor 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a5209a25d37f28fe82c30a59bd9d04c3e">abs</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a29dfb90436b834098192ab60647a916b">add</a>(const Tensor *other) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af7e15eb3e9ec1807280aea89eaa51647">addInPlace</a>(const Tensor *other)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af0a8669fb1743fc7e0100f0980873a5d">addScalar</a>(float s) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a39475376ae9bc8c87c7944db36aeebf8">addScalarInPlace</a>(float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a71bdf18657f4b2c8ff090c55bf968346">clamp</a>(float lo, float hi) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab47a290679a1a86925371c6e61f9d0e4">clone</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a34d8cf84c1ac765a655425ab1429fa96">CompiledFunction</a></td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a2a43947e9ff6722833d9b02d51f5ea55">copyFrom</a>(const Tensor *other)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aff77a6e807281da0330c01fa0722ebea">cos</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a6e39958e55b64494e3dc033c372e1c47">data</a>()</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a4fea3703bde436c97142475dfb2b3233">data</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a50a0097649a31f4db508be5a92d7e3b5">dequantized</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ac0652c58a276956d6e179c7f8cd66ae0">div</a>(const Tensor *other) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a8b71753d940b1f727a7c26834a81e203">divScalar</a>(float s) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7eb9c2975d492aa2e67d89dca5d73a19">dot</a>(const Tensor *other) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#add634cfae737caa7105d8ec6715ac151">dtype</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a28f727627fff058140cf5e651e574379">ensureEager</a>(const char *op) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a840095b6a773e45c2e9c095510ca3429">exp</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a28923e1b6386f5957916431003815bd7">fill</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae0dc9ab974f1b0322bb216833fa54a9b">flatten</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a87c6c86ed0896880400f89c8c88c3927">Func</a></td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a84418543e13d10893e16246a4d18d4d6">gelu</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#abb5cc31f9e99c4cc237b0d136dd69763">get</a>(int flatIndex) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a44d3dfef6a445eb37f95a48580669d69">get1</a>(int i0) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a9944967bf58a50edf5f4aeec6d8f0b15">get2</a>(int i0, int i1) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3f857d6901be86cb804b556273060569">get3</a>(int i0, int i1, int i2) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a4cf439620d1f785a2333ece3bb2a24f2">get4</a>(int i0, int i1, int i2, int i3) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a63f41c9b37ccc38e5f011258a12865ea">get5</a>(int i0, int i1, int i2, int i3, int i4) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a84d954c44b28e7667333708a9fede2e9">get6</a>(int i0, int i1, int i2, int i3, int i4, int i5) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a55a6b12e626a591aea56919bc6d7734f">getDevice</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab12434034bee1e389323562526a041bf">getDim</a>(int axis) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa49bf33209d1345413dc5c5f63fd3b86">getDim0</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa468a725a9d6235cf9c86e155f7597d4">getDim1</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a412334bb321abdb222781840d568005a">getDim2</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a5074ab98efe4bf84d3ebad94c90a3087">getDim3</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a1f99127143b98611c77e17884b4b8c13">getDim4</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aeed7de3629b529992b932ee1e1bcea53">getDim5</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a152ba4a9cc55962c40b3444b71c9b4dc">getDtype</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aafe479d6adb7594bca8244a836588e45">getRank</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a5bca6083957c306a9968a25640b01260">getSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa4f1152df59b03cc297a14da4a232aa6">graph</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#afab89afd724f1b07b1aaad6bdc61c47a">Graph</a></td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad7505a476f19ffbed83e5aac6ccc76e5">isEager</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a26cc92b5c9ef9dabe9fc8d9d18814704">isQuantized</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa2dc8f124088595d64072b562a91313d">isSymbolic</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3b5bcc40b612cd0923fe9f5853eb2295">kMaxRank</a></td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a373977da4987d6b6f4f34a8209759226">log</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad1f66feb46d090eba3296f529e5f083f">makeSymbolic</a>(Graph *graph, int nodeId, const int *dims, int rank)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae136a7a89f8c69f86e13b8d134530bcc">matmul</a>(const Tensor *other) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#abec287f4ad9ea6d8ae457ac149604ade">maximumScalar</a>(float s) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aee5de2d076312b44341a198a760377d0">minimumScalar</a>(float s) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0665aa0e34adebf1ae34877e9a4d2b9a">mulScalar</a>(float s) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a58d19413d343bf680f8ad6724b797712">mulScalarInPlace</a>(float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a8f5b58d19b2a50bb177c300784b19117">multiply</a>(const Tensor *other) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#adb118cb8851befa3b3b9669e3b956e70">multiplyInPlace</a>(const Tensor *other)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a67f5d2c3d231a325f57864e70fd804d5">neg</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a83b6dcca51dbb15c5b192ca970a94255">nodeId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af60a5be3237e5672790a16e1093d8039">permute</a>(const int *order, int rank) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa5cb05876df18825a7baed97fe3c6d09">powScalar</a>(float exp) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af6dbc3ed5e8b582ba39b1c61b4b6ea84">product</a>(const int *dims, int rank)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a52653f75f30b535ae64dfbf97a41879d">qBytes</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a237a9d0670731bfd262979d456b9b55f">qGroup</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a07b00c0c94d365cfba98b207346d19fe">qScales</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a331b0dae1089c1ffbe0f3c87c8d72752">reduceMax</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af2cdcce2b0e6253605b00a91c9f6d25b">reduceMean</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af98c21a1323549923272d664aee4b491">reduceMin</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a15340c9e9f4901def6cf14e3bc937745">reduceSum</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a6f1f0ff6763de707e91594b8175e99d4">relu</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ade02ae8d647fc40c159956faca4ab207">reluInPlace</a>()</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e6dc3ad8be571a6437c686a77aeef9a">reshape1</a>(int d0) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a68445856c25cd600bbb2375503e28277">reshape2</a>(int d0, int d1) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad62b138afed18d7716de465cf9d6bef1">reshape3</a>(int d0, int d1, int d2) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3d61892c744f7dbab02401a6831bb9dd">reshape4</a>(int d0, int d1, int d2, int d3) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0a2d339d24cbdd9be2220452ac30e36b">reshape5</a>(int d0, int d1, int d2, int d3, int d4) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a666cdcd491b877af5f300f7808049102">reshape6</a>(int d0, int d1, int d2, int d3, int d4, int d5) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab398364ba40e0c3f7f98742699b8aff2">set</a>(int flatIndex, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab07f6745a1514094867d4532e67919a9">set1</a>(int i0, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad5ae09e70e78b4110ebb782addb77242">set2</a>(int i0, int i1, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a2bc296e35ae4abfc4d4bae99162db3ca">set3</a>(int i0, int i1, int i2, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab7f672c9600576a62f7dc0281339b832">set4</a>(int i0, int i1, int i2, int i3, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af903c2b425b9fa9560dfed3e159cb739">set5</a>(int i0, int i1, int i2, int i3, int i4, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af8127a53e61f352d410384d0867b2641">set6</a>(int i0, int i1, int i2, int i3, int i4, int i5, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae107afe64888fd81c72a6a1d4d45824e">setDtype</a>(DType dtype)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a4eefa7ac429084a902f522e6923b073a">sigmoid</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad706d131c64df4d4efb9546bfb7511cc">silu</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a19efec2a8020545c59d9a3960f3fb174">sin</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#abeeb718bf682e4c61c182a4f143e4129">sqrt</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0e7849a3e004ee25205057c88ed3c8cd">sub</a>(const Tensor *other) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#aac0ea602247d4c02a36b9f789ea18c02">subScalar</a>(float s) const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a02d839d9b15be37aeee202b9e7930f22">tanh</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a7e42c3f58549695b26c42efbdc854ee3">Tensor</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ae7549844894da978e6b49130e259a41d">Tensor</a>(const int *dims, int rank)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a512523497d23d147f3266e024ba9b8d2">Tensor</a>(DType dtype, const int *dims, int rank)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ac057e6c6a100d8ae57d42c95d18be2f3">Tensor</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a0a726cb0cce6b5d833d02ee975ce811e">Tensor</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab70bcdda2ccade8dcbe39bf92aa432fa">Tensor</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#af5cdf4718a587af355bd4c9b12d4f409">Tensor</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a36587eb15af178dfb66f9d466e1af689">Tensor</a>(int d0, int d1, int d2, int d3, int d4)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a2626b1699fd3820f950f2edc45a56ae7">Tensor</a>(int d0, int d1, int d2, int d3, int d4, int d5)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#a667aac9bd0ef4b4dd0041d0aeb7a32ad">TF</a></td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html#ab30361ff50494f45329ffe1837d2c0df">transpose</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1Tensor.html">eve::tensor::Tensor</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::rpg::RPGActor 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab2e3987a8f9189c2daaddc034d41af6a">addAttributeModifier</a>(const std::string &amp;attribute, const std::string &amp;source, const std::string &amp;op, double value, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a802ed963a9581ce6ef1e83bd62db21ac">applyBuff</a>(const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#adef24e7aafd1d17e4c7271a6314bfabd">applyEffect</a>(const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0141af94ef3706f7e01943b9542b8e0b">beginCastSkill</a>(const std::string &amp;skillId, RPGActor *target=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a94843a992928cf9f40c4db3f200bc630">canCastSkill</a>(const std::string &amp;skillId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a2fffbb8debe1b6d455e80891f55f7909">canCastSkillReason</a>(const std::string &amp;skillId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a49ac960ec781fef51bfd7da31704c9fe">cancelCastSkill</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672">createActor</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a699de16741d22265d8cdc979d2aa54e8">forgetSkill</a>(const std::string &amp;skillId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1088028070c66d33c73fea7b364cafb9">getBaseAttribute</a>(const std::string &amp;attribute)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab018bdb64a28231c7dc8bb02a527ab23">getBuffCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a68048cc3bc2762ea748c9ef9d9b4a453">getBuffEffectId</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a718f177754a482efe7b1b04fad5cfb62">getBuffInstanceId</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a75e93b68df57f67fe2ca3b25f48d4029">getBuffProp</a>(int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9629184b6f3a9bb2cb5b18362a90cb03">getBuffRemaining</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aea78d4e20a5a24b032536404aa36fda8">getBuffSource</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a2aa026bf68da98cdab8576677ec91a81">getBuffStacks</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0a4ee473bf60213f66c3831236be1aa1">getCastingSkillId</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6cb118f87ea36b1b676fc2204f2861c9">getCastProgress</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad20a8ff2485a1df898a095c96ca25172">getFinalAttribute</a>(const std::string &amp;attribute)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aedf16e5a7d8d819381f2f43a9737baa1">getSkillCooldown</a>(const std::string &amp;skillId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aa213b7544640ca11cc409acfd37346d8">getStatusCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a3d53fbf46869f85d30e60f3f1ab9825f">getStatusEffectId</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac3a85883db91c565dcf6aa067b4489f8">getStatusInstanceId</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad7bf02b0ab972c8d8f0cda7520392786">getStatusProp</a>(int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#addeefc52c986e817d8817d6fa7b07392">getStatusRemaining</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">getStatusSource</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9a3d4245248c28a5e44c7c1224db041c">getStatusStacks</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a694db59306b0051333fb27a78a187887">hasAttribute</a>(const std::string &amp;attribute)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac1230de1ed7fd3b3155641b641248c91">hasBuff</a>(const std::string &amp;effectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad16ef68e52ba561b61a92719b828ec14">hasBuffTag</a>(const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ae3f9e39c6be1e8f37ad39064cd33338f">hasEffect</a>(const std::string &amp;effectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aaef2855ec9b56d7ebc8d997548f8cb98">hasStatusTag</a>(const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0e5083571cf515ae18babee186f99972">isCastingSkill</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aaaf868fa5e99616618e81249f87e8199">knowsSkill</a>(const std::string &amp;skillId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6d6626ef069ebab0edcac2eec5295c54">learnSkill</a>(const std::string &amp;skillId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7">liveActors</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9d1fddcf1ba76ec1999d206b86c70cff">modifyBaseAttribute</a>(const std::string &amp;attribute, double delta)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a48378d77c37dfceb89884810b907edc8">release</a>() override</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a4ca37d0593e130ef2a3ecea298ace6a9">removeAllAttributeModifiersBySource</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#af1f45617594d95e17b06a401c6de8bf5">removeAttributeModifier</a>(const std::string &amp;attribute, const std::string &amp;modifierId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a42a7c234a76aed475aa097b76473c45f">removeAttributeModifiersBySource</a>(const std::string &amp;attribute, const std::string &amp;source)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a129cd7e1d7f27e3610ec1b0708c527f0">removeBuff</a>(int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aae8e45ab445c6276fb7923e2335a3c9a">removeBuffByEffect</a>(const std::string &amp;effectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab42375a1591757875edac59f417767a2">removeBuffBySource</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ae4aa8a88ce43dca55f95b574fd264ed9">removeBuffByTag</a>(const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1d4e2d3ae0e6ae570d0acee6324f19ad">removeStatus</a>(int instanceId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab324a96129ed27f66340c49071df2ea0">removeStatusByEffect</a>(const std::string &amp;effectId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6321dcc8a75beead11b385d0213964f4">removeStatusBySource</a>(const std::string &amp;source)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5f3b73e1b645ee8bae8606bb48b02eb8">removeStatusByTag</a>(const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a99835dda1c2cbb0cf81741cd4d4fdf37">setBaseAttribute</a>(const std::string &amp;attribute, double value)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#abcdf9c43da23b7abe244e8cd2479be2a">setBuffProp</a>(int instanceId, const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a62f35ce20c6de35b184ec4ffc0e7743f">setSkillCooldown</a>(const std::string &amp;skillId, float seconds)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac78810aca4fb6050a115c3536bc020cc">setStatusProp</a>(int instanceId, const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

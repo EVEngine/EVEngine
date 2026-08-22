@@ -1,0 +1,279 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ik/Skeleton3D.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_78f9f9dd9739ad50d799c91f246187db.html">ik</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Skeleton3D.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Skeleton3D_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;ik.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ik.html">eve::ik</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html">   11</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a64ced0bbc0af24b78aeb0cf9c9c04f25">Skeleton3D</a>();</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#a620579c712f382b865d8ad18c274a444">   14</a></span>    <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a620579c712f382b865d8ad18c274a444">~Skeleton3D</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#aad7f9b757c8a44264ea97d2a6fd40c25">   16</a></span>    <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#aad7f9b757c8a44264ea97d2a6fd40c25">Skeleton3D</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#a91e4d802a9abd71f3b1bd5334fbe926a">   17</a></span>    <a class="code hl_class" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;<a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a91e4d802a9abd71f3b1bd5334fbe926a">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a71f05ceedb930035795ed6f28b06c57c">createBone</a>(<span class="keywordtype">int</span> parentId, <span class="keywordtype">float</span> length = 1.f);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#affd345db239e2182de42c1eb62ef2db2">getBoneCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#afceb6b27c45471e5c62819e85d869d48">   22</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#afceb6b27c45471e5c62819e85d869d48">getRootId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#af68521496ff2fb74b673ec24c5d67166">getParent</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a5d6b429c32a53d87bb088d8d419f6c07">getChildCount</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#adcfdabd3d7d314d15d8de9b058baacc3">getChild</a>(<span class="keywordtype">int</span> boneId, <span class="keywordtype">int</span> childIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a17333e56304ef9c23b29334a992bb991">getLength</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a2d7b31f78ed3d7b04aee7f97951bd0f7">setLength</a>(<span class="keywordtype">int</span> boneId, <span class="keywordtype">float</span> length);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a0940003ea396610075e696f82bc5d7a6">setPosition</a>(<span class="keywordtype">int</span> boneId, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ad6d33cb3b312876d37f9814fefe5f2fe">getX</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#acb86aa9a95227975e609f9c33cd4d0bc">getY</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ab7dd3ad8ba1257d1e9f05d13fac41f3a">getZ</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a94a60aebcdd887b375852a6f65b00a82">setOrientation</a>(<span class="keywordtype">int</span> boneId, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ae323bad193ecb50a3ad63358a6cfc8c6">getOrientationX</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#acf88de2b698cd15026b3ff35b965d654">getOrientationY</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ab46a8ebf1d0fcd0f5b01d1937253f927">getOrientationZ</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a8900bc5acf20c98456a98cfbd96c8b9b">setRotation</a>(<span class="keywordtype">int</span> boneId, <span class="keywordtype">float</span> yaw, <span class="keywordtype">float</span> pitch);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#af5f595a5c5d2e56db84f7570018fd70e">getRotationYaw</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a724e51e8612d72c355f2f6466b561053">getRotationPitch</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a11f6969ad4c091480870e2818fcc7d95">setConstraints</a>(<span class="keywordtype">int</span> boneId, <span class="keywordtype">float</span> minYaw, <span class="keywordtype">float</span> minPitch, <span class="keywordtype">float</span> maxYaw,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                        <span class="keywordtype">float</span> maxPitch);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ab519cd432da98333e4c150b1d8a36536">clearConstraints</a>(<span class="keywordtype">int</span> boneId);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ad00084755c671e968ac6e91c93b01d8d">hasConstraints</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a959cfa107c7532fc89bf6bf091a9135f">initStraightPose</a>(<span class="keywordtype">float</span> rootX = 0.f, <span class="keywordtype">float</span> rootY = 0.f, <span class="keywordtype">float</span> rootZ = 0.f);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a6896cddf3b74f77c19215636f9b5b9af">bind</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a453bebd7a7c56683a5e4a72eea7382f5">forwardKinematics</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#ad6ae5d566f5baca99514a1f244dcb657">updateRotations</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#aac9e535688b6d24ea4c734bd97c28032">totalLengthTo</a>(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#a2c5e352d84970fcbc0e940d4de9b539e">   56</a></span>    ::ik::skeleton3d &amp;<a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a2c5e352d84970fcbc0e940d4de9b539e">native</a>() { <span class="keywordflow">return</span> sk_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#a4b60c82486b7eabab205002242b1a6cb">   57</a></span>    ::ik::ecs3d      &amp;<a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a4b60c82486b7eabab205002242b1a6cb">state</a>() { <span class="keywordflow">return</span> state_; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#a91cff647fcde4067d8677eb4cd9f4dc0">   58</a></span>    const ::ik::skeleton3d &amp;<a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a91cff647fcde4067d8677eb4cd9f4dc0">native</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sk_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1ik_1_1Skeleton3D.html#a41c833c7abe8b2623ed4c08ac58e0e2e">   59</a></span>    const ::ik::ecs3d      &amp;<a class="code hl_function" href="classeve_1_1ik_1_1Skeleton3D.html#a41c833c7abe8b2623ed4c08ac58e0e2e">state</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> state_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> ensureSorted();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> ensureStateSize();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    ::ik::bone3d *boneAt(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span>          requireBone(<span class="keywordtype">int</span> boneId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    ::ik::skeleton3d sk_;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    ::ik::ecs3d      state_;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}  <span class="comment">// namespace eve::ik</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html">eve::ik::Skeleton3D</a></div><div class="ttdoc">Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d). Local angles are yaw/pitch in th...</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8h_source.html#l00011">Skeleton3D.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a0940003ea396610075e696f82bc5d7a6"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a0940003ea396610075e696f82bc5d7a6">eve::ik::Skeleton3D::setPosition</a></div><div class="ttdeci">void setPosition(int boneId, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00098">Skeleton3D.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a11f6969ad4c091480870e2818fcc7d95"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a11f6969ad4c091480870e2818fcc7d95">eve::ik::Skeleton3D::setConstraints</a></div><div class="ttdeci">void setConstraints(int boneId, float minYaw, float minPitch, float maxYaw, float maxPitch)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00164">Skeleton3D.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a17333e56304ef9c23b29334a992bb991"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a17333e56304ef9c23b29334a992bb991">eve::ik::Skeleton3D::getLength</a></div><div class="ttdeci">float getLength(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00082">Skeleton3D.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a2c5e352d84970fcbc0e940d4de9b539e"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a2c5e352d84970fcbc0e940d4de9b539e">eve::ik::Skeleton3D::native</a></div><div class="ttdeci">::ik::skeleton3d &amp; native()</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8h_source.html#l00056">Skeleton3D.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a2d7b31f78ed3d7b04aee7f97951bd0f7"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a2d7b31f78ed3d7b04aee7f97951bd0f7">eve::ik::Skeleton3D::setLength</a></div><div class="ttdeci">void setLength(int boneId, float length)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00087">Skeleton3D.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a41c833c7abe8b2623ed4c08ac58e0e2e"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a41c833c7abe8b2623ed4c08ac58e0e2e">eve::ik::Skeleton3D::state</a></div><div class="ttdeci">const ::ik::ecs3d &amp; state() const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8h_source.html#l00059">Skeleton3D.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a453bebd7a7c56683a5e4a72eea7382f5"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a453bebd7a7c56683a5e4a72eea7382f5">eve::ik::Skeleton3D::forwardKinematics</a></div><div class="ttdeci">void forwardKinematics()</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00196">Skeleton3D.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a4b60c82486b7eabab205002242b1a6cb"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a4b60c82486b7eabab205002242b1a6cb">eve::ik::Skeleton3D::state</a></div><div class="ttdeci">::ik::ecs3d &amp; state()</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8h_source.html#l00057">Skeleton3D.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a5d6b429c32a53d87bb088d8d419f6c07"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a5d6b429c32a53d87bb088d8d419f6c07">eve::ik::Skeleton3D::getChildCount</a></div><div class="ttdeci">int getChildCount(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00068">Skeleton3D.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a620579c712f382b865d8ad18c274a444"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a620579c712f382b865d8ad18c274a444">eve::ik::Skeleton3D::~Skeleton3D</a></div><div class="ttdeci">~Skeleton3D()=default</div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a64ced0bbc0af24b78aeb0cf9c9c04f25"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a64ced0bbc0af24b78aeb0cf9c9c04f25">eve::ik::Skeleton3D::Skeleton3D</a></div><div class="ttdeci">Skeleton3D()</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00007">Skeleton3D.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a6896cddf3b74f77c19215636f9b5b9af"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a6896cddf3b74f77c19215636f9b5b9af">eve::ik::Skeleton3D::bind</a></div><div class="ttdeci">void bind()</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00190">Skeleton3D.cpp:190</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a71f05ceedb930035795ed6f28b06c57c"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a71f05ceedb930035795ed6f28b06c57c">eve::ik::Skeleton3D::createBone</a></div><div class="ttdeci">int createBone(int parentId, float length=1.f)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00043">Skeleton3D.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a724e51e8612d72c355f2f6466b561053"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a724e51e8612d72c355f2f6466b561053">eve::ik::Skeleton3D::getRotationPitch</a></div><div class="ttdeci">float getRotationPitch(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00158">Skeleton3D.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a8900bc5acf20c98456a98cfbd96c8b9b"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a8900bc5acf20c98456a98cfbd96c8b9b">eve::ik::Skeleton3D::setRotation</a></div><div class="ttdeci">void setRotation(int boneId, float yaw, float pitch)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00146">Skeleton3D.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a91cff647fcde4067d8677eb4cd9f4dc0"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a91cff647fcde4067d8677eb4cd9f4dc0">eve::ik::Skeleton3D::native</a></div><div class="ttdeci">const ::ik::skeleton3d &amp; native() const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8h_source.html#l00058">Skeleton3D.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a91e4d802a9abd71f3b1bd5334fbe926a"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a91e4d802a9abd71f3b1bd5334fbe926a">eve::ik::Skeleton3D::operator=</a></div><div class="ttdeci">Skeleton3D &amp; operator=(const Skeleton3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a94a60aebcdd887b375852a6f65b00a82"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a94a60aebcdd887b375852a6f65b00a82">eve::ik::Skeleton3D::setOrientation</a></div><div class="ttdeci">void setOrientation(int boneId, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00122">Skeleton3D.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_a959cfa107c7532fc89bf6bf091a9135f"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#a959cfa107c7532fc89bf6bf091a9135f">eve::ik::Skeleton3D::initStraightPose</a></div><div class="ttdeci">void initStraightPose(float rootX=0.f, float rootY=0.f, float rootZ=0.f)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00184">Skeleton3D.cpp:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_aac9e535688b6d24ea4c734bd97c28032"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#aac9e535688b6d24ea4c734bd97c28032">eve::ik::Skeleton3D::totalLengthTo</a></div><div class="ttdeci">float totalLengthTo(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00208">Skeleton3D.cpp:208</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_aad7f9b757c8a44264ea97d2a6fd40c25"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#aad7f9b757c8a44264ea97d2a6fd40c25">eve::ik::Skeleton3D::Skeleton3D</a></div><div class="ttdeci">Skeleton3D(const Skeleton3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ab46a8ebf1d0fcd0f5b01d1937253f927"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ab46a8ebf1d0fcd0f5b01d1937253f927">eve::ik::Skeleton3D::getOrientationZ</a></div><div class="ttdeci">float getOrientationZ(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00140">Skeleton3D.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ab519cd432da98333e4c150b1d8a36536"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ab519cd432da98333e4c150b1d8a36536">eve::ik::Skeleton3D::clearConstraints</a></div><div class="ttdeci">void clearConstraints(int boneId)</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00174">Skeleton3D.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ab7dd3ad8ba1257d1e9f05d13fac41f3a"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ab7dd3ad8ba1257d1e9f05d13fac41f3a">eve::ik::Skeleton3D::getZ</a></div><div class="ttdeci">float getZ(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00116">Skeleton3D.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_acb86aa9a95227975e609f9c33cd4d0bc"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#acb86aa9a95227975e609f9c33cd4d0bc">eve::ik::Skeleton3D::getY</a></div><div class="ttdeci">float getY(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00110">Skeleton3D.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_acf88de2b698cd15026b3ff35b965d654"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#acf88de2b698cd15026b3ff35b965d654">eve::ik::Skeleton3D::getOrientationY</a></div><div class="ttdeci">float getOrientationY(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00134">Skeleton3D.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ad00084755c671e968ac6e91c93b01d8d"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ad00084755c671e968ac6e91c93b01d8d">eve::ik::Skeleton3D::hasConstraints</a></div><div class="ttdeci">bool hasConstraints(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00179">Skeleton3D.cpp:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ad6ae5d566f5baca99514a1f244dcb657"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ad6ae5d566f5baca99514a1f244dcb657">eve::ik::Skeleton3D::updateRotations</a></div><div class="ttdeci">void updateRotations()</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00202">Skeleton3D.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ad6d33cb3b312876d37f9814fefe5f2fe"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ad6d33cb3b312876d37f9814fefe5f2fe">eve::ik::Skeleton3D::getX</a></div><div class="ttdeci">float getX(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00104">Skeleton3D.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_adcfdabd3d7d314d15d8de9b058baacc3"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#adcfdabd3d7d314d15d8de9b058baacc3">eve::ik::Skeleton3D::getChild</a></div><div class="ttdeci">int getChild(int boneId, int childIndex) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00073">Skeleton3D.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_ae323bad193ecb50a3ad63358a6cfc8c6"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#ae323bad193ecb50a3ad63358a6cfc8c6">eve::ik::Skeleton3D::getOrientationX</a></div><div class="ttdeci">float getOrientationX(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00128">Skeleton3D.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_af5f595a5c5d2e56db84f7570018fd70e"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#af5f595a5c5d2e56db84f7570018fd70e">eve::ik::Skeleton3D::getRotationYaw</a></div><div class="ttdeci">float getRotationYaw(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00152">Skeleton3D.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_af68521496ff2fb74b673ec24c5d67166"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#af68521496ff2fb74b673ec24c5d67166">eve::ik::Skeleton3D::getParent</a></div><div class="ttdeci">int getParent(int boneId) const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00061">Skeleton3D.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_afceb6b27c45471e5c62819e85d869d48"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#afceb6b27c45471e5c62819e85d869d48">eve::ik::Skeleton3D::getRootId</a></div><div class="ttdeci">int getRootId() const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8h_source.html#l00022">Skeleton3D.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1ik_1_1Skeleton3D_html_affd345db239e2182de42c1eb62ef2db2"><div class="ttname"><a href="classeve_1_1ik_1_1Skeleton3D.html#affd345db239e2182de42c1eb62ef2db2">eve::ik::Skeleton3D::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="Skeleton3D_8cpp_source.html#l00056">Skeleton3D.cpp:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ik_html"><div class="ttname"><a href="namespaceeve_1_1ik.html">eve::ik</a></div><div class="ttdef"><b>Definition</b> <a href="ChainSolver_8h_source.html#l00010">ChainSolver.h:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

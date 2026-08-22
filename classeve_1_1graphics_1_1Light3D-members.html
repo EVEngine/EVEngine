@@ -1,0 +1,200 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">Light3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::Light3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a9779175f51764a73a4f9dc3e5f614d65">createLight</a>(const std::string &amp;type=&quot;point&quot;)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a4931e29697f798bbcdbe08c44315be72">getCastShadow</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ace6daa4c01141c22f329ea090f40632b">getDirX</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ad68090391443a0490cd4577e3b03f76f">getDirY</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a3a1ffe8bb30933f1b6718a7b492c952d">getDirZ</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a24b0e57705b6cdd00555ed87aa4e840b">getRadius</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a8afe0698d84ce2f072e7c3b0908453ee">getShadowBias</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a656e5ea64459ba3720d8498ba92fd7a6">getShadowStrength</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#af954e0e3493b227ad244475c8c13ddaf">getType</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ae51691a1847478435b9ca53b89d28268">getVolumetric</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a51e552263f3e4efee046e3d51cf14d4b">getVolumetricIntensity</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aeccfd999ffaccc8713943fe1a5e11c5e">getX</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a791a763a15903b47d1e30cf4122cb61d">getY</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aef1ec04805b0d17a91b0d57882666dc1">getZ</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ac79eaa0b760027505a0e220885830b5f">isEnabled</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a5ada25abbd26c882664e0fa1cf29f872">release</a>() override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a3ac69c6db6637be103c891b7bdf1ac35">setCastShadow</a>(bool cast)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#ac8d8acaf19b4a0f6698e343ebe4cf7c6">setColor</a>(float r, float g, float b, float intensity=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a459afe3900c9a78b1fd9fe819184894e">setDirection</a>(float dx, float dy, float dz)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a2038fade3fae36a857dc8554cf2c1edf">setEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a8b4098e6b794e2c761bf9faa02c89972">setPosition</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aaa7b2bde31de8671b26c93cb2db37e44">setRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a4fd8017d10c3ac7c0a21ad33f413cb79">setShadowBias</a>(float bias)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#a72157d78ef2c8cb0f0b9be1f64a3477f">setShadowStrength</a>(float strength)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aa4fe56b863c01d5a0df1e598620d1a14">setType</a>(const std::string &amp;type)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aecc940bf672f19df720cce588b383254">setVolumetric</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html#aa8166896d6f631999bbe2999a0a44b31">setVolumetricIntensity</a>(float intensity)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Light3D.html">eve::graphics::Light3D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/Ghost.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Ghost.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Ghost_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Ghost_8h.html">building/Ghost.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementSystem_8h.html">building/PlacementSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementWorld_8h.html">building/PlacementWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building.html">eve::building</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#afd98cfe9955c2cdf32ae8f725662b00c">    7</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#afd98cfe9955c2cdf32ae8f725662b00c">Ghost::destroy</a>() { <span class="keyword">delete</span> <span class="keyword">this</span>; }</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#af4691641a50f81549d46ee449cfbbe2f">    9</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#af4691641a50f81549d46ee449cfbbe2f">Ghost::setBuildingId</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    buildingId_ = <a class="code hl_variable" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    reason_.clear();</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#adc443b9ef0cc574a070209d1f81aecf3">   15</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#adc443b9ef0cc574a070209d1f81aecf3">Ghost::setCell</a>(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    cellX_ = cellX;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    cellY_ = cellY;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    reason_.clear();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#abe737c6673b5a2db1902dd4d4d6a1f68">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#abe737c6673b5a2db1902dd4d4d6a1f68">Ghost::setWorld</a>(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    worldX_ = worldX;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    worldY_ = worldY;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    reason_.clear();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#a3bfe63654609aa30da926d2cbd71c4f2">   29</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a3bfe63654609aa30da926d2cbd71c4f2">Ghost::setElevation</a>(<span class="keywordtype">float</span> elevation) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    elevation_ = elevation;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    reason_.clear();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#a2ee7132907e5fa6414016bc9f8085bca">   35</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a2ee7132907e5fa6414016bc9f8085bca">Ghost::setRotationDeg</a>(<span class="keywordtype">float</span> deg) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    rotationDeg_ = deg;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    reason_.clear();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#ad218f8002734d42318dc146713d91b1a">   41</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#ad218f8002734d42318dc146713d91b1a">Ghost::rotateBy</a>(<span class="keywordtype">float</span> deltaDeg) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a2ee7132907e5fa6414016bc9f8085bca">setRotationDeg</a>(rotationDeg_ + deltaDeg);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#a2e2815d8f28211d41afda5dbe543c180">   45</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a2e2815d8f28211d41afda5dbe543c180">Ghost::setFromWorld</a>(<a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (!world) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> = <a class="code hl_function" href="classeve_1_1building_1_1PlacementSystem.html#a06975edb41abf054f1c0d29346b41b4a">PlacementSystem::snap</a>(*world, buildingId_, worldX, worldY);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    cellX_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.cellX;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    cellY_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.cellY;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    worldX_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.worldX;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    worldY_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.worldY;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    elevation_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.elevation;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    reason_.clear();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#a58b12cf488f3cf95805783de68ad0a14">   57</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a58b12cf488f3cf95805783de68ad0a14">Ghost::setFromWorld3D</a>(<a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY, <span class="keywordtype">float</span> worldZ) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">if</span> (!world) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a> <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a> = <a class="code hl_function" href="classeve_1_1building_1_1PlacementSystem.html#a678db70cd36da3ed3201fd4ed8fb38b5">PlacementSystem::snap3D</a>(*world, buildingId_, worldX, worldY, worldZ);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    cellX_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.cellX;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    cellY_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.cellY;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    worldX_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.worldX;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    worldY_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.worldY;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    elevation_ = <a class="code hl_variable" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>.elevation;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    reason_.clear();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#af27f119f66382d754b0d4dceac00d8ff">   69</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#af27f119f66382d754b0d4dceac00d8ff">Ghost::setFromSurface</a>(<a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, <span class="keyword">const</span> std::string &amp;surface, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">if</span> (!world) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_struct" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementSystem::PlacementHit</a> hit;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1building_1_1PlacementSystem.html#a7367c85cf3c4fd04b372e5f005986ffd">PlacementSystem::surfaceHit</a>(*world, surface, <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, &amp;hit)) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        reason_ = <span class="stringliteral">&quot;no_surface_hit&quot;</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a58b12cf488f3cf95805783de68ad0a14">setFromWorld3D</a>(world, hit.<a class="code hl_variable" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html#a1c27ef0b547389ef5a19bca4236fc0cb">worldX</a>, hit.<a class="code hl_variable" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html#a1c335c38ea071c52ab388eb6cb302d16">worldY</a>, hit.<a class="code hl_variable" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html#a41727fd4dee0b8af6b30b1edd85fd580">worldZ</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Ghost.html#a586af914011f2d5329c658e15c63d2ae">   80</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1Ghost.html#a586af914011f2d5329c658e15c63d2ae">Ghost::validate</a>(<a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">if</span> (!world) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        reason_ = <span class="stringliteral">&quot;no_world&quot;</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    rotationDeg_ = <a class="code hl_function" href="classeve_1_1building_1_1PlacementSystem.html#a9bf0fe3d81c8af2977b71958b92e3ce9">PlacementSystem::normalizeRotation</a>(buildingId_, rotationDeg_);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::string reason;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    valid_ = <a class="code hl_function" href="classeve_1_1building_1_1PlacementSystem.html#aeb289dcf231b0ac3664f5c589c3b50f5">PlacementSystem::canPlaceElev</a>(world, buildingId_, cellX_, cellY_, elevation_,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                           rotationDeg_, 0, &amp;reason);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    reason_ = reason;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> valid_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::building</span></div>
+<div class="ttc" id="aEditorHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00450">EditorHost.cpp:450</a></div></div>
+<div class="ttc" id="aGhost_8h_html"><div class="ttname"><a href="Ghost_8h.html">Ghost.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aPlacementSystem_8h_html"><div class="ttname"><a href="PlacementSystem_8h.html">PlacementSystem.h</a></div></div>
+<div class="ttc" id="aPlacementWorld_8h_html"><div class="ttname"><a href="PlacementWorld_8h.html">PlacementWorld.h</a></div></div>
+<div class="ttc" id="aWeather_8cpp_html_a2dee666f0c1fe072c549ff86b1d0a8ab"><div class="ttname"><a href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a></div><div class="ttdeci">uint32_t s</div><div class="ttdef"><b>Definition</b> <a href="Weather_8cpp_source.html#l00028">Weather.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_a2e2815d8f28211d41afda5dbe543c180"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#a2e2815d8f28211d41afda5dbe543c180">eve::building::Ghost::setFromWorld</a></div><div class="ttdeci">void setFromWorld(PlacementWorld *world, float worldX, float worldY)</div><div class="ttdoc">按世界吸附模式，从世界坐标刷新格子与世界位姿。</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00045">Ghost.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_a2ee7132907e5fa6414016bc9f8085bca"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#a2ee7132907e5fa6414016bc9f8085bca">eve::building::Ghost::setRotationDeg</a></div><div class="ttdeci">void setRotationDeg(float deg)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00035">Ghost.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_a3bfe63654609aa30da926d2cbd71c4f2"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#a3bfe63654609aa30da926d2cbd71c4f2">eve::building::Ghost::setElevation</a></div><div class="ttdeci">void setElevation(float elevation)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00029">Ghost.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_a586af914011f2d5329c658e15c63d2ae"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#a586af914011f2d5329c658e15c63d2ae">eve::building::Ghost::validate</a></div><div class="ttdeci">bool validate(PlacementWorld *world)</div><div class="ttdoc">对当前姿态做校验，写入 valid_/reason_。</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00080">Ghost.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_a58b12cf488f3cf95805783de68ad0a14"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#a58b12cf488f3cf95805783de68ad0a14">eve::building::Ghost::setFromWorld3D</a></div><div class="ttdeci">void setFromWorld3D(PlacementWorld *world, float worldX, float worldY, float worldZ)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00057">Ghost.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_abe737c6673b5a2db1902dd4d4d6a1f68"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#abe737c6673b5a2db1902dd4d4d6a1f68">eve::building::Ghost::setWorld</a></div><div class="ttdeci">void setWorld(float worldX, float worldY)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00022">Ghost.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_ad218f8002734d42318dc146713d91b1a"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#ad218f8002734d42318dc146713d91b1a">eve::building::Ghost::rotateBy</a></div><div class="ttdeci">void rotateBy(float deltaDeg)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00041">Ghost.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_adc443b9ef0cc574a070209d1f81aecf3"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#adc443b9ef0cc574a070209d1f81aecf3">eve::building::Ghost::setCell</a></div><div class="ttdeci">void setCell(int cellX, int cellY)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00015">Ghost.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_af27f119f66382d754b0d4dceac00d8ff"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#af27f119f66382d754b0d4dceac00d8ff">eve::building::Ghost::setFromSurface</a></div><div class="ttdeci">void setFromSurface(PlacementWorld *world, const std::string &amp;surface, float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00069">Ghost.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_af4691641a50f81549d46ee449cfbbe2f"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#af4691641a50f81549d46ee449cfbbe2f">eve::building::Ghost::setBuildingId</a></div><div class="ttdeci">void setBuildingId(const std::string &amp;id)</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00009">Ghost.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html_afd98cfe9955c2cdf32ae8f725662b00c"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html#afd98cfe9955c2cdf32ae8f725662b00c">eve::building::Ghost::destroy</a></div><div class="ttdeci">void destroy()</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8cpp_source.html#l00007">Ghost.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementSystem_html_a06975edb41abf054f1c0d29346b41b4a"><div class="ttname"><a href="classeve_1_1building_1_1PlacementSystem.html#a06975edb41abf054f1c0d29346b41b4a">eve::building::PlacementSystem::snap</a></div><div class="ttdeci">static SnapResult snap(const PlacementWorld &amp;world, const std::string &amp;buildingId, float worldX, float worldY)</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00261">PlacementSystem.cpp:261</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementSystem_html_a678db70cd36da3ed3201fd4ed8fb38b5"><div class="ttname"><a href="classeve_1_1building_1_1PlacementSystem.html#a678db70cd36da3ed3201fd4ed8fb38b5">eve::building::PlacementSystem::snap3D</a></div><div class="ttdeci">static SnapResult snap3D(const PlacementWorld &amp;world, const std::string &amp;buildingId, float worldX, float worldY, float worldZ)</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00271">PlacementSystem.cpp:271</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementSystem_html_a7367c85cf3c4fd04b372e5f005986ffd"><div class="ttname"><a href="classeve_1_1building_1_1PlacementSystem.html#a7367c85cf3c4fd04b372e5f005986ffd">eve::building::PlacementSystem::surfaceHit</a></div><div class="ttdeci">static bool surfaceHit(const PlacementWorld &amp;world, const std::string &amp;name, float x, float y, PlacementHit *hit)</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00111">PlacementSystem.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementSystem_html_a9bf0fe3d81c8af2977b71958b92e3ce9"><div class="ttname"><a href="classeve_1_1building_1_1PlacementSystem.html#a9bf0fe3d81c8af2977b71958b92e3ce9">eve::building::PlacementSystem::normalizeRotation</a></div><div class="ttdeci">static float normalizeRotation(const std::string &amp;buildingId, float rotationDeg)</div><div class="ttdoc">规范化旋转角（cardinal → 0/90/180/270；none → 0）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00286">PlacementSystem.cpp:286</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementSystem_html_aeb289dcf231b0ac3664f5c589c3b50f5"><div class="ttname"><a href="classeve_1_1building_1_1PlacementSystem.html#aeb289dcf231b0ac3664f5c589c3b50f5">eve::building::PlacementSystem::canPlaceElev</a></div><div class="ttdeci">static bool canPlaceElev(PlacementWorld *world, const std::string &amp;buildingId, int cellX, int cellY, float elevation, float rotationDeg=0.f, int excludeInstanceId=0, std::string *reason=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00463">PlacementSystem.cpp:463</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></div><div class="ttdoc">格子型建筑放置世界（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00025">PlacementWorld.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html"><div class="ttname"><a href="namespaceeve_1_1building.html">eve::building</a></div><div class="ttdoc">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00007">Building.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacementSystem_1_1PlacementHit_html"><div class="ttname"><a href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">eve::building::PlacementSystem::PlacementHit</a></div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8h_source.html#l00028">PlacementSystem.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacementSystem_1_1PlacementHit_html_a1c27ef0b547389ef5a19bca4236fc0cb"><div class="ttname"><a href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html#a1c27ef0b547389ef5a19bca4236fc0cb">eve::building::PlacementSystem::PlacementHit::worldX</a></div><div class="ttdeci">float worldX</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8h_source.html#l00029">PlacementSystem.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacementSystem_1_1PlacementHit_html_a1c335c38ea071c52ab388eb6cb302d16"><div class="ttname"><a href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html#a1c335c38ea071c52ab388eb6cb302d16">eve::building::PlacementSystem::PlacementHit::worldY</a></div><div class="ttdeci">float worldY</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8h_source.html#l00030">PlacementSystem.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacementSystem_1_1PlacementHit_html_a41727fd4dee0b8af6b30b1edd85fd580"><div class="ttname"><a href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html#a41727fd4dee0b8af6b30b1edd85fd580">eve::building::PlacementSystem::PlacementHit::worldZ</a></div><div class="ttdeci">float worldZ</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8h_source.html#l00031">PlacementSystem.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1SnapResult_html"><div class="ttname"><a href="structeve_1_1building_1_1SnapResult.html">eve::building::SnapResult</a></div><div class="ttdoc">吸附结果。</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00110">BuildingTypes.h:110</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

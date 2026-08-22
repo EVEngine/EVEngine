@@ -1,0 +1,998 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::Grid2D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1Grid2D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::Grid2D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Intermediate 2D generation result. <code>cells</code> store semantic ids (see <a class="el" href="Semantic_8h.html">Semantic.h</a>), not tile GIDs — convert via Palette when applying to a TileLayer.  
+ <a href="classeve_1_1procgen_1_1Grid2D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Grid2D_8h_source.html">Grid2D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a55fd7106f49eaf5789a76aaf3b3ab0d5" id="r_a55fd7106f49eaf5789a76aaf3b3ab0d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a55fd7106f49eaf5789a76aaf3b3ab0d5">resize</a> (int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="separator:a55fd7106f49eaf5789a76aaf3b3ab0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a404bc4ec817697872ab2205696e838e8" id="r_a404bc4ec817697872ab2205696e838e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a404bc4ec817697872ab2205696e838e8">getWidth</a> () const</td></tr>
+<tr class="separator:a404bc4ec817697872ab2205696e838e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae880b566dc208d04cff40a85457b3a37" id="r_ae880b566dc208d04cff40a85457b3a37"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ae880b566dc208d04cff40a85457b3a37">getHeight</a> () const</td></tr>
+<tr class="separator:ae880b566dc208d04cff40a85457b3a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c66f0caf5095da7b3222500335adfd4" id="r_a6c66f0caf5095da7b3222500335adfd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a6c66f0caf5095da7b3222500335adfd4">setCell</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>)</td></tr>
+<tr class="separator:a6c66f0caf5095da7b3222500335adfd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83e14ac97e99fd3b7090fcaa31ac65a3" id="r_a83e14ac97e99fd3b7090fcaa31ac65a3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a83e14ac97e99fd3b7090fcaa31ac65a3">getCell</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a83e14ac97e99fd3b7090fcaa31ac65a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66f1422005532c0740f0b57e9afbd652" id="r_a66f1422005532c0740f0b57e9afbd652"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a66f1422005532c0740f0b57e9afbd652">fill</a> (int <a class="el" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>)</td></tr>
+<tr class="separator:a66f1422005532c0740f0b57e9afbd652"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a379cb742e5800a3d4eb7663e83f8caa9" id="r_a379cb742e5800a3d4eb7663e83f8caa9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a379cb742e5800a3d4eb7663e83f8caa9">setDetail</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="memdesc:a379cb742e5800a3d4eb7663e83f8caa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-cell detail layer (0..255), parallel to <code>cells</code>. Semantics stay in <code>cells</code> (palette/GID compatible); <code>detail</code> carries algorithm-specific extras such as wall-autotile direction masks, floor-pattern variants and decor tile indices. Semantics that have no detail use 0.  <br /></td></tr>
+<tr class="separator:a379cb742e5800a3d4eb7663e83f8caa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5428c08580eb0c2d8abb3abc4dac28ae" id="r_a5428c08580eb0c2d8abb3abc4dac28ae"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a5428c08580eb0c2d8abb3abc4dac28ae">getDetail</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const</td></tr>
+<tr class="separator:a5428c08580eb0c2d8abb3abc4dac28ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad22107d54e6ad503cc7624181aee4031" id="r_ad22107d54e6ad503cc7624181aee4031"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ad22107d54e6ad503cc7624181aee4031">setMeta</a> (const std::string &amp;key, const std::string &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:ad22107d54e6ad503cc7624181aee4031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3aef4604c7eba458e78b0ac85a8051a" id="r_af3aef4604c7eba458e78b0ac85a8051a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#af3aef4604c7eba458e78b0ac85a8051a">getMeta</a> (const std::string &amp;key, const std::string &amp;defaultValue) const</td></tr>
+<tr class="separator:af3aef4604c7eba458e78b0ac85a8051a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38502d8ec400df5315353c6b54787155" id="r_a38502d8ec400df5315353c6b54787155"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a38502d8ec400df5315353c6b54787155">clearObjects</a> ()</td></tr>
+<tr class="separator:a38502d8ec400df5315353c6b54787155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a954c8d660ad047b1ce7d1cb86825523d" id="r_a954c8d660ad047b1ce7d1cb86825523d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a954c8d660ad047b1ce7d1cb86825523d">addObjectAt</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;<a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</td></tr>
+<tr class="memdesc:a954c8d660ad047b1ce7d1cb86825523d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-friendly: name/type + tile coords.  <br /></td></tr>
+<tr class="separator:a954c8d660ad047b1ce7d1cb86825523d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ec1b28e837225461d1274d9294d7b8e" id="r_a7ec1b28e837225461d1274d9294d7b8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a7ec1b28e837225461d1274d9294d7b8e">addObject</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;<a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, int gid)</td></tr>
+<tr class="separator:a7ec1b28e837225461d1274d9294d7b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad83b6467a7f95215c6c3ec16a35e9b9" id="r_aad83b6467a7f95215c6c3ec16a35e9b9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#aad83b6467a7f95215c6c3ec16a35e9b9">getObjectCount</a> () const</td></tr>
+<tr class="separator:aad83b6467a7f95215c6c3ec16a35e9b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc63cae68b00102201dbf4e8428efd71" id="r_acc63cae68b00102201dbf4e8428efd71"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#acc63cae68b00102201dbf4e8428efd71">getObjectName</a> (int i) const</td></tr>
+<tr class="separator:acc63cae68b00102201dbf4e8428efd71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a381ad0d74a9434213885020a1d45cd79" id="r_a381ad0d74a9434213885020a1d45cd79"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a381ad0d74a9434213885020a1d45cd79">getObjectType</a> (int i) const</td></tr>
+<tr class="separator:a381ad0d74a9434213885020a1d45cd79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89c486e4a1de76b0e7439ffa73796cea" id="r_a89c486e4a1de76b0e7439ffa73796cea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a89c486e4a1de76b0e7439ffa73796cea">getObjectX</a> (int i) const</td></tr>
+<tr class="separator:a89c486e4a1de76b0e7439ffa73796cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ebfb9ac6ff218e9001fc47d7a082b2" id="r_a58ebfb9ac6ff218e9001fc47d7a082b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a58ebfb9ac6ff218e9001fc47d7a082b2">getObjectY</a> (int i) const</td></tr>
+<tr class="separator:a58ebfb9ac6ff218e9001fc47d7a082b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438c7f8750e97896d2f9a32bfd918d0e" id="r_a438c7f8750e97896d2f9a32bfd918d0e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a438c7f8750e97896d2f9a32bfd918d0e">getObjectWidth</a> (int i) const</td></tr>
+<tr class="separator:a438c7f8750e97896d2f9a32bfd918d0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7bc4dc81e4e98d8f7e35bb448c4398d" id="r_ac7bc4dc81e4e98d8f7e35bb448c4398d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ac7bc4dc81e4e98d8f7e35bb448c4398d">getObjectHeight</a> (int i) const</td></tr>
+<tr class="separator:ac7bc4dc81e4e98d8f7e35bb448c4398d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab445b71420371dd48dd6bd1418d047e1" id="r_ab445b71420371dd48dd6bd1418d047e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#ab445b71420371dd48dd6bd1418d047e1">getObjectGid</a> (int i) const</td></tr>
+<tr class="separator:ab445b71420371dd48dd6bd1418d047e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbc00133ce0ed3fb6ee97806e25e05b9" id="r_afbc00133ce0ed3fb6ee97806e25e05b9"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#afbc00133ce0ed3fb6ee97806e25e05b9">cells</a> () const</td></tr>
+<tr class="separator:afbc00133ce0ed3fb6ee97806e25e05b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d6b41ac15110dcae7c9e0931ed8596f" id="r_a0d6b41ac15110dcae7c9e0931ed8596f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a0d6b41ac15110dcae7c9e0931ed8596f">cells</a> ()</td></tr>
+<tr class="separator:a0d6b41ac15110dcae7c9e0931ed8596f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25975247c1e1d2933c4850473520a57e" id="r_a25975247c1e1d2933c4850473520a57e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a25975247c1e1d2933c4850473520a57e">detail</a> () const</td></tr>
+<tr class="separator:a25975247c1e1d2933c4850473520a57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a131318d24e07a860db869b75ffd8c7fa" id="r_a131318d24e07a860db869b75ffd8c7fa"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a131318d24e07a860db869b75ffd8c7fa">detail</a> ()</td></tr>
+<tr class="separator:a131318d24e07a860db869b75ffd8c7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a410730f8fe0349129d5fa7972fded804" id="r_a410730f8fe0349129d5fa7972fded804"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1map_1_1MapObject.html">map::MapObject</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html#a410730f8fe0349129d5fa7972fded804">objects</a> () const</td></tr>
+<tr class="separator:a410730f8fe0349129d5fa7972fded804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Intermediate 2D generation result. <code>cells</code> store semantic ids (see <a class="el" href="Semantic_8h.html">Semantic.h</a>), not tile GIDs — convert via Palette when applying to a TileLayer. </p>
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8h_source.html">Grid2D.h</a> 第 <a class="el" href="Grid2D_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a7ec1b28e837225461d1274d9294d7b8e" name="a7ec1b28e837225461d1274d9294d7b8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ec1b28e837225461d1274d9294d7b8e">&#9670;&#160;</a></span>addObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::addObject </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapObject_8h_source.html#l00022">eve::map::MapObject::gid</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="MapObject_8h_source.html#l00020">eve::map::MapObject::height</a>, <a class="el" href="MapObject_8h_source.html#l00013">eve::map::MapObject::name</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="MapObject_8h_source.html#l00014">eve::map::MapObject::type</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>, <a class="el" href="MapObject_8h_source.html#l00019">eve::map::MapObject::width</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="MapObject_8h_source.html#l00016">eve::map::MapObject::x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="MapObject_8h_source.html#l00017">eve::map::MapObject::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grid2D_8cpp_source.html#l00056">addObjectAt()</a>.</p>
+
+</div>
+</div>
+<a id="a954c8d660ad047b1ce7d1cb86825523d" name="a954c8d660ad047b1ce7d1cb86825523d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a954c8d660ad047b1ce7d1cb86825523d">&#9670;&#160;</a></span>addObjectAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::addObjectAt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script-friendly: name/type + tile coords. </p>
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grid2D_8cpp_source.html#l00060">addObject()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DtlHelpers_8h_source.html#l00049">eve::procgen::dtlutil::placeSpawnAndStairs()</a>.</p>
+
+</div>
+</div>
+<a id="a0d6b41ac15110dcae7c9e0931ed8596f" name="a0d6b41ac15110dcae7c9e0931ed8596f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d6b41ac15110dcae7c9e0931ed8596f">&#9670;&#160;</a></span>cells() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint32_t &gt; &amp; eve::procgen::Grid2D::cells </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8h_source.html">Grid2D.h</a> 第 <a class="el" href="Grid2D_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afbc00133ce0ed3fb6ee97806e25e05b9" name="afbc00133ce0ed3fb6ee97806e25e05b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbc00133ce0ed3fb6ee97806e25e05b9">&#9670;&#160;</a></span>cells() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; uint32_t &gt; &amp; eve::procgen::Grid2D::cells </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8h_source.html">Grid2D.h</a> 第 <a class="el" href="Grid2D_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a38502d8ec400df5315353c6b54787155" name="a38502d8ec400df5315353c6b54787155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38502d8ec400df5315353c6b54787155">&#9670;&#160;</a></span>clearObjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::clearObjects </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DtlHelpers_8h_source.html#l00049">eve::procgen::dtlutil::placeSpawnAndStairs()</a>.</p>
+
+</div>
+</div>
+<a id="a131318d24e07a860db869b75ffd8c7fa" name="a131318d24e07a860db869b75ffd8c7fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a131318d24e07a860db869b75ffd8c7fa">&#9670;&#160;</a></span>detail() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint8_t &gt; &amp; eve::procgen::Grid2D::detail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8h_source.html">Grid2D.h</a> 第 <a class="el" href="Grid2D_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a25975247c1e1d2933c4850473520a57e" name="a25975247c1e1d2933c4850473520a57e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25975247c1e1d2933c4850473520a57e">&#9670;&#160;</a></span>detail() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; uint8_t &gt; &amp; eve::procgen::Grid2D::detail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8h_source.html">Grid2D.h</a> 第 <a class="el" href="Grid2D_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66f1422005532c0740f0b57e9afbd652" name="a66f1422005532c0740f0b57e9afbd652"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66f1422005532c0740f0b57e9afbd652">&#9670;&#160;</a></span>fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::fill </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>semantic</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a>.</p>
+
+</div>
+</div>
+<a id="a83e14ac97e99fd3b7090fcaa31ac65a3" name="a83e14ac97e99fd3b7090fcaa31ac65a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83e14ac97e99fd3b7090fcaa31ac65a3">&#9670;&#160;</a></span>getCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Grid2D::getCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Semantic_8h_source.html#l00010">eve::procgen::Semantic::Empty</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Palette_8cpp_source.html#l00024">eve::procgen::PaletteTable::applyToLayer()</a> , 以及 <a class="el" href="DtlHelpers_8h_source.html#l00049">eve::procgen::dtlutil::placeSpawnAndStairs()</a>.</p>
+
+</div>
+</div>
+<a id="a5428c08580eb0c2d8abb3abc4dac28ae" name="a5428c08580eb0c2d8abb3abc4dac28ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5428c08580eb0c2d8abb3abc4dac28ae">&#9670;&#160;</a></span>getDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Grid2D::getDetail </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ae880b566dc208d04cff40a85457b3a37" name="ae880b566dc208d04cff40a85457b3a37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae880b566dc208d04cff40a85457b3a37">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Grid2D::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Palette_8cpp_source.html#l00024">eve::procgen::PaletteTable::applyToLayer()</a>, <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00347">eve::procgen::autotileGridInPlace()</a>, <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a> , 以及 <a class="el" href="DtlHelpers_8h_source.html#l00049">eve::procgen::dtlutil::placeSpawnAndStairs()</a>.</p>
+
+</div>
+</div>
+<a id="af3aef4604c7eba458e78b0ac85a8051a" name="af3aef4604c7eba458e78b0ac85a8051a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3aef4604c7eba458e78b0ac85a8051a">&#9670;&#160;</a></span>getMeta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Grid2D::getMeta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>defaultValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="aad83b6467a7f95215c6c3ec16a35e9b9" name="aad83b6467a7f95215c6c3ec16a35e9b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad83b6467a7f95215c6c3ec16a35e9b9">&#9670;&#160;</a></span>getObjectCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Grid2D::getObjectCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="ab445b71420371dd48dd6bd1418d047e1" name="ab445b71420371dd48dd6bd1418d047e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab445b71420371dd48dd6bd1418d047e1">&#9670;&#160;</a></span>getObjectGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Grid2D::getObjectGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="ac7bc4dc81e4e98d8f7e35bb448c4398d" name="ac7bc4dc81e4e98d8f7e35bb448c4398d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7bc4dc81e4e98d8f7e35bb448c4398d">&#9670;&#160;</a></span>getObjectHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Grid2D::getObjectHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="acc63cae68b00102201dbf4e8428efd71" name="acc63cae68b00102201dbf4e8428efd71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc63cae68b00102201dbf4e8428efd71">&#9670;&#160;</a></span>getObjectName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Grid2D::getObjectName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a381ad0d74a9434213885020a1d45cd79" name="a381ad0d74a9434213885020a1d45cd79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a381ad0d74a9434213885020a1d45cd79">&#9670;&#160;</a></span>getObjectType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Grid2D::getObjectType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a438c7f8750e97896d2f9a32bfd918d0e" name="a438c7f8750e97896d2f9a32bfd918d0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438c7f8750e97896d2f9a32bfd918d0e">&#9670;&#160;</a></span>getObjectWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Grid2D::getObjectWidth </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a89c486e4a1de76b0e7439ffa73796cea" name="a89c486e4a1de76b0e7439ffa73796cea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89c486e4a1de76b0e7439ffa73796cea">&#9670;&#160;</a></span>getObjectX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Grid2D::getObjectX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a58ebfb9ac6ff218e9001fc47d7a082b2" name="a58ebfb9ac6ff218e9001fc47d7a082b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ebfb9ac6ff218e9001fc47d7a082b2">&#9670;&#160;</a></span>getObjectY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Grid2D::getObjectY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>.</p>
+
+</div>
+</div>
+<a id="a404bc4ec817697872ab2205696e838e8" name="a404bc4ec817697872ab2205696e838e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a404bc4ec817697872ab2205696e838e8">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Grid2D::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Palette_8cpp_source.html#l00024">eve::procgen::PaletteTable::applyToLayer()</a>, <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00347">eve::procgen::autotileGridInPlace()</a>, <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a> , 以及 <a class="el" href="DtlHelpers_8h_source.html#l00049">eve::procgen::dtlutil::placeSpawnAndStairs()</a>.</p>
+
+</div>
+</div>
+<a id="a410730f8fe0349129d5fa7972fded804" name="a410730f8fe0349129d5fa7972fded804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a410730f8fe0349129d5fa7972fded804">&#9670;&#160;</a></span>objects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1map_1_1MapObject.html">map::MapObject</a> &gt; &amp; eve::procgen::Grid2D::objects </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8h_source.html">Grid2D.h</a> 第 <a class="el" href="Grid2D_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55fd7106f49eaf5789a76aaf3b3ab0d5" name="a55fd7106f49eaf5789a76aaf3b3ab0d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55fd7106f49eaf5789a76aaf3b3ab0d5">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Semantic_8h_source.html#l00010">eve::procgen::Semantic::Empty</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DtlHelpers_8h_source.html#l00035">eve::procgen::dtlutil::copyMatrixToGrid()</a> , 以及 <a class="el" href="Heightmap_8cpp_source.html#l00084">eve::procgen::Heightmap::toGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a6c66f0caf5095da7b3222500335adfd4" name="a6c66f0caf5095da7b3222500335adfd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c66f0caf5095da7b3222500335adfd4">&#9670;&#160;</a></span>setCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::setCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>semantic</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WfcSimple_8cpp_source.html#l00015">semantic</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DtlHelpers_8h_source.html#l00035">eve::procgen::dtlutil::copyMatrixToGrid()</a> , 以及 <a class="el" href="Heightmap_8cpp_source.html#l00084">eve::procgen::Heightmap::toGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a379cb742e5800a3d4eb7663e83f8caa9" name="a379cb742e5800a3d4eb7663e83f8caa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a379cb742e5800a3d4eb7663e83f8caa9">&#9670;&#160;</a></span>setDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::setDetail </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-cell detail layer (0..255), parallel to <code>cells</code>. Semantics stay in <code>cells</code> (palette/GID compatible); <code>detail</code> carries algorithm-specific extras such as wall-autotile direction masks, floor-pattern variants and decor tile indices. Semantics that have no detail use 0. </p>
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ad22107d54e6ad503cc7624181aee4031" name="ad22107d54e6ad503cc7624181aee4031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad22107d54e6ad503cc7624181aee4031">&#9670;&#160;</a></span>setMeta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Grid2D::setMeta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a> 第 <a class="el" href="Grid2D_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="Grid2D_8h_source.html">Grid2D.h</a></li>
+<li>src/modules/procgen/<a class="el" href="Grid2D_8cpp_source.html">Grid2D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

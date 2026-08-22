@@ -1,0 +1,393 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Drawable类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Drawable.html">Drawable</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Drawable-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Drawable类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases).">Drawable</a> base (textures, meshes, canvases).  
+ <a href="classeve_1_1graphics_1_1Drawable.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Drawable_8h_source.html">Drawable.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Drawable 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Drawable.png" usemap="#eve::graphics::Drawable_map" alt=""/>
+  <map id="eve::graphics::Drawable_map" name="eve::graphics::Drawable_map">
+<area href="classeve_1_1graphics_1_1Canvas.html" alt="eve::graphics::Canvas" shape="rect" coords="381,56,625,80"/>
+<area href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets)." alt="eve::graphics::Mesh" shape="rect" coords="635,56,879,80"/>
+<area href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle." alt="eve::graphics::Texture" shape="rect" coords="889,56,1133,80"/>
+<area href="classeve_1_1graphics_1_1Graphics.html" alt="eve::graphics::Graphics" shape="rect" coords="127,112,371,136"/>
+<area href="classeve_1_1graphics_1_1vulkan_1_1OffscreenCanvas.html" alt="eve::graphics::vulkan::OffscreenCanvas" shape="rect" coords="381,112,625,136"/>
+<area href="classeve_1_1graphics_1_1webgpu_1_1OffscreenCanvas.html" title="Offscreen render target (RGBA8Unorm color, optional Depth32Float). 2D batches are flushed into the ca..." alt="eve::graphics::webgpu::OffscreenCanvas" shape="rect" coords="635,112,879,136"/>
+<area href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html" alt="eve::graphics::vulkan::Graphics" shape="rect" coords="0,168,244,192"/>
+<area href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html" alt="eve::graphics::webgpu::Graphics" shape="rect" coords="254,168,498,192"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aceeba99f4da23b12baf616fd57639c5d" id="r_aceeba99f4da23b12baf616fd57639c5d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#aceeba99f4da23b12baf616fd57639c5d">~Drawable</a> ()</td></tr>
+<tr class="separator:aceeba99f4da23b12baf616fd57639c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c0894d4411b877fd948bbc24ab108f6" id="r_a1c0894d4411b877fd948bbc24ab108f6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1c0894d4411b877fd948bbc24ab108f6">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, const glm::mat4 &amp;matrix) const =0</td></tr>
+<tr class="memdesc:a1c0894d4411b877fd948bbc24ab108f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object with the specified transformation matrix.  <br /></td></tr>
+<tr class="separator:a1c0894d4411b877fd948bbc24ab108f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84e1f90d6c78c65e64f2d74b36a3fbf2" id="r_a84e1f90d6c78c65e64f2d74b36a3fbf2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2">getCastOcclusion</a> () const</td></tr>
+<tr class="memdesc:a84e1f90d6c78c65e64f2d74b36a3fbf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">When false, skipped by <a class="el" href="classeve_1_1graphics_1_1Graphics.html#accadbc9e8f42c43cd11ea78ad32980dc" title="Volumetric occlusion helpers (shadow-pass analogue for light shafts). drawOcclusion skips drawables w...">Graphics::drawOcclusion</a> / volumetric occluder passes.  <br /></td></tr>
+<tr class="separator:a84e1f90d6c78c65e64f2d74b36a3fbf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab42dd0f3ecbccdd65fe4accdd924871" id="r_aab42dd0f3ecbccdd65fe4accdd924871"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#aab42dd0f3ecbccdd65fe4accdd924871">setCastOcclusion</a> (bool cast)</td></tr>
+<tr class="separator:aab42dd0f3ecbccdd65fe4accdd924871"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ab585bd5bbc4b9b903001ee28014db5" id="r_a1ab585bd5bbc4b9b903001ee28014db5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1ab585bd5bbc4b9b903001ee28014db5">drawOcclusion</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, const glm::mat4 &amp;matrix) const</td></tr>
+<tr class="memdesc:a1ab585bd5bbc4b9b903001ee28014db5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw as an opaque black silhouette for volumetric occlusion maps (screen-space god rays / light shafts). Default is a no-op; <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> / <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> override with 2D black rects (alpha preserved for textures).  <br /></td></tr>
+<tr class="separator:a1ab585bd5bbc4b9b903001ee28014db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases).">Drawable</a> base (textures, meshes, canvases). </p>
+<p>Occlusion follows the same idea as mesh shadow casting: a drawable may contribute a black silhouette to a volumetric light occlusion map via <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1ab585bd5bbc4b9b903001ee28014db5" title="Draw as an opaque black silhouette for volumetric occlusion maps (screen-space god rays / light shaft...">drawOcclusion()</a>. Defaults to casting occlusion (opt-out with setCastOcclusion). </p>
+
+<p class="definition">在文件 <a class="el" href="Drawable_8h_source.html">Drawable.h</a> 第 <a class="el" href="Drawable_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aceeba99f4da23b12baf616fd57639c5d" name="aceeba99f4da23b12baf616fd57639c5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceeba99f4da23b12baf616fd57639c5d">&#9670;&#160;</a></span>~Drawable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::graphics::Drawable::~Drawable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Drawable_8h_source.html">Drawable.h</a> 第 <a class="el" href="Drawable_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1c0894d4411b877fd948bbc24ab108f6" name="a1c0894d4411b877fd948bbc24ab108f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c0894d4411b877fd948bbc24ab108f6">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::graphics::Drawable::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Draws the object with the specified transformation matrix. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1OffscreenCanvas.html#a7e28eecb56c75c8d6d90741684c3d2b5">eve::graphics::vulkan::OffscreenCanvas</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1OffscreenCanvas.html#a782224eee80a436b647f570748ce67cf">eve::graphics::webgpu::OffscreenCanvas</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a1267314a960d3729b43df77eb7a982ec">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a130799ab0efd87740ce419c806faeff5">eve::graphics::webgpu::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1Mesh.html#a70e222ad430404b6ef885ac4d41d9c81">eve::graphics::Mesh</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html#a5e59d325bb64721d2761c8de88b70c0a">eve::graphics::Texture</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ad6ccfafd77b9dafbe66b632cf7953214">eve::graphics::Canvas</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00893">eve::graphics::Graphics::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a1ab585bd5bbc4b9b903001ee28014db5" name="a1ab585bd5bbc4b9b903001ee28014db5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ab585bd5bbc4b9b903001ee28014db5">&#9670;&#160;</a></span>drawOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::graphics::Drawable::drawOcclusion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Draw as an opaque black silhouette for volumetric occlusion maps (screen-space god rays / light shafts). Default is a no-op; <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> / <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> override with 2D black rects (alpha preserved for textures). </p>
+
+<p>被 <a class="el" href="classeve_1_1graphics_1_1Mesh.html#a6be1fa7819df7db83a3824c2b240568c">eve::graphics::Mesh</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Texture.html#a8596152e42006cb79c3456b7602d7b02">eve::graphics::Texture</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="Drawable_8h_source.html">Drawable.h</a> 第 <a class="el" href="Drawable_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00897">eve::graphics::Graphics::drawOcclusion()</a>.</p>
+
+</div>
+</div>
+<a id="a84e1f90d6c78c65e64f2d74b36a3fbf2" name="a84e1f90d6c78c65e64f2d74b36a3fbf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84e1f90d6c78c65e64f2d74b36a3fbf2">&#9670;&#160;</a></span>getCastOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Drawable::getCastOcclusion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>When false, skipped by <a class="el" href="classeve_1_1graphics_1_1Graphics.html#accadbc9e8f42c43cd11ea78ad32980dc" title="Volumetric occlusion helpers (shadow-pass analogue for light shafts). drawOcclusion skips drawables w...">Graphics::drawOcclusion</a> / volumetric occluder passes. </p>
+
+<p class="definition">在文件 <a class="el" href="Drawable_8h_source.html">Drawable.h</a> 第 <a class="el" href="Drawable_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00897">eve::graphics::Graphics::drawOcclusion()</a>, <a class="el" href="Mesh_8cpp_source.html#l00042">eve::graphics::Mesh::drawOcclusion()</a> , 以及 <a class="el" href="Texture_8cpp_source.html#l00021">eve::graphics::Texture::drawOcclusion()</a>.</p>
+
+</div>
+</div>
+<a id="aab42dd0f3ecbccdd65fe4accdd924871" name="aab42dd0f3ecbccdd65fe4accdd924871"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab42dd0f3ecbccdd65fe4accdd924871">&#9670;&#160;</a></span>setCastOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Drawable::setCastOcclusion </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Drawable_8h_source.html">Drawable.h</a> 第 <a class="el" href="Drawable_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Drawable_8h_source.html">Drawable.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

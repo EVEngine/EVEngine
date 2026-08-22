@@ -1,0 +1,2057 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::window::sdl::Window类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window.html">window</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window_1_1sdl.html">sdl</a></li><li class="navelem"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">Window</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1window_1_1sdl_1_1Window-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::window::sdl::Window类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="sdl_2Window_8h_source.html">Window.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::window::sdl::Window 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1window_1_1sdl_1_1Window.png" usemap="#eve::window::sdl::Window_map" alt=""/>
+  <map id="eve::window::sdl::Window_map" name="eve::window::sdl::Window_map">
+<area href="classeve_1_1window_1_1Window.html" title="Platform window interface (SDL implementation on desktop/mobile). Script: win &lt;- eve...." alt="eve::window::Window" shape="rect" coords="0,56,153,80"/>
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,153,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aeac0e3ae979e19bfdac85a6e49ddf577" id="r_aeac0e3ae979e19bfdac85a6e49ddf577"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aeac0e3ae979e19bfdac85a6e49ddf577">Window</a> ()</td></tr>
+<tr class="separator:aeac0e3ae979e19bfdac85a6e49ddf577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa47fa19b5671692bb85f0e6d9564711" id="r_afa47fa19b5671692bb85f0e6d9564711"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#afa47fa19b5671692bb85f0e6d9564711">~Window</a> ()</td></tr>
+<tr class="separator:afa47fa19b5671692bb85f0e6d9564711"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af556ef9a9098106603bd184e082152db" id="r_af556ef9a9098106603bd184e082152db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af556ef9a9098106603bd184e082152db">setSize</a> (int <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) override</td></tr>
+<tr class="memdesc:af556ef9a9098106603bd184e082152db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests a new logical window size.  <br /></td></tr>
+<tr class="separator:af556ef9a9098106603bd184e082152db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77033bea64bc31ff81fcf95639f31858" id="r_a77033bea64bc31ff81fcf95639f31858"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a77033bea64bc31ff81fcf95639f31858">getWidth</a> () const override</td></tr>
+<tr class="separator:a77033bea64bc31ff81fcf95639f31858"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43b7225e2ddcfbda2a7f7cbbe29fe22f" id="r_a43b7225e2ddcfbda2a7f7cbbe29fe22f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a43b7225e2ddcfbda2a7f7cbbe29fe22f">getHeight</a> () const override</td></tr>
+<tr class="separator:a43b7225e2ddcfbda2a7f7cbbe29fe22f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a788013e18e076a9b033b80fa5f550ba3" id="r_a788013e18e076a9b033b80fa5f550ba3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a788013e18e076a9b033b80fa5f550ba3">setWindowSettings</a> (<a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> settings) override</td></tr>
+<tr class="memdesc:a788013e18e076a9b033b80fa5f550ba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a full <a class="el" href="structeve_1_1window_1_1WindowSettings.html" title="Display settings for window creation/resize. width/height == 0 selects the desktop display mode size.">WindowSettings</a> struct (recreates the window when needed).  <br /></td></tr>
+<tr class="separator:a788013e18e076a9b033b80fa5f550ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcdddc1c70d86e03e54a419234246226" id="r_adcdddc1c70d86e03e54a419234246226"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#adcdddc1c70d86e03e54a419234246226">getWindowSettings</a> () override</td></tr>
+<tr class="separator:adcdddc1c70d86e03e54a419234246226"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3db8ddeae8e6ccc4b4738ccd56a5ec6" id="r_ae3db8ddeae8e6ccc4b4738ccd56a5ec6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">close</a> () override</td></tr>
+<tr class="memdesc:ae3db8ddeae8e6ccc4b4738ccd56a5ec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes and destroys the underlying window.  <br /></td></tr>
+<tr class="separator:ae3db8ddeae8e6ccc4b4738ccd56a5ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acadd7190e5f8b156b61a65cb732c44e7" id="r_acadd7190e5f8b156b61a65cb732c44e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#acadd7190e5f8b156b61a65cb732c44e7">setFullscreenDesktop</a> (bool fullscreen) override</td></tr>
+<tr class="memdesc:acadd7190e5f8b156b61a65cb732c44e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches between desktop fullscreen and windowed mode.  <br /></td></tr>
+<tr class="separator:acadd7190e5f8b156b61a65cb732c44e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1892debfca56e8cd533e2b1aa808fe14" id="r_a1892debfca56e8cd533e2b1aa808fe14"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1892debfca56e8cd533e2b1aa808fe14">setFullscreenExclusive</a> (bool fullscreen) override</td></tr>
+<tr class="memdesc:a1892debfca56e8cd533e2b1aa808fe14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches between exclusive fullscreen and windowed mode.  <br /></td></tr>
+<tr class="separator:a1892debfca56e8cd533e2b1aa808fe14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf37cb2433dd9e2d78d76c18d8a14816" id="r_aaf37cb2433dd9e2d78d76c18d8a14816"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aaf37cb2433dd9e2d78d76c18d8a14816">isOpen</a> () const override</td></tr>
+<tr class="separator:aaf37cb2433dd9e2d78d76c18d8a14816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c3d793b0ab5166a4d29e25641f66410" id="r_a7c3d793b0ab5166a4d29e25641f66410"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a7c3d793b0ab5166a4d29e25641f66410">setWindowTitle</a> (const std::string &amp;title) override</td></tr>
+<tr class="memdesc:a7c3d793b0ab5166a4d29e25641f66410"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the window title shown in the OS title bar.  <br /></td></tr>
+<tr class="separator:a7c3d793b0ab5166a4d29e25641f66410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af36747f4cb8650b198fabfe521c9a462" id="r_af36747f4cb8650b198fabfe521c9a462"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af36747f4cb8650b198fabfe521c9a462">getWindowTitle</a> () const override</td></tr>
+<tr class="separator:af36747f4cb8650b198fabfe521c9a462"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca7d667412c151606ea60b1c16af409a" id="r_aca7d667412c151606ea60b1c16af409a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aca7d667412c151606ea60b1c16af409a">setPosition</a> (int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int display) override</td></tr>
+<tr class="memdesc:aca7d667412c151606ea60b1c16af409a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves the window to a position in logical units on the given display.  <br /></td></tr>
+<tr class="separator:aca7d667412c151606ea60b1c16af409a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4b54c6b5213d937aa30d8c5ea1d7b73" id="r_ad4b54c6b5213d937aa30d8c5ea1d7b73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad4b54c6b5213d937aa30d8c5ea1d7b73">getPosition</a> (int &amp;<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int &amp;<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, int &amp;display) override</td></tr>
+<tr class="memdesc:ad4b54c6b5213d937aa30d8c5ea1d7b73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the current window position and display index.  <br /></td></tr>
+<tr class="separator:ad4b54c6b5213d937aa30d8c5ea1d7b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9963e84e0005369e07ea09270db87ad" id="r_ae9963e84e0005369e07ea09270db87ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ae9963e84e0005369e07ea09270db87ad">minimize</a> () override</td></tr>
+<tr class="memdesc:ae9963e84e0005369e07ea09270db87ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimizes / maximizes / restores the window.  <br /></td></tr>
+<tr class="separator:ae9963e84e0005369e07ea09270db87ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a255e81919f261575eb27a99ed0c0d5b7" id="r_a255e81919f261575eb27a99ed0c0d5b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a255e81919f261575eb27a99ed0c0d5b7">maximize</a> () override</td></tr>
+<tr class="separator:a255e81919f261575eb27a99ed0c0d5b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5006434fceb8be0df191192b36d05e26" id="r_a5006434fceb8be0df191192b36d05e26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a5006434fceb8be0df191192b36d05e26">restore</a> () override</td></tr>
+<tr class="separator:a5006434fceb8be0df191192b36d05e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d75884aae81b9461cfb30cfde67796b" id="r_a1d75884aae81b9461cfb30cfde67796b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1d75884aae81b9461cfb30cfde67796b">isMaximized</a> () const override</td></tr>
+<tr class="separator:a1d75884aae81b9461cfb30cfde67796b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a784212943e8ddb5b11572a368ef7e322" id="r_a784212943e8ddb5b11572a368ef7e322"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a784212943e8ddb5b11572a368ef7e322">isMinimized</a> () const override</td></tr>
+<tr class="separator:a784212943e8ddb5b11572a368ef7e322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a662286a12d32f4ab6ad197bd5c206d87" id="r_a662286a12d32f4ab6ad197bd5c206d87"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a662286a12d32f4ab6ad197bd5c206d87">hasFocus</a> () const override</td></tr>
+<tr class="memdesc:a662286a12d32f4ab6ad197bd5c206d87"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the window has keyboard focus.  <br /></td></tr>
+<tr class="separator:a662286a12d32f4ab6ad197bd5c206d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a113c8477c1872c8b344971c4b80787b3" id="r_a113c8477c1872c8b344971c4b80787b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a113c8477c1872c8b344971c4b80787b3">hasMouseFocus</a> () const override</td></tr>
+<tr class="memdesc:a113c8477c1872c8b344971c4b80787b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the window has mouse focus.  <br /></td></tr>
+<tr class="separator:a113c8477c1872c8b344971c4b80787b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ea52a8d58e775c4b2b67055087481b2" id="r_a1ea52a8d58e775c4b2b67055087481b2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1ea52a8d58e775c4b2b67055087481b2">isVisible</a> () const override</td></tr>
+<tr class="separator:a1ea52a8d58e775c4b2b67055087481b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309bd22078ba61b48095e987436298dc" id="r_a309bd22078ba61b48095e987436298dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a309bd22078ba61b48095e987436298dc">setVSync</a> (int vsync) override</td></tr>
+<tr class="memdesc:a309bd22078ba61b48095e987436298dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables/disables vertical sync (0 = off, 1 = on).  <br /></td></tr>
+<tr class="separator:a309bd22078ba61b48095e987436298dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a319af4a319354727f85bb3769978a15c" id="r_a319af4a319354727f85bb3769978a15c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a319af4a319354727f85bb3769978a15c">getVSync</a> () const override</td></tr>
+<tr class="separator:a319af4a319354727f85bb3769978a15c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad9a2f9fa37e1d3385a34d78f6f4e81a" id="r_aad9a2f9fa37e1d3385a34d78f6f4e81a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aad9a2f9fa37e1d3385a34d78f6f4e81a">getPixelWidth</a> () const override</td></tr>
+<tr class="memdesc:aad9a2f9fa37e1d3385a34d78f6f4e81a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Framebuffer (pixel) dimensions of the window.  <br /></td></tr>
+<tr class="separator:aad9a2f9fa37e1d3385a34d78f6f4e81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b0de7d96316349c2227547c27f14e22" id="r_a5b0de7d96316349c2227547c27f14e22"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a5b0de7d96316349c2227547c27f14e22">getPixelHeight</a> () const override</td></tr>
+<tr class="separator:a5b0de7d96316349c2227547c27f14e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54ddc84563dbd55d5f1d716a6ca580cb" id="r_a54ddc84563dbd55d5f1d716a6ca580cb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a54ddc84563dbd55d5f1d716a6ca580cb">getDPIScale</a> () const override</td></tr>
+<tr class="memdesc:a54ddc84563dbd55d5f1d716a6ca580cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current UI/logical DPI scale (1.0 on non-retina displays).  <br /></td></tr>
+<tr class="separator:a54ddc84563dbd55d5f1d716a6ca580cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9db6c9e74eb1fb28b89e88d12e897fdb" id="r_a9db6c9e74eb1fb28b89e88d12e897fdb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9db6c9e74eb1fb28b89e88d12e897fdb">getNativeDPIScale</a> () const override</td></tr>
+<tr class="memdesc:a9db6c9e74eb1fb28b89e88d12e897fdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native DPI scale reported by the OS for this window.  <br /></td></tr>
+<tr class="separator:a9db6c9e74eb1fb28b89e88d12e897fdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad84dfa1a3601225ba4c525a9159c3ed1" id="r_ad84dfa1a3601225ba4c525a9159c3ed1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad84dfa1a3601225ba4c525a9159c3ed1">windowToPixelCoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:ad84dfa1a3601225ba4c525a9159c3ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts window logical coordinates to framebuffer pixel coordinates.  <br /></td></tr>
+<tr class="separator:ad84dfa1a3601225ba4c525a9159c3ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac66cbb3ce2d418189e298d4a77ca395" id="r_aac66cbb3ce2d418189e298d4a77ca395"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aac66cbb3ce2d418189e298d4a77ca395">pixelToWindowCoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:aac66cbb3ce2d418189e298d4a77ca395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts framebuffer pixel coordinates to window logical coordinates.  <br /></td></tr>
+<tr class="separator:aac66cbb3ce2d418189e298d4a77ca395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d0b40fd24815ea2fa5644b9bd7744a1" id="r_a9d0b40fd24815ea2fa5644b9bd7744a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9d0b40fd24815ea2fa5644b9bd7744a1">windowToDPICoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:a9d0b40fd24815ea2fa5644b9bd7744a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts window logical coordinates to UI-DPI coordinates.  <br /></td></tr>
+<tr class="separator:a9d0b40fd24815ea2fa5644b9bd7744a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad77e384b9a230c8861d554218c156c92" id="r_ad77e384b9a230c8861d554218c156c92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad77e384b9a230c8861d554218c156c92">DPIToWindowCoords</a> (double *<a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double *<a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) const override</td></tr>
+<tr class="memdesc:ad77e384b9a230c8861d554218c156c92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts UI-DPI coordinates to window logical coordinates.  <br /></td></tr>
+<tr class="separator:ad77e384b9a230c8861d554218c156c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2f0a2c39e3fcfabc2701ab46dc04af" id="r_abc2f0a2c39e3fcfabc2701ab46dc04af"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#abc2f0a2c39e3fcfabc2701ab46dc04af">toPixels</a> (double <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:abc2f0a2c39e3fcfabc2701ab46dc04af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scales a logical length to UI pixels (and back).  <br /></td></tr>
+<tr class="separator:abc2f0a2c39e3fcfabc2701ab46dc04af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f70d42fe480b8344199f269e146bce" id="r_a75f70d42fe480b8344199f269e146bce"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a75f70d42fe480b8344199f269e146bce">fromPixels</a> (double <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="separator:a75f70d42fe480b8344199f269e146bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbb3112c317b2041ae430ba8337ca0e1" id="r_acbb3112c317b2041ae430ba8337ca0e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#acbb3112c317b2041ae430ba8337ca0e1">toPixelsXY</a> (double wx, double wy, double &amp;<a class="el" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, double &amp;py) const override</td></tr>
+<tr class="memdesc:acbb3112c317b2041ae430ba8337ca0e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector variants of the coordinate conversions above.  <br /></td></tr>
+<tr class="separator:acbb3112c317b2041ae430ba8337ca0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811bfaf4b7435da7b749f5faae887104" id="r_a811bfaf4b7435da7b749f5faae887104"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a811bfaf4b7435da7b749f5faae887104">fromPixelsXY</a> (double <a class="el" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, double py, double &amp;wx, double &amp;wy) const override</td></tr>
+<tr class="separator:a811bfaf4b7435da7b749f5faae887104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a099e008296bee06cdf51a634cbfee7a2" id="r_a099e008296bee06cdf51a634cbfee7a2"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a099e008296bee06cdf51a634cbfee7a2">getHandle</a> () const override</td></tr>
+<tr class="memdesc:a099e008296bee06cdf51a634cbfee7a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native window handle (SDL_Window* on SDL backend).  <br /></td></tr>
+<tr class="separator:a099e008296bee06cdf51a634cbfee7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5b9b1fb32bd625f2f87849389407922" id="r_ac5b9b1fb32bd625f2f87849389407922"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ac5b9b1fb32bd625f2f87849389407922">getDisplayCount</a> () const override</td></tr>
+<tr class="memdesc:ac5b9b1fb32bd625f2f87849389407922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of displays attached to the system.  <br /></td></tr>
+<tr class="separator:ac5b9b1fb32bd625f2f87849389407922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad18562ac4cc2b97b24449ba136445e3b" id="r_ad18562ac4cc2b97b24449ba136445e3b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad18562ac4cc2b97b24449ba136445e3b">getDisplayName</a> (int display) const override</td></tr>
+<tr class="memdesc:ad18562ac4cc2b97b24449ba136445e3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable display name for a display index.  <br /></td></tr>
+<tr class="separator:ad18562ac4cc2b97b24449ba136445e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a615454ab1f689bc0604de91994cad541" id="r_a615454ab1f689bc0604de91994cad541"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a615454ab1f689bc0604de91994cad541">getDisplayOrientation</a> (int display) const override</td></tr>
+<tr class="memdesc:a615454ab1f689bc0604de91994cad541"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display orientation string (e.g. "landscape").  <br /></td></tr>
+<tr class="separator:a615454ab1f689bc0604de91994cad541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e1b34b3fa41b714c5fe4302d1ee991" id="r_a96e1b34b3fa41b714c5fe4302d1ee991"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1window_1_1Window_1_1WindowSize.html">WindowSize</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a96e1b34b3fa41b714c5fe4302d1ee991">getFullscreenSizes</a> (int display) const override</td></tr>
+<tr class="memdesc:a96e1b34b3fa41b714c5fe4302d1ee991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fullscreen sizes supported by a display.  <br /></td></tr>
+<tr class="separator:a96e1b34b3fa41b714c5fe4302d1ee991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f1464e376f479d0c3db24e73f3a617d" id="r_a0f1464e376f479d0c3db24e73f3a617d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a0f1464e376f479d0c3db24e73f3a617d">getDesktopDimensions</a> (int display, int &amp;outWidth, int &amp;outHeight) const override</td></tr>
+<tr class="memdesc:a0f1464e376f479d0c3db24e73f3a617d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desktop resolution of a display.  <br /></td></tr>
+<tr class="separator:a0f1464e376f479d0c3db24e73f3a617d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af673952b9d9493ff69f375c52e40ca34" id="r_af673952b9d9493ff69f375c52e40ca34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af673952b9d9493ff69f375c52e40ca34">showMessageBox</a> (const std::string &amp;caption, const std::string &amp;message, const std::string &amp;<a class="el" href="EditorHost_8cpp.html#a75b160f574a0be26114bae2c7686a5e1">type</a>, bool attachToWindow) override</td></tr>
+<tr class="memdesc:af673952b9d9493ff69f375c52e40ca34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows a modal message box ("info", "warning", or "error").  <br /></td></tr>
+<tr class="separator:af673952b9d9493ff69f375c52e40ca34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34a7a8ed208e21a3772061be8c0c309d" id="r_a34a7a8ed208e21a3772061be8c0c309d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a34a7a8ed208e21a3772061be8c0c309d">showMessageBoxData</a> (const <a class="el" href="structeve_1_1window_1_1Window_1_1MessageBoxData.html">MessageBoxData</a> &amp;data) override</td></tr>
+<tr class="memdesc:a34a7a8ed208e21a3772061be8c0c309d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows a configurable message box; returns the pressed button index.  <br /></td></tr>
+<tr class="separator:a34a7a8ed208e21a3772061be8c0c309d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92fa05b53286d56669e8c82db46639a1" id="r_a92fa05b53286d56669e8c82db46639a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a92fa05b53286d56669e8c82db46639a1">requestAttention</a> (bool continuous) override</td></tr>
+<tr class="memdesc:a92fa05b53286d56669e8c82db46639a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests OS attention (flashing taskbar); continuous repeats until focused.  <br /></td></tr>
+<tr class="separator:a92fa05b53286d56669e8c82db46639a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a582b026ac08966bf6db6913d6bf20c" id="r_a2a582b026ac08966bf6db6913d6bf20c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a2a582b026ac08966bf6db6913d6bf20c">setIconRGBA</a> (const uint8_t *rgba, int <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) override</td></tr>
+<tr class="memdesc:a2a582b026ac08966bf6db6913d6bf20c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the window icon from tightly packed RGBA8 pixels (w*h*4 bytes).  <br /></td></tr>
+<tr class="separator:a2a582b026ac08966bf6db6913d6bf20c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ce13679c447d676376cce2678ba8f39" id="r_a9ce13679c447d676376cce2678ba8f39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9ce13679c447d676376cce2678ba8f39">updateSettings</a> (const <a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> &amp;newsettings, bool updateGraphicsViewport)</td></tr>
+<tr class="memdesc:a9ce13679c447d676376cce2678ba8f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used by event backend on resize to refresh drawable size / viewport.  <br /></td></tr>
+<tr class="separator:a9ce13679c447d676376cce2678ba8f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1window_1_1Window"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1window_1_1Window')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td></tr>
+<tr class="memitem:aadefa9b3bb4766e78b05c7ca9e7180ff inherit pub_methods_classeve_1_1window_1_1Window" id="r_aadefa9b3bb4766e78b05c7ca9e7180ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1window_1_1Window.html#aadefa9b3bb4766e78b05c7ca9e7180ff">Module_REG</a> (<a class="el" href="classeve_1_1window_1_1Window.html">Window</a>)</td></tr>
+<tr class="separator:aadefa9b3bb4766e78b05c7ca9e7180ff inherit pub_methods_classeve_1_1window_1_1Window"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8h_source.html">Window.h</a> 第 <a class="el" href="sdl_2Window_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aeac0e3ae979e19bfdac85a6e49ddf577" name="aeac0e3ae979e19bfdac85a6e49ddf577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeac0e3ae979e19bfdac85a6e49ddf577">&#9670;&#160;</a></span>Window()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::window::sdl::Window::Window </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa47fa19b5671692bb85f0e6d9564711" name="afa47fa19b5671692bb85f0e6d9564711"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa47fa19b5671692bb85f0e6d9564711">&#9670;&#160;</a></span>~Window()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::window::sdl::Window::~Window </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1window_1_1Window.html#a4bc2070e1ce229a3885cf8f573f135e2">eve::window::Window</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae3db8ddeae8e6ccc4b4738ccd56a5ec6" name="ae3db8ddeae8e6ccc4b4738ccd56a5ec6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Closes and destroys the underlying window. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ac8bce05cdc317a16a24f42690ced321f">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00557">557</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00557">close()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00557">close()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00076">setWindowSettings()</a>.</p>
+
+</div>
+</div>
+<a id="ad77e384b9a230c8861d554218c156c92" name="ad77e384b9a230c8861d554218c156c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad77e384b9a230c8861d554218c156c92">&#9670;&#160;</a></span>DPIToWindowCoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::DPIToWindowCoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts UI-DPI coordinates to window logical coordinates. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ab5ea157deab5af4ebee0f20865dec5d9">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00381">381</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00352">getDPIScale()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a75f70d42fe480b8344199f269e146bce" name="a75f70d42fe480b8344199f269e146bce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f70d42fe480b8344199f269e146bce">&#9670;&#160;</a></span>fromPixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::window::sdl::Window::fromPixels </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ae0a3ebab6b28fc89ffc90cf06e1f2cab">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00347">getNativeDPIScale()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00400">fromPixelsXY()</a>.</p>
+
+</div>
+</div>
+<a id="a811bfaf4b7435da7b749f5faae887104" name="a811bfaf4b7435da7b749f5faae887104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a811bfaf4b7435da7b749f5faae887104">&#9670;&#160;</a></span>fromPixelsXY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::fromPixelsXY </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>px</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>py</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#af4c0ab7d306c9e932b5bf1951e48b15d">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00390">fromPixels()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>.</p>
+
+</div>
+</div>
+<a id="a0f1464e376f479d0c3db24e73f3a617d" name="a0f1464e376f479d0c3db24e73f3a617d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f1464e376f479d0c3db24e73f3a617d">&#9670;&#160;</a></span>getDesktopDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::getDesktopDimensions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Desktop resolution of a display. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a9e0b85913838d20d5cceac27514e3b82">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00443">443</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00405">getDisplayCount()</a>.</p>
+
+</div>
+</div>
+<a id="ac5b9b1fb32bd625f2f87849389407922" name="ac5b9b1fb32bd625f2f87849389407922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5b9b1fb32bd625f2f87849389407922">&#9670;&#160;</a></span>getDisplayCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::getDisplayCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of displays attached to the system. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a0e54083aa23b3100ac0f0f99e917dd32">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00443">getDesktopDimensions()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00410">getDisplayName()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00416">getDisplayOrientation()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00427">getFullscreenSizes()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00076">setWindowSettings()</a>.</p>
+
+</div>
+</div>
+<a id="ad18562ac4cc2b97b24449ba136445e3b" name="ad18562ac4cc2b97b24449ba136445e3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad18562ac4cc2b97b24449ba136445e3b">&#9670;&#160;</a></span>getDisplayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::window::sdl::Window::getDisplayName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable display name for a display index. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a518a769935235872f35d50ea225cf91e">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00405">getDisplayCount()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>.</p>
+
+</div>
+</div>
+<a id="a615454ab1f689bc0604de91994cad541" name="a615454ab1f689bc0604de91994cad541"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615454ab1f689bc0604de91994cad541">&#9670;&#160;</a></span>getDisplayOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::window::sdl::Window::getDisplayOrientation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Display orientation string (e.g. "landscape"). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ac2069f5e837c5cd603cfdac7e60cc5bb">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00405">getDisplayCount()</a>.</p>
+
+</div>
+</div>
+<a id="a54ddc84563dbd55d5f1d716a6ca580cb" name="a54ddc84563dbd55d5f1d716a6ca580cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54ddc84563dbd55d5f1d716a6ca580cb">&#9670;&#160;</a></span>getDPIScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::window::sdl::Window::getDPIScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current UI/logical DPI scale (1.0 on non-retina displays). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aa97368a8e5402a9417542100911b6800">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00019">eve::window::WindowSettings::dpi_scale</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00347">getNativeDPIScale()</a> , 以及 <a class="el" href="Window_8h_source.html#l00033">eve::window::WindowSettings::use_dpi_scale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00381">DPIToWindowCoords()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00373">windowToDPICoords()</a>.</p>
+
+</div>
+</div>
+<a id="a96e1b34b3fa41b714c5fe4302d1ee991" name="a96e1b34b3fa41b714c5fe4302d1ee991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96e1b34b3fa41b714c5fe4302d1ee991">&#9670;&#160;</a></span>getFullscreenSizes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1window_1_1Window_1_1WindowSize.html">Window::WindowSize</a> &gt; eve::window::sdl::Window::getFullscreenSizes </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fullscreen sizes supported by a display. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a7af5e960255a85e324486920b2eb01b8">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00427">427</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00405">getDisplayCount()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Window_8h_source.html#l00051">eve::window::Window::WindowSize::width</a>.</p>
+
+</div>
+</div>
+<a id="a099e008296bee06cdf51a634cbfee7a2" name="a099e008296bee06cdf51a634cbfee7a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a099e008296bee06cdf51a634cbfee7a2">&#9670;&#160;</a></span>getHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::window::sdl::Window::getHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native window handle (SDL_Window* on SDL backend). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aee2fcb703b93acb71de793ad70a51280">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8h_source.html">Window.h</a> 第 <a class="el" href="sdl_2Window_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43b7225e2ddcfbda2a7f7cbbe29fe22f" name="a43b7225e2ddcfbda2a7f7cbbe29fe22f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43b7225e2ddcfbda2a7f7cbbe29fe22f">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ae9c1035279bc746a0e97820320d0fa80">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00023">eve::window::WindowSettings::height</a>.</p>
+
+</div>
+</div>
+<a id="a9db6c9e74eb1fb28b89e88d12e897fdb" name="a9db6c9e74eb1fb28b89e88d12e897fdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9db6c9e74eb1fb28b89e88d12e897fdb">&#9670;&#160;</a></span>getNativeDPIScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::window::sdl::Window::getNativeDPIScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native DPI scale reported by the OS for this window. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a2f4b1e102b6204b6fd8b7096225229a6">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00390">fromPixels()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00352">getDPIScale()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00365">pixelToWindowCoords()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00388">toPixels()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00358">windowToPixelCoords()</a>.</p>
+
+</div>
+</div>
+<a id="a5b0de7d96316349c2227547c27f14e22" name="a5b0de7d96316349c2227547c27f14e22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b0de7d96316349c2227547c27f14e22">&#9670;&#160;</a></span>getPixelHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::getPixelHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#afbd62ff320550282d56c9afdc72a719c">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad9a2f9fa37e1d3385a34d78f6f4e81a" name="aad9a2f9fa37e1d3385a34d78f6f4e81a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad9a2f9fa37e1d3385a34d78f6f4e81a">&#9670;&#160;</a></span>getPixelWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::getPixelWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Framebuffer (pixel) dimensions of the window. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aeb0be647ed6de6d5c8967eeae96b9358">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4b54c6b5213d937aa30d8c5ea1d7b73" name="ad4b54c6b5213d937aa30d8c5ea1d7b73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b54c6b5213d937aa30d8c5ea1d7b73">&#9670;&#160;</a></span>getPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::getPosition </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>display</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads the current window position and display index. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ae3a91f70345b4c00d0bbf7b0811cc6ee">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00029">eve::window::WindowSettings::display</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Window_8h_source.html#l00020">eve::window::WindowSettings::x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Window_8h_source.html#l00021">eve::window::WindowSettings::y</a>.</p>
+
+</div>
+</div>
+<a id="a319af4a319354727f85bb3769978a15c" name="a319af4a319354727f85bb3769978a15c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319af4a319354727f85bb3769978a15c">&#9670;&#160;</a></span>getVSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::getVSync </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#afa3622701ae426f3e4f6becd8882a862">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00026">eve::window::WindowSettings::vsync</a>.</p>
+
+</div>
+</div>
+<a id="a77033bea64bc31ff81fcf95639f31858" name="a77033bea64bc31ff81fcf95639f31858"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77033bea64bc31ff81fcf95639f31858">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aa2dc82329dfeb26602c472e2d0c78574">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00022">eve::window::WindowSettings::width</a>.</p>
+
+</div>
+</div>
+<a id="adcdddc1c70d86e03e54a419234246226" name="adcdddc1c70d86e03e54a419234246226"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcdddc1c70d86e03e54a419234246226">&#9670;&#160;</a></span>getWindowSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> eve::window::sdl::Window::getWindowSettings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ae710cf78a331f6fb0abfc4f852b6dab7">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af36747f4cb8650b198fabfe521c9a462" name="af36747f4cb8650b198fabfe521c9a462"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af36747f4cb8650b198fabfe521c9a462">&#9670;&#160;</a></span>getWindowTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::window::sdl::Window::getWindowTitle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a889033315a12b2174bcf07d970681f25">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a662286a12d32f4ab6ad197bd5c206d87" name="a662286a12d32f4ab6ad197bd5c206d87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662286a12d32f4ab6ad197bd5c206d87">&#9670;&#160;</a></span>hasFocus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::hasFocus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the window has keyboard focus. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a31367d5006048d5017fbd87bee936998">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a113c8477c1872c8b344971c4b80787b3" name="a113c8477c1872c8b344971c4b80787b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a113c8477c1872c8b344971c4b80787b3">&#9670;&#160;</a></span>hasMouseFocus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::hasMouseFocus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the window has mouse focus. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a98d75ddbf2155a0ec1ef8672ccea9851">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d75884aae81b9461cfb30cfde67796b" name="a1d75884aae81b9461cfb30cfde67796b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d75884aae81b9461cfb30cfde67796b">&#9670;&#160;</a></span>isMaximized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::isMaximized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ac225c18559f693eeed62b8a3fe39d114">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a784212943e8ddb5b11572a368ef7e322" name="a784212943e8ddb5b11572a368ef7e322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a784212943e8ddb5b11572a368ef7e322">&#9670;&#160;</a></span>isMinimized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::isMinimized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a4437ca04a353da4f28c81c1267f7a02d">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf37cb2433dd9e2d78d76c18d8a14816" name="aaf37cb2433dd9e2d78d76c18d8a14816"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf37cb2433dd9e2d78d76c18d8a14816">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a94bb3c9427d43895a50574d175c70dc6">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ea52a8d58e775c4b2b67055087481b2" name="a1ea52a8d58e775c4b2b67055087481b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ea52a8d58e775c4b2b67055087481b2">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a67b3d326825a0c5566f41d72f4b0fafa">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a255e81919f261575eb27a99ed0c0d5b7" name="a255e81919f261575eb27a99ed0c0d5b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a255e81919f261575eb27a99ed0c0d5b7">&#9670;&#160;</a></span>maximize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::maximize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a22f20a45ba38ff4ddd8570d4d80789be">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9963e84e0005369e07ea09270db87ad" name="ae9963e84e0005369e07ea09270db87ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9963e84e0005369e07ea09270db87ad">&#9670;&#160;</a></span>minimize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::minimize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Minimizes / maximizes / restores the window. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aa675184700cbf7ac0378d5f45e35ef31">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac66cbb3ce2d418189e298d4a77ca395" name="aac66cbb3ce2d418189e298d4a77ca395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac66cbb3ce2d418189e298d4a77ca395">&#9670;&#160;</a></span>pixelToWindowCoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::pixelToWindowCoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts framebuffer pixel coordinates to window logical coordinates. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ad08b6c33417155c6d3fbaa8c32ae6661">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00347">getNativeDPIScale()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a92fa05b53286d56669e8c82db46639a1" name="a92fa05b53286d56669e8c82db46639a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92fa05b53286d56669e8c82db46639a1">&#9670;&#160;</a></span>requestAttention()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::requestAttention </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>continuous</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Requests OS attention (flashing taskbar); continuous repeats until focused. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ab213cdadf775d5e379969fae7919194b">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5006434fceb8be0df191192b36d05e26" name="a5006434fceb8be0df191192b36d05e26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5006434fceb8be0df191192b36d05e26">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::restore </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a4e4576e4a55a3ba36a5533efaf84ea7b">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acadd7190e5f8b156b61a65cb732c44e7" name="acadd7190e5f8b156b61a65cb732c44e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acadd7190e5f8b156b61a65cb732c44e7">&#9670;&#160;</a></span>setFullscreenDesktop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::setFullscreenDesktop </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fullscreen</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Switches between desktop fullscreen and windowed mode. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a1f69e102f44e4deef67320ed5a1effbc">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1892debfca56e8cd533e2b1aa808fe14" name="a1892debfca56e8cd533e2b1aa808fe14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1892debfca56e8cd533e2b1aa808fe14">&#9670;&#160;</a></span>setFullscreenExclusive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::setFullscreenExclusive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fullscreen</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Switches between exclusive fullscreen and windowed mode. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a7ec57f58ca7c800920a62dbe0293e7b5">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a582b026ac08966bf6db6913d6bf20c" name="a2a582b026ac08966bf6db6913d6bf20c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a582b026ac08966bf6db6913d6bf20c">&#9670;&#160;</a></span>setIconRGBA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::setIconRGBA </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>rgba</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the window icon from tightly packed RGBA8 pixels (w*h*4 bytes). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a899bc3bbeec4b035c9586d41045291ff">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00493">493</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00076">setWindowSettings()</a>.</p>
+
+</div>
+</div>
+<a id="aca7d667412c151606ea60b1c16af409a" name="aca7d667412c151606ea60b1c16af409a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca7d667412c151606ea60b1c16af409a">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>display</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Moves the window to a position in logical units on the given display. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ae73f6b5f787a82bf6b28a15e60ea83c4">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00029">eve::window::WindowSettings::display</a>, <a class="el" href="Window_8h_source.html#l00034">eve::window::WindowSettings::use_position</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Window_8h_source.html#l00020">eve::window::WindowSettings::x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Window_8h_source.html#l00021">eve::window::WindowSettings::y</a>.</p>
+
+</div>
+</div>
+<a id="af556ef9a9098106603bd184e082152db" name="af556ef9a9098106603bd184e082152db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af556ef9a9098106603bd184e082152db">&#9670;&#160;</a></span>setSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::setSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Requests a new logical window size. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#af13db08906c3d90f2ab2f21196095136">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00076">setWindowSettings()</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a> , 以及 <a class="el" href="Window_8h_source.html#l00022">eve::window::WindowSettings::width</a>.</p>
+
+</div>
+</div>
+<a id="a309bd22078ba61b48095e987436298dc" name="a309bd22078ba61b48095e987436298dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a309bd22078ba61b48095e987436298dc">&#9670;&#160;</a></span>setVSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::setVSync </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vsync</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables/disables vertical sync (0 = off, 1 = on). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a0cd19d3d87a665399be82c99b44cba49">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Window_8h_source.html#l00026">eve::window::WindowSettings::vsync</a>.</p>
+
+</div>
+</div>
+<a id="a788013e18e076a9b033b80fa5f550ba3" name="a788013e18e076a9b033b80fa5f550ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a788013e18e076a9b033b80fa5f550ba3">&#9670;&#160;</a></span>setWindowSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::setWindowSettings </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applies a full <a class="el" href="structeve_1_1window_1_1WindowSettings.html" title="Display settings for window creation/resize. width/height == 0 selects the desktop display mode size.">WindowSettings</a> struct (recreates the window when needed). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aad33fa5bc7c45e09bf31245386823d2c">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00557">close()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00405">getDisplayCount()</a>, <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00493">setIconRGBA()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00578">updateSettings()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00064">setSize()</a>.</p>
+
+</div>
+</div>
+<a id="a7c3d793b0ab5166a4d29e25641f66410" name="a7c3d793b0ab5166a4d29e25641f66410"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3d793b0ab5166a4d29e25641f66410">&#9670;&#160;</a></span>setWindowTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::setWindowTitle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the window title shown in the OS title bar. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a8217d33317238df12ea8ff880804499b">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af673952b9d9493ff69f375c52e40ca34" name="af673952b9d9493ff69f375c52e40ca34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af673952b9d9493ff69f375c52e40ca34">&#9670;&#160;</a></span>showMessageBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::sdl::Window::showMessageBox </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>attachToWindow</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shows a modal message box ("info", "warning", or "error"). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a61f0a4b0800de8a92ebebea3d7c223ba">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00175">parent</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00444">type</a>.</p>
+
+</div>
+</div>
+<a id="a34a7a8ed208e21a3772061be8c0c309d" name="a34a7a8ed208e21a3772061be8c0c309d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34a7a8ed208e21a3772061be8c0c309d">&#9670;&#160;</a></span>showMessageBoxData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::window::sdl::Window::showMessageBoxData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1window_1_1Window_1_1MessageBoxData.html">MessageBoxData</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shows a configurable message box; returns the pressed button index. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a17132e70ada992567ecf7ddb39438d3a">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00459">459</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>.</p>
+
+</div>
+</div>
+<a id="abc2f0a2c39e3fcfabc2701ab46dc04af" name="abc2f0a2c39e3fcfabc2701ab46dc04af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc2f0a2c39e3fcfabc2701ab46dc04af">&#9670;&#160;</a></span>toPixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::window::sdl::Window::toPixels </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scales a logical length to UI pixels (and back). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#ab5a7f454eaa55654a24d9f66caafb8a1">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00347">getNativeDPIScale()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00395">toPixelsXY()</a>.</p>
+
+</div>
+</div>
+<a id="acbb3112c317b2041ae430ba8337ca0e1" name="acbb3112c317b2041ae430ba8337ca0e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbb3112c317b2041ae430ba8337ca0e1">&#9670;&#160;</a></span>toPixelsXY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::toPixelsXY </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>px</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>py</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vector variants of the coordinate conversions above. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a4fd9ad4d6aa381b23bc6d428787626e2">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00652">px</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00388">toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a9ce13679c447d676376cce2678ba8f39" name="a9ce13679c447d676376cce2678ba8f39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ce13679c447d676376cce2678ba8f39">&#9670;&#160;</a></span>updateSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::updateSettings </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>newsettings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>updateGraphicsViewport</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Used by event backend on resize to refresh drawable size / viewport. </p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00578">578</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8h_source.html#l00077">eve::cap::query()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00076">setWindowSettings()</a>.</p>
+
+</div>
+</div>
+<a id="a9d0b40fd24815ea2fa5644b9bd7744a1" name="a9d0b40fd24815ea2fa5644b9bd7744a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d0b40fd24815ea2fa5644b9bd7744a1">&#9670;&#160;</a></span>windowToDPICoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::windowToDPICoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts window logical coordinates to UI-DPI coordinates. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#a84c39371ae8fc22cc4e32c2d6b26d57f">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00352">getDPIScale()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ad84dfa1a3601225ba4c525a9159c3ed1" name="ad84dfa1a3601225ba4c525a9159c3ed1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad84dfa1a3601225ba4c525a9159c3ed1">&#9670;&#160;</a></span>windowToPixelCoords()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::window::sdl::Window::windowToPixelCoords </td>
+          <td>(</td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts window logical coordinates to framebuffer pixel coordinates. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1window_1_1Window.html#aaadc6beb65d17e4bd5c29aae58c1e7c7">eve::window::Window</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a> 第 <a class="el" href="sdl_2Window_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="sdl_2Window_8cpp_source.html#l00347">getNativeDPIScale()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/window/sdl/<a class="el" href="sdl_2Window_8h_source.html">Window.h</a></li>
+<li>src/modules/window/sdl/<a class="el" href="sdl_2Window_8cpp_source.html">Window.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

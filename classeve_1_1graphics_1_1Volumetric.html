@@ -1,0 +1,1856 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Volumetric类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Volumetric-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Volumetric类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a> light + fog.  
+ <a href="classeve_1_1graphics_1_1Volumetric.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Volumetric_8h_source.html">Volumetric.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3613c8bc90def6e69048b3f1d7161497" id="r_a3613c8bc90def6e69048b3f1d7161497"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a3613c8bc90def6e69048b3f1d7161497">Volumetric</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a3613c8bc90def6e69048b3f1d7161497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad25c1b39b9cb06c8365de322731966dd" id="r_ad25c1b39b9cb06c8365de322731966dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ad25c1b39b9cb06c8365de322731966dd">~Volumetric</a> ()</td></tr>
+<tr class="separator:ad25c1b39b9cb06c8365de322731966dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c97fb9c07519a4b0e078551efbce28c" id="r_a3c97fb9c07519a4b0e078551efbce28c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a3c97fb9c07519a4b0e078551efbce28c">Volumetric</a> (const <a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> &amp;)=delete</td></tr>
+<tr class="separator:a3c97fb9c07519a4b0e078551efbce28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a161737daa2657d0551d4d5894b32d1ea" id="r_a161737daa2657d0551d4d5894b32d1ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a161737daa2657d0551d4d5894b32d1ea">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> &amp;)=delete</td></tr>
+<tr class="separator:a161737daa2657d0551d4d5894b32d1ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ea5b3489b94927c3cd2fab4f1a72f8f" id="r_a9ea5b3489b94927c3cd2fab4f1a72f8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a9ea5b3489b94927c3cd2fab4f1a72f8f">setQuality</a> (const std::string &amp;quality)</td></tr>
+<tr class="memdesc:a9ea5b3489b94927c3cd2fab4f1a72f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">"low" | "medium" | "high" (unknown → medium).  <br /></td></tr>
+<tr class="separator:a9ea5b3489b94927c3cd2fab4f1a72f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6faf8ee33f2deaf094a0af744c320e" id="r_a7e6faf8ee33f2deaf094a0af744c320e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a7e6faf8ee33f2deaf094a0af744c320e">getQuality</a> () const</td></tr>
+<tr class="separator:a7e6faf8ee33f2deaf094a0af744c320e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25bce36e8a4f4fa70aa59fb61e5376c8" id="r_a25bce36e8a4f4fa70aa59fb61e5376c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a25bce36e8a4f4fa70aa59fb61e5376c8">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a25bce36e8a4f4fa70aa59fb61e5376c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">"screenspace" | "raymarch" | "fog" — selects which shader params quality tweaks.  <br /></td></tr>
+<tr class="separator:a25bce36e8a4f4fa70aa59fb61e5376c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f4af8e5bb7eceae455028b9f6e0fba1" id="r_a6f4af8e5bb7eceae455028b9f6e0fba1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a6f4af8e5bb7eceae455028b9f6e0fba1">getMode</a> () const</td></tr>
+<tr class="separator:a6f4af8e5bb7eceae455028b9f6e0fba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db57744dc53e89eed08327c9a26ae13" id="r_a5db57744dc53e89eed08327c9a26ae13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a5db57744dc53e89eed08327c9a26ae13">setLightScreenUV</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a5db57744dc53e89eed08327c9a26ae13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Light position in UV (0..1), origin top-left to match 2D UVs.  <br /></td></tr>
+<tr class="separator:a5db57744dc53e89eed08327c9a26ae13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8254cb241dbcb8ef08a100d56d16a6cb" id="r_a8254cb241dbcb8ef08a100d56d16a6cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a8254cb241dbcb8ef08a100d56d16a6cb">getLightScreenU</a> () const</td></tr>
+<tr class="separator:a8254cb241dbcb8ef08a100d56d16a6cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae8512c76e759eed36f06927d161ba59" id="r_aae8512c76e759eed36f06927d161ba59"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#aae8512c76e759eed36f06927d161ba59">getLightScreenV</a> () const</td></tr>
+<tr class="separator:aae8512c76e759eed36f06927d161ba59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bbd744ad21718231c683fd215288e43" id="r_a2bbd744ad21718231c683fd215288e43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a2bbd744ad21718231c683fd215288e43">setLightScreenPos</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, float <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)</td></tr>
+<tr class="memdesc:a2bbd744ad21718231c683fd215288e43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pixel-space helper (converts with width/height).  <br /></td></tr>
+<tr class="separator:a2bbd744ad21718231c683fd215288e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8727890d6263cfe2eef38851519dd2f0" id="r_a8727890d6263cfe2eef38851519dd2f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a8727890d6263cfe2eef38851519dd2f0">setLightDirection</a> (float dx, float dy, float dz)</td></tr>
+<tr class="memdesc:a8727890d6263cfe2eef38851519dd2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space direction toward the lit surface (ray march / phase).  <br /></td></tr>
+<tr class="separator:a8727890d6263cfe2eef38851519dd2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec4aa4c29209024dc5a9f8ad0ac17da" id="r_a6ec4aa4c29209024dc5a9f8ad0ac17da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a6ec4aa4c29209024dc5a9f8ad0ac17da">setCamera</a> (float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</td></tr>
+<tr class="memdesc:a6ec4aa4c29209024dc5a9f8ad0ac17da"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for ray march reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by rayMarch*.  <br /></td></tr>
+<tr class="separator:a6ec4aa4c29209024dc5a9f8ad0ac17da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76c420d91ff3ab0cdad0b3742a55b841" id="r_a76c420d91ff3ab0cdad0b3742a55b841"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a76c420d91ff3ab0cdad0b3742a55b841">setInvViewProj</a> (const glm::mat4 &amp;invViewProj)</td></tr>
+<tr class="memdesc:a76c420d91ff3ab0cdad0b3742a55b841"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw inverse view-projection (column-major, matching glm).  <br /></td></tr>
+<tr class="separator:a76c420d91ff3ab0cdad0b3742a55b841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bb53d12f47e4f625ec38721acb3fc25" id="r_a9bb53d12f47e4f625ec38721acb3fc25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a9bb53d12f47e4f625ec38721acb3fc25">setShaftColor</a> (float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a9bb53d12f47e4f625ec38721acb3fc25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcfe55bfa5b048035c9fbd6bf515f07f" id="r_afcfe55bfa5b048035c9fbd6bf515f07f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#afcfe55bfa5b048035c9fbd6bf515f07f">setFogColor</a> (float r, float g, float <a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:afcfe55bfa5b048035c9fbd6bf515f07f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79914b318eebbce6a3a3f05b4a71b4b2" id="r_a79914b318eebbce6a3a3f05b4a71b4b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a79914b318eebbce6a3a3f05b4a71b4b2">setIntensity</a> (float intensity)</td></tr>
+<tr class="separator:a79914b318eebbce6a3a3f05b4a71b4b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cee46c58799eb79c9e1516ba3bc16b8" id="r_a8cee46c58799eb79c9e1516ba3bc16b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a8cee46c58799eb79c9e1516ba3bc16b8">setTime</a> (float seconds)</td></tr>
+<tr class="separator:a8cee46c58799eb79c9e1516ba3bc16b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac860946aecb0092f33978534c1693afd" id="r_ac860946aecb0092f33978534c1693afd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ac860946aecb0092f33978534c1693afd">setDensity</a> (float density)</td></tr>
+<tr class="separator:ac860946aecb0092f33978534c1693afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa06eebb581066a1692dfa98f9e7e3f17" id="r_aa06eebb581066a1692dfa98f9e7e3f17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#aa06eebb581066a1692dfa98f9e7e3f17">setFogHeight</a> (float worldY)</td></tr>
+<tr class="memdesc:aa06eebb581066a1692dfa98f9e7e3f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height fog: denser near world Y = fogHeight; falloff is 1/meters scale.  <br /></td></tr>
+<tr class="separator:aa06eebb581066a1692dfa98f9e7e3f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4571e5dbb9f99f2bbd9fd832b7ca955e" id="r_a4571e5dbb9f99f2bbd9fd832b7ca955e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a4571e5dbb9f99f2bbd9fd832b7ca955e">setFogHeightFalloff</a> (float falloff)</td></tr>
+<tr class="separator:a4571e5dbb9f99f2bbd9fd832b7ca955e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb66074b53e24b2059d07e9f083ca7e8" id="r_acb66074b53e24b2059d07e9f083ca7e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#acb66074b53e24b2059d07e9f083ca7e8">setFogStart</a> (float startDistance)</td></tr>
+<tr class="memdesc:acb66074b53e24b2059d07e9f083ca7e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">View-distance ramp where fog appears (world units along the ray).  <br /></td></tr>
+<tr class="separator:acb66074b53e24b2059d07e9f083ca7e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cfcd1921dafdc4f37207b2792ac7ef0" id="r_a2cfcd1921dafdc4f37207b2792ac7ef0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a2cfcd1921dafdc4f37207b2792ac7ef0">setFogEnd</a> (float endDistance)</td></tr>
+<tr class="separator:a2cfcd1921dafdc4f37207b2792ac7ef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20da5319c2f7f9e9a9665fac7641ae09" id="r_a20da5319c2f7f9e9a9665fac7641ae09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a20da5319c2f7f9e9a9665fac7641ae09">setFogNoise</a> (float amount)</td></tr>
+<tr class="separator:a20da5319c2f7f9e9a9665fac7641ae09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a5409674006a54d18b9b9e7e96d8fe6" id="r_a7a5409674006a54d18b9b9e7e96d8fe6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a7a5409674006a54d18b9b9e7e96d8fe6">hasParam</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="separator:a7a5409674006a54d18b9b9e7e96d8fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99c2bc342de8f9551449e1aa50a6b06e" id="r_a99c2bc342de8f9551449e1aa50a6b06e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a99c2bc342de8f9551449e1aa50a6b06e">setFloat</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, float <a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)</td></tr>
+<tr class="separator:a99c2bc342de8f9551449e1aa50a6b06e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1adc9532f11dda8ff2a6a18276e983f4" id="r_a1adc9532f11dda8ff2a6a18276e983f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a1adc9532f11dda8ff2a6a18276e983f4">getFloat</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="separator:a1adc9532f11dda8ff2a6a18276e983f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ae53a6971dedb7fe0f2e62d1b34409f" id="r_a2ae53a6971dedb7fe0f2e62d1b34409f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a2ae53a6971dedb7fe0f2e62d1b34409f">getSampleCount</a> () const</td></tr>
+<tr class="separator:a2ae53a6971dedb7fe0f2e62d1b34409f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5112f0cf775d321ca327ea6442997f4f" id="r_a5112f0cf775d321ca327ea6442997f4f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a5112f0cf775d321ca327ea6442997f4f">getDownscale</a> () const</td></tr>
+<tr class="separator:a5112f0cf775d321ca327ea6442997f4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d4217b9a627c11017eb1fd46d25b2c" id="r_a31d4217b9a627c11017eb1fd46d25b2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a31d4217b9a627c11017eb1fd46d25b2c">beginOcclusionMap</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, float lightPixelX, float lightPixelY, float lightRadiusPixels=24.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a31d4217b9a627c11017eb1fd46d25b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the current canvas to black and draw a bright light disc (start of an occlusion map). Call drawOcclusion* afterward.  <br /></td></tr>
+<tr class="separator:a31d4217b9a627c11017eb1fd46d25b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a214bc1e329ae93bfcb7afe54679a79e3" id="r_a214bc1e329ae93bfcb7afe54679a79e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a214bc1e329ae93bfcb7afe54679a79e3">drawOccluder</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Drawable.html">Drawable</a> *drawable, const glm::mat4 &amp;matrix)</td></tr>
+<tr class="memdesc:a214bc1e329ae93bfcb7afe54679a79e3"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases).">Drawable</a> occlusion (respects <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2" title="When false, skipped by Graphics::drawOcclusion / volumetric occluder passes.">Drawable::getCastOcclusion</a>).  <br /></td></tr>
+<tr class="separator:a214bc1e329ae93bfcb7afe54679a79e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2f666a0a4f2f00ffe468023cf4921fa" id="r_ae2f666a0a4f2f00ffe468023cf4921fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ae2f666a0a4f2f00ffe468023cf4921fa">drawOccluderSolid</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:ae2f666a0a4f2f00ffe468023cf4921fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience 2D black silhouette (solid or textured alpha).  <br /></td></tr>
+<tr class="separator:ae2f666a0a4f2f00ffe468023cf4921fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8ffa9aca55f4db1575d4276a4dd03b5" id="r_ac8ffa9aca55f4db1575d4276a4dd03b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ac8ffa9aca55f4db1575d4276a4dd03b5">drawOccluderTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:ac8ffa9aca55f4db1575d4276a4dd03b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1132d5c10b0b5475f56f05e881fcf399" id="r_a1132d5c10b0b5475f56f05e881fcf399"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a1132d5c10b0b5475f56f05e881fcf399">scatter</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *occlusion)</td></tr>
+<tr class="memdesc:a1132d5c10b0b5475f56f05e881fcf399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scatter-only: occlusion → shafts with alpha (draw over a prior scene). Writes to the currently bound canvas / screen.  <br /></td></tr>
+<tr class="separator:a1132d5c10b0b5475f56f05e881fcf399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a156f54fec031ae2108a374d4cb73e1df" id="r_a156f54fec031ae2108a374d4cb73e1df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a156f54fec031ae2108a374d4cb73e1df">scatterTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *occlusion, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="memdesc:a156f54fec031ae2108a374d4cb73e1df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as scatter but into an explicit destination.  <br /></td></tr>
+<tr class="separator:a156f54fec031ae2108a374d4cb73e1df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c46519704eaadee89f03472384fffc6" id="r_a3c46519704eaadee89f03472384fffc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a3c46519704eaadee89f03472384fffc6">applyFromScene</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *scene)</td></tr>
+<tr class="memdesc:a3c46519704eaadee89f03472384fffc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single-pass: treat source as the scene (bright regions ≈ light), add shafts + dust/fog onto it. Writes to current canvas.  <br /></td></tr>
+<tr class="separator:a3c46519704eaadee89f03472384fffc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4fde3859c6cb0f543fa0c7f1ed0c98a" id="r_aa4fde3859c6cb0f543fa0c7f1ed0c98a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#aa4fde3859c6cb0f543fa0c7f1ed0c98a">applyFromSceneTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *scene, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:aa4fde3859c6cb0f543fa0c7f1ed0c98a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a635186c03a5c93a30199289126c3a1fd" id="r_a635186c03a5c93a30199289126c3a1fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a635186c03a5c93a30199289126c3a1fd">rayMarch</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth)</td></tr>
+<tr class="memdesc:a635186c03a5c93a30199289126c3a1fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ray march participating media using a linear-depth texture (R channel, 0=near .. 1=far). Screen-space steps toward light UV approximate CSM occlusion. Call setCamera / setLightDirection / setLightScreenUV first.  <br /></td></tr>
+<tr class="separator:a635186c03a5c93a30199289126c3a1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43c591a858854108265b8c8f174de0f0" id="r_a43c591a858854108265b8c8f174de0f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a43c591a858854108265b8c8f174de0f0">rayMarchTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:a43c591a858854108265b8c8f174de0f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2c9ece60b24d7dcb73ce1d0b994113e" id="r_ad2c9ece60b24d7dcb73ce1d0b994113e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ad2c9ece60b24d7dcb73ce1d0b994113e">applyFog</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth)</td></tr>
+<tr class="memdesc:ad2c9ece60b24d7dcb73ce1d0b994113e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a> height/distance fog from a linear-depth texture. Writes fog RGB with alpha = 1-transmittance (overlay with alpha blend). Call setCamera / setFogHeight* / setFogStart/End first.  <br /></td></tr>
+<tr class="separator:ad2c9ece60b24d7dcb73ce1d0b994113e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0f23024d798fab4267e46dd31224102" id="r_ac0f23024d798fab4267e46dd31224102"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ac0f23024d798fab4267e46dd31224102">applyFogTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:ac0f23024d798fab4267e46dd31224102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f6a520b72d6a7b615af3462c40eeb62" id="r_a9f6a520b72d6a7b615af3462c40eeb62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a9f6a520b72d6a7b615af3462c40eeb62">newLinearDepthTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>, float(*depth01)(int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, void *userdata), void *userdata)</td></tr>
+<tr class="memdesc:a9f6a520b72d6a7b615af3462c40eeb62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build an RGBA8 texture with linear depth in R (G=B=R, A=255). depth01(x,y) should return values in [0,1]. Owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>.  <br /></td></tr>
+<tr class="separator:a9f6a520b72d6a7b615af3462c40eeb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af144650cc32826c976bc867de3985309" id="r_af144650cc32826c976bc867de3985309"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#af144650cc32826c976bc867de3985309">resolutionFor</a> (int fullSize) const</td></tr>
+<tr class="memdesc:af144650cc32826c976bc867de3985309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Downscale helper: returns floor(dim / downscale), at least 1. Callers create occlusion / scatter canvases at this size for the active quality tier.  <br /></td></tr>
+<tr class="separator:af144650cc32826c976bc867de3985309"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3df14f8e75c2aafe7321ed9a86ea0666" id="r_a3df14f8e75c2aafe7321ed9a86ea0666"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a3df14f8e75c2aafe7321ed9a86ea0666">drawOccluders2D</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a3df14f8e75c2aafe7321ed9a86ea0666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw all visible <a class="el" href="classeve_1_1graphics_1_1Renderable2D.html" title="Default renderable entity for declarative 2D sprites / solid quads.">Renderable2D</a> with castOcclusion into the current canvas as black silhouettes (shadow-analogue occlusion pass).  <br /></td></tr>
+<tr class="separator:a3df14f8e75c2aafe7321ed9a86ea0666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68db1b4b1bd32870dbe775334e73a946" id="r_a68db1b4b1bd32870dbe775334e73a946"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a68db1b4b1bd32870dbe775334e73a946">getShader</a> () const</td></tr>
+<tr class="separator:a68db1b4b1bd32870dbe775334e73a946"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4b97362d986e9961d5bc3703eda6337" id="r_ad4b97362d986e9961d5bc3703eda6337"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#ad4b97362d986e9961d5bc3703eda6337">getRayMarchShader</a> () const</td></tr>
+<tr class="separator:ad4b97362d986e9961d5bc3703eda6337"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af65d41b36338415c810c800ec2b7115f" id="r_af65d41b36338415c810c800ec2b7115f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html#af65d41b36338415c810c800ec2b7115f">getFogShader</a> () const</td></tr>
+<tr class="separator:af65d41b36338415c810c800ec2b7115f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a> light + fog. </p>
+<p>Modes:</p><ul>
+<li>"screenspace" — Mitchell radial blur god rays (+ dust/fog tint)</li>
+<li>"raymarch" — depth ray march light shafts (SS occlusion ≈ CSM)</li>
+<li>"fog" — height + distance volumetric fog (Beer-Lambert)</li>
+</ul>
+<p>Quality presets ("low" | "medium" | "high") control sample count and suggested downscale via <a class="el" href="classeve_1_1graphics_1_1Volumetric.html#af144650cc32826c976bc867de3985309" title="Downscale helper: returns floor(dim / downscale), at least 1. Callers create occlusion / scatter canv...">resolutionFor()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3613c8bc90def6e69048b3f1d7161497" name="a3613c8bc90def6e69048b3f1d7161497"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3613c8bc90def6e69048b3f1d7161497">&#9670;&#160;</a></span>Volumetric() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Volumetric::Volumetric </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad25c1b39b9cb06c8365de322731966dd" name="ad25c1b39b9cb06c8365de322731966dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad25c1b39b9cb06c8365de322731966dd">&#9670;&#160;</a></span>~Volumetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Volumetric::~Volumetric </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c97fb9c07519a4b0e078551efbce28c" name="a3c97fb9c07519a4b0e078551efbce28c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c97fb9c07519a4b0e078551efbce28c">&#9670;&#160;</a></span>Volumetric() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Volumetric::Volumetric </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad2c9ece60b24d7dcb73ce1d0b994113e" name="ad2c9ece60b24d7dcb73ce1d0b994113e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2c9ece60b24d7dcb73ce1d0b994113e">&#9670;&#160;</a></span>applyFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::applyFog </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a> height/distance fog from a linear-depth texture. Writes fog RGB with alpha = 1-transmittance (overlay with alpha blend). Call setCamera / setFogHeight* / setFogStart/End first. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00522">522</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00527">applyFogTo()</a>.</p>
+
+</div>
+</div>
+<a id="ac0f23024d798fab4267e46dd31224102" name="ac0f23024d798fab4267e46dd31224102"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0f23024d798fab4267e46dd31224102">&#9670;&#160;</a></span>applyFogTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::applyFogTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00527">527</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Volumetric_8cpp_source.html#l00522">applyFog()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a3c46519704eaadee89f03472384fffc6" name="a3c46519704eaadee89f03472384fffc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c46519704eaadee89f03472384fffc6">&#9670;&#160;</a></span>applyFromScene()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::applyFromScene </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>scene</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Single-pass: treat source as the scene (bright regions ≈ light), add shafts + dust/fog onto it. Writes to current canvas. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00494">494</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00499">applyFromSceneTo()</a>.</p>
+
+</div>
+</div>
+<a id="aa4fde3859c6cb0f543fa0c7f1ed0c98a" name="aa4fde3859c6cb0f543fa0c7f1ed0c98a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4fde3859c6cb0f543fa0c7f1ed0c98a">&#9670;&#160;</a></span>applyFromSceneTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::applyFromSceneTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00499">499</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Volumetric_8cpp_source.html#l00494">applyFromScene()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a31d4217b9a627c11017eb1fd46d25b2c" name="a31d4217b9a627c11017eb1fd46d25b2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31d4217b9a627c11017eb1fd46d25b2c">&#9670;&#160;</a></span>beginOcclusionMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::beginOcclusionMap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lightPixelX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lightPixelY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lightRadiusPixels</em> = <code>24.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the current canvas to black and draw a bright light disc (start of an occlusion map). Call drawOcclusion* afterward. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00436">436</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a814c359e0f393e429926a6230cd99c8c">eve::graphics::Canvas::clear()</a>, <a class="el" href="Graphics_8cpp_source.html#l00923">eve::graphics::Graphics::drawSolidRect()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Graphics_8h_source.html#l00284">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00283">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="Volumetric_8cpp_source.html#l00253">setLightScreenPos()</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="a214bc1e329ae93bfcb7afe54679a79e3" name="a214bc1e329ae93bfcb7afe54679a79e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a214bc1e329ae93bfcb7afe54679a79e3">&#9670;&#160;</a></span>drawOccluder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::drawOccluder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Drawable.html">Drawable</a> *&#160;</td>
+          <td class="paramname"><em>drawable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases).">Drawable</a> occlusion (respects <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2" title="When false, skipped by Graphics::drawOcclusion / volumetric occluder passes.">Drawable::getCastOcclusion</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00897">eve::graphics::Graphics::drawOcclusion()</a>.</p>
+
+</div>
+</div>
+<a id="a3df14f8e75c2aafe7321ed9a86ea0666" name="a3df14f8e75c2aafe7321ed9a86ea0666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3df14f8e75c2aafe7321ed9a86ea0666">&#9670;&#160;</a></span>drawOccluders2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::drawOccluders2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw all visible <a class="el" href="classeve_1_1graphics_1_1Renderable2D.html" title="Default renderable entity for declarative 2D sprites / solid quads.">Renderable2D</a> with castOcclusion into the current canvas as black silhouettes (shadow-analogue occlusion pass). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00464">464</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00901">eve::graphics::Graphics::drawOcclusionSolid()</a>, <a class="el" href="Graphics_8cpp_source.html#l00905">eve::graphics::Graphics::drawOcclusionTexture()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00485">view</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+</div>
+</div>
+<a id="ae2f666a0a4f2f00ffe468023cf4921fa" name="ae2f666a0a4f2f00ffe468023cf4921fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2f666a0a4f2f00ffe468023cf4921fa">&#9670;&#160;</a></span>drawOccluderSolid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::drawOccluderSolid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience 2D black silhouette (solid or textured alpha). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00901">eve::graphics::Graphics::drawOcclusionSolid()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="ac8ffa9aca55f4db1575d4276a4dd03b5" name="ac8ffa9aca55f4db1575d4276a4dd03b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8ffa9aca55f4db1575d4276a4dd03b5">&#9670;&#160;</a></span>drawOccluderTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::drawOccluderTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00458">458</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00905">eve::graphics::Graphics::drawOcclusionTexture()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a5112f0cf775d321ca327ea6442997f4f" name="a5112f0cf775d321ca327ea6442997f4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5112f0cf775d321ca327ea6442997f4f">&#9670;&#160;</a></span>getDownscale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Volumetric::getDownscale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1adc9532f11dda8ff2a6a18276e983f4" name="a1adc9532f11dda8ff2a6a18276e983f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1adc9532f11dda8ff2a6a18276e983f4">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Volumetric::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00071">eve::graphics::Shader::getFromVar()</a>, <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00250">getLightScreenU()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00251">getLightScreenV()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00390">getSampleCount()</a>.</p>
+
+</div>
+</div>
+<a id="af65d41b36338415c810c800ec2b7115f" name="af65d41b36338415c810c800ec2b7115f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af65d41b36338415c810c800ec2b7115f">&#9670;&#160;</a></span>getFogShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Volumetric::getFogShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8254cb241dbcb8ef08a100d56d16a6cb" name="a8254cb241dbcb8ef08a100d56d16a6cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8254cb241dbcb8ef08a100d56d16a6cb">&#9670;&#160;</a></span>getLightScreenU()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Volumetric::getLightScreenU </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Volumetric_8cpp_source.html#l00365">getFloat()</a>.</p>
+
+</div>
+</div>
+<a id="aae8512c76e759eed36f06927d161ba59" name="aae8512c76e759eed36f06927d161ba59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae8512c76e759eed36f06927d161ba59">&#9670;&#160;</a></span>getLightScreenV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Volumetric::getLightScreenV </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Volumetric_8cpp_source.html#l00365">getFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a6f4af8e5bb7eceae455028b9f6e0fba1" name="a6f4af8e5bb7eceae455028b9f6e0fba1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f4af8e5bb7eceae455028b9f6e0fba1">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Volumetric::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e6faf8ee33f2deaf094a0af744c320e" name="a7e6faf8ee33f2deaf094a0af744c320e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6faf8ee33f2deaf094a0af744c320e">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Volumetric::getQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4b97362d986e9961d5bc3703eda6337" name="ad4b97362d986e9961d5bc3703eda6337"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b97362d986e9961d5bc3703eda6337">&#9670;&#160;</a></span>getRayMarchShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Volumetric::getRayMarchShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00153">153</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ae53a6971dedb7fe0f2e62d1b34409f" name="a2ae53a6971dedb7fe0f2e62d1b34409f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ae53a6971dedb7fe0f2e62d1b34409f">&#9670;&#160;</a></span>getSampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Volumetric::getSampleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Volumetric_8cpp_source.html#l00365">getFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a68db1b4b1bd32870dbe775334e73a946" name="a68db1b4b1bd32870dbe775334e73a946"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68db1b4b1bd32870dbe775334e73a946">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Volumetric::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8h_source.html">Volumetric.h</a> 第 <a class="el" href="Volumetric_8h_source.html#l00152">152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a5409674006a54d18b9b9e7e96d8fe6" name="a7a5409674006a54d18b9b9e7e96d8fe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a5409674006a54d18b9b9e7e96d8fe6">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Volumetric::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00353">353</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a9f6a520b72d6a7b615af3462c40eeb62" name="a9f6a520b72d6a7b615af3462c40eeb62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f6a520b72d6a7b615af3462c40eeb62">&#9670;&#160;</a></span>newLinearDepthTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::Volumetric::newLinearDepthTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float(*)(int <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, int <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, void *userdata)&#160;</td>
+          <td class="paramname"><em>depth01</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>userdata</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build an RGBA8 texture with linear depth in R (G=B=R, A=255). depth01(x,y) should return values in [0,1]. Owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00536">536</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+</div>
+</div>
+<a id="a161737daa2657d0551d4d5894b32d1ea" name="a161737daa2657d0551d4d5894b32d1ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a161737daa2657d0551d4d5894b32d1ea">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> &amp; eve::graphics::Volumetric::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a635186c03a5c93a30199289126c3a1fd" name="a635186c03a5c93a30199289126c3a1fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a635186c03a5c93a30199289126c3a1fd">&#9670;&#160;</a></span>rayMarch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::rayMarch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ray march participating media using a linear-depth texture (R channel, 0=near .. 1=far). Screen-space steps toward light UV approximate CSM occlusion. Call setCamera / setLightDirection / setLightScreenUV first. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00508">508</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00513">rayMarchTo()</a>.</p>
+
+</div>
+</div>
+<a id="a43c591a858854108265b8c8f174de0f0" name="a43c591a858854108265b8c8f174de0f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43c591a858854108265b8c8f174de0f0">&#9670;&#160;</a></span>rayMarchTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::rayMarchTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00508">rayMarch()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="af144650cc32826c976bc867de3985309" name="af144650cc32826c976bc867de3985309"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af144650cc32826c976bc867de3985309">&#9670;&#160;</a></span>resolutionFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Volumetric::resolutionFor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fullSize</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Downscale helper: returns floor(dim / downscale), at least 1. Callers create occlusion / scatter canvases at this size for the active quality tier. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1132d5c10b0b5475f56f05e881fcf399" name="a1132d5c10b0b5475f56f05e881fcf399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1132d5c10b0b5475f56f05e881fcf399">&#9670;&#160;</a></span>scatter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::scatter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>occlusion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scatter-only: occlusion → shafts with alpha (draw over a prior scene). Writes to the currently bound canvas / screen. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00485">scatterTo()</a>.</p>
+
+</div>
+</div>
+<a id="a156f54fec031ae2108a374d4cb73e1df" name="a156f54fec031ae2108a374d4cb73e1df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a156f54fec031ae2108a374d4cb73e1df">&#9670;&#160;</a></span>scatterTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::scatterTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>occlusion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Same as scatter but into an explicit destination. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00485">485</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00480">scatter()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a6ec4aa4c29209024dc5a9f8ad0ac17da" name="a6ec4aa4c29209024dc5a9f8ad0ac17da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec4aa4c29209024dc5a9f8ad0ac17da">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for ray march reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by rayMarch*. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00489">fovRad</a>, <a class="el" href="ClipSpace_8h_source.html#l00020">eve::graphics::perspectiveVulkanRH_ZO()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00486">proj</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00272">setInvViewProj()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00485">view</a>.</p>
+
+</div>
+</div>
+<a id="ac860946aecb0092f33978534c1693afd" name="ac860946aecb0092f33978534c1693afd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac860946aecb0092f33978534c1693afd">&#9670;&#160;</a></span>setDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setDensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00358">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a99c2bc342de8f9551449e1aa50a6b06e" name="a99c2bc342de8f9551449e1aa50a6b06e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99c2bc342de8f9551449e1aa50a6b06e">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00322">setDensity()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00305">setFogColor()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00314">setIntensity()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00243">setLightScreenUV()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00296">setShaftColor()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00320">setTime()</a>.</p>
+
+</div>
+</div>
+<a id="afcfe55bfa5b048035c9fbd6bf515f07f" name="afcfe55bfa5b048035c9fbd6bf515f07f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcfe55bfa5b048035c9fbd6bf515f07f">&#9670;&#160;</a></span>setFogColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFogColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00358">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a2cfcd1921dafdc4f37207b2792ac7ef0" name="a2cfcd1921dafdc4f37207b2792ac7ef0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cfcd1921dafdc4f37207b2792ac7ef0">&#9670;&#160;</a></span>setFogEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFogEnd </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endDistance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="aa06eebb581066a1692dfa98f9e7e3f17" name="aa06eebb581066a1692dfa98f9e7e3f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa06eebb581066a1692dfa98f9e7e3f17">&#9670;&#160;</a></span>setFogHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFogHeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a4571e5dbb9f99f2bbd9fd832b7ca955e" name="a4571e5dbb9f99f2bbd9fd832b7ca955e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4571e5dbb9f99f2bbd9fd832b7ca955e">&#9670;&#160;</a></span>setFogHeightFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFogHeightFalloff </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>falloff</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a20da5319c2f7f9e9a9665fac7641ae09" name="a20da5319c2f7f9e9a9665fac7641ae09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20da5319c2f7f9e9a9665fac7641ae09">&#9670;&#160;</a></span>setFogNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFogNoise </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="acb66074b53e24b2059d07e9f083ca7e8" name="acb66074b53e24b2059d07e9f083ca7e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb66074b53e24b2059d07e9f083ca7e8">&#9670;&#160;</a></span>setFogStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setFogStart </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startDistance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>View-distance ramp where fog appears (world units along the ray). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a79914b318eebbce6a3a3f05b4a71b4b2" name="a79914b318eebbce6a3a3f05b4a71b4b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79914b318eebbce6a3a3f05b4a71b4b2">&#9670;&#160;</a></span>setIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00358">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a76c420d91ff3ab0cdad0b3742a55b841" name="a76c420d91ff3ab0cdad0b3742a55b841"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76c420d91ff3ab0cdad0b3742a55b841">&#9670;&#160;</a></span>setInvViewProj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setInvViewProj </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invViewProj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Raw inverse view-projection (column-major, matching glm). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00099">eve::graphics::Shader::sendMatrix()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00278">setCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a8727890d6263cfe2eef38851519dd2f0" name="a8727890d6263cfe2eef38851519dd2f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8727890d6263cfe2eef38851519dd2f0">&#9670;&#160;</a></span>setLightDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setLightDirection </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space direction toward the lit surface (ray march / phase). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a2bbd744ad21718231c683fd215288e43" name="a2bbd744ad21718231c683fd215288e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bbd744ad21718231c683fd215288e43">&#9670;&#160;</a></span>setLightScreenPos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setLightScreenPos </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pixel-space helper (converts with width/height). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00235">height</a>, <a class="el" href="Volumetric_8cpp_source.html#l00243">setLightScreenUV()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00144">width</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00436">beginOcclusionMap()</a>.</p>
+
+</div>
+</div>
+<a id="a5db57744dc53e89eed08327c9a26ae13" name="a5db57744dc53e89eed08327c9a26ae13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5db57744dc53e89eed08327c9a26ae13">&#9670;&#160;</a></span>setLightScreenUV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setLightScreenUV </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Light position in UV (0..1), origin top-left to match 2D UVs. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00358">setFloat()</a>, <a class="el" href="Grass_8cpp_source.html#l00234">u</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Volumetric_8cpp_source.html#l00253">setLightScreenPos()</a>.</p>
+
+</div>
+</div>
+<a id="a25bce36e8a4f4fa70aa59fb61e5376c8" name="a25bce36e8a4f4fa70aa59fb61e5376c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25bce36e8a4f4fa70aa59fb61e5376c8">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"screenspace" | "raymarch" | "fog" — selects which shader params quality tweaks. </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ea5b3489b94927c3cd2fab4f1a72f8f" name="a9ea5b3489b94927c3cd2fab4f1a72f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ea5b3489b94927c3cd2fab4f1a72f8f">&#9670;&#160;</a></span>setQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setQuality </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"low" | "medium" | "high" (unknown → medium). </p>
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9bb53d12f47e4f625ec38721acb3fc25" name="a9bb53d12f47e4f625ec38721acb3fc25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bb53d12f47e4f625ec38721acb3fc25">&#9670;&#160;</a></span>setShaftColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setShaftColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00358">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a8cee46c58799eb79c9e1516ba3bc16b8" name="a8cee46c58799eb79c9e1516ba3bc16b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cee46c58799eb79c9e1516ba3bc16b8">&#9670;&#160;</a></span>setTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Volumetric::setTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a> 第 <a class="el" href="Volumetric_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Volumetric_8cpp_source.html#l00358">setFloat()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Volumetric_8h_source.html">Volumetric.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Volumetric_8cpp_source.html">Volumetric.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

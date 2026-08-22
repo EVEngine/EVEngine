@@ -1,0 +1,1326 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::StateValue类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1StateValue.html">StateValue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1StateValue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::StateValue类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>JSON-compatible state value tree used by state hot reload.  
+ <a href="classeve_1_1StateValue.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StateValue_8h_source.html">StateValue.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:ab0922d5d43322780bc24887579f16759" id="r_ab0922d5d43322780bc24887579f16759"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">Kind</a> { <br />
+&#160;&#160;<a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759abbb93ef26e3c101ff11cdd21cab08a94">Null</a>
+, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52">Int</a>
+, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>
+, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034">Bool</a>
+, <br />
+&#160;&#160;<a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98">String</a>
+, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a4410ec34d9e6c1a68100ca0ce033fb17">Array</a>
+, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a497031794414a552435f90151ac3b54b">Object</a>
+<br />
+ }</td></tr>
+<tr class="separator:ab0922d5d43322780bc24887579f16759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad6031296d131b44e4ca2dc740ff1a8bf" id="r_ad6031296d131b44e4ca2dc740ff1a8bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ad6031296d131b44e4ca2dc740ff1a8bf">StateValue</a> ()=default</td></tr>
+<tr class="memdesc:ad6031296d131b44e4ca2dc740ff1a8bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Null value.  <br /></td></tr>
+<tr class="separator:ad6031296d131b44e4ca2dc740ff1a8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19d94198021f2a5884636161f7daa6da" id="r_a19d94198021f2a5884636161f7daa6da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">Kind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a19d94198021f2a5884636161f7daa6da">kind</a> () const</td></tr>
+<tr class="memdesc:a19d94198021f2a5884636161f7daa6da"><td class="mdescLeft">&#160;</td><td class="mdescRight">The kind of the stored value.  <br /></td></tr>
+<tr class="separator:a19d94198021f2a5884636161f7daa6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a733c9a14cd992e8d9b8ce01092ea504f" id="r_a733c9a14cd992e8d9b8ce01092ea504f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a733c9a14cd992e8d9b8ce01092ea504f">isNull</a> () const</td></tr>
+<tr class="separator:a733c9a14cd992e8d9b8ce01092ea504f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8e18b7b4439151dd818e53212a56200" id="r_ae8e18b7b4439151dd818e53212a56200"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ae8e18b7b4439151dd818e53212a56200">isInt</a> () const</td></tr>
+<tr class="separator:ae8e18b7b4439151dd818e53212a56200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03d2eeb3641117d4fb03f4de3c3e18b7" id="r_a03d2eeb3641117d4fb03f4de3c3e18b7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a03d2eeb3641117d4fb03f4de3c3e18b7">isFloat</a> () const</td></tr>
+<tr class="separator:a03d2eeb3641117d4fb03f4de3c3e18b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa94170547efc6b539cee34060e7963cb" id="r_aa94170547efc6b539cee34060e7963cb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">isBool</a> () const</td></tr>
+<tr class="separator:aa94170547efc6b539cee34060e7963cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa46ea8b85932e3ccd7896af61146b693" id="r_aa46ea8b85932e3ccd7896af61146b693"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">isString</a> () const</td></tr>
+<tr class="separator:aa46ea8b85932e3ccd7896af61146b693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa1c0a5376ba31980868ca5230d99780" id="r_aaa1c0a5376ba31980868ca5230d99780"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a> () const</td></tr>
+<tr class="separator:aaa1c0a5376ba31980868ca5230d99780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb639ea8a63e067ce9bfc23e956972d" id="r_aabb639ea8a63e067ce9bfc23e956972d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aabb639ea8a63e067ce9bfc23e956972d">isArray</a> () const</td></tr>
+<tr class="separator:aabb639ea8a63e067ce9bfc23e956972d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415747f7f02bed1a9ee2471cec80182e" id="r_a415747f7f02bed1a9ee2471cec80182e"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a415747f7f02bed1a9ee2471cec80182e">asInt</a> () const</td></tr>
+<tr class="memdesc:a415747f7f02bed1a9ee2471cec80182e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52">Kind::Int</a>.  <br /></td></tr>
+<tr class="separator:a415747f7f02bed1a9ee2471cec80182e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab697179d1ee57b6b7932114b07c6699" id="r_aab697179d1ee57b6b7932114b07c6699"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aab697179d1ee57b6b7932114b07c6699">asDouble</a> () const</td></tr>
+<tr class="memdesc:aab697179d1ee57b6b7932114b07c6699"><td class="mdescLeft">&#160;</td><td class="mdescRight">Floating-point payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b">Kind::Float</a>.  <br /></td></tr>
+<tr class="separator:aab697179d1ee57b6b7932114b07c6699"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56863251ea1f5e05109805d402b2d7ad" id="r_a56863251ea1f5e05109805d402b2d7ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">asBool</a> () const</td></tr>
+<tr class="memdesc:a56863251ea1f5e05109805d402b2d7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034">Kind::Bool</a>.  <br /></td></tr>
+<tr class="separator:a56863251ea1f5e05109805d402b2d7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae4e15ee11a3a558911c373a06d309f7" id="r_aae4e15ee11a3a558911c373a06d309f7"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">asString</a> () const</td></tr>
+<tr class="memdesc:aae4e15ee11a3a558911c373a06d309f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">String payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98">Kind::String</a>.  <br /></td></tr>
+<tr class="separator:aae4e15ee11a3a558911c373a06d309f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a648045efb0c5ed3c4654da543e4ff1a0" id="r_a648045efb0c5ed3c4654da543e4ff1a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a648045efb0c5ed3c4654da543e4ff1a0">pushBack</a> (<a class="el" href="classeve_1_1StateValue.html">StateValue</a> <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a648045efb0c5ed3c4654da543e4ff1a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an element; only valid on arrays.  <br /></td></tr>
+<tr class="separator:a648045efb0c5ed3c4654da543e4ff1a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8443baddb044ef74393c0a8904206067" id="r_a8443baddb044ef74393c0a8904206067"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a8443baddb044ef74393c0a8904206067">arraySize</a> () const</td></tr>
+<tr class="memdesc:a8443baddb044ef74393c0a8904206067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Element count; only valid on arrays.  <br /></td></tr>
+<tr class="separator:a8443baddb044ef74393c0a8904206067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc80fbebba17fac5fffd6be7a24912c2" id="r_adc80fbebba17fac5fffd6be7a24912c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">at</a> (size_t index)</td></tr>
+<tr class="memdesc:adc80fbebba17fac5fffd6be7a24912c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexed element (bounds-checked); only valid on arrays.  <br /></td></tr>
+<tr class="separator:adc80fbebba17fac5fffd6be7a24912c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7fde0ba1f1734c06caea9e4129f7930" id="r_ac7fde0ba1f1734c06caea9e4129f7930"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ac7fde0ba1f1734c06caea9e4129f7930">at</a> (size_t index) const</td></tr>
+<tr class="separator:ac7fde0ba1f1734c06caea9e4129f7930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af94024f4815db7b0284b458db6db5d5e" id="r_af94024f4815db7b0284b458db6db5d5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a> (const std::string &amp;key, <a class="el" href="classeve_1_1StateValue.html">StateValue</a> <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:af94024f4815db7b0284b458db6db5d5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert or replace <code>key</code>; only valid on objects.  <br /></td></tr>
+<tr class="separator:af94024f4815db7b0284b458db6db5d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad478efd6633dc0d386f6b900b7d1e04e" id="r_ad478efd6633dc0d386f6b900b7d1e04e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a> (const std::string &amp;key) const</td></tr>
+<tr class="memdesc:ad478efd6633dc0d386f6b900b7d1e04e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up <code>key</code>; nullptr when absent.  <br /></td></tr>
+<tr class="separator:ad478efd6633dc0d386f6b900b7d1e04e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8c8a87303c004cf6bc0e4506b772ca5" id="r_af8c8a87303c004cf6bc0e4506b772ca5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#af8c8a87303c004cf6bc0e4506b772ca5">find</a> (const std::string &amp;key)</td></tr>
+<tr class="separator:af8c8a87303c004cf6bc0e4506b772ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc8d31383a0d9a631eed5433c8836fed" id="r_adc8d31383a0d9a631eed5433c8836fed"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#adc8d31383a0d9a631eed5433c8836fed">keys</a> () const</td></tr>
+<tr class="memdesc:adc8d31383a0d9a631eed5433c8836fed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member names in insertion order.  <br /></td></tr>
+<tr class="separator:adc8d31383a0d9a631eed5433c8836fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84dea8c19b058469a772ba928a9eca1a" id="r_a84dea8c19b058469a772ba928a9eca1a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a84dea8c19b058469a772ba928a9eca1a">get</a> (const std::string &amp;dottedPath) const</td></tr>
+<tr class="memdesc:a84dea8c19b058469a772ba928a9eca1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Navigate a dotted path ("a.b[2].c").  <br /></td></tr>
+<tr class="separator:a84dea8c19b058469a772ba928a9eca1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848956b2aad96aee11c42127059c27ed" id="r_a848956b2aad96aee11c42127059c27ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a848956b2aad96aee11c42127059c27ed">get</a> (const std::string &amp;dottedPath)</td></tr>
+<tr class="separator:a848956b2aad96aee11c42127059c27ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39df7f28f3f07ff37fdde48ec73b41c0" id="r_a39df7f28f3f07ff37fdde48ec73b41c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a39df7f28f3f07ff37fdde48ec73b41c0">setPath</a> (const std::string &amp;dottedPath, <a class="el" href="classeve_1_1StateValue.html">StateValue</a> <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a39df7f28f3f07ff37fdde48ec73b41c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a value at a dotted path, creating missing intermediate objects along the way.  <br /></td></tr>
+<tr class="separator:a39df7f28f3f07ff37fdde48ec73b41c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600a2856388ec2ba719c12981df59919" id="r_a600a2856388ec2ba719c12981df59919"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a600a2856388ec2ba719c12981df59919">mergeDefaults</a> (const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;defaults)</td></tr>
+<tr class="memdesc:a600a2856388ec2ba719c12981df59919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill missing members from <code>defaults</code>; object members merge recursively, existing values are never overwritten.  <br /></td></tr>
+<tr class="separator:a600a2856388ec2ba719c12981df59919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7b7bbcf46adf76702b1ab4a59751065" id="r_ac7b7bbcf46adf76702b1ab4a59751065"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ac7b7bbcf46adf76702b1ab4a59751065">operator==</a> (const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;o) const</td></tr>
+<tr class="separator:ac7b7bbcf46adf76702b1ab4a59751065"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c334806cdd3864bc0cfd4437a1435fd" id="r_a1c334806cdd3864bc0cfd4437a1435fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a1c334806cdd3864bc0cfd4437a1435fd">operator!=</a> (const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;o) const</td></tr>
+<tr class="separator:a1c334806cdd3864bc0cfd4437a1435fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad482878f4c8c4634a5b4d8dae7c1bb3f" id="r_ad482878f4c8c4634a5b4d8dae7c1bb3f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#ad482878f4c8c4634a5b4d8dae7c1bb3f">null</a> ()</td></tr>
+<tr class="memdesc:ad482878f4c8c4634a5b4d8dae7c1bb3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Null value.  <br /></td></tr>
+<tr class="separator:ad482878f4c8c4634a5b4d8dae7c1bb3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bc1f200083d80d1415e72bc56c4cc6f" id="r_a4bc1f200083d80d1415e72bc56c4cc6f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a4bc1f200083d80d1415e72bc56c4cc6f">integer</a> (int64_t <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a4bc1f200083d80d1415e72bc56c4cc6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer value.  <br /></td></tr>
+<tr class="separator:a4bc1f200083d80d1415e72bc56c4cc6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca1a9bf25966b17772761d74ec3ee9c5" id="r_aca1a9bf25966b17772761d74ec3ee9c5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">number</a> (double <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:aca1a9bf25966b17772761d74ec3ee9c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Floating-point value.  <br /></td></tr>
+<tr class="separator:aca1a9bf25966b17772761d74ec3ee9c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a9456af1494eba1268fc6ac17131f8e" id="r_a1a9456af1494eba1268fc6ac17131f8e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">boolean</a> (bool <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:a1a9456af1494eba1268fc6ac17131f8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean value.  <br /></td></tr>
+<tr class="separator:a1a9456af1494eba1268fc6ac17131f8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed9daf3f70ad735a6615625b0061b8a1" id="r_aed9daf3f70ad735a6615625b0061b8a1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#aed9daf3f70ad735a6615625b0061b8a1">string</a> (std::string <a class="el" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>)</td></tr>
+<tr class="memdesc:aed9daf3f70ad735a6615625b0061b8a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">String value.  <br /></td></tr>
+<tr class="separator:aed9daf3f70ad735a6615625b0061b8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ac75fdd66a0636ac8aae5afaf7c1134" id="r_a2ac75fdd66a0636ac8aae5afaf7c1134"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">array</a> ()</td></tr>
+<tr class="memdesc:a2ac75fdd66a0636ac8aae5afaf7c1134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty array.  <br /></td></tr>
+<tr class="separator:a2ac75fdd66a0636ac8aae5afaf7c1134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06f7509e63bac0703ab2b1e0df06e26c" id="r_a06f7509e63bac0703ab2b1e0df06e26c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">object</a> ()</td></tr>
+<tr class="memdesc:a06f7509e63bac0703ab2b1e0df06e26c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty object.  <br /></td></tr>
+<tr class="separator:a06f7509e63bac0703ab2b1e0df06e26c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>JSON-compatible state value tree used by state hot reload. </p>
+<p>Engine modules (state providers) and script roots serialize their runtime state into this structure so a reload session can capture it before code changes and restore it afterwards. Scalars, arrays and objects map 1:1 to JSON; object members preserve insertion order. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="ab0922d5d43322780bc24887579f16759" name="ab0922d5d43322780bc24887579f16759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0922d5d43322780bc24887579f16759">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">eve::StateValue::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759abbb93ef26e3c101ff11cdd21cab08a94" name="ab0922d5d43322780bc24887579f16759abbb93ef26e3c101ff11cdd21cab08a94"></a>Null&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52" name="ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52"></a>Int&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b" name="ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b"></a>Float&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034" name="ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034"></a>Bool&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98" name="ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759a4410ec34d9e6c1a68100ca0ce033fb17" name="ab0922d5d43322780bc24887579f16759a4410ec34d9e6c1a68100ca0ce033fb17"></a>Array&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab0922d5d43322780bc24887579f16759a497031794414a552435f90151ac3b54b" name="ab0922d5d43322780bc24887579f16759a497031794414a552435f90151ac3b54b"></a>Object&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad6031296d131b44e4ca2dc740ff1a8bf" name="ad6031296d131b44e4ca2dc740ff1a8bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6031296d131b44e4ca2dc740ff1a8bf">&#9670;&#160;</a></span>StateValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::StateValue::StateValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Null value. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2ac75fdd66a0636ac8aae5afaf7c1134" name="a2ac75fdd66a0636ac8aae5afaf7c1134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac75fdd66a0636ac8aae5afaf7c1134">&#9670;&#160;</a></span>array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::array </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Empty array. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00043">eve::card::captureCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>.</p>
+
+</div>
+</div>
+<a id="a8443baddb044ef74393c0a8904206067" name="a8443baddb044ef74393c0a8904206067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8443baddb044ef74393c0a8904206067">&#9670;&#160;</a></span>arraySize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::StateValue::arraySize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Element count; only valid on arrays. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a> , 以及 <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>.</p>
+
+</div>
+</div>
+<a id="a56863251ea1f5e05109805d402b2d7ad" name="a56863251ea1f5e05109805d402b2d7ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56863251ea1f5e05109805d402b2d7ad">&#9670;&#160;</a></span>asBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::asBool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Boolean payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034">Kind::Bool</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimStateMachine_8cpp_source.html#l00327">eve::animation::AnimStateMachine::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="aab697179d1ee57b6b7932114b07c6699" name="aab697179d1ee57b6b7932114b07c6699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab697179d1ee57b6b7932114b07c6699">&#9670;&#160;</a></span>asDouble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::StateValue::asDouble </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Floating-point payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b">Kind::Float</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a415747f7f02bed1a9ee2471cec80182e" name="a415747f7f02bed1a9ee2471cec80182e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415747f7f02bed1a9ee2471cec80182e">&#9670;&#160;</a></span>asInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::StateValue::asInt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Integer payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52">Kind::Int</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aae4e15ee11a3a558911c373a06d309f7" name="aae4e15ee11a3a558911c373a06d309f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae4e15ee11a3a558911c373a06d309f7">&#9670;&#160;</a></span>asString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::StateValue::asString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>String payload; only valid when <a class="el" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind()</a> == <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98">Kind::String</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00327">eve::animation::AnimStateMachine::restoreState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="adc80fbebba17fac5fffd6be7a24912c2" name="adc80fbebba17fac5fffd6be7a24912c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc80fbebba17fac5fffd6be7a24912c2">&#9670;&#160;</a></span>at() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp; eve::StateValue::at </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Indexed element (bounds-checked); only valid on arrays. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00066">at()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StateValue_8h_source.html#l00066">at()</a>, <a class="el" href="StateValue_8h_source.html#l00067">at()</a>, <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="ac7fde0ba1f1734c06caea9e4129f7930" name="ac7fde0ba1f1734c06caea9e4129f7930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7fde0ba1f1734c06caea9e4129f7930">&#9670;&#160;</a></span>at() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp; eve::StateValue::at </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00066">at()</a>.</p>
+
+</div>
+</div>
+<a id="a1a9456af1494eba1268fc6ac17131f8e" name="a1a9456af1494eba1268fc6ac17131f8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a9456af1494eba1268fc6ac17131f8e">&#9670;&#160;</a></span>boolean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::boolean </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Boolean value. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034">Bool</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00303">eve::animation::AnimStateMachine::captureState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>.</p>
+
+</div>
+</div>
+<a id="af8c8a87303c004cf6bc0e4506b772ca5" name="af8c8a87303c004cf6bc0e4506b772ca5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8c8a87303c004cf6bc0e4506b772ca5">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> * eve::StateValue::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad478efd6633dc0d386f6b900b7d1e04e" name="ad478efd6633dc0d386f6b900b7d1e04e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad478efd6633dc0d386f6b900b7d1e04e">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> * eve::StateValue::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Look up <code>key</code>; nullptr when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00028">eve::dev::ReloadSession::commit()</a>, <a class="el" href="StateValue_8cpp_source.html#l00093">get()</a>, <a class="el" href="StateValue_8cpp_source.html#l00170">mergeDefaults()</a>, <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00327">eve::animation::AnimStateMachine::restoreState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00419">eve::dev::Snapshot::restoreState()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00121">setPath()</a>.</p>
+
+</div>
+</div>
+<a id="a848956b2aad96aee11c42127059c27ed" name="a848956b2aad96aee11c42127059c27ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a848956b2aad96aee11c42127059c27ed">&#9670;&#160;</a></span>get() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> * eve::StateValue::get </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>dottedPath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8cpp_source.html#l00093">get()</a>.</p>
+
+</div>
+</div>
+<a id="a84dea8c19b058469a772ba928a9eca1a" name="a84dea8c19b058469a772ba928a9eca1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84dea8c19b058469a772ba928a9eca1a">&#9670;&#160;</a></span>get() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> * eve::StateValue::get </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>dottedPath</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Navigate a dotted path ("a.b[2].c"). </p>
+<dl class="section return"><dt>返回</dt><dd>nullptr when any segment is missing or the wrong type. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8cpp_source.html#l00074">find()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00290">idx</a> , 以及 <a class="el" href="StateValue_8h_source.html#l00050">isArray()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StateValue_8cpp_source.html#l00117">get()</a>.</p>
+
+</div>
+</div>
+<a id="a4bc1f200083d80d1415e72bc56c4cc6f" name="a4bc1f200083d80d1415e72bc56c4cc6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc1f200083d80d1415e72bc56c4cc6f">&#9670;&#160;</a></span>integer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::integer </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Integer value. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52">Int</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Snapshot_8cpp_source.html#l00348">eve::dev::Snapshot::captureState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>.</p>
+
+</div>
+</div>
+<a id="aabb639ea8a63e067ce9bfc23e956972d" name="aabb639ea8a63e067ce9bfc23e956972d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb639ea8a63e067ce9bfc23e956972d">&#9670;&#160;</a></span>isArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isArray </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StateValue_8cpp_source.html#l00093">get()</a>, <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00121">setPath()</a>.</p>
+
+</div>
+</div>
+<a id="aa94170547efc6b539cee34060e7963cb" name="aa94170547efc6b539cee34060e7963cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa94170547efc6b539cee34060e7963cb">&#9670;&#160;</a></span>isBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isBool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimStateMachine_8cpp_source.html#l00327">eve::animation::AnimStateMachine::restoreState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a03d2eeb3641117d4fb03f4de3c3e18b7" name="a03d2eeb3641117d4fb03f4de3c3e18b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03d2eeb3641117d4fb03f4de3c3e18b7">&#9670;&#160;</a></span>isFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isFloat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8e18b7b4439151dd818e53212a56200" name="ae8e18b7b4439151dd818e53212a56200"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8e18b7b4439151dd818e53212a56200">&#9670;&#160;</a></span>isInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isInt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a733c9a14cd992e8d9b8ce01092ea504f" name="a733c9a14cd992e8d9b8ce01092ea504f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a733c9a14cd992e8d9b8ce01092ea504f">&#9670;&#160;</a></span>isNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isNull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa1c0a5376ba31980868ca5230d99780" name="aaa1c0a5376ba31980868ca5230d99780"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa1c0a5376ba31980868ca5230d99780">&#9670;&#160;</a></span>isObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isObject </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00028">eve::dev::ReloadSession::commit()</a>, <a class="el" href="StateValue_8cpp_source.html#l00170">mergeDefaults()</a>, <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00327">eve::animation::AnimStateMachine::restoreState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00419">eve::dev::Snapshot::restoreState()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00121">setPath()</a>.</p>
+
+</div>
+</div>
+<a id="aa46ea8b85932e3ccd7896af61146b693" name="aa46ea8b85932e3ccd7896af61146b693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa46ea8b85932e3ccd7896af61146b693">&#9670;&#160;</a></span>isString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::isString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00058">eve::card::restoreCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00327">eve::animation::AnimStateMachine::restoreState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01412">eve::dialogue::Dialogue::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="adc8d31383a0d9a631eed5433c8836fed" name="adc8d31383a0d9a631eed5433c8836fed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc8d31383a0d9a631eed5433c8836fed">&#9670;&#160;</a></span>keys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::StateValue::keys </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Member names in insertion order. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00028">eve::dev::ReloadSession::commit()</a>.</p>
+
+</div>
+</div>
+<a id="a19d94198021f2a5884636161f7daa6da" name="a19d94198021f2a5884636161f7daa6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d94198021f2a5884636161f7daa6da">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">Kind</a> eve::StateValue::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The kind of the stored value. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a600a2856388ec2ba719c12981df59919" name="a600a2856388ec2ba719c12981df59919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600a2856388ec2ba719c12981df59919">&#9670;&#160;</a></span>mergeDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::mergeDefaults </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>defaults</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill missing members from <code>defaults</code>; object members merge recursively, existing values are never overwritten. </p>
+<dl class="section return"><dt>返回</dt><dd>true when at least one member was added. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8cpp_source.html#l00074">find()</a>, <a class="el" href="StateValue_8h_source.html#l00049">isObject()</a>, <a class="el" href="StateValue_8cpp_source.html#l00170">mergeDefaults()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00064">set()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00028">eve::dev::ReloadSession::commit()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00170">mergeDefaults()</a>.</p>
+
+</div>
+</div>
+<a id="ad482878f4c8c4634a5b4d8dae7c1bb3f" name="ad482878f4c8c4634a5b4d8dae7c1bb3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad482878f4c8c4634a5b4d8dae7c1bb3f">&#9670;&#160;</a></span>null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Null value. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00059">eve::dev::ReloadSession::abort()</a>, <a class="el" href="ReloadSession_8cpp_source.html#l00012">eve::dev::ReloadSession::begin()</a> , 以及 <a class="el" href="ReloadSession_8cpp_source.html#l00028">eve::dev::ReloadSession::commit()</a>.</p>
+
+</div>
+</div>
+<a id="aca1a9bf25966b17772761d74ec3ee9c5" name="aca1a9bf25966b17772761d74ec3ee9c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca1a9bf25966b17772761d74ec3ee9c5">&#9670;&#160;</a></span>number()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::number </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Floating-point value. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b">Float</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00303">eve::animation::AnimStateMachine::captureState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>.</p>
+
+</div>
+</div>
+<a id="a06f7509e63bac0703ab2b1e0df06e26c" name="a06f7509e63bac0703ab2b1e0df06e26c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06f7509e63bac0703ab2b1e0df06e26c">&#9670;&#160;</a></span>object()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::object </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Empty object. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00043">eve::card::captureCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00348">eve::dev::Snapshot::captureState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00303">eve::animation::AnimStateMachine::captureState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00121">setPath()</a>.</p>
+
+</div>
+</div>
+<a id="a1c334806cdd3864bc0cfd4437a1435fd" name="a1c334806cdd3864bc0cfd4437a1435fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c334806cdd3864bc0cfd4437a1435fd">&#9670;&#160;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8h_source.html">StateValue.h</a> 第 <a class="el" href="StateValue_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7b7bbcf46adf76702b1ab4a59751065" name="ac7b7bbcf46adf76702b1ab4a59751065"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7b7bbcf46adf76702b1ab4a59751065">&#9670;&#160;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a4410ec34d9e6c1a68100ca0ce033fb17">Array</a>, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759ac26f15e86e3de4c398a8273272aba034">Bool</a>, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a22ae0e2b89e5e3d477f988cc36d3272b">Float</a>, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a1686a6c336b71b36d77354cea19a8b52">Int</a>, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759abbb93ef26e3c101ff11cdd21cab08a94">Null</a>, <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a497031794414a552435f90151ac3b54b">Object</a> , 以及 <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98">String</a>.</p>
+
+</div>
+</div>
+<a id="a648045efb0c5ed3c4654da543e4ff1a0" name="a648045efb0c5ed3c4654da543e4ff1a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a648045efb0c5ed3c4654da543e4ff1a0">&#9670;&#160;</a></span>pushBack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::StateValue::pushBack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an element; only valid on arrays. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00043">eve::card::captureCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>.</p>
+
+</div>
+</div>
+<a id="af94024f4815db7b0284b458db6db5d5e" name="af94024f4815db7b0284b458db6db5d5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af94024f4815db7b0284b458db6db5d5e">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::StateValue::set </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert or replace <code>key</code>; only valid on objects. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00043">eve::card::captureCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="Snapshot_8cpp_source.html#l00348">eve::dev::Snapshot::captureState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00303">eve::animation::AnimStateMachine::captureState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>, <a class="el" href="StateValue_8cpp_source.html#l00170">mergeDefaults()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00121">setPath()</a>.</p>
+
+</div>
+</div>
+<a id="a39df7f28f3f07ff37fdde48ec73b41c0" name="a39df7f28f3f07ff37fdde48ec73b41c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39df7f28f3f07ff37fdde48ec73b41c0">&#9670;&#160;</a></span>setPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::StateValue::setPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>dottedPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a value at a dotted path, creating missing intermediate objects along the way. </p>
+<dl class="section return"><dt>返回</dt><dd>false when an existing segment is the wrong type or an array index is out of bounds (arrays must be pre-sized via pushBack). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8cpp_source.html#l00074">find()</a>, <a class="el" href="StateValue_8h_source.html#l00050">isArray()</a>, <a class="el" href="StateValue_8h_source.html#l00049">isObject()</a>, <a class="el" href="StateValue_8h_source.html#l00039">object()</a>, <a class="el" href="StateValue_8cpp_source.html#l00064">set()</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+<a id="aed9daf3f70ad735a6615625b0061b8a1" name="aed9daf3f70ad735a6615625b0061b8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed9daf3f70ad735a6615625b0061b8a1">&#9670;&#160;</a></span>string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> eve::StateValue::string </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>String value. </p>
+
+<p class="definition">在文件 <a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a> 第 <a class="el" href="StateValue_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759a27118326006d3829667a400ad23d5d98">String</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStateProvider_8cpp_source.html#l00043">eve::card::captureCardState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00303">eve::animation::AnimStateMachine::captureState()</a> , 以及 <a class="el" href="Dialogue_8cpp_source.html#l01364">eve::dialogue::Dialogue::captureState()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="StateValue_8h_source.html">StateValue.h</a></li>
+<li>src/engine/common/<a class="el" href="StateValue_8cpp_source.html">StateValue.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

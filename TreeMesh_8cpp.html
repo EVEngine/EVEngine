@@ -1,0 +1,815 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/TreeMesh.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">TreeMesh.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="TreeMesh_8h_source.html">procgen/algorithms/TreeMesh.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;random&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="TreeMesh_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aa328908cdb7dcd5d553cad7241cfd933" id="r_aa328908cdb7dcd5d553cad7241cfd933"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aa328908cdb7dcd5d553cad7241cfd933">eve::procgen::generateTreeMesh</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;params, <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:aa328908cdb7dcd5d553cad7241cfd933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a deterministic procedural tree. Registered as the <code>mesh.tree</code> recipe.  <br /></td></tr>
+<tr class="separator:aa328908cdb7dcd5d553cad7241cfd933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a5852c7ddfe71f018f3e44ca803aa372d" name="a5852c7ddfe71f018f3e44ca803aa372d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5852c7ddfe71f018f3e44ca803aa372d">&#9670;&#160;</a></span>attractorCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int attractorCount</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a15214458e4e41f7ea55e64bd720824ff" name="a15214458e4e41f7ea55e64bd720824ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15214458e4e41f7ea55e64bd720824ff">&#9670;&#160;</a></span>budHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float budHeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93ed9b546e7fadad14615c5ef0065277" name="a93ed9b546e7fadad14615c5ef0065277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93ed9b546e7fadad14615c5ef0065277">&#9670;&#160;</a></span>children</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int children = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00072">eve::ui::ScenePanel::build()</a>, <a class="el" href="Widget_8cpp_source.html#l00387">eve::ui::child()</a>, <a class="el" href="Widget_8cpp_source.html#l00375">eve::ui::collapsingHeader()</a>, <a class="el" href="Widget_8cpp_source.html#l00435">eve::ui::column()</a>, <a class="el" href="Widget_8cpp_source.html#l00421">eve::ui::flex()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00223">eve::scene::group()</a>, <a class="el" href="Widget_8cpp_source.html#l00254">eve::ui::group()</a>, <a class="el" href="Widget_8cpp_source.html#l00457">eve::ui::list()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00214">eve::scene::node()</a>, <a class="el" href="Widget_8cpp_source.html#l00431">eve::ui::row()</a>, <a class="el" href="Widget_8cpp_source.html#l00398">eve::ui::scrollList()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00225">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="a7bc54a402de0e3c360eb2c5a6adb3f1b" name="a7bc54a402de0e3c360eb2c5a6adb3f1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc54a402de0e3c360eb2c5a6adb3f1b">&#9670;&#160;</a></span>crownRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float crownRadius</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="acb5ba97551079e0b072c62c21d784ac5" name="acb5ba97551079e0b072c62c21d784ac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb5ba97551079e0b072c62c21d784ac5">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int depth = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacc85107753a8cd1bfe89b9d46747032" name="aacc85107753a8cd1bfe89b9d46747032"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc85107753a8cd1bfe89b9d46747032">&#9670;&#160;</a></span>descendants</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int descendants = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8763533b7c9fc0f7c4dd1918d79df84" name="ad8763533b7c9fc0f7c4dd1918d79df84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8763533b7c9fc0f7c4dd1918d79df84">&#9670;&#160;</a></span>dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">V3 dir</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FileWatch_8cpp_source.html#l00064">eve::filesystem::FileWatch::add()</a>, <a class="el" href="SceneInspect_8cpp_source.html#l00115">eve::dev::SceneInspect::capture()</a>, <a class="el" href="Create_8cpp_source.html#l00038">eve::cmd::Cmdline::Create()</a>, <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00571">eve::filesystem::physfs::Filesystem::createDirectory()</a>, <a class="el" href="VoxelRectDecode_8h_source.html#l00023">eve::voxel::decodePackedRect()</a>, <a class="el" href="Fov_8cpp_source.html#l00848">eve::map::Fov::Impl::extendVertical()</a>, <a class="el" href="Chunk_8h_source.html#l00103">eve::voxel::Chunk::faceAOPackedData()</a>, <a class="el" href="Chunk_8h_source.html#l00094">eve::voxel::Chunk::facePackedData()</a>, <a class="el" href="Chunk_8h_source.html#l00092">eve::voxel::Chunk::faceRectCount()</a>, <a class="el" href="Chunk_8h_source.html#l00088">eve::voxel::Chunk::faceRects()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00127">eve::procgen::generateBushMesh()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>, <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00618">eve::filesystem::physfs::Filesystem::getDirectoryItems()</a>, <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00540">eve::filesystem::physfs::Filesystem::getRealDirectory()</a>, <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00463">eve::filesystem::physfs::Filesystem::getUserDirectory()</a>, <a class="el" href="EditorHost_8cpp_source.html#l01314">eve::ui::EditorHost::loadEditorsFromDisk()</a>, <a class="el" href="GreedyMesher_8cpp_source.html#l00160">eve::voxel::GreedyMesher::meshFace()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00461">eve::scene::Scene::pickRayAt()</a>, <a class="el" href="FileWatch_8cpp_source.html#l00152">eve::filesystem::FileWatch::remove()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00544">eve::graphics::RenderSystem3D::render()</a>, <a class="el" href="CubeTypeRegistry_8h_source.html#l00066">eve::voxel::resolveFaceTex()</a>, <a class="el" href="FaceDir_8h_source.html#l00074">eve::voxel::rotateFaceY()</a>, <a class="el" href="EditorHost_8cpp_source.html#l01277">eve::ui::EditorHost::saveEditor()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00174">eve::graphics::Camera3D::screenToRay()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00281">eve::voxel::VoxelWorld::selectVisible()</a>, <a class="el" href="SceneInspect_8hpp_source.html#l00104">eve::dev::SceneInspect::setCacheDir()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00258">eve::graphics::vulkan::Graphics::setMesh3DLight()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02786">eve::graphics::webgpu::Graphics::setMesh3DLight()</a>, <a class="el" href="HotReload_8cpp_source.html#l00221">eve::filesystem::HotReload::setRemoteHotDir()</a> , 以及 <a class="el" href="HotReload_8cpp_source.html#l00155">eve::filesystem::HotReload::watchTree()</a>.</p>
+
+</div>
+</div>
+<a id="adaaae1ed85826c2dc1f80877bb19ccd0" name="adaaae1ed85826c2dc1f80877bb19ccd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaaae1ed85826c2dc1f80877bb19ccd0">&#9670;&#160;</a></span>droop</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float droop</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a7caba1a72606c9a209365bd1ac51e1ad" name="a7caba1a72606c9a209365bd1ac51e1ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7caba1a72606c9a209365bd1ac51e1ad">&#9670;&#160;</a></span>endDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">V3 endDirection</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac50a3d9c3cec9194a1c6748474a91ec6" name="ac50a3d9c3cec9194a1c6748474a91ec6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac50a3d9c3cec9194a1c6748474a91ec6">&#9670;&#160;</a></span>foliageStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float foliageStart</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a959b42a817333546414a646493f19c16" name="a959b42a817333546414a646493f19c16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a959b42a817333546414a646493f19c16">&#9670;&#160;</a></span>heading</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">V3 heading {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48083b65ac9a863566dc3e3fff09a5b4" name="a48083b65ac9a863566dc3e3fff09a5b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48083b65ac9a863566dc3e3fff09a5b4">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float height</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17ca74f051befb55deca87ccc0e5cbdd" name="a17ca74f051befb55deca87ccc0e5cbdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ca74f051befb55deca87ccc0e5cbdd">&#9670;&#160;</a></span>inertia</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float inertia</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc247b1dfc99333562f52d9a52208b00" name="afc247b1dfc99333562f52d9a52208b00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc247b1dfc99333562f52d9a52208b00">&#9670;&#160;</a></span>influenceRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float influenceRadius</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a1d10e252e778731e59f0f71afd7e727e" name="a1d10e252e778731e59f0f71afd7e727e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d10e252e778731e59f0f71afd7e727e">&#9670;&#160;</a></span>iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int iterations</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth_8cpp_source.html#l00083">eve::physics::Cloth::setIterations()</a>, <a class="el" href="Fluid_8cpp_source.html#l00049">eve::physics::Fluid::setIterations()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00016">eve::ik::Solver2D::setMaxIterations()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00016">eve::ik::Solver3D::setMaxIterations()</a> , 以及 <a class="el" href="ChainSolver_8h_source.html#l00170">eve::ik::detail::solveChain()</a>.</p>
+
+</div>
+</div>
+<a id="a6c53c05cf0437aaf74358915b56c1442" name="a6c53c05cf0437aaf74358915b56c1442"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c53c05cf0437aaf74358915b56c1442">&#9670;&#160;</a></span>killRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float killRadius</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a0b4c0c791b68e95b5d272f4f2cf75350" name="a0b4c0c791b68e95b5d272f4f2cf75350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b4c0c791b68e95b5d272f4f2cf75350">&#9670;&#160;</a></span>lengthFalloff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float lengthFalloff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d32b93fc216418dd48a529ac6e9eb6e" name="a1d32b93fc216418dd48a529ac6e9eb6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d32b93fc216418dd48a529ac6e9eb6e">&#9670;&#160;</a></span>lowerLeafCoverage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float lowerLeafCoverage</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a503ac5cd59094dc1a43333be9735d9b7" name="a503ac5cd59094dc1a43333be9735d9b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a503ac5cd59094dc1a43333be9735d9b7">&#9670;&#160;</a></span>maxChildren</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int maxChildren</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a49bac7723b24baf699ea2cf0324168d8" name="a49bac7723b24baf699ea2cf0324168d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49bac7723b24baf699ea2cf0324168d8">&#9670;&#160;</a></span>maxCumulativeAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float maxCumulativeAngle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a05f20eb0a3a7292f565cfe00d4e3dae2" name="a05f20eb0a3a7292f565cfe00d4e3dae2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05f20eb0a3a7292f565cfe00d4e3dae2">&#9670;&#160;</a></span>maxTurnAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float maxTurnAngle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ada1128820dcd5b9b7a08a81ee54e2ece" name="ada1128820dcd5b9b7a08a81ee54e2ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada1128820dcd5b9b7a08a81ee54e2ece">&#9670;&#160;</a></span>p</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">V3 p</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4dafd66c26e6b8acf64d2feba6141bcc" name="a4dafd66c26e6b8acf64d2feba6141bcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dafd66c26e6b8acf64d2feba6141bcc">&#9670;&#160;</a></span>parent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int parent = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00558">eve::ui::UI::addListItem()</a>, <a class="el" href="Builder_8cpp_source.html#l00337">eve::virtualgeometry::VirtualGeometryBuilder::build()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00151">eve::animation::AnimPose::computeWorld()</a>, <a class="el" href="Skeleton2D_8cpp_source.html#l00043">eve::ik::Skeleton2D::createBone()</a>, <a class="el" href="Skeleton3D_8cpp_source.html#l00043">eve::ik::Skeleton3D::createBone()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00923">eve::sceneloader::SceneLoader::diff()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00446">eve::map::Pathfinder::findPath()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>, <a class="el" href="SpineSkeletonData_8cpp_source.html#l00102">eve::animation::SpineSkeletonData::getBoneParent()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00044">eve::animation::AnimSkeleton::getParent()</a>, <a class="el" href="AnimImporter_8cpp_source.html#l00179">eve::animation::AnimImporter::importEva()</a>, <a class="el" href="HouseLayout_8cpp_source.html#l00221">eve::housegen::HouseLayout::instantiate()</a>, <a class="el" href="SpineSkeletonData_8cpp_source.html#l00188">eve::animation::SpineSkeletonData::loadFromJson()</a>, <a class="el" href="UI_8cpp_source.html#l00546">eve::ui::UI::setFlexAlign()</a>, <a class="el" href="UI_8cpp_source.html#l00552">eve::ui::UI::setFlexJustify()</a>, <a class="el" href="UI_8cpp_source.html#l00536">eve::ui::UI::setItemAbsolute()</a>, <a class="el" href="UI_8cpp_source.html#l00484">eve::ui::UI::setItemFlexGrow()</a>, <a class="el" href="UI_8cpp_source.html#l00497">eve::ui::UI::setItemMargin()</a>, <a class="el" href="UI_8cpp_source.html#l00522">eve::ui::UI::setItemMaxSize()</a>, <a class="el" href="UI_8cpp_source.html#l00515">eve::ui::UI::setItemMinSize()</a>, <a class="el" href="UI_8cpp_source.html#l00506">eve::ui::UI::setItemPadding()</a>, <a class="el" href="UI_8cpp_source.html#l00529">eve::ui::UI::setItemPercent()</a>, <a class="el" href="UI_8cpp_source.html#l00490">eve::ui::UI::setItemSize()</a>, <a class="el" href="sdl_2Window_8cpp_source.html#l00453">eve::window::sdl::Window::showMessageBox()</a> , 以及 <a class="el" href="SpineSkeleton_8cpp_source.html#l00060">eve::animation::SpineSkeleton::updateWorldTransform()</a>.</p>
+
+</div>
+</div>
+<a id="ab0d901dbc2b3a02f445b75b206b413f7" name="ab0d901dbc2b3a02f445b75b206b413f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0d901dbc2b3a02f445b75b206b413f7">&#9670;&#160;</a></span>points</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;V3&gt; points</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00583">eve::graphics::grass::buildBillboards()</a> , 以及 <a class="el" href="ClusteredLight_8cpp_source.html#l00009">eve::graphics::buildClusteredLighting()</a>.</p>
+
+</div>
+</div>
+<a id="a1a35113fa3c1b7de79f4513944013ac0" name="a1a35113fa3c1b7de79f4513944013ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a35113fa3c1b7de79f4513944013ac0">&#9670;&#160;</a></span>radiusFalloff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float radiusFalloff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82dd6eb6897902d6165923e41f028b25" name="a82dd6eb6897902d6165923e41f028b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82dd6eb6897902d6165923e41f028b25">&#9670;&#160;</a></span>remainingLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float remainingLength = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d28dec57cce925ad92342891bd71e7c" name="a1d28dec57cce925ad92342891bd71e7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d28dec57cce925ad92342891bd71e7c">&#9670;&#160;</a></span>scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scale</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graph_8cpp_source.html#l00292">eve::tensor::Func::emitLayerNorm()</a>, <a class="el" href="Graph_8cpp_source.html#l00314">eve::tensor::Func::emitRMSNorm()</a>, <a class="el" href="Graph_8cpp_source.html#l00533">eve::tensor::Func::emitSdpa()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00331">eve::procgen::fillDensityField()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00205">eve::scene::Scene::getNodeWorldRotationAt()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00215">eve::scene::Scene::getNodeWorldScaleAt()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00187">eve::tensor::kernels::layernorm()</a>, <a class="el" href="TF_8cpp_source.html#l00492">eve::tensor::TF::layernormWB()</a>, <a class="el" href="ParallaxMap_8h_source.html#l00022">eve::graphics::parallaxOffsetUV()</a>, <a class="el" href="Graphics_8cpp_source.html#l01005">eve::graphics::Graphics::print()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00203">eve::card::printCentered()</a>, <a class="el" href="Quant_8h_source.html#l00216">eve::tensor::q::quantize()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00211">eve::tensor::kernels::rmsnorm()</a>, <a class="el" href="TF_8cpp_source.html#l00520">eve::tensor::TF::rmsnormW()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00454">eve::tensor::kernels::sdpa()</a>, <a class="el" href="TF_8cpp_source.html#l00761">eve::tensor::TF::sdpa()</a>, <a class="el" href="TF_8cpp_source.html#l00765">eve::tensor::TF::sdpaMasked()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01443">eve::particles::ParticleEmitter::setAttachScale()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00657">eve::graphics::vulkan::Graphics::setMesh3DParallax()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02733">eve::graphics::webgpu::Graphics::setMesh3DParallax()</a>, <a class="el" href="Material_8cpp_source.html#l00040">eve::graphics::Material::setParallax()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00342">eve::graphics::Renderable3D::setParallax()</a>, <a class="el" href="Fov_8cpp_source.html#l01145">eve::map::Fov::setPerceptionRadiusScale()</a>, <a class="el" href="TerrainSampler_8cpp_source.html#l00012">eve::procgen::TerrainSampler::setScale()</a>, <a class="el" href="UI_8cpp_source.html#l00786">eve::ui::UI::setScale()</a>, <a class="el" href="ImGuiBackend_8cpp_source.html#l00302">eve::ui::ImGuiBackend::setScale()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01509">eve::particles::ParticleEmitter::setSkinScale()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00019">eve::voxel::VoxelWorld::setTerrainParams()</a>, <a class="el" href="Theme_8cpp_source.html#l00123">eve::ui::setThemeUiScale()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00389">eve::particles::stepEmitterSim()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00691">eve::particles::stepEmitterSimGpu()</a> , 以及 <a class="el" href="TextureCellBomb_8h_source.html#l00036">eve::graphics::texCellBombSampleUV()</a>.</p>
+
+</div>
+</div>
+<a id="a8e87157d34798f60f3b3427902fa78e9" name="a8e87157d34798f60f3b3427902fa78e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e87157d34798f60f3b3427902fa78e9">&#9670;&#160;</a></span>sides</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int sides</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HouseGenerator_8cpp_source.html#l00120">eve::housegen::HouseGenerator::generate()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00127">eve::procgen::generateBushMesh()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a863c86bdfd96bf9c461846689c2614aa" name="a863c86bdfd96bf9c461846689c2614aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a863c86bdfd96bf9c461846689c2614aa">&#9670;&#160;</a></span>step</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float step</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorInspector_8cpp_source.html#l00029">eve::editor::EditorInspector::addFloat()</a>, <a class="el" href="Fov_8cpp_source.html#l00562">eve::map::Fov::Impl::computeHexShadowcast()</a>, <a class="el" href="Fov_8cpp_source.html#l00653">eve::map::Fov::Impl::computeRaycast()</a>, <a class="el" href="Fluid_8cpp_source.html#l00065">eve::physics::Fluid::emit()</a>, <a class="el" href="Fov_8cpp_source.html#l00848">eve::map::Fov::Impl::extendVertical()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00533">eve::map::Pathfinder::followFlow()</a>, <a class="el" href="TF_8cpp_source.html#l00184">eve::tensor::TF::linspace()</a>, <a class="el" href="ColorRamp_8cpp_source.html#l00034">eve::procgen::ColorRamp::sampleBanded()</a>, <a class="el" href="utf8_8cpp_source.html#l00037">eve::utf8_byte_offset_for_codepoints()</a> , 以及 <a class="el" href="utf8_8cpp_source.html#l00023">eve::utf8_codepoint_count()</a>.</p>
+
+</div>
+</div>
+<a id="a37203a7f7096d2276ed06331bc25f1a1" name="a37203a7f7096d2276ed06331bc25f1a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37203a7f7096d2276ed06331bc25f1a1">&#9670;&#160;</a></span>tropism</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float tropism</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a980cd16b89c7073e20a6cd68aa138a38" name="a980cd16b89c7073e20a6cd68aa138a38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a980cd16b89c7073e20a6cd68aa138a38">&#9670;&#160;</a></span>trunkRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float trunkRadius</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a091ac8103f3c5eb6df2272174779253c" name="a091ac8103f3c5eb6df2272174779253c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a091ac8103f3c5eb6df2272174779253c">&#9670;&#160;</a></span>upperLeafCoverage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float upperLeafCoverage</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a56e0ce0ec80df6cd3fa4933b318f89a0" name="a56e0ce0ec80df6cd3fa4933b318f89a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56e0ce0ec80df6cd3fa4933b318f89a0">&#9670;&#160;</a></span>vigor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float vigor = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0da36b2558901e21e7a30f6c227a45e" name="ad0da36b2558901e21e7a30f6c227a45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0da36b2558901e21e7a30f6c227a45e">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4f0d3eebc3c443f9be81bf48561a217" name="aa4f0d3eebc3c443f9be81bf48561a217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f0d3eebc3c443f9be81bf48561a217">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af73583b1e980b0aa03f9884812e9fd4d" name="af73583b1e980b0aa03f9884812e9fd4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af73583b1e980b0aa03f9884812e9fd4d">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TreeMesh_8cpp_source.html">TreeMesh.cpp</a> 第 <a class="el" href="TreeMesh_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

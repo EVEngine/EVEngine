@@ -1,0 +1,426 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::GpuMeshRecord结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html">GpuMeshRecord</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1GpuMeshRecord-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::GpuMeshRecord结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GPU mesh table record (std430). Mirrors GLSL <a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html" title="GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.">GpuMeshRecord</a>.  
+ <a href="structeve_1_1graphics_1_1GpuMeshRecord.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aaecd72f7b7a03816e1d62db02be6d5a3" id="r_aaecd72f7b7a03816e1d62db02be6d5a3"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#aaecd72f7b7a03816e1d62db02be6d5a3">boundsCenterRadius</a></td></tr>
+<tr class="separator:aaecd72f7b7a03816e1d62db02be6d5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae02cc17b32c181b3e79cd32f69cd00c5" id="r_ae02cc17b32c181b3e79cd32f69cd00c5"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#ae02cc17b32c181b3e79cd32f69cd00c5">vertexOffset</a> = 0</td></tr>
+<tr class="separator:ae02cc17b32c181b3e79cd32f69cd00c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9721819b3c7bdffffd24088c3349d9a0" id="r_a9721819b3c7bdffffd24088c3349d9a0"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a9721819b3c7bdffffd24088c3349d9a0">vertexCount</a> = 0</td></tr>
+<tr class="separator:a9721819b3c7bdffffd24088c3349d9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79c9cf1807015b6d3aa1fb56076429db" id="r_a79c9cf1807015b6d3aa1fb56076429db"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a79c9cf1807015b6d3aa1fb56076429db">indexOffset</a> = 0</td></tr>
+<tr class="separator:a79c9cf1807015b6d3aa1fb56076429db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe15e3091d5f90007d62151fc4110cbc" id="r_afe15e3091d5f90007d62151fc4110cbc"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#afe15e3091d5f90007d62151fc4110cbc">indexCount</a> = 0</td></tr>
+<tr class="separator:afe15e3091d5f90007d62151fc4110cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a397f5d1089e76b887a3e0a721f66bca7" id="r_a397f5d1089e76b887a3e0a721f66bca7"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a397f5d1089e76b887a3e0a721f66bca7">indexType</a> = 1</td></tr>
+<tr class="separator:a397f5d1089e76b887a3e0a721f66bca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a354a8b3cbe695ce63ffc9e3772d48c3a" id="r_a354a8b3cbe695ce63ffc9e3772d48c3a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a354a8b3cbe695ce63ffc9e3772d48c3a">firstIndex</a> = 0</td></tr>
+<tr class="separator:a354a8b3cbe695ce63ffc9e3772d48c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c1069db3c3922ff5cfd75bd1ce0c1d3" id="r_a3c1069db3c3922ff5cfd75bd1ce0c1d3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3c1069db3c3922ff5cfd75bd1ce0c1d3">vertexBase</a> = 0</td></tr>
+<tr class="separator:a3c1069db3c3922ff5cfd75bd1ce0c1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd3336eb7036d52ce145dfb9740d437" id="r_a4fd3336eb7036d52ce145dfb9740d437"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a4fd3336eb7036d52ce145dfb9740d437">lodGroupId</a> = <a class="el" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a></td></tr>
+<tr class="separator:a4fd3336eb7036d52ce145dfb9740d437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab52d3b237c8171d0890c773f8194478d" id="r_ab52d3b237c8171d0890c773f8194478d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#ab52d3b237c8171d0890c773f8194478d">vgAssetId</a> = <a class="el" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a></td></tr>
+<tr class="separator:ab52d3b237c8171d0890c773f8194478d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6851579e064c85c469b302565ac4cbc7" id="r_a6851579e064c85c469b302565ac4cbc7"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a6851579e064c85c469b302565ac4cbc7">pad1</a> = 0</td></tr>
+<tr class="separator:a6851579e064c85c469b302565ac4cbc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23e07bf5429510b649751cf48f19bdef" id="r_a23e07bf5429510b649751cf48f19bdef"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a23e07bf5429510b649751cf48f19bdef">pad2</a> = 0</td></tr>
+<tr class="separator:a23e07bf5429510b649751cf48f19bdef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6db71b2c03e1ea2f58c10c7dfa3510" id="r_a3d6db71b2c03e1ea2f58c10c7dfa3510"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html#a3d6db71b2c03e1ea2f58c10c7dfa3510">pad3</a> = 0</td></tr>
+<tr class="separator:a3d6db71b2c03e1ea2f58c10c7dfa3510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GPU mesh table record (std430). Mirrors GLSL <a class="el" href="structeve_1_1graphics_1_1GpuMeshRecord.html" title="GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.">GpuMeshRecord</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aaecd72f7b7a03816e1d62db02be6d5a3" name="aaecd72f7b7a03816e1d62db02be6d5a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaecd72f7b7a03816e1d62db02be6d5a3">&#9670;&#160;</a></span>boundsCenterRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::GpuMeshRecord::boundsCenterRadius</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a354a8b3cbe695ce63ffc9e3772d48c3a" name="a354a8b3cbe695ce63ffc9e3772d48c3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a354a8b3cbe695ce63ffc9e3772d48c3a">&#9670;&#160;</a></span>firstIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::firstIndex = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe15e3091d5f90007d62151fc4110cbc" name="afe15e3091d5f90007d62151fc4110cbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe15e3091d5f90007d62151fc4110cbc">&#9670;&#160;</a></span>indexCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::indexCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79c9cf1807015b6d3aa1fb56076429db" name="a79c9cf1807015b6d3aa1fb56076429db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79c9cf1807015b6d3aa1fb56076429db">&#9670;&#160;</a></span>indexOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::indexOffset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a397f5d1089e76b887a3e0a721f66bca7" name="a397f5d1089e76b887a3e0a721f66bca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a397f5d1089e76b887a3e0a721f66bca7">&#9670;&#160;</a></span>indexType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::indexType = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fd3336eb7036d52ce145dfb9740d437" name="a4fd3336eb7036d52ce145dfb9740d437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fd3336eb7036d52ce145dfb9740d437">&#9670;&#160;</a></span>lodGroupId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::lodGroupId = <a class="el" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6851579e064c85c469b302565ac4cbc7" name="a6851579e064c85c469b302565ac4cbc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6851579e064c85c469b302565ac4cbc7">&#9670;&#160;</a></span>pad1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::pad1 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a23e07bf5429510b649751cf48f19bdef" name="a23e07bf5429510b649751cf48f19bdef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23e07bf5429510b649751cf48f19bdef">&#9670;&#160;</a></span>pad2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::pad2 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d6db71b2c03e1ea2f58c10c7dfa3510" name="a3d6db71b2c03e1ea2f58c10c7dfa3510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d6db71b2c03e1ea2f58c10c7dfa3510">&#9670;&#160;</a></span>pad3</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::pad3 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c1069db3c3922ff5cfd75bd1ce0c1d3" name="a3c1069db3c3922ff5cfd75bd1ce0c1d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c1069db3c3922ff5cfd75bd1ce0c1d3">&#9670;&#160;</a></span>vertexBase</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::vertexBase = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9721819b3c7bdffffd24088c3349d9a0" name="a9721819b3c7bdffffd24088c3349d9a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9721819b3c7bdffffd24088c3349d9a0">&#9670;&#160;</a></span>vertexCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::vertexCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae02cc17b32c181b3e79cd32f69cd00c5" name="ae02cc17b32c181b3e79cd32f69cd00c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae02cc17b32c181b3e79cd32f69cd00c5">&#9670;&#160;</a></span>vertexOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::vertexOffset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab52d3b237c8171d0890c773f8194478d" name="ab52d3b237c8171d0890c773f8194478d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab52d3b237c8171d0890c773f8194478d">&#9670;&#160;</a></span>vgAssetId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::GpuMeshRecord::vgAssetId = <a class="el" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">kInvalidGpuDrivenSlot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a> 第 <a class="el" href="GpuDrivenTypes_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGpuDriven_8cpp_source.html#l00836">eve::graphics::vulkan::Graphics::gpuDrivenVgAssetId()</a> , 以及 <a class="el" href="GraphicsGpuDriven_8cpp_source.html#l00842">eve::graphics::vulkan::Graphics::gpuDrivenVgAttachToMesh()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="GpuDrivenTypes_8h_source.html">GpuDrivenTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

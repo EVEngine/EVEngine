@@ -1,0 +1,674 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/RenderSystem.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RenderSystem.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RenderSystem_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="RenderSystem_8h.html">graphics/RenderSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Canvas_8h.html">graphics/Canvas.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Light_8h.html">graphics/Light.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Quad_8h.html">graphics/Quad.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="RenderTrace_8h.html">common/RenderTrace.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;zeroerr/assert.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#ac71257f14dcf9b6dc25eec6d1a3b144d">   17</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#ac71257f14dcf9b6dc25eec6d1a3b144d">Camera2D::setAmbient</a>(<span class="keywordtype">float</span> r, <span class="keywordtype">float</span> g, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;ambientR = r;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;ambientG = g;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;ambientB = <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#acdd343f68fc5cceff44e3caf7bf97e17">   24</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#acdd343f68fc5cceff44e3caf7bf97e17">Camera2D::setPosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;x = <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;y = <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#ab37a23ecdedb8292820334029324b24c">   30</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#ab37a23ecdedb8292820334029324b24c">Camera2D::getX</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>()-&gt;x; }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#a71db171bf868578b1e78dcfe0b5b4ea7">   31</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#a71db171bf868578b1e78dcfe0b5b4ea7">Camera2D::getY</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>()-&gt;y; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#a9ec995e82db0b1d49722c51921a0ecba">   33</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#a9ec995e82db0b1d49722c51921a0ecba">Camera2D::setZoom</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a15776f201dc8b554110222e67a51cbae">zoom</a>) { <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>()-&gt;zoom = <a class="code hl_variable" href="RenderSystem_8cpp.html#a15776f201dc8b554110222e67a51cbae">zoom</a>; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#ad19303f8c19cc85648ed7b22c445b638">   34</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#ad19303f8c19cc85648ed7b22c445b638">Camera2D::getZoom</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>()-&gt;zoom; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#a9e761f0ad5e69d00a78c9a142844668c">   36</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#a9e761f0ad5e69d00a78c9a142844668c">Camera2D::screenToWorldX</a>(<span class="keywordtype">float</span> screenX, <span class="keywordtype">float</span> <span class="comment">/*screenY*/</span>, <span class="keywordtype">float</span> viewW, <span class="keywordtype">float</span> <span class="comment">/*viewH*/</span>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom &lt;= 0.f ? 1e-4f : <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> (screenX - viewW * 0.5f) / <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;x;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#a04f6a28f7351f26efd2c61ec252d3657">   42</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#a04f6a28f7351f26efd2c61ec252d3657">Camera2D::screenToWorldY</a>(<span class="keywordtype">float</span> <span class="comment">/*screenX*/</span>, <span class="keywordtype">float</span> screenY, <span class="keywordtype">float</span> <span class="comment">/*viewW*/</span>, <span class="keywordtype">float</span> viewH) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom &lt;= 0.f ? 1e-4f : <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> (screenY - viewH * 0.5f) / <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;y;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#a8c1a4ebd4f78856d20999037d6659959">   48</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#a8c1a4ebd4f78856d20999037d6659959">Camera2D::worldToScreenX</a>(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> <span class="comment">/*worldY*/</span>, <span class="keywordtype">float</span> viewW, <span class="keywordtype">float</span> <span class="comment">/*viewH*/</span>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom &lt;= 0.f ? 1e-4f : <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> (worldX - <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;x) * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + viewW * 0.5f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Camera2D.html#a45f84902a9794226f7019c7219ed16a6">   54</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Camera2D.html#a45f84902a9794226f7019c7219ed16a6">Camera2D::worldToScreenY</a>(<span class="keywordtype">float</span> <span class="comment">/*worldX*/</span>, <span class="keywordtype">float</span> worldY, <span class="keywordtype">float</span> <span class="comment">/*viewW*/</span>, <span class="keywordtype">float</span> viewH) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom &lt;= 0.f ? 1e-4f : <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> (worldY - <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;y) * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + viewH * 0.5f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Renderable2D.html#a00acf79cb4e6e4c0c8f38501ea913826">   60</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Renderable2D.html#a00acf79cb4e6e4c0c8f38501ea913826">Renderable2D::setCastOcclusion</a>(<span class="keywordtype">bool</span> cast) { sprite()-&gt;castOcclusion = cast; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Renderable2D.html#aac53d2ab7594218a051794891567763b">   62</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Renderable2D.html#aac53d2ab7594218a051794891567763b">Renderable2D::getCastOcclusion</a>() { <span class="keywordflow">return</span> sprite()-&gt;castOcclusion; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keywordtype">float</span> clampZoom(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> &lt;= 0.f ? 1e-4f : <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">struct </span>ViewCam {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">   69</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">   70</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0.f;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#a15776f201dc8b554110222e67a51cbae">   71</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a15776f201dc8b554110222e67a51cbae">zoom</a> = 1.f;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">   72</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#a3eee060377777dd0f0d99b765d0794df">   73</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> <a class="code hl_variable" href="RenderSystem_8cpp.html#a3eee060377777dd0f0d99b765d0794df">clearColor</a>{0.1f, 0.1f, 0.12f, 1.f};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#ab385bb60bebff3ec65c1f1c95d75f885">   74</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a7fc7e3a9f212b8d07183def53bfc74ba">ambientR</a> = 0.15f, <a class="code hl_variable" href="RenderSystem_8cpp.html#a6bc49b0b8efcf696758c69a3d00e3dc2">ambientG</a> = 0.15f, <a class="code hl_variable" href="RenderSystem_8cpp.html#ab385bb60bebff3ec65c1f1c95d75f885">ambientB</a> = 0.18f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>ViewCam fromEntity(Camera2D *ent) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    ViewCam <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!ent) <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = ent-&gt;data();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.valid = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.x = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;x;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.y = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;y;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.zoom = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;zoom;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.clearColor = <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a>(<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;r, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;g, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;b, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;a);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.ambientR = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;ambientR;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.ambientG = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;ambientG;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.ambientB = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;ambientB;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keywordtype">void</span> applyCamera(<span class="keywordtype">float</span> wx, <span class="keywordtype">float</span> wy, <span class="keywordtype">float</span> ww, <span class="keywordtype">float</span> wh, <span class="keyword">const</span> ViewCam &amp;cam, <span class="keywordtype">int</span> viewW, <span class="keywordtype">int</span> viewH,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                 <span class="keywordtype">float</span> &amp;sx, <span class="keywordtype">float</span> &amp;sy, <span class="keywordtype">float</span> &amp;sw, <span class="keywordtype">float</span> &amp;sh) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!cam.valid) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        sx = wx;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        sy = wy;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        sw = ww;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        sh = wh;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    ASSERT_GT(viewW, 0);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    ASSERT_GT(viewH, 0);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = clampZoom(cam.zoom);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    ASSERT_GT(<a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, 0.f);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    sx = (wx - cam.x) * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <span class="keywordtype">float</span>(viewW) * 0.5f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    sy = (wy - cam.y) * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <span class="keywordtype">float</span>(viewH) * 0.5f;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    sw = ww * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    sh = wh * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="keyword">struct </span>PackedLight {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">  112</a></span>    Light2D::Data *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="RenderSystem_8cpp.html#a409b77101f156f6b54f7be43c6fc87aa">  113</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a409b77101f156f6b54f7be43c6fc87aa">isPoint</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keywordtype">void</span> collectLights(Canvas *canvasKey, std::vector&lt;PackedLight&gt; &amp;out) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    out.clear();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (ecs::current()-&gt;getManager&lt;Light2D&gt;() == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a> = ecs::View&lt;Light2D, Light2D::Data&gt;();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>.begin(); it != <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>.end(); ++it) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keyword">auto</span> [<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>] = *it;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;enabled) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;canvas != canvasKey) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        PackedLight pl;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        pl.data = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        pl.isPoint = (<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;type != <span class="stringliteral">&quot;dir&quot;</span>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        out.push_back(pl);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    std::stable_sort(out.begin(), out.end(), [](<span class="keyword">const</span> PackedLight &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> PackedLight &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        if (a.isPoint != b.isPoint) return a.isPoint &amp;&amp; !b.isPoint;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        return a.data-&gt;intensity &gt; b.data-&gt;intensity;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    });</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">if</span> (out.size() &gt; <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="structeve_1_1graphics_1_1Lighting2DUBO.html#a365009eb43f0c39c207d9be24d647809">Lighting2DUBO::kMaxLights</a>))</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        out.resize(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="structeve_1_1graphics_1_1Lighting2DUBO.html#a365009eb43f0c39c207d9be24d647809">Lighting2DUBO::kMaxLights</a>));</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>Lighting2DUBO packLights(<span class="keyword">const</span> std::vector&lt;PackedLight&gt; &amp;lights, <span class="keyword">const</span> ViewCam &amp;cam, <span class="keywordtype">int</span> viewW,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                         <span class="keywordtype">int</span> viewH) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    Lighting2DUBO ubo{};</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    ubo.ambient = glm::vec4(cam.ambientR, cam.ambientG, cam.ambientB, 0.f);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    ubo.meta = glm::vec4(<span class="keywordtype">float</span>(lights.size()), <span class="keywordtype">float</span>(viewW), <span class="keywordtype">float</span>(viewH), 0.f);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; lights.size(); ++i) {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keyword">const</span> <span class="keyword">auto</span> *<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a> = lights[i].data;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        Light2DGpu &amp;g = ubo.lights[i];</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        g.color = glm::vec4(<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;r * <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;intensity, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;g * <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;intensity, <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;b * <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;intensity, 1.f);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordflow">if</span> (lights[i].<a class="code hl_variable" href="RenderSystem_8cpp.html#a409b77101f156f6b54f7be43c6fc87aa">isPoint</a>) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordtype">float</span> lx = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;x, ly = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;y;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            <span class="keywordtype">float</span> lr = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;radius;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            <span class="keywordflow">if</span> (cam.valid) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> = clampZoom(cam.zoom);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                lx = (<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;x - cam.x) * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <span class="keywordtype">float</span>(viewW) * 0.5f;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                ly = (<a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;y - cam.y) * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> + <span class="keywordtype">float</span>(viewH) * 0.5f;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                lr = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;radius * <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            g.posRadius = glm::vec4(lx, ly, 0.f, lr);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <span class="keywordtype">float</span> dx = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;dx, dy = <a class="code hl_variable" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>-&gt;dy;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> len = std::sqrt(dx * dx + dy * dy);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            <span class="keywordflow">if</span> (len &gt; 1e-6f) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                dx /= len;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                dy /= len;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                dx = 0.f;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                dy = -1.f;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            g.posRadius = glm::vec4(dx, dy, 0.f, 0.f);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        }</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">return</span> ubo;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>}</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> modulateUnlit(<a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> base, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">bool</span> receiveLight, <span class="keyword">const</span> Lighting2DUBO &amp;ubo) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">if</span> (!receiveLight) <span class="keywordflow">return</span> base;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    glm::vec3 lit(ubo.ambient.r, ubo.ambient.g, ubo.ambient.b);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> count = int(ubo.meta.x + 0.5f);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; count; ++i) {</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;L = ubo.lights[i];</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        glm::vec3 col(L.color.r, L.color.g, L.color.b);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">if</span> (L.posRadius.w &lt;= 0.f) {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            <span class="comment">// Directional: approximate as constant contribution for unlit sprites.</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            lit += col * 0.65f;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dx = L.posRadius.x - <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dy = L.posRadius.y - <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dist = std::sqrt(dx * dx + dy * dy);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keywordtype">float</span> atten = 1.f - dist / std::max(L.posRadius.w, 1.f);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            <span class="keywordflow">if</span> (atten &lt; 0.f) atten = 0.f;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            atten *= atten;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            lit += col * atten;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a>(base.r * lit.r, base.g * lit.g, base.b * lit.b, base.a);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>}</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1RenderSystem.html#aa22c8fbb042bea52f0e271dc36578226">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1RenderSystem.html#aa22c8fbb042bea52f0e271dc36578226">RenderSystem::collectSprites</a>(std::vector&lt;DrawItem2D&gt; &amp;out) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    std::unordered_map&lt;Canvas *, Camera2D *&gt; defaultCam;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordflow">if</span> (ecs::current()-&gt;getManager&lt;Camera2D&gt;() != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">auto</span> camView = ecs::View&lt;Camera2D, Camera2D::Data&gt;();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = camView.begin(); it != camView.end(); ++it) {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <span class="keyword">auto</span> [<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>] = *it;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;active) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            ASSERT(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;entity != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;entity) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *key = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;canvas;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordflow">if</span> (defaultCam.find(key) == defaultCam.end()) defaultCam[key] = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;entity;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a> = ecs::View&lt;Renderable2D, Renderable2D::Transform2D, Renderable2D::Sprite&gt;();</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>.begin(); it != <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>.end(); ++it) {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keyword">auto</span> [xf, sp] = *it;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">if</span> (!sp-&gt;visible) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Camera2D.html">Camera2D</a> *camEnt = sp-&gt;camera;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">if</span> (!camEnt) {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keyword">auto</span> found = defaultCam.find(sp-&gt;canvas);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            camEnt = (found != defaultCam.end()) ? found-&gt;second : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        ViewCam cam = fromEntity(camEnt);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1DrawItem2D.html">DrawItem2D</a> item;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ad68ec315288a9d3c346a79e89eb98ce4">x</a> = xf-&gt;x;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a0c568107cb4eb1d7228cda45236fa434">y</a> = xf-&gt;y;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae663f58c7a1d042da7c73ee26bbec906">w</a> = sp-&gt;width * xf-&gt;sx;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#af064312392030d25c1cd1585e7b0b273">h</a> = sp-&gt;height * xf-&gt;sy;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae51186ada81b5027c81d789ea98900f0">depthY</a> = xf-&gt;y + sp-&gt;height * xf-&gt;sy;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a71a9aa09a5ed5fa39bc95281da9df984">color</a> = <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a>(sp-&gt;r, sp-&gt;g, sp-&gt;b, sp-&gt;a);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a8b7ae99074f55ea4ba608e6beece47d4">layer</a> = sp-&gt;layer;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">texture</a> = sp-&gt;texture;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a9e3888519d315c9d5a3d7a90b1ce092e">normal</a> = sp-&gt;normalTexture;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">quad</a> = sp-&gt;quad;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ac64eff41c30ded2f47e8a89d0caa1fcb">shader</a> = sp-&gt;shader;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a7a7d897f0508827281fb687bcf725478">canvas</a> = sp-&gt;canvas;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ad3c7bc9c777d9c49f6d5add3e336ff2c">camera</a> = camEnt;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a838deb0b22ef3b498ec1e2a2da00e903">camValid</a> = cam.valid;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a6be74c8789d88216e2913e9adb5122f6">camX</a> = cam.x;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ab95036e946a431bdce7bae0bbb93f0e1">camY</a> = cam.y;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ac2cc2a77ac8b9734c0c859fcdc5487df">camZoom</a> = cam.zoom;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a111c9cf42eb3c95e7c134e33397d94a8">camClear</a> = cam.clearColor;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a162803ce357f7b43e271b65edb6b6bc1">camAmbientR</a> = cam.ambientR;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ab08de2647c342c3b1bfe4e57de88b64a">camAmbientG</a> = cam.ambientG;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a2747cfc821b0f82c0e5a0c534111fa58">camAmbientB</a> = cam.ambientB;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a68889a095074058fdf81f07210f83ba4">receiveLight</a> = sp-&gt;receiveLight;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#afc7119c5e9d080fca5748de64943d373">litPath</a> = sp-&gt;receiveLight &amp;&amp; sp-&gt;normalTexture != <span class="keyword">nullptr</span> &amp;&amp; sp-&gt;texture != <span class="keyword">nullptr</span> &amp;&amp;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                       sp-&gt;shader == <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordflow">if</span> (item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">quad</a> &amp;&amp; item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">texture</a>) {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a2022347fd63e0767ff0b2462169f075d">hasUV</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">quad</a>-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Quad.html#a2e76ae11c0c72d734858b024e14bbedd">getUV</a>(item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">texture</a>-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Texture.html#af0b2e8bb89592cb32b0d9aa8b39e52e7">getWidth</a>(), item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">texture</a>-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Texture.html#af57bd6f9a156caae806f7ed5481d7716">getHeight</a>(), item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a71153f41788c0cc99aa7b55c5d27c9c9">u0</a>, item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a532e00f2a7d4c7541f65f643cc0767b5">v0</a>,</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                             item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#a520405c99335d2a5f4910851c1ff1aae">u1</a>, item.<a class="code hl_variable" href="structeve_1_1graphics_1_1DrawItem2D.html#aab49a210f7dc5b3de131c34220847421">v1</a>);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        }</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        out.push_back(item);</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    }</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>}</div>
+</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="foldopen" id="foldopen00257" data-start="{" data-end="}">
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1RenderSystem.html#aca9ba0421bb799086c90cd556f9e2fd8">  257</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1RenderSystem.html#aca9ba0421bb799086c90cd556f9e2fd8">RenderSystem::drawItems</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;gfx, std::vector&lt;DrawItem2D&gt; &amp;items, <span class="keywordtype">bool</span> present) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <a class="code hl_class" href="classeve_1_1debug_1_1RenderPassScope.html">eve::debug::RenderPassScope</a> pass(<span class="stringliteral">&quot;RenderSystem2D&quot;</span>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <a class="code hl_function" href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">sortDrawItems2D</a>(items);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    std::unordered_map&lt;Canvas *, Camera2D *&gt; defaultCam;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keywordflow">if</span> (ecs::current()-&gt;getManager&lt;Camera2D&gt;() != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keyword">auto</span> camView = ecs::View&lt;Camera2D, Camera2D::Data&gt;();</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = camView.begin(); it != camView.end(); ++it) {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keyword">auto</span> [<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>] = *it;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;active) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;entity) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *key = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;canvas;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            <span class="keywordflow">if</span> (defaultCam.find(key) == defaultCam.end()) defaultCam[key] = <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;entity;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        }</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    }</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *current = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>uintptr_t<span class="keyword">&gt;</span>(1));</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1Lighting2DUBO.html">Lighting2DUBO</a> currentLights{};</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; items.size(); ++i) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *next = items[i].canvas;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <span class="keywordflow">if</span> (i == 0 || next != current) {</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> clearCol = gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a452768e7a498b68c1b837956374793cc">getBackgroundColor</a>();</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            ViewCam groupCam{};</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            <span class="keyword">auto</span> defIt = defaultCam.find(next);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            <span class="keywordflow">if</span> (defIt != defaultCam.end()) {</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                groupCam = fromEntity(defIt-&gt;second);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                clearCol = groupCam.clearColor;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (items[i].camValid) {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                groupCam.valid = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                groupCam.x = items[i].camX;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                groupCam.y = items[i].camY;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                groupCam.zoom = items[i].camZoom;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                groupCam.clearColor = items[i].camClear;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                groupCam.ambientR = items[i].camAmbientR;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                groupCam.ambientG = items[i].camAmbientG;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                groupCam.ambientB = items[i].camAmbientB;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                clearCol = groupCam.clearColor;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            }</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(next);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            <a class="code hl_function" href="namespaceeve_1_1debug.html#a179091d995802564e9d76d56ab7d16b8">eve::debug::rtTarget</a>(next ? <span class="stringliteral">&quot;canvas&quot;</span> : <span class="stringliteral">&quot;screen&quot;</span>);</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            <span class="comment">// Only clear when presenting a full sprite pass; map-unified draws must not wipe.</span></div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            <span class="keywordflow">if</span> (present) gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#a814c359e0f393e429926a6230cd99c8c">clear</a>(clearCol, std::nullopt, std::nullopt);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            current = next;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            <span class="keywordtype">int</span> viewW = next ? next-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">getWidth</a>() : gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a291839c5e3c20797ebac64507156872f">getWidth</a>();</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            <span class="keywordtype">int</span> viewH = next ? next-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">getHeight</a>() : gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#aec5d1735567305b330f5c1c6f86ae676">getHeight</a>();</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            std::vector&lt;PackedLight&gt; packed;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            collectLights(next, packed);</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>            currentLights = packLights(packed, groupCam, viewW, viewH);</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>            gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a492b8d8d276dfef13d9d4d959948cc39">setLighting2D</a>(currentLights);</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        }</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;it = items[i];</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        ViewCam cam{};</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        <span class="keywordflow">if</span> (it.camValid) {</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            cam.valid = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            cam.x = it.camX;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            cam.y = it.camY;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            cam.zoom = it.camZoom;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (it.camera) {</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>            cam = fromEntity(it.camera);</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        }</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        <span class="keywordtype">int</span> viewW = it.canvas ? it.canvas-&gt;getWidth() : gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a291839c5e3c20797ebac64507156872f">getWidth</a>();</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <span class="keywordtype">int</span> viewH = it.canvas ? it.canvas-&gt;getHeight() : gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#aec5d1735567305b330f5c1c6f86ae676">getHeight</a>();</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <span class="keywordtype">float</span> sx, sy, sw, sh;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        applyCamera(it.x, it.y, it.w, it.h, cam, viewW, viewH, sx, sy, sw, sh);</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        <span class="keywordtype">float</span> u0 = it.hasUV ? it.u0 : 0.f;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keywordtype">float</span> v0 = it.hasUV ? it.v0 : 0.f;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keywordtype">float</span> u1 = it.hasUV ? it.u1 : 1.f;</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="keywordtype">float</span> v1 = it.hasUV ? it.v1 : 1.f;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keywordflow">if</span> (!it.hasUV &amp;&amp; it.quad &amp;&amp; it.texture)</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            it.quad-&gt;getUV(it.texture-&gt;getWidth(), it.texture-&gt;getHeight(), u0, v0, u1, v1);</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keywordflow">if</span> (it.litPath) {</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>            <a class="code hl_function" href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">eve::debug::rtBind</a>(<span class="stringliteral">&quot;texture&quot;</span>, <span class="stringliteral">&quot;albedo&quot;</span>);</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            <a class="code hl_function" href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">eve::debug::rtBind</a>(<span class="stringliteral">&quot;texture&quot;</span>, <span class="stringliteral">&quot;normal&quot;</span>);</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            <a class="code hl_function" href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">eve::debug::rtDraw</a>(<span class="stringliteral">&quot;drawTexturedRectLitUV&quot;</span>, <span class="stringliteral">&quot;lit2d&quot;</span>);</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#aef3828f94e12dd33141c6a0c8defd7fd">drawTexturedRectLitUV</a>(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>                                      it.color);</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (it.texture) {</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>            <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = it.color;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>            <span class="keywordflow">if</span> (it.receiveLight &amp;&amp; !it.normal)</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = modulateUnlit(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, sx + sw * 0.5f, sy + sh * 0.5f, <span class="keyword">true</span>, currentLights);</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            <a class="code hl_function" href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">eve::debug::rtBind</a>(<span class="stringliteral">&quot;texture&quot;</span>, <span class="stringliteral">&quot;sprite&quot;</span>);</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            <span class="keywordflow">if</span> (it.shader) <a class="code hl_function" href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">eve::debug::rtBind</a>(<span class="stringliteral">&quot;shader&quot;</span>, <span class="stringliteral">&quot;custom&quot;</span>);</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            <span class="keywordflow">if</span> (it.rotation != 0.f) {</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                <a class="code hl_function" href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">eve::debug::rtDraw</a>(<span class="stringliteral">&quot;drawTexturedRectShaderUVRotated&quot;</span>,</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                                   it.shader ? <span class="stringliteral">&quot;shader&quot;</span> : <span class="stringliteral">&quot;textured&quot;</span>);</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a76596e35515a11fa30ef8961f623fee7">drawTexturedRectShaderUVRotated</a>(it.texture, it.shader, sx + sw * 0.5f,</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>                                                    sy + sh * 0.5f, sw, sh, it.rotation, u0, v0, u1,</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                                                    v1, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, it.rotatedUV, it.blend);</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>                <a class="code hl_function" href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">eve::debug::rtDraw</a>(<span class="stringliteral">&quot;drawTexturedRectShaderUV&quot;</span>, it.shader ? <span class="stringliteral">&quot;shader&quot;</span> : <span class="stringliteral">&quot;textured&quot;</span>);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>                gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">drawTexturedRectShaderUV</a>(it.texture, it.shader, sx, sy, sw, sh, u0, v0, u1, v1, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>,</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>                                             it.rotatedUV, it.blend);</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>            }</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>            <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">Color</a> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = it.color;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            <span class="keywordflow">if</span> (it.receiveLight)</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>                <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = modulateUnlit(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, sx + sw * 0.5f, sy + sh * 0.5f, <span class="keyword">true</span>, currentLights);</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>            <a class="code hl_function" href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">eve::debug::rtDraw</a>(<span class="stringliteral">&quot;drawSolidRect&quot;</span>, <span class="stringliteral">&quot;solid&quot;</span>);</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            <span class="keywordflow">if</span> (it.rotation != 0.f)</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>                gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a915cf0adc784fb8ddc751b523062fafc">drawSolidRectRotated</a>(sx + sw * 0.5f, sy + sh * 0.5f, sw, sh, it.rotation, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>,</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>                                         it.blend);</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>                gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a69362b88d9a68889fcab66bee5f73146">drawSolidRect</a>(sx, sy, sw, sh, <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, it.blend);</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        }</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    }</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="keywordflow">if</span> (present) {</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>();</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        <a class="code hl_function" href="namespaceeve_1_1debug.html#a8b8732ca91db1fae264d1318e0b6af7d">eve::debug::rtPassBegin</a>(<span class="stringliteral">&quot;Present&quot;</span>);</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        gfx.<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#aa8b8a9003379e013a3942de85db780fb">present</a>();</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        <a class="code hl_function" href="namespaceeve_1_1debug.html#aca5f5221ff03f67344a3255b2d5f416d">eve::debug::rtPassEnd</a>(<span class="stringliteral">&quot;Present&quot;</span>);</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    }</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>}</div>
+</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>
+<div class="foldopen" id="foldopen00376" data-start="{" data-end="}">
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1RenderSystem.html#a9921af99884c2e01a59421ec5959dd28">  376</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1RenderSystem.html#a9921af99884c2e01a59421ec5959dd28">RenderSystem::render</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;gfx) {</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <a class="code hl_function" href="namespaceeve_1_1debug.html#a93c9ad9107f66aef97bd010c9f2780ff">eve::debug::rtFrameBegin</a>();</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    std::vector&lt;DrawItem2D&gt; items;</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1RenderSystem.html#aa22c8fbb042bea52f0e271dc36578226">collectSprites</a>(items);</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1RenderSystem.html#aca9ba0421bb799086c90cd556f9e2fd8">drawItems</a>(gfx, items, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <a class="code hl_function" href="namespaceeve_1_1debug.html#aaaec25797526a2aaea9fadfbc59c9a7e">eve::debug::rtFrameEnd</a>();</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>}</div>
+</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span> </div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aCanvas_8h_html"><div class="ttname"><a href="Canvas_8h.html">Canvas.h</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00031">CardTypes.cpp:31</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00032">CardTypes.cpp:32</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aLight_8h_html"><div class="ttname"><a href="Light_8h.html">Light.h</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aQuad_8h_html"><div class="ttname"><a href="Quad_8h.html">Quad.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ada05f6cebac471a16afe32603db72cd2"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00485">RenderSystem3D.cpp:485</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00112">RenderSystem.cpp:112</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a15776f201dc8b554110222e67a51cbae"><div class="ttname"><a href="RenderSystem_8cpp.html#a15776f201dc8b554110222e67a51cbae">zoom</a></div><div class="ttdeci">float zoom</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00071">RenderSystem.cpp:71</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="RenderSystem_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00072">RenderSystem.cpp:72</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a3eee060377777dd0f0d99b765d0794df"><div class="ttname"><a href="RenderSystem_8cpp.html#a3eee060377777dd0f0d99b765d0794df">clearColor</a></div><div class="ttdeci">Color clearColor</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00073">RenderSystem.cpp:73</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a409b77101f156f6b54f7be43c6fc87aa"><div class="ttname"><a href="RenderSystem_8cpp.html#a409b77101f156f6b54f7be43c6fc87aa">isPoint</a></div><div class="ttdeci">bool isPoint</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00113">RenderSystem.cpp:113</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a6bc49b0b8efcf696758c69a3d00e3dc2"><div class="ttname"><a href="RenderSystem_8cpp.html#a6bc49b0b8efcf696758c69a3d00e3dc2">ambientG</a></div><div class="ttdeci">float ambientG</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00074">RenderSystem.cpp:74</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a7fc7e3a9f212b8d07183def53bfc74ba"><div class="ttname"><a href="RenderSystem_8cpp.html#a7fc7e3a9f212b8d07183def53bfc74ba">ambientR</a></div><div class="ttdeci">float ambientR</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00074">RenderSystem.cpp:74</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_ab385bb60bebff3ec65c1f1c95d75f885"><div class="ttname"><a href="RenderSystem_8cpp.html#ab385bb60bebff3ec65c1f1c95d75f885">ambientB</a></div><div class="ttdeci">float ambientB</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00074">RenderSystem.cpp:74</a></div></div>
+<div class="ttc" id="aRenderSystem_8h_html"><div class="ttname"><a href="RenderSystem_8h.html">RenderSystem.h</a></div></div>
+<div class="ttc" id="aRenderTrace_8h_html"><div class="ttname"><a href="RenderTrace_8h.html">RenderTrace.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_a6f364afbe132c4ecfea48bde1b0618ba"><div class="ttname"><a href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a></div><div class="ttdeci">int d</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1RenderPassScope_html"><div class="ttname"><a href="classeve_1_1debug_1_1RenderPassScope.html">eve::debug::RenderPassScope</a></div><div class="ttdoc">RAII pass scope for C++ call sites.</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00056">RenderTrace.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html">eve::graphics::Camera2D</a></div><div class="ttdoc">Declarative 2D camera (viewport center + zoom).</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8h_source.html#l00017">RenderSystem.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_a04f6a28f7351f26efd2c61ec252d3657"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#a04f6a28f7351f26efd2c61ec252d3657">eve::graphics::Camera2D::screenToWorldY</a></div><div class="ttdeci">float screenToWorldY(float screenX, float screenY, float viewW, float viewH)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00042">RenderSystem.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_a45f84902a9794226f7019c7219ed16a6"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#a45f84902a9794226f7019c7219ed16a6">eve::graphics::Camera2D::worldToScreenY</a></div><div class="ttdeci">float worldToScreenY(float worldX, float worldY, float viewW, float viewH)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00054">RenderSystem.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_a71db171bf868578b1e78dcfe0b5b4ea7"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#a71db171bf868578b1e78dcfe0b5b4ea7">eve::graphics::Camera2D::getY</a></div><div class="ttdeci">float getY()</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00031">RenderSystem.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_a8c1a4ebd4f78856d20999037d6659959"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#a8c1a4ebd4f78856d20999037d6659959">eve::graphics::Camera2D::worldToScreenX</a></div><div class="ttdeci">float worldToScreenX(float worldX, float worldY, float viewW, float viewH)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00048">RenderSystem.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_a9e761f0ad5e69d00a78c9a142844668c"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#a9e761f0ad5e69d00a78c9a142844668c">eve::graphics::Camera2D::screenToWorldX</a></div><div class="ttdeci">float screenToWorldX(float screenX, float screenY, float viewW, float viewH)</div><div class="ttdoc">Convert screen pixel (origin top-left of viewport) to world coordinates. viewW/viewH are the current ...</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00036">RenderSystem.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_a9ec995e82db0b1d49722c51921a0ecba"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#a9ec995e82db0b1d49722c51921a0ecba">eve::graphics::Camera2D::setZoom</a></div><div class="ttdeci">void setZoom(float zoom)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00033">RenderSystem.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_ab37a23ecdedb8292820334029324b24c"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#ab37a23ecdedb8292820334029324b24c">eve::graphics::Camera2D::getX</a></div><div class="ttdeci">float getX()</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00030">RenderSystem.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_ac71257f14dcf9b6dc25eec6d1a3b144d"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#ac71257f14dcf9b6dc25eec6d1a3b144d">eve::graphics::Camera2D::setAmbient</a></div><div class="ttdeci">void setAmbient(float r, float g, float b)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00017">RenderSystem.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_acdd343f68fc5cceff44e3caf7bf97e17"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#acdd343f68fc5cceff44e3caf7bf97e17">eve::graphics::Camera2D::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y)</div><div class="ttdoc">World-space look-at center and zoom (1 = identity).</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00024">RenderSystem.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera2D_html_ad19303f8c19cc85648ed7b22c445b638"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera2D.html#ad19303f8c19cc85648ed7b22c445b638">eve::graphics::Camera2D::getZoom</a></div><div class="ttdeci">float getZoom()</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00034">RenderSystem.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_a36b54ae2371f612291a02c5f08f0e2ea"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth</a></div><div class="ttdeci">virtual int getWidth() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_a814c359e0f393e429926a6230cd99c8c"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#a814c359e0f393e429926a6230cd99c8c">eve::graphics::Canvas::clear</a></div><div class="ttdeci">virtual void clear(std::optional&lt; Color &gt; color, std::optional&lt; int &gt; stencil, std::optional&lt; double &gt; depth)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_ac72d6748ee3c3ca0263fc0b47c93e1b3"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight</a></div><div class="ttdeci">virtual int getHeight() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a291839c5e3c20797ebac64507156872f"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a291839c5e3c20797ebac64507156872f">eve::graphics::Graphics::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00283">Graphics.h:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a33a135bee19f60052f90549a4d3ac74a"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">eve::graphics::Graphics::drawTexturedRectShaderUV</a></div><div class="ttdeci">virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w, float h, float u0, float v0, float u1, float v1, const Color &amp;color, bool rotatedUV=false, BlendMode blend=BlendMode::Alpha)=0</div><div class="ttdoc">UV draw with an explicit Shader (nullptr = default textured pipeline).</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a452768e7a498b68c1b837956374793cc"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a452768e7a498b68c1b837956374793cc">eve::graphics::Graphics::getBackgroundColor</a></div><div class="ttdeci">Color getBackgroundColor() const</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00756">Graphics.h:756</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a492b8d8d276dfef13d9d4d959948cc39"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a492b8d8d276dfef13d9d4d959948cc39">eve::graphics::Graphics::setLighting2D</a></div><div class="ttdeci">virtual void setLighting2D(const Lighting2DUBO &amp;ubo)=0</div><div class="ttdoc">Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a69362b88d9a68889fcab66bee5f73146"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a69362b88d9a68889fcab66bee5f73146">eve::graphics::Graphics::drawSolidRect</a></div><div class="ttdeci">virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a=1.f)</div><div class="ttdoc">RGBA-float overload matching the script-facing drawSolidRect name.</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00923">Graphics.cpp:923</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a76596e35515a11fa30ef8961f623fee7"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a76596e35515a11fa30ef8961f623fee7">eve::graphics::Graphics::drawTexturedRectShaderUVRotated</a></div><div class="ttdeci">virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy, float w, float h, float degrees, float u0, float v0, float u1, float v1, const Color &amp;color, bool rotatedUV=false, BlendMode blend=BlendMode::Alpha)=0</div><div class="ttdoc">UV draw rotated degrees clockwise (screen Y-down) around the rect center. texture may be null → solid...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a915cf0adc784fb8ddc751b523062fafc"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a915cf0adc784fb8ddc751b523062fafc">eve::graphics::Graphics::drawSolidRectRotated</a></div><div class="ttdeci">virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees, const Color &amp;color, BlendMode blend=BlendMode::Alpha)=0</div><div class="ttdoc">Rotated solid quad degrees clockwise (screen Y-down) around (cx, cy).</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a97f5ab4a9dfc44c1ca2ee873edc9fe7c"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas</a></div><div class="ttdeci">virtual void setCanvas(Canvas *canvas)=0</div><div class="ttdoc">nullptr or this → screen. Switching flushes pending draws to the previous target.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_aa8b8a9003379e013a3942de85db780fb"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#aa8b8a9003379e013a3942de85db780fb">eve::graphics::Graphics::present</a></div><div class="ttdeci">virtual void present()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_aec5d1735567305b330f5c1c6f86ae676"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#aec5d1735567305b330f5c1c6f86ae676">eve::graphics::Graphics::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00284">Graphics.h:284</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_aef3828f94e12dd33141c6a0c8defd7fd"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#aef3828f94e12dd33141c6a0c8defd7fd">eve::graphics::Graphics::drawTexturedRectLitUV</a></div><div class="ttdeci">virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0, float v0, float u1, float v1, const Color &amp;color)=0</div><div class="ttdoc">Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D. normal may be null → treate...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Quad_html_a2e76ae11c0c72d734858b024e14bbedd"><div class="ttname"><a href="classeve_1_1graphics_1_1Quad.html#a2e76ae11c0c72d734858b024e14bbedd">eve::graphics::Quad::getUV</a></div><div class="ttdeci">void getUV(int texW, int texH, float &amp;u0, float &amp;v0, float &amp;u1, float &amp;v1) const</div><div class="ttdoc">Convert pixel rect to normalized UVs for a texture of size texW×texH.</div><div class="ttdef"><b>Definition</b> <a href="Quad_8cpp_source.html#l00018">Quad.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1RenderSystem_html_a9921af99884c2e01a59421ec5959dd28"><div class="ttname"><a href="classeve_1_1graphics_1_1RenderSystem.html#a9921af99884c2e01a59421ec5959dd28">eve::graphics::RenderSystem::render</a></div><div class="ttdeci">static void render(Graphics &amp;gfx)</div><div class="ttdoc">Full sprite pass + present (existing tests / sprite-only scenes).</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00376">RenderSystem.cpp:376</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1RenderSystem_html_aa22c8fbb042bea52f0e271dc36578226"><div class="ttname"><a href="classeve_1_1graphics_1_1RenderSystem.html#aa22c8fbb042bea52f0e271dc36578226">eve::graphics::RenderSystem::collectSprites</a></div><div class="ttdeci">static void collectSprites(std::vector&lt; DrawItem2D &gt; &amp;out)</div><div class="ttdoc">Append visible Renderable2D sprites into a shared queue.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00197">RenderSystem.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1RenderSystem_html_aca9ba0421bb799086c90cd556f9e2fd8"><div class="ttname"><a href="classeve_1_1graphics_1_1RenderSystem.html#aca9ba0421bb799086c90cd556f9e2fd8">eve::graphics::RenderSystem::drawItems</a></div><div class="ttdeci">static void drawItems(Graphics &amp;gfx, std::vector&lt; DrawItem2D &gt; &amp;items, bool present)</div><div class="ttdoc">Sort and draw items. If present=true, calls gfx.present() at the end. Map::render uses present=false ...</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00257">RenderSystem.cpp:257</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable2D_html_a00acf79cb4e6e4c0c8f38501ea913826"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable2D.html#a00acf79cb4e6e4c0c8f38501ea913826">eve::graphics::Renderable2D::setCastOcclusion</a></div><div class="ttdeci">void setCastOcclusion(bool cast)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00060">RenderSystem.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Renderable2D_html_aac53d2ab7594218a051794891567763b"><div class="ttname"><a href="classeve_1_1graphics_1_1Renderable2D.html#aac53d2ab7594218a051794891567763b">eve::graphics::Renderable2D::getCastOcclusion</a></div><div class="ttdeci">bool getCastOcclusion()</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00062">RenderSystem.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_af0b2e8bb89592cb32b0d9aa8b39e52e7"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#af0b2e8bb89592cb32b0d9aa8b39e52e7">eve::graphics::Texture::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00026">Texture.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html_af57bd6f9a156caae806f7ed5481d7716"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html#af57bd6f9a156caae806f7ed5481d7716">eve::graphics::Texture::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00027">Texture.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a0e4f9b64bb3b4b9e7b42b44a8952b383"><div class="ttname"><a href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">eve::debug::rtBind</a></div><div class="ttdeci">void rtBind(const char *kind, const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00045">RenderTrace.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a179091d995802564e9d76d56ab7d16b8"><div class="ttname"><a href="namespaceeve_1_1debug.html#a179091d995802564e9d76d56ab7d16b8">eve::debug::rtTarget</a></div><div class="ttdeci">void rtTarget(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00042">RenderTrace.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a8b8732ca91db1fae264d1318e0b6af7d"><div class="ttname"><a href="namespaceeve_1_1debug.html#a8b8732ca91db1fae264d1318e0b6af7d">eve::debug::rtPassBegin</a></div><div class="ttdeci">void rtPassBegin(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00036">RenderTrace.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a93c9ad9107f66aef97bd010c9f2780ff"><div class="ttname"><a href="namespaceeve_1_1debug.html#a93c9ad9107f66aef97bd010c9f2780ff">eve::debug::rtFrameBegin</a></div><div class="ttdeci">void rtFrameBegin()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00030">RenderTrace.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_aaaec25797526a2aaea9fadfbc59c9a7e"><div class="ttname"><a href="namespaceeve_1_1debug.html#aaaec25797526a2aaea9fadfbc59c9a7e">eve::debug::rtFrameEnd</a></div><div class="ttdeci">void rtFrameEnd()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00033">RenderTrace.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_ac3c4af2bdb399697e520d059215b87bb"><div class="ttname"><a href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">eve::debug::rtDraw</a></div><div class="ttdeci">void rtDraw(const char *api, const char *detail=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00048">RenderTrace.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_aca5f5221ff03f67344a3255b2d5f416d"><div class="ttname"><a href="namespaceeve_1_1debug.html#aca5f5221ff03f67344a3255b2d5f416d">eve::debug::rtPassEnd</a></div><div class="ttdeci">void rtPassEnd(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00039">RenderTrace.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a984994cf626422557f08db6251ec6617"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a984994cf626422557f08db6251ec6617">eve::graphics::Color</a></div><div class="ttdeci">glm::vec4 Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ac57a2ef893af9fa844685a5c63c0d9a9"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">eve::graphics::sortDrawItems2D</a></div><div class="ttdeci">void sortDrawItems2D(std::vector&lt; DrawItem2D &gt; &amp;items)</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00053">DrawItem2D.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html">eve::graphics::DrawItem2D</a></div><div class="ttdoc">Shared 2D draw queue item (sprites + tiles).</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00018">DrawItem2D.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a0c568107cb4eb1d7228cda45236fa434"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a0c568107cb4eb1d7228cda45236fa434">eve::graphics::DrawItem2D::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00020">DrawItem2D.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a111c9cf42eb3c95e7c134e33397d94a8"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a111c9cf42eb3c95e7c134e33397d94a8">eve::graphics::DrawItem2D::camClear</a></div><div class="ttdeci">Color camClear</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00049">DrawItem2D.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a162803ce357f7b43e271b65edb6b6bc1"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a162803ce357f7b43e271b65edb6b6bc1">eve::graphics::DrawItem2D::camAmbientR</a></div><div class="ttdeci">float camAmbientR</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00050">DrawItem2D.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a2022347fd63e0767ff0b2462169f075d"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a2022347fd63e0767ff0b2462169f075d">eve::graphics::DrawItem2D::hasUV</a></div><div class="ttdeci">bool hasUV</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00042">DrawItem2D.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a2747cfc821b0f82c0e5a0c534111fa58"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a2747cfc821b0f82c0e5a0c534111fa58">eve::graphics::DrawItem2D::camAmbientB</a></div><div class="ttdeci">float camAmbientB</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00050">DrawItem2D.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a520405c99335d2a5f4910851c1ff1aae"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a520405c99335d2a5f4910851c1ff1aae">eve::graphics::DrawItem2D::u1</a></div><div class="ttdeci">float u1</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00045">DrawItem2D.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a532e00f2a7d4c7541f65f643cc0767b5"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a532e00f2a7d4c7541f65f643cc0767b5">eve::graphics::DrawItem2D::v0</a></div><div class="ttdeci">float v0</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00045">DrawItem2D.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a68889a095074058fdf81f07210f83ba4"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a68889a095074058fdf81f07210f83ba4">eve::graphics::DrawItem2D::receiveLight</a></div><div class="ttdeci">bool receiveLight</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00040">DrawItem2D.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a6be74c8789d88216e2913e9adb5122f6"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a6be74c8789d88216e2913e9adb5122f6">eve::graphics::DrawItem2D::camX</a></div><div class="ttdeci">float camX</div><div class="ttdoc">Screen-space camera already resolved; if cameraEntity set, RenderSystem resolves.</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00047">DrawItem2D.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a71153f41788c0cc99aa7b55c5d27c9c9"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a71153f41788c0cc99aa7b55c5d27c9c9">eve::graphics::DrawItem2D::u0</a></div><div class="ttdeci">float u0</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00045">DrawItem2D.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a71a9aa09a5ed5fa39bc95281da9df984"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a71a9aa09a5ed5fa39bc95281da9df984">eve::graphics::DrawItem2D::color</a></div><div class="ttdeci">Color color</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00030">DrawItem2D.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a7a7d897f0508827281fb687bcf725478"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a7a7d897f0508827281fb687bcf725478">eve::graphics::DrawItem2D::canvas</a></div><div class="ttdeci">Canvas * canvas</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00038">DrawItem2D.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a838deb0b22ef3b498ec1e2a2da00e903"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a838deb0b22ef3b498ec1e2a2da00e903">eve::graphics::DrawItem2D::camValid</a></div><div class="ttdeci">bool camValid</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00048">DrawItem2D.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a8b7ae99074f55ea4ba608e6beece47d4"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a8b7ae99074f55ea4ba608e6beece47d4">eve::graphics::DrawItem2D::layer</a></div><div class="ttdeci">int layer</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00031">DrawItem2D.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_a9e3888519d315c9d5a3d7a90b1ce092e"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#a9e3888519d315c9d5a3d7a90b1ce092e">eve::graphics::DrawItem2D::normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00035">DrawItem2D.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_aab49a210f7dc5b3de131c34220847421"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#aab49a210f7dc5b3de131c34220847421">eve::graphics::DrawItem2D::v1</a></div><div class="ttdeci">float v1</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00045">DrawItem2D.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ab08de2647c342c3b1bfe4e57de88b64a"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ab08de2647c342c3b1bfe4e57de88b64a">eve::graphics::DrawItem2D::camAmbientG</a></div><div class="ttdeci">float camAmbientG</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00050">DrawItem2D.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ab95036e946a431bdce7bae0bbb93f0e1"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ab95036e946a431bdce7bae0bbb93f0e1">eve::graphics::DrawItem2D::camY</a></div><div class="ttdeci">float camY</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00047">DrawItem2D.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ac2cc2a77ac8b9734c0c859fcdc5487df"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ac2cc2a77ac8b9734c0c859fcdc5487df">eve::graphics::DrawItem2D::camZoom</a></div><div class="ttdeci">float camZoom</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00047">DrawItem2D.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ac64eff41c30ded2f47e8a89d0caa1fcb"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ac64eff41c30ded2f47e8a89d0caa1fcb">eve::graphics::DrawItem2D::shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00037">DrawItem2D.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ad3c7bc9c777d9c49f6d5add3e336ff2c"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ad3c7bc9c777d9c49f6d5add3e336ff2c">eve::graphics::DrawItem2D::camera</a></div><div class="ttdeci">Camera2D * camera</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00039">DrawItem2D.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ad68ec315288a9d3c346a79e89eb98ce4"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ad68ec315288a9d3c346a79e89eb98ce4">eve::graphics::DrawItem2D::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00019">DrawItem2D.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ae01ee809f16b5bdcd9043e79c2b2a284"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ae01ee809f16b5bdcd9043e79c2b2a284">eve::graphics::DrawItem2D::texture</a></div><div class="ttdeci">Texture * texture</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00034">DrawItem2D.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ae51186ada81b5027c81d789ea98900f0"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ae51186ada81b5027c81d789ea98900f0">eve::graphics::DrawItem2D::depthY</a></div><div class="ttdeci">float depthY</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00023">DrawItem2D.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_ae663f58c7a1d042da7c73ee26bbec906"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#ae663f58c7a1d042da7c73ee26bbec906">eve::graphics::DrawItem2D::w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00021">DrawItem2D.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_aeb72351345554dc5f93e937b0daa4a97"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#aeb72351345554dc5f93e937b0daa4a97">eve::graphics::DrawItem2D::quad</a></div><div class="ttdeci">Quad * quad</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00036">DrawItem2D.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_af064312392030d25c1cd1585e7b0b273"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#af064312392030d25c1cd1585e7b0b273">eve::graphics::DrawItem2D::h</a></div><div class="ttdeci">float h</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00022">DrawItem2D.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DrawItem2D_html_afc7119c5e9d080fca5748de64943d373"><div class="ttname"><a href="structeve_1_1graphics_1_1DrawItem2D.html#afc7119c5e9d080fca5748de64943d373">eve::graphics::DrawItem2D::litPath</a></div><div class="ttdeci">bool litPath</div><div class="ttdef"><b>Definition</b> <a href="DrawItem2D_8h_source.html#l00041">DrawItem2D.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Lighting2DUBO_html"><div class="ttname"><a href="structeve_1_1graphics_1_1Lighting2DUBO.html">eve::graphics::Lighting2DUBO</a></div><div class="ttdef"><b>Definition</b> <a href="Light_8h_source.html#l00020">Light.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Lighting2DUBO_html_a365009eb43f0c39c207d9be24d647809"><div class="ttname"><a href="structeve_1_1graphics_1_1Lighting2DUBO.html#a365009eb43f0c39c207d9be24d647809">eve::graphics::Lighting2DUBO::kMaxLights</a></div><div class="ttdeci">static constexpr int kMaxLights</div><div class="ttdef"><b>Definition</b> <a href="Light_8h_source.html#l00021">Light.h:21</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

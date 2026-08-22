@@ -1,0 +1,291 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="classeve_1_1tensor_1_1TF.html">TF</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::tensor::TF 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a62f5e7ed0e50c273635331d5b9ff814c">abs</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a24fece6e10107466cb2b314c45513b6f">add</a>(Tensor *a, Tensor *b)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a18f681ac54646dcaf2af3fbbb34edabe">addScalar</a>(Tensor *a, float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aa3e7173c41f167f4c0afa03f3d8ab1c3">arange</a>(int n)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a179316ce174ff0ba6d7eca04bcf1df35">argmax</a>(Tensor *a, int axis, int keepDims)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a30200512a4f517abc93eb1e209132407">avgpool2d</a>(Tensor *x, int ksize, int stride, int pad)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#afa140b594d46ca590becda48118810b8">cast</a>(Tensor *a, const std::string &amp;dtype)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a4cc00d547b262c45453024957ba33429">clamp</a>(Tensor *a, float lo, float hi)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#af952e0f21e79d934f4cc604f12a4694c">concat2</a>(Tensor *a, Tensor *b, int axis)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a9038d2c7c5fde34dce5f1abfb8b6c0ce">concat3</a>(Tensor *a, Tensor *b, Tensor *c, int axis)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#acd52a7b6196f2c187764c2f0b7d51d40">concat4</a>(Tensor *a, Tensor *b, Tensor *c, Tensor *d, int axis)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a251f544b56c70aae6f81691c1776fe16">concatN</a>(Tensor *const *ins, int n, int axis)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ac9a442026bd0192f9fe0ffbe17b7c8b7">constantScalar</a>(float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a65fdb4adc6b37ff0266b66f9c2352245">conv1d</a>(Tensor *x, Tensor *w, int stride, int pad)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a7b27404982c8c9b4e7edb629aac71d75">conv1dBias</a>(Tensor *x, Tensor *w, Tensor *bias, int stride, int pad)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#adf86ad574c505751fa5a1614261992c2">conv2d</a>(Tensor *x, Tensor *w, int stride, int pad)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#adef81ced0f9ac2b2e6bdaeaec2fd74f4">conv2dBias</a>(Tensor *x, Tensor *w, Tensor *bias, int stride, int pad)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ab60fc2e9108fc962894a6cf3176b4d54">cos</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ac15c6a5c409f60c5e4f57b57ffe8ef3b">div</a>(Tensor *a, Tensor *b)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a0f8f953260be84afe925953a2e0aa66b">divScalar</a>(Tensor *a, float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a2e37eedb3b85ee53f1e5cef68656b6fe">embedding</a>(Tensor *table, Tensor *indices)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a4848241f8a43320112e86c095384d146">exp</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a9db6f8d5277dcfb735378b6fa34daf5b">eye</a>(int n)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#afaeab0726c41e037335ef66afe50cc3c">fill1</a>(int d0, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a87150b75d346e9335e8c6bc798a05e36">fill2</a>(int d0, int d1, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a235f98dd07f0990e1b34fa69a3df1ab4">fill3</a>(int d0, int d1, int d2, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a4215c54300bbb47c91654cc3184a159b">fill4</a>(int d0, int d1, int d2, int d3, float value)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a86a52e255ea78081308f669a5df2c204">flatten</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ab5952791253424fe28288bce6ad95c6d">func</a>()</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a5047687a96e78898712fa1ba4d15d832">gelu</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a3ee6ec6f6e2f886441af213f968a7a19">getRandomSeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a0d991f2ba77f00671f95e69dbea49397">layernorm</a>(Tensor *a, float eps)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a07bf1a338b471d0e9ae397baef6abafa">layernormWB</a>(Tensor *a, Tensor *scale, Tensor *bias, float eps)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a1cae881314d02de15e780c428dd12b37">linspace</a>(float start, float end, int n)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a5d9301fc110aa800607d8a9916aec83b">log</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#acc18b4d073407c96f06df449b7f77b73">logSoftmax</a>(Tensor *a, int axis)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ab293a57888e04553475d51dd8a35ee89">matmul</a>(Tensor *a, Tensor *b)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a021e9267be6380a948bae8c12aea3318">maxAxis</a>(Tensor *a, int axis, int keepDims)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aab341679d4226948eeb14a35fb9d9a79">maximumScalar</a>(Tensor *a, float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a109d7afcd46f973fbbdc57227f1ca92b">maxpool2d</a>(Tensor *x, int ksize, int stride, int pad)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a6d1697dce07555c8286f3b792acc63b4">meanAxis</a>(Tensor *a, int axis, int keepDims)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a820933db1b8a2873d0abe812d678339a">minAxis</a>(Tensor *a, int axis, int keepDims)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a0520caccab1467fa110f429230d5b121">minimumScalar</a>(Tensor *a, float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ad38904750161d1a30030f645cddc69c0">Module_REG</a>(TF)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aef1ac6bc494aa90f4ee49b9babaef3dc">mulScalar</a>(Tensor *a, float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a2a46a1f5c63150e324406c24375f2d7c">multiply</a>(Tensor *a, Tensor *b)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a08cd4f5b70f84b3f255541d63307999b">neg</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a48ec63ec1404ef16506fa654aada7020">ones1</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a57fe34a5cbb6344f7263968de4c7231d">ones2</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a5a05414f5c15c44685f80e7dc940d9d3">ones3</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ae51537b5965ca37efeeae64051b14ff2">ones4</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ae7cd85a207545d628373ddeab7572a9c">ones5</a>(int d0, int d1, int d2, int d3, int d4)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#abc8812037dac116703c0f4572b0945d0">ones6</a>(int d0, int d1, int d2, int d3, int d4, int d5)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#afdf6d1af7aff97849cae21ab6d50d54e">permute2</a>(Tensor *a, int a0, int a1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a1ac00f7d3f8b0b9f8439550716a2c15f">permute3</a>(Tensor *a, int a0, int a1, int a2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ae5eca3f0a88d0db5d557ff7d54bae897">permute4</a>(Tensor *a, int a0, int a1, int a2, int a3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aeaca8e84b9a9fb4989b7dd1b09882c8d">permute5</a>(Tensor *a, int a0, int a1, int a2, int a3, int a4)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aeba634cccf842edea5cab1eb180a68f8">permute6</a>(Tensor *a, int a0, int a1, int a2, int a3, int a4, int a5)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a12a9c88dd14620b6a9bf7af250d15c78">popTrace</a>(Func *f)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#abdc5ab4f57e4993c1c33d00cca6bca6d">powScalar</a>(Tensor *a, float exp)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a705f838a8bf0dc6ba5d3f35bd72cb550">pushTrace</a>(Func *f)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a08959e36043ba35f5b1665b207c5a44f">quantizeWeight</a>(Tensor *a, const std::string &amp;dtype, int group=0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a920be9832efafa5d2d97c64fc257588c">rand1</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a6c98d38afe7ecc57f3af76d85c1665d1">rand2</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a0d84a5e2136d5227bc14759b75978278">rand3</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a366562a35bf6c878af528e2255e45972">rand4</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#af910fd3807f8c9ce9739e500d74f0849">randn1</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a647c444d5998423c48fad59445c20e4b">randn2</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ab137d3d5665dc4479d5b862667591975">randn3</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a00e7124caec9a73838804cc1b939384e">randn4</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a117951d23c16120e8200f7fe6f2fb895">randomNormal1</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ac78260eb380b95b7f8ab76a2649c0f0f">randomNormal2</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#afbed0e3239d39672ec7f572daefc51c6">randomNormal3</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a6a617f4a62334efafa5171d7ebbf2222">randomNormal4</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a7ff480fb3a7ad8404fbc4afe148d5fcb">randomUniform1</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a90ee826180111fb41fd167e5b1c0cf41">randomUniform2</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aad8a113ef8c71fcff9466d74dfa962af">randomUniform3</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a8ccbe8a5c3b07b712bfe40776d303bc8">randomUniform4</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a8ef8774706461aa835cd0fe9870468cc">reduceMax</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a4e2c2e95ef0c6f68d06b609f1975145d">reduceMean</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a3a683f905b0cc5a1321505f5ff7363ff">reduceMin</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a4fd498929f18d3a776e343aedd873da2">reduceSum</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a2caab0700900e52497dcba78e7756340">relu</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a905136eeb538eeeea227660fe4f1a779">reshape1</a>(Tensor *a, int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a0819e16d9755c75d63739d88982cf1c7">reshape2</a>(Tensor *a, int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ac1583912eeab92adb0e3b3927cb4b8f7">reshape3</a>(Tensor *a, int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aa3ef74224d93756115ad4f3408a3f3cb">reshape4</a>(Tensor *a, int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a508a7634b0f480edc0123e0863f35d9b">reshape5</a>(Tensor *a, int d0, int d1, int d2, int d3, int d4)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ac0cd63c26e218e9f60f2e328bf0c7f39">reshape6</a>(Tensor *a, int d0, int d1, int d2, int d3, int d4, int d5)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a1da66b73f2dc1d3054552ccffe9f7e55">resize2d</a>(Tensor *a, int outW, int outH, int mode)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aabd15d1ba91e8e0587d2a19c110fabc9">rmsnorm</a>(Tensor *a, float eps)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#adb3e2add1dd33ece04d1beb42c94abb8">rmsnormW</a>(Tensor *a, Tensor *scale, float eps)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a90f7ac9b352d1e15a771b19de97cffeb">sdpa</a>(Tensor *q, Tensor *k, Tensor *v, float scale)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#abd6a5b645da19ffe214f9e7cafc275ea">sdpaMasked</a>(Tensor *q, Tensor *k, Tensor *v, Tensor *mask, float scale)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a2b550ad3ba3b59a01006c6a5c36b0b28">setRandomSeed</a>(uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a49596b910a6da9beb8957ebc025ba1e2">sigmoid</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ad398e8d338ddf58f25408d1b65d1505a">silu</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ab486d8b6a9178b3175d847031c49b2b6">sin</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aa03ab541cc22521b0f2757ace1ac0bd5">slice</a>(Tensor *a, int axis, int begin, int end)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a1a3ce957200ea3cbc1590c679c93b9cc">softmax</a>(Tensor *a, int axis)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a64a82f25c44d422b369b35512f0ad21c">sqrt</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a97ba68e88caa1649d01cccdfe0cf72dd">sub</a>(Tensor *a, Tensor *b)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#af27e667a593a48dbe82e5433db7de506">subScalar</a>(Tensor *a, float s)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a59137b3878474a9935001d0274fc36a0">sumAxis</a>(Tensor *a, int axis, int keepDims)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a3c45309f12e62715f3d5ebde534e973c">tanh</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a79a4eb39f2705deb62fccfabfdae7c08">TF</a>()</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#af466dfd54a28898ad2a90214e75e1124">tracing</a>() const</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a0456a9ccb1149056d39f04c6ace0f5c6">transpose</a>(Tensor *a)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ae3d2d533f6515a765c1dc2e9ef80f17a">where</a>(Tensor *cond, Tensor *a, Tensor *b)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a2a973fb7fdb22a86cbbb41feb7a703f9">zeros1</a>(int d0)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#ab3535069ba78c2014417a642434df2ea">zeros2</a>(int d0, int d1)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#adbbe58c8c2a3789ef294da307b449926">zeros3</a>(int d0, int d1, int d2)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a9dd620e58022ee74da95b9e64f078e60">zeros4</a>(int d0, int d1, int d2, int d3)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#aada7c3c973c3e2633aca37ae00b79b62">zeros5</a>(int d0, int d1, int d2, int d3, int d4)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a3f5c38972188dcf03a9d2e7a72c0ef1a">zeros6</a>(int d0, int d1, int d2, int d3, int d4, int d5)</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html#a9bb3289c725488fe667d7ddd21307358">~TF</a>() override=default</td><td class="entry"><a class="el" href="classeve_1_1tensor_1_1TF.html">eve::tensor::TF</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::spatial::SpatialHash3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1spatial.html">spatial</a></li><li class="navelem"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1spatial_1_1SpatialHash3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::spatial::SpatialHash3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Uniform-grid spatial hash for 3D AABB / sphere queries.  
+ <a href="classeve_1_1spatial_1_1SpatialHash3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0da91f3375fb0c0191c972034cdf3465" id="r_a0da91f3375fb0c0191c972034cdf3465"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a0da91f3375fb0c0191c972034cdf3465">SpatialHash3D</a> (float cellSize=64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a0da91f3375fb0c0191c972034cdf3465"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7dedc8ac2947dbe5fb854b6bfd64e25" id="r_aa7dedc8ac2947dbe5fb854b6bfd64e25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#aa7dedc8ac2947dbe5fb854b6bfd64e25">~SpatialHash3D</a> ()=default</td></tr>
+<tr class="separator:aa7dedc8ac2947dbe5fb854b6bfd64e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c3faf5b0140e23a5eec6d5e63bfcca7" id="r_a6c3faf5b0140e23a5eec6d5e63bfcca7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a6c3faf5b0140e23a5eec6d5e63bfcca7">SpatialHash3D</a> (const <a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a6c3faf5b0140e23a5eec6d5e63bfcca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0390cdbf3c8378a3b5a163d9a5afe5da" id="r_a0390cdbf3c8378a3b5a163d9a5afe5da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a0390cdbf3c8378a3b5a163d9a5afe5da">operator=</a> (const <a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a0390cdbf3c8378a3b5a163d9a5afe5da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06199252f20b959c387778b68e58a2a7" id="r_a06199252f20b959c387778b68e58a2a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a06199252f20b959c387778b68e58a2a7">clear</a> ()</td></tr>
+<tr class="separator:a06199252f20b959c387778b68e58a2a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8aa3902e9bf1817406d4473cf6ad08" id="r_a7f8aa3902e9bf1817406d4473cf6ad08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a7f8aa3902e9bf1817406d4473cf6ad08">setCellSize</a> (float cellSize)</td></tr>
+<tr class="separator:a7f8aa3902e9bf1817406d4473cf6ad08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f7283881bf926376aec472a13dd2f86" id="r_a9f7283881bf926376aec472a13dd2f86"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a9f7283881bf926376aec472a13dd2f86">getCellSize</a> () const</td></tr>
+<tr class="separator:a9f7283881bf926376aec472a13dd2f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a573c1ba0b6505e3eb252cb13869e021e" id="r_a573c1ba0b6505e3eb252cb13869e021e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a573c1ba0b6505e3eb252cb13869e021e">insert</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="separator:a573c1ba0b6505e3eb252cb13869e021e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acebaa6cba519a8001e1c94a64c796be8" id="r_acebaa6cba519a8001e1c94a64c796be8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#acebaa6cba519a8001e1c94a64c796be8">remove</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:acebaa6cba519a8001e1c94a64c796be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d82f18aa0520fed3246eac3acbec9f" id="r_a90d82f18aa0520fed3246eac3acbec9f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a90d82f18aa0520fed3246eac3acbec9f">update</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="separator:a90d82f18aa0520fed3246eac3acbec9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96afd07796648a977d149a7acaf0df3b" id="r_a96afd07796648a977d149a7acaf0df3b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a96afd07796648a977d149a7acaf0df3b">contains</a> (int <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a96afd07796648a977d149a7acaf0df3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d9ad36e78318f8e7b6cfa03228874cd" id="r_a5d9ad36e78318f8e7b6cfa03228874cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a5d9ad36e78318f8e7b6cfa03228874cd">getCount</a> () const</td></tr>
+<tr class="separator:a5d9ad36e78318f8e7b6cfa03228874cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef358e96fca53f811001c9a3c2c8b13b" id="r_aef358e96fca53f811001c9a3c2c8b13b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#aef358e96fca53f811001c9a3c2c8b13b">queryPoint</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)</td></tr>
+<tr class="separator:aef358e96fca53f811001c9a3c2c8b13b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed42966e68dc37ead13e8161cfea0916" id="r_aed42966e68dc37ead13e8161cfea0916"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#aed42966e68dc37ead13e8161cfea0916">queryAABB</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="separator:aed42966e68dc37ead13e8161cfea0916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ca59a70ebf8c0480fff68aa725fca8d" id="r_a5ca59a70ebf8c0480fff68aa725fca8d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a5ca59a70ebf8c0480fff68aa725fca8d">querySphere</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float cz, float radius)</td></tr>
+<tr class="separator:a5ca59a70ebf8c0480fff68aa725fca8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af482ae14ea5b5a46e68150fbc69a779f" id="r_af482ae14ea5b5a46e68150fbc69a779f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#af482ae14ea5b5a46e68150fbc69a779f">getResultCount</a> () const</td></tr>
+<tr class="separator:af482ae14ea5b5a46e68150fbc69a779f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91027c60931a51a0a792d6bbdcd8aae5" id="r_a91027c60931a51a0a792d6bbdcd8aae5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a91027c60931a51a0a792d6bbdcd8aae5">getResultId</a> (int index) const</td></tr>
+<tr class="separator:a91027c60931a51a0a792d6bbdcd8aae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Uniform-grid spatial hash for 3D AABB / sphere queries. </p>
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a> 第 <a class="el" href="SpatialHash3D_8h_source.html#l00013">13</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0da91f3375fb0c0191c972034cdf3465" name="a0da91f3375fb0c0191c972034cdf3465"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0da91f3375fb0c0191c972034cdf3465">&#9670;&#160;</a></span>SpatialHash3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::SpatialHash3D::SpatialHash3D </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em> = <code>64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialHash3D_8cpp_source.html#l00012">setCellSize()</a>.</p>
+
+</div>
+</div>
+<a id="aa7dedc8ac2947dbe5fb854b6bfd64e25" name="aa7dedc8ac2947dbe5fb854b6bfd64e25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7dedc8ac2947dbe5fb854b6bfd64e25">&#9670;&#160;</a></span>~SpatialHash3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::SpatialHash3D::~SpatialHash3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6c3faf5b0140e23a5eec6d5e63bfcca7" name="a6c3faf5b0140e23a5eec6d5e63bfcca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c3faf5b0140e23a5eec6d5e63bfcca7">&#9670;&#160;</a></span>SpatialHash3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::SpatialHash3D::SpatialHash3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a06199252f20b959c387778b68e58a2a7" name="a06199252f20b959c387778b68e58a2a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06199252f20b959c387778b68e58a2a7">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spatial::SpatialHash3D::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialHash3D_8cpp_source.html#l00012">setCellSize()</a>.</p>
+
+</div>
+</div>
+<a id="a96afd07796648a977d149a7acaf0df3b" name="a96afd07796648a977d149a7acaf0df3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96afd07796648a977d149a7acaf0df3b">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::SpatialHash3D::contains </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialHash3D_8cpp_source.html#l00075">insert()</a> , 以及 <a class="el" href="SpatialHash3D_8cpp_source.html#l00093">update()</a>.</p>
+
+</div>
+</div>
+<a id="a9f7283881bf926376aec472a13dd2f86" name="a9f7283881bf926376aec472a13dd2f86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f7283881bf926376aec472a13dd2f86">&#9670;&#160;</a></span>getCellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::SpatialHash3D::getCellSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a> 第 <a class="el" href="SpatialHash3D_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5d9ad36e78318f8e7b6cfa03228874cd" name="a5d9ad36e78318f8e7b6cfa03228874cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d9ad36e78318f8e7b6cfa03228874cd">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::SpatialHash3D::getCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a> 第 <a class="el" href="SpatialHash3D_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af482ae14ea5b5a46e68150fbc69a779f" name="af482ae14ea5b5a46e68150fbc69a779f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af482ae14ea5b5a46e68150fbc69a779f">&#9670;&#160;</a></span>getResultCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::SpatialHash3D::getResultCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a> 第 <a class="el" href="SpatialHash3D_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a>.</p>
+
+</div>
+</div>
+<a id="a91027c60931a51a0a792d6bbdcd8aae5" name="a91027c60931a51a0a792d6bbdcd8aae5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91027c60931a51a0a792d6bbdcd8aae5">&#9670;&#160;</a></span>getResultId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::SpatialHash3D::getResultId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a> 第 <a class="el" href="SpatialHash3D_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00026">eve::spatial::QueryIds::getId()</a>.</p>
+
+</div>
+</div>
+<a id="a573c1ba0b6505e3eb252cb13869e021e" name="a573c1ba0b6505e3eb252cb13869e021e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a573c1ba0b6505e3eb252cb13869e021e">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::SpatialHash3D::insert </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="SpatialHash3D_8cpp_source.html#l00035">contains()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="Bounds_8h_source.html#l00091">eve::spatial::makeAABB3()</a> , 以及 <a class="el" href="SpatialHash3D_8cpp_source.html#l00085">remove()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialHash3D_8cpp_source.html#l00012">setCellSize()</a> , 以及 <a class="el" href="SpatialHash3D_8cpp_source.html#l00093">update()</a>.</p>
+
+</div>
+</div>
+<a id="a0390cdbf3c8378a3b5a163d9a5afe5da" name="a0390cdbf3c8378a3b5a163d9a5afe5da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0390cdbf3c8378a3b5a163d9a5afe5da">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a> &amp; eve::spatial::SpatialHash3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html">SpatialHash3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed42966e68dc37ead13e8161cfea0916" name="aed42966e68dc37ead13e8161cfea0916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed42966e68dc37ead13e8161cfea0916">&#9670;&#160;</a></span>queryAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::SpatialHash3D::queryAABB </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00091">eve::spatial::makeAABB3()</a>.</p>
+
+</div>
+</div>
+<a id="aef358e96fca53f811001c9a3c2c8b13b" name="aef358e96fca53f811001c9a3c2c8b13b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef358e96fca53f811001c9a3c2c8b13b">&#9670;&#160;</a></span>queryPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::SpatialHash3D::queryPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a5ca59a70ebf8c0480fff68aa725fca8d" name="a5ca59a70ebf8c0480fff68aa725fca8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ca59a70ebf8c0480fff68aa725fca8d">&#9670;&#160;</a></span>querySphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::SpatialHash3D::querySphere </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00091">eve::spatial::makeAABB3()</a>.</p>
+
+</div>
+</div>
+<a id="acebaa6cba519a8001e1c94a64c796be8" name="acebaa6cba519a8001e1c94a64c796be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acebaa6cba519a8001e1c94a64c796be8">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::SpatialHash3D::remove </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialHash3D_8cpp_source.html#l00075">insert()</a>.</p>
+
+</div>
+</div>
+<a id="a7f8aa3902e9bf1817406d4473cf6ad08" name="a7f8aa3902e9bf1817406d4473cf6ad08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f8aa3902e9bf1817406d4473cf6ad08">&#9670;&#160;</a></span>setCellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spatial::SpatialHash3D::setCellSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialHash3D_8cpp_source.html#l00029">clear()</a> , 以及 <a class="el" href="SpatialHash3D_8cpp_source.html#l00075">insert()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialHash3D_8cpp_source.html#l00010">SpatialHash3D()</a>.</p>
+
+</div>
+</div>
+<a id="a90d82f18aa0520fed3246eac3acbec9f" name="a90d82f18aa0520fed3246eac3acbec9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90d82f18aa0520fed3246eac3acbec9f">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::SpatialHash3D::update </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a> 第 <a class="el" href="SpatialHash3D_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpatialHash3D_8cpp_source.html#l00035">contains()</a> , 以及 <a class="el" href="SpatialHash3D_8cpp_source.html#l00075">insert()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/spatial/<a class="el" href="SpatialHash3D_8h_source.html">SpatialHash3D.h</a></li>
+<li>src/modules/spatial/<a class="el" href="SpatialHash3D_8cpp_source.html">SpatialHash3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

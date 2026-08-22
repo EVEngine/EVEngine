@@ -1,0 +1,786 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network::TcpSocket类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1network_1_1TcpSocket-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::network::TcpSocket类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>TCP socket backed by <a class="el" href="namespacePoco_1_1Net.html">Poco::Net</a>; supports both client (connect) and server (listen/accept) roles. <a class="el" href="classeve_1_1Data.html">Data</a> arrives via <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> as <a class="el" href="structeve_1_1network_1_1NetCompletion.html" title="One asynchronous network result/event. handle points at the originating TcpSocket/UdpSocket/HttpReque...">NetCompletion</a>.  
+ <a href="classeve_1_1network_1_1TcpSocket.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TcpSocket_8h_source.html">TcpSocket.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a74e127541be64963790ef1f68b82e520" id="r_a74e127541be64963790ef1f68b82e520"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a74e127541be64963790ef1f68b82e520">TcpSocket</a> (<a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *net)</td></tr>
+<tr class="memdesc:a74e127541be64963790ef1f68b82e520"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an unconnected socket owned by the given module.  <br /></td></tr>
+<tr class="separator:a74e127541be64963790ef1f68b82e520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6a723e983a1f7d740fc7b8d0bc8aeee" id="r_ac6a723e983a1f7d740fc7b8d0bc8aeee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#ac6a723e983a1f7d740fc7b8d0bc8aeee">~TcpSocket</a> ()</td></tr>
+<tr class="separator:ac6a723e983a1f7d740fc7b8d0bc8aeee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc7353618d181947088f8645d70f0ee" id="r_aecc7353618d181947088f8645d70f0ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#aecc7353618d181947088f8645d70f0ee">connect</a> (std::string host, uint16_t port)</td></tr>
+<tr class="memdesc:aecc7353618d181947088f8645d70f0ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects to host:port; true on success.  <br /></td></tr>
+<tr class="separator:aecc7353618d181947088f8645d70f0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2139b115937b164d4cc66eda4692504c" id="r_a2139b115937b164d4cc66eda4692504c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a2139b115937b164d4cc66eda4692504c">listen</a> (uint16_t port)</td></tr>
+<tr class="memdesc:a2139b115937b164d4cc66eda4692504c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts listening on the given port; true on success.  <br /></td></tr>
+<tr class="separator:a2139b115937b164d4cc66eda4692504c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4f53cff5b622fefce2e3001a287e76" id="r_acd4f53cff5b622fefce2e3001a287e76"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#acd4f53cff5b622fefce2e3001a287e76">accept</a> ()</td></tr>
+<tr class="memdesc:acd4f53cff5b622fefce2e3001a287e76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepts one pending client, or nullptr if none.  <br /></td></tr>
+<tr class="separator:acd4f53cff5b622fefce2e3001a287e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affb12038dbb3b8d3db25d380216b4f35" id="r_affb12038dbb3b8d3db25d380216b4f35"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#affb12038dbb3b8d3db25d380216b4f35">send</a> (<a class="el" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a> *data)</td></tr>
+<tr class="memdesc:affb12038dbb3b8d3db25d380216b4f35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a framed byte payload; true when queued/accepted.  <br /></td></tr>
+<tr class="separator:affb12038dbb3b8d3db25d380216b4f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698713bec7524d4bb1e8bc12138b8a55" id="r_a698713bec7524d4bb1e8bc12138b8a55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a698713bec7524d4bb1e8bc12138b8a55">sendString</a> (std::string <a class="el" href="Weather_8cpp.html#a2dee666f0c1fe072c549ff86b1d0a8ab">s</a>)</td></tr>
+<tr class="memdesc:a698713bec7524d4bb1e8bc12138b8a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a string payload.  <br /></td></tr>
+<tr class="separator:a698713bec7524d4bb1e8bc12138b8a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa93dae9ac279ebeeeeec0945d9b5cc03" id="r_aa93dae9ac279ebeeeeec0945d9b5cc03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#aa93dae9ac279ebeeeeec0945d9b5cc03">close</a> ()</td></tr>
+<tr class="memdesc:aa93dae9ac279ebeeeeec0945d9b5cc03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the socket.  <br /></td></tr>
+<tr class="separator:aa93dae9ac279ebeeeeec0945d9b5cc03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add890a5ad230fce12d8e6b614a70df98" id="r_add890a5ad230fce12d8e6b614a70df98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#add890a5ad230fce12d8e6b614a70df98">isConnected</a> () const</td></tr>
+<tr class="memdesc:add890a5ad230fce12d8e6b614a70df98"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while a stream is connected.  <br /></td></tr>
+<tr class="separator:add890a5ad230fce12d8e6b614a70df98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab744ba3b34e19a57f0b205b48b9aef1d" id="r_ab744ba3b34e19a57f0b205b48b9aef1d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#ab744ba3b34e19a57f0b205b48b9aef1d">getPeer</a> () const</td></tr>
+<tr class="memdesc:ab744ba3b34e19a57f0b205b48b9aef1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remote peer address string, e.g. "1.2.3.4:5678".  <br /></td></tr>
+<tr class="separator:ab744ba3b34e19a57f0b205b48b9aef1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cd1b173cb68d9bf01af1bef7e138dcc" id="r_a4cd1b173cb68d9bf01af1bef7e138dcc"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a4cd1b173cb68d9bf01af1bef7e138dcc">getLocalPort</a> () const</td></tr>
+<tr class="memdesc:a4cd1b173cb68d9bf01af1bef7e138dcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local listening port, or 0.  <br /></td></tr>
+<tr class="separator:a4cd1b173cb68d9bf01af1bef7e138dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e72261cddcea5cc7e67fac4b529c4ce" id="r_a0e72261cddcea5cc7e67fac4b529c4ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a0e72261cddcea5cc7e67fac4b529c4ce">network</a> () const</td></tr>
+<tr class="memdesc:a0e72261cddcea5cc7e67fac4b529c4ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: owning module (used by <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> / <a class="el" href="classeve_1_1network_1_1NetWorker.html" title="Background thread that runs blocking socket I/O and HTTP jobs. Completions are queued and drained by ...">NetWorker</a>).  <br /></td></tr>
+<tr class="separator:a0e72261cddcea5cc7e67fac4b529c4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8be2487415e984e4a158d802b219be26" id="r_a8be2487415e984e4a158d802b219be26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a8be2487415e984e4a158d802b219be26">setConnectedSocket</a> (std::unique_ptr&lt; Poco::Net::StreamSocket &gt; sock)</td></tr>
+<tr class="separator:a8be2487415e984e4a158d802b219be26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a446aac0788146323b6411adfe8a40e14" id="r_a446aac0788146323b6411adfe8a40e14"><td class="memItemLeft" align="right" valign="top">Poco::Net::StreamSocket *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a446aac0788146323b6411adfe8a40e14">stream</a> ()</td></tr>
+<tr class="separator:a446aac0788146323b6411adfe8a40e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1cdf49ec1d0279bf422e7399a9849db" id="r_ac1cdf49ec1d0279bf422e7399a9849db"><td class="memItemLeft" align="right" valign="top">Poco::Net::ServerSocket *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#ac1cdf49ec1d0279bf422e7399a9849db">server</a> ()</td></tr>
+<tr class="separator:ac1cdf49ec1d0279bf422e7399a9849db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af289f73631beac99b96d986ae62693b1" id="r_af289f73631beac99b96d986ae62693b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#af289f73631beac99b96d986ae62693b1">isListening</a> () const</td></tr>
+<tr class="memdesc:af289f73631beac99b96d986ae62693b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after <a class="el" href="classeve_1_1network_1_1TcpSocket.html#a2139b115937b164d4cc66eda4692504c" title="Starts listening on the given port; true on success.">listen()</a>.  <br /></td></tr>
+<tr class="separator:af289f73631beac99b96d986ae62693b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a540355d6184f458a9837d07383aae1" id="r_a3a540355d6184f458a9837d07383aae1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a3a540355d6184f458a9837d07383aae1">takeAccepted</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> &gt; &amp;out)</td></tr>
+<tr class="separator:a3a540355d6184f458a9837d07383aae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ffe19740c2ac87108b56ebf002b6514" id="r_a1ffe19740c2ac87108b56ebf002b6514"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a1ffe19740c2ac87108b56ebf002b6514">pushAccepted</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> &gt; sock)</td></tr>
+<tr class="separator:a1ffe19740c2ac87108b56ebf002b6514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3fadcaf1276a2f318f883eb6f936d9a" id="r_ac3fadcaf1276a2f318f883eb6f936d9a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#ac3fadcaf1276a2f318f883eb6f936d9a">pendingSendBytes</a> () const</td></tr>
+<tr class="memdesc:ac3fadcaf1276a2f318f883eb6f936d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: queued-outgoing byte counter for back-pressure.  <br /></td></tr>
+<tr class="separator:ac3fadcaf1276a2f318f883eb6f936d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58e2ab21ce772a355de5c386d6ef050f" id="r_a58e2ab21ce772a355de5c386d6ef050f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a58e2ab21ce772a355de5c386d6ef050f">queueSend</a> (const void *<a class="el" href="SpriteStack_8cpp.html#a6f364afbe132c4ecfea48bde1b0618ba">d</a>, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="memdesc:a58e2ab21ce772a355de5c386d6ef050f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append bytes to the pending send queue (worker-thread flush via pollSockets).  <br /></td></tr>
+<tr class="separator:a58e2ab21ce772a355de5c386d6ef050f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab543824736fadb3b342f80ec73cdae55" id="r_ab543824736fadb3b342f80ec73cdae55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#ab543824736fadb3b342f80ec73cdae55">flushSend</a> ()</td></tr>
+<tr class="memdesc:ab543824736fadb3b342f80ec73cdae55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push pending bytes onto the socket; called from <a class="el" href="classeve_1_1network_1_1Network.html#ae08db7992bd03d5c8b38c8d36e1b2049" title="Internal: polls watched sockets; called from the NetWorker thread.">Network::pollSockets</a>.  <br /></td></tr>
+<tr class="separator:ab543824736fadb3b342f80ec73cdae55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98fd394dc6eefbace64d9160d5a6a4d8" id="r_a98fd394dc6eefbace64d9160d5a6a4d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1TcpSocket.html#a98fd394dc6eefbace64d9160d5a6a4d8">clearPendingSend</a> ()</td></tr>
+<tr class="separator:a98fd394dc6eefbace64d9160d5a6a4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>TCP socket backed by <a class="el" href="namespacePoco_1_1Net.html">Poco::Net</a>; supports both client (connect) and server (listen/accept) roles. <a class="el" href="classeve_1_1Data.html">Data</a> arrives via <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> as <a class="el" href="structeve_1_1network_1_1NetCompletion.html" title="One asynchronous network result/event. handle points at the originating TcpSocket/UdpSocket/HttpReque...">NetCompletion</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8h_source.html">TcpSocket.h</a> 第 <a class="el" href="TcpSocket_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a74e127541be64963790ef1f68b82e520" name="a74e127541be64963790ef1f68b82e520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74e127541be64963790ef1f68b82e520">&#9670;&#160;</a></span>TcpSocket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::TcpSocket::TcpSocket </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> *&#160;</td>
+          <td class="paramname"><em>net</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an unconnected socket owned by the given module. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6a723e983a1f7d740fc7b8d0bc8aeee" name="ac6a723e983a1f7d740fc7b8d0bc8aeee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6a723e983a1f7d740fc7b8d0bc8aeee">&#9670;&#160;</a></span>~TcpSocket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::TcpSocket::~TcpSocket </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TcpSocket_8cpp_source.html#l00227">close()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="acd4f53cff5b622fefce2e3001a287e76" name="acd4f53cff5b622fefce2e3001a287e76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd4f53cff5b622fefce2e3001a287e76">&#9670;&#160;</a></span>accept()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> * eve::network::TcpSocket::accept </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Accepts one pending client, or nullptr if none. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TcpSocket_8cpp_source.html#l00048">takeAccepted()</a>.</p>
+
+</div>
+</div>
+<a id="a98fd394dc6eefbace64d9160d5a6a4d8" name="a98fd394dc6eefbace64d9160d5a6a4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98fd394dc6eefbace64d9160d5a6a4d8">&#9670;&#160;</a></span>clearPendingSend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::TcpSocket::clearPendingSend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00227">close()</a>.</p>
+
+</div>
+</div>
+<a id="aa93dae9ac279ebeeeeec0945d9b5cc03" name="aa93dae9ac279ebeeeeec0945d9b5cc03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa93dae9ac279ebeeeeec0945d9b5cc03">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::TcpSocket::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closes the socket. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TcpSocket_8cpp_source.html#l00172">clearPendingSend()</a> , 以及 <a class="el" href="Network_8cpp_source.html#l00198">eve::network::Network::unwatchTcp()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="network_2Channel_8cpp_source.html#l00065">eve::network::Channel::feed()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00177">flushSend()</a> , 以及 <a class="el" href="TcpSocket_8cpp_source.html#l00019">~TcpSocket()</a>.</p>
+
+</div>
+</div>
+<a id="aecc7353618d181947088f8645d70f0ee" name="aecc7353618d181947088f8645d70f0ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc7353618d181947088f8645d70f0ee">&#9670;&#160;</a></span>connect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::connect </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Connects to host:port; true on success. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9aa32417899e2db4290fb0d3634d33c9a3">eve::network::Conn</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="NetTypes_8h_source.html#l00036">eve::network::NetCompletion::handle</a>, <a class="el" href="NetTypes_8h_source.html#l00035">eve::network::NetCompletion::kind</a>, <a class="el" href="NetTypes_8h_source.html#l00039">eve::network::NetCompletion::reason</a>, <a class="el" href="NetWorker_8cpp_source.html#l00040">eve::network::NetWorker::submit()</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520">eve::network::Tcp</a>, <a class="el" href="NetTypes_8h_source.html#l00034">eve::network::NetCompletion::type</a> , 以及 <a class="el" href="Network_8h_source.html#l00075">eve::network::Network::worker()</a>.</p>
+
+</div>
+</div>
+<a id="ab543824736fadb3b342f80ec73cdae55" name="ab543824736fadb3b342f80ec73cdae55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab543824736fadb3b342f80ec73cdae55">&#9670;&#160;</a></span>flushSend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::TcpSocket::flushSend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push pending bytes onto the socket; called from <a class="el" href="classeve_1_1network_1_1Network.html#ae08db7992bd03d5c8b38c8d36e1b2049" title="Internal: polls watched sockets; called from the NetWorker thread.">Network::pollSockets</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00227">close()</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Network_8cpp_source.html#l00184">eve::network::Network::post()</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520">eve::network::Tcp</a> , 以及 <a class="el" href="NetTypes_8h_source.html#l00034">eve::network::NetCompletion::type</a>.</p>
+
+</div>
+</div>
+<a id="a4cd1b173cb68d9bf01af1bef7e138dcc" name="a4cd1b173cb68d9bf01af1bef7e138dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cd1b173cb68d9bf01af1bef7e138dcc">&#9670;&#160;</a></span>getLocalPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::network::TcpSocket::getLocalPort </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local listening port, or 0. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab744ba3b34e19a57f0b205b48b9aef1d" name="ab744ba3b34e19a57f0b205b48b9aef1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab744ba3b34e19a57f0b205b48b9aef1d">&#9670;&#160;</a></span>getPeer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::network::TcpSocket::getPeer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remote peer address string, e.g. "1.2.3.4:5678". </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00230">eve::network::Network::pollSockets()</a>.</p>
+
+</div>
+</div>
+<a id="add890a5ad230fce12d8e6b614a70df98" name="add890a5ad230fce12d8e6b614a70df98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add890a5ad230fce12d8e6b614a70df98">&#9670;&#160;</a></span>isConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::isConnected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True while a stream is connected. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af289f73631beac99b96d986ae62693b1" name="af289f73631beac99b96d986ae62693b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af289f73631beac99b96d986ae62693b1">&#9670;&#160;</a></span>isListening()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::isListening </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after <a class="el" href="classeve_1_1network_1_1TcpSocket.html#a2139b115937b164d4cc66eda4692504c" title="Starts listening on the given port; true on success.">listen()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8h_source.html">TcpSocket.h</a> 第 <a class="el" href="TcpSocket_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2139b115937b164d4cc66eda4692504c" name="a2139b115937b164d4cc66eda4692504c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2139b115937b164d4cc66eda4692504c">&#9670;&#160;</a></span>listen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::listen </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Starts listening on the given port; true on success. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="Network_8cpp_source.html#l00184">eve::network::Network::post()</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520">eve::network::Tcp</a>, <a class="el" href="NetTypes_8h_source.html#l00034">eve::network::NetCompletion::type</a> , 以及 <a class="el" href="Network_8cpp_source.html#l00192">eve::network::Network::watchTcp()</a>.</p>
+
+</div>
+</div>
+<a id="a0e72261cddcea5cc7e67fac4b529c4ce" name="a0e72261cddcea5cc7e67fac4b529c4ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e72261cddcea5cc7e67fac4b529c4ce">&#9670;&#160;</a></span>network()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1Network.html">Network</a> * eve::network::TcpSocket::network </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal: owning module (used by <a class="el" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8" title="Drains worker completions and emits them as events; call per frame.">Network::pump</a> / <a class="el" href="classeve_1_1network_1_1NetWorker.html" title="Background thread that runs blocking socket I/O and HTTP jobs. Completions are queued and drained by ...">NetWorker</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8h_source.html">TcpSocket.h</a> 第 <a class="el" href="TcpSocket_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="network_2Channel_8cpp_source.html#l00065">eve::network::Channel::feed()</a>, <a class="el" href="network_2Channel_8cpp_source.html#l00038">eve::network::Channel::sendMsg()</a> , 以及 <a class="el" href="network_2Channel_8cpp_source.html#l00034">eve::network::Channel::~Channel()</a>.</p>
+
+</div>
+</div>
+<a id="ac3fadcaf1276a2f318f883eb6f936d9a" name="ac3fadcaf1276a2f318f883eb6f936d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3fadcaf1276a2f318f883eb6f936d9a">&#9670;&#160;</a></span>pendingSendBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::network::TcpSocket::pendingSendBytes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: queued-outgoing byte counter for back-pressure. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ffe19740c2ac87108b56ebf002b6514" name="a1ffe19740c2ac87108b56ebf002b6514"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ffe19740c2ac87108b56ebf002b6514">&#9670;&#160;</a></span>pushAccepted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::TcpSocket::pushAccepted </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> &gt;&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Network_8cpp_source.html#l00230">eve::network::Network::pollSockets()</a>.</p>
+
+</div>
+</div>
+<a id="a58e2ab21ce772a355de5c386d6ef050f" name="a58e2ab21ce772a355de5c386d6ef050f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58e2ab21ce772a355de5c386d6ef050f">&#9670;&#160;</a></span>queueSend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::queueSend </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append bytes to the pending send queue (worker-thread flush via pollSockets). </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="namespaceeve_1_1network.html#a7e3c18777060ebf8cca9051452532bc9ab47f6a6092c5d7e4bffec12dff309c3b">eve::network::Err</a>, <a class="el" href="NetTypes_8h_source.html#l00011">eve::network::kMaxSendBuffer</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00444">p</a>, <a class="el" href="Network_8cpp_source.html#l00184">eve::network::Network::post()</a>, <a class="el" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca30b7fdeebc36988717d0e274cc2e7520">eve::network::Tcp</a> , 以及 <a class="el" href="NetTypes_8h_source.html#l00034">eve::network::NetCompletion::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00134">send()</a>.</p>
+
+</div>
+</div>
+<a id="affb12038dbb3b8d3db25d380216b4f35" name="affb12038dbb3b8d3db25d380216b4f35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affb12038dbb3b8d3db25d380216b4f35">&#9670;&#160;</a></span>send()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::send </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1ByteData.html">eve::data::ByteData</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends a framed byte payload; true when queued/accepted. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a> , 以及 <a class="el" href="TcpSocket_8cpp_source.html#l00146">queueSend()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="network_2Channel_8cpp_source.html#l00038">eve::network::Channel::sendMsg()</a> , 以及 <a class="el" href="TcpSocket_8cpp_source.html#l00140">sendString()</a>.</p>
+
+</div>
+</div>
+<a id="a698713bec7524d4bb1e8bc12138b8a55" name="a698713bec7524d4bb1e8bc12138b8a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698713bec7524d4bb1e8bc12138b8a55">&#9670;&#160;</a></span>sendString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::sendString </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends a string payload. </p>
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00112">data</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="TcpSocket_8cpp_source.html#l00134">send()</a>.</p>
+
+</div>
+</div>
+<a id="ac1cdf49ec1d0279bf422e7399a9849db" name="ac1cdf49ec1d0279bf422e7399a9849db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1cdf49ec1d0279bf422e7399a9849db">&#9670;&#160;</a></span>server()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::Net::ServerSocket * eve::network::TcpSocket::server </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8be2487415e984e4a158d802b219be26" name="a8be2487415e984e4a158d802b219be26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8be2487415e984e4a158d802b219be26">&#9670;&#160;</a></span>setConnectedSocket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::TcpSocket::setConnectedSocket </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; Poco::Net::StreamSocket &gt;&#160;</td>
+          <td class="paramname"><em>sock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a446aac0788146323b6411adfe8a40e14" name="a446aac0788146323b6411adfe8a40e14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a446aac0788146323b6411adfe8a40e14">&#9670;&#160;</a></span>stream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Poco::Net::StreamSocket * eve::network::TcpSocket::stream </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a540355d6184f458a9837d07383aae1" name="a3a540355d6184f458a9837d07383aae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a540355d6184f458a9837d07383aae1">&#9670;&#160;</a></span>takeAccepted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::TcpSocket::takeAccepted </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a> 第 <a class="el" href="TcpSocket_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TcpSocket_8cpp_source.html#l00128">accept()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/network/<a class="el" href="TcpSocket_8h_source.html">TcpSocket.h</a></li>
+<li>src/modules/network/<a class="el" href="TcpSocket_8cpp_source.html">TcpSocket.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::TextureSampler结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1TextureSampler-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::TextureSampler结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Sampler state for a <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> (filter, wrap, mip LOD, anisotropy). Defaults match historical engine behaviour: linear, clamp, no mips, no aniso.  
+ <a href="structeve_1_1graphics_1_1TextureSampler.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a78638c51bd5a3e7ccf28df02963ee279" id="r_a78638c51bd5a3e7ccf28df02963ee279"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a78638c51bd5a3e7ccf28df02963ee279">nearest</a> ()</td></tr>
+<tr class="separator:a78638c51bd5a3e7ccf28df02963ee279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8301c5c52839fb1e2ef7ef5463639b12" id="r_a8301c5c52839fb1e2ef7ef5463639b12"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a8301c5c52839fb1e2ef7ef5463639b12">linear</a> ()</td></tr>
+<tr class="separator:a8301c5c52839fb1e2ef7ef5463639b12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1080a81e5545d7a2436ae398a11ba57" id="r_ad1080a81e5545d7a2436ae398a11ba57"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#ad1080a81e5545d7a2436ae398a11ba57">linearMipmap</a> ()</td></tr>
+<tr class="memdesc:ad1080a81e5545d7a2436ae398a11ba57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trilinear (linear + linear mips). Caller should create the texture with generateMipmaps.  <br /></td></tr>
+<tr class="separator:ad1080a81e5545d7a2436ae398a11ba57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5caaf1ed0c0b778acf8d5ca4382a2933" id="r_a5caaf1ed0c0b778acf8d5ca4382a2933"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a5caaf1ed0c0b778acf8d5ca4382a2933">anisotropic</a> (float maxAniso=16.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a5caaf1ed0c0b778acf8d5ca4382a2933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trilinear + anisotropic filtering (capped by device limits at bind time).  <br /></td></tr>
+<tr class="separator:a5caaf1ed0c0b778acf8d5ca4382a2933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f1ffd402867a656387ac5efcefbadc" id="r_ad4f1ffd402867a656387ac5efcefbadc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#ad4f1ffd402867a656387ac5efcefbadc">parseFilter</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ad4f1ffd402867a656387ac5efcefbadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef5228d0ac0478ae14b84eb1afb5b676" id="r_aef5228d0ac0478ae14b84eb1afb5b676"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#aef5228d0ac0478ae14b84eb1afb5b676">parseMipmap</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:aef5228d0ac0478ae14b84eb1afb5b676"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac20afe0d855372cab8b6759baa7ee9c1" id="r_ac20afe0d855372cab8b6759baa7ee9c1"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#ac20afe0d855372cab8b6759baa7ee9c1">filterName</a> (<a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a> <a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>)</td></tr>
+<tr class="separator:ac20afe0d855372cab8b6759baa7ee9c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dbdf9a8460fd8f953944798dc9e1257" id="r_a8dbdf9a8460fd8f953944798dc9e1257"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a8dbdf9a8460fd8f953944798dc9e1257">mipmapName</a> (<a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a> <a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>)</td></tr>
+<tr class="separator:a8dbdf9a8460fd8f953944798dc9e1257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a09f27cd4381e13fa29a5c7694ab65341" id="r_a09f27cd4381e13fa29a5c7694ab65341"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a09f27cd4381e13fa29a5c7694ab65341">min</a> = <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">FilterMode::Linear</a></td></tr>
+<tr class="separator:a09f27cd4381e13fa29a5c7694ab65341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaa57f2a6716e3cc57874f5a1cff6386" id="r_aaaa57f2a6716e3cc57874f5a1cff6386"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#aaaa57f2a6716e3cc57874f5a1cff6386">mag</a> = <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">FilterMode::Linear</a></td></tr>
+<tr class="separator:aaaa57f2a6716e3cc57874f5a1cff6386"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f0ebb71d1c196d8821b77b48cd8c40a" id="r_a6f0ebb71d1c196d8821b77b48cd8c40a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a6f0ebb71d1c196d8821b77b48cd8c40a">mipmap</a> = <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">MipmapMode::Disabled</a></td></tr>
+<tr class="separator:a6f0ebb71d1c196d8821b77b48cd8c40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1192d3984205fc47d56c7f24242d468a" id="r_a1192d3984205fc47d56c7f24242d468a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a1192d3984205fc47d56c7f24242d468a">repeatU</a> = false</td></tr>
+<tr class="separator:a1192d3984205fc47d56c7f24242d468a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ddbb7c817007b6dbe5b81ebd4b7c85" id="r_ab5ddbb7c817007b6dbe5b81ebd4b7c85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#ab5ddbb7c817007b6dbe5b81ebd4b7c85">repeatV</a> = false</td></tr>
+<tr class="separator:ab5ddbb7c817007b6dbe5b81ebd4b7c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25a093ae770656a211e41121c0ee0a15" id="r_a25a093ae770656a211e41121c0ee0a15"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a25a093ae770656a211e41121c0ee0a15">repeatW</a> = false</td></tr>
+<tr class="separator:a25a093ae770656a211e41121c0ee0a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf5353eeb1cb2c3a47e56155f97074a" id="r_a9cf5353eeb1cb2c3a47e56155f97074a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a9cf5353eeb1cb2c3a47e56155f97074a">maxAnisotropy</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a9cf5353eeb1cb2c3a47e56155f97074a"><td class="mdescLeft">&#160;</td><td class="mdescRight">1 = off; values &gt;1 enable anisotropic filtering when the device supports it.  <br /></td></tr>
+<tr class="separator:a9cf5353eeb1cb2c3a47e56155f97074a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60074d9ef704c25a87233361e8da5d04" id="r_a60074d9ef704c25a87233361e8da5d04"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a60074d9ef704c25a87233361e8da5d04">lodBias</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a60074d9ef704c25a87233361e8da5d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06e2778df48fef1d97865bf6226964d3" id="r_a06e2778df48fef1d97865bf6226964d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#a06e2778df48fef1d97865bf6226964d3">minLod</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a06e2778df48fef1d97865bf6226964d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecfa60d26c4165257c369b8871e5e074" id="r_aecfa60d26c4165257c369b8871e5e074"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html#aecfa60d26c4165257c369b8871e5e074">maxLod</a> = 1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aecfa60d26c4165257c369b8871e5e074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inclusive upper LOD clamp. Large values mean "use all available mips".  <br /></td></tr>
+<tr class="separator:aecfa60d26c4165257c369b8871e5e074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Sampler state for a <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> (filter, wrap, mip LOD, anisotropy). Defaults match historical engine behaviour: linear, clamp, no mips, no aniso. </p>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a5caaf1ed0c0b778acf8d5ca4382a2933" name="a5caaf1ed0c0b778acf8d5ca4382a2933"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5caaf1ed0c0b778acf8d5ca4382a2933">&#9670;&#160;</a></span>anisotropic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> eve::graphics::TextureSampler::anisotropic </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxAniso</em> = <code>16.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Trilinear + anisotropic filtering (capped by device limits at bind time). </p>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TextureSampler_8h_source.html#l00058">linearMipmap()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TextureSampler_8h_source.html#l00110">eve::graphics::TextureCreateInfo::withMipmaps()</a>.</p>
+
+</div>
+</div>
+<a id="ac20afe0d855372cab8b6759baa7ee9c1" name="ac20afe0d855372cab8b6759baa7ee9c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac20afe0d855372cab8b6759baa7ee9c1">&#9670;&#160;</a></span>filterName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static const char * eve::graphics::TextureSampler::filterName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a>&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007">eve::graphics::Nearest</a>.</p>
+
+</div>
+</div>
+<a id="a8301c5c52839fb1e2ef7ef5463639b12" name="a8301c5c52839fb1e2ef7ef5463639b12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8301c5c52839fb1e2ef7ef5463639b12">&#9670;&#160;</a></span>linear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> eve::graphics::TextureSampler::linear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">eve::graphics::Disabled</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">eve::graphics::Linear</a>, <a class="el" href="TextureSampler_8h_source.html#l00028">min</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00505">eve::graphics::grass::createSwayAtlasFromFiles()</a>.</p>
+
+</div>
+</div>
+<a id="ad1080a81e5545d7a2436ae398a11ba57" name="ad1080a81e5545d7a2436ae398a11ba57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1080a81e5545d7a2436ae398a11ba57">&#9670;&#160;</a></span>linearMipmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> eve::graphics::TextureSampler::linearMipmap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Trilinear (linear + linear mips). Caller should create the texture with generateMipmaps. </p>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">eve::graphics::Linear</a>, <a class="el" href="TextureSampler_8h_source.html#l00028">min</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TextureSampler_8h_source.html#l00067">anisotropic()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00017">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a> , 以及 <a class="el" href="TextureSampler_8h_source.html#l00110">eve::graphics::TextureCreateInfo::withMipmaps()</a>.</p>
+
+</div>
+</div>
+<a id="a8dbdf9a8460fd8f953944798dc9e1257" name="a8dbdf9a8460fd8f953944798dc9e1257"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dbdf9a8460fd8f953944798dc9e1257">&#9670;&#160;</a></span>mipmapName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static const char * eve::graphics::TextureSampler::mipmapName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a>&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">eve::graphics::Disabled</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4ba60494f02d440f316319dd0fad40ad007">eve::graphics::Nearest</a>.</p>
+
+</div>
+</div>
+<a id="a78638c51bd5a3e7ccf28df02963ee279" name="a78638c51bd5a3e7ccf28df02963ee279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78638c51bd5a3e7ccf28df02963ee279">&#9670;&#160;</a></span>nearest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> eve::graphics::TextureSampler::nearest </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">eve::graphics::Disabled</a>, <a class="el" href="TextureSampler_8h_source.html#l00028">min</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007">eve::graphics::Nearest</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Grass_8cpp_source.html#l00383">eve::graphics::grass::createSwayAtlas()</a>.</p>
+
+</div>
+</div>
+<a id="ad4f1ffd402867a656387ac5efcefbadc" name="ad4f1ffd402867a656387ac5efcefbadc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4f1ffd402867a656387ac5efcefbadc">&#9670;&#160;</a></span>parseFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a> eve::graphics::TextureSampler::parseFilter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">eve::graphics::Linear</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a60494f02d440f316319dd0fad40ad007">eve::graphics::Nearest</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00973">eve::graphics::Graphics::setTextureSampler()</a>.</p>
+
+</div>
+</div>
+<a id="aef5228d0ac0478ae14b84eb1afb5b676" name="aef5228d0ac0478ae14b84eb1afb5b676"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef5228d0ac0478ae14b84eb1afb5b676">&#9670;&#160;</a></span>parseMipmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a> eve::graphics::TextureSampler::parseMipmap </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">eve::graphics::Disabled</a>, <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4ba32a843da6ea40ab3b17a3421ccdf671b">eve::graphics::Linear</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4ba60494f02d440f316319dd0fad40ad007">eve::graphics::Nearest</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00973">eve::graphics::Graphics::setTextureSampler()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a60074d9ef704c25a87233361e8da5d04" name="a60074d9ef704c25a87233361e8da5d04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60074d9ef704c25a87233361e8da5d04">&#9670;&#160;</a></span>lodBias</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::TextureSampler::lodBias = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a>.</p>
+
+</div>
+</div>
+<a id="aaaa57f2a6716e3cc57874f5a1cff6386" name="aaaa57f2a6716e3cc57874f5a1cff6386"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaa57f2a6716e3cc57874f5a1cff6386">&#9670;&#160;</a></span>mag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a> eve::graphics::TextureSampler::mag = <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">FilterMode::Linear</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a>.</p>
+
+</div>
+</div>
+<a id="a9cf5353eeb1cb2c3a47e56155f97074a" name="a9cf5353eeb1cb2c3a47e56155f97074a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf5353eeb1cb2c3a47e56155f97074a">&#9670;&#160;</a></span>maxAnisotropy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::TextureSampler::maxAnisotropy = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>1 = off; values &gt;1 enable anisotropic filtering when the device supports it. </p>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a>.</p>
+
+</div>
+</div>
+<a id="aecfa60d26c4165257c369b8871e5e074" name="aecfa60d26c4165257c369b8871e5e074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfa60d26c4165257c369b8871e5e074">&#9670;&#160;</a></span>maxLod</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::TextureSampler::maxLod = 1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inclusive upper LOD clamp. Large values mean "use all available mips". </p>
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a09f27cd4381e13fa29a5c7694ab65341" name="a09f27cd4381e13fa29a5c7694ab65341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09f27cd4381e13fa29a5c7694ab65341">&#9670;&#160;</a></span>min</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855">FilterMode</a> eve::graphics::TextureSampler::min = <a class="el" href="namespaceeve_1_1graphics.html#a1101bde6b430dcbf0bbc96839a5b4855a32a843da6ea40ab3b17a3421ccdf671b">FilterMode::Linear</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TextureSampler_8h_source.html#l00049">linear()</a>, <a class="el" href="TextureSampler_8h_source.html#l00058">linearMipmap()</a>, <a class="el" href="TextureSampler_8h_source.html#l00041">nearest()</a>, <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00973">eve::graphics::Graphics::setTextureSampler()</a>.</p>
+
+</div>
+</div>
+<a id="a06e2778df48fef1d97865bf6226964d3" name="a06e2778df48fef1d97865bf6226964d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06e2778df48fef1d97865bf6226964d3">&#9670;&#160;</a></span>minLod</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::TextureSampler::minLod = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f0ebb71d1c196d8821b77b48cd8c40a" name="a6f0ebb71d1c196d8821b77b48cd8c40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f0ebb71d1c196d8821b77b48cd8c40a">&#9670;&#160;</a></span>mipmap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4b">MipmapMode</a> eve::graphics::TextureSampler::mipmap = <a class="el" href="namespaceeve_1_1graphics.html#a5bd6bbb7f652cb64fc0927c04f8b6c4bab9f5c797ebbf55adccdd8539a65a0241">MipmapMode::Disabled</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a>.</p>
+
+</div>
+</div>
+<a id="a1192d3984205fc47d56c7f24242d468a" name="a1192d3984205fc47d56c7f24242d468a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1192d3984205fc47d56c7f24242d468a">&#9670;&#160;</a></span>repeatU</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::TextureSampler::repeatU = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsTexture_8cpp_source.html#l00100">eve::graphics::vulkan::Graphics::newCubemap()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00040">eve::graphics::vulkan::Graphics::newTexture()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01543">eve::graphics::webgpu::Graphics::newTexture()</a>, <a class="el" href="Graphics_8cpp_source.html#l00932">eve::graphics::Graphics::newTextureFromImageData()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a>.</p>
+
+</div>
+</div>
+<a id="ab5ddbb7c817007b6dbe5b81ebd4b7c85" name="ab5ddbb7c817007b6dbe5b81ebd4b7c85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ddbb7c817007b6dbe5b81ebd4b7c85">&#9670;&#160;</a></span>repeatV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::TextureSampler::repeatV = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsTexture_8cpp_source.html#l00100">eve::graphics::vulkan::Graphics::newCubemap()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00040">eve::graphics::vulkan::Graphics::newTexture()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01543">eve::graphics::webgpu::Graphics::newTexture()</a>, <a class="el" href="Graphics_8cpp_source.html#l00932">eve::graphics::Graphics::newTextureFromImageData()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00957">eve::graphics::Graphics::newTextureWithSampler()</a>.</p>
+
+</div>
+</div>
+<a id="a25a093ae770656a211e41121c0ee0a15" name="a25a093ae770656a211e41121c0ee0a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25a093ae770656a211e41121c0ee0a15">&#9670;&#160;</a></span>repeatW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::TextureSampler::repeatW = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a> 第 <a class="el" href="TextureSampler_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsTexture_8cpp_source.html#l00100">eve::graphics::vulkan::Graphics::newCubemap()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="TextureSampler_8h_source.html">TextureSampler.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

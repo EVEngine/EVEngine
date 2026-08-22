@@ -1,0 +1,1238 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::Theme结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1ui_1_1Theme-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::Theme结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Unified <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> design tokens (colors, geometry, typography). Applied to <a class="el" href="namespaceImGui.html">ImGui</a> each frame via applyThemeToImGui; metrics are design-time units at uiScale=1 and are multiplied by the current <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> scale.  
+ <a href="structeve_1_1ui_1_1Theme.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Theme_8h_source.html">Theme.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae7973840dda5bfa855a3f8dc395625ab" id="r_ae7973840dda5bfa855a3f8dc395625ab"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ae7973840dda5bfa855a3f8dc395625ab">dark</a> ()</td></tr>
+<tr class="memdesc:ae7973840dda5bfa855a3f8dc395625ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in presets with matching geometry; only colors differ.  <br /></td></tr>
+<tr class="separator:ae7973840dda5bfa855a3f8dc395625ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6f38435f781262e3a13caa00e63d56a" id="r_aa6f38435f781262e3a13caa00e63d56a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#aa6f38435f781262e3a13caa00e63d56a">light</a> ()</td></tr>
+<tr class="separator:aa6f38435f781262e3a13caa00e63d56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a80380b57fbbd0ddd9dae47392bd3f456" id="r_a80380b57fbbd0ddd9dae47392bd3f456"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a80380b57fbbd0ddd9dae47392bd3f456">text</a> [4] = {0.92<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.93<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.95<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a80380b57fbbd0ddd9dae47392bd3f456"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b0abcf4985fc5838acb72f12f3aec17" id="r_a4b0abcf4985fc5838acb72f12f3aec17"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a4b0abcf4985fc5838acb72f12f3aec17">textDisabled</a> [4] = {0.50f, 0.52<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a4b0abcf4985fc5838acb72f12f3aec17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a992868a9264d44eafcb8b72d5cb8d159" id="r_a992868a9264d44eafcb8b72d5cb8d159"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a992868a9264d44eafcb8b72d5cb8d159">windowBg</a> [4] = {0.09<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.96<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a992868a9264d44eafcb8b72d5cb8d159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd152e649f07f34edfc56cf4616da067" id="r_acd152e649f07f34edfc56cf4616da067"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#acd152e649f07f34edfc56cf4616da067">childBg</a> [4] = {0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 0.90f}</td></tr>
+<tr class="separator:acd152e649f07f34edfc56cf4616da067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a565bd5411f280da0dd7ff79b4da4c2a2" id="r_a565bd5411f280da0dd7ff79b4da4c2a2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a565bd5411f280da0dd7ff79b4da4c2a2">popupBg</a> [4] = {0.11<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.98<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a565bd5411f280da0dd7ff79b4da4c2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aead5d6d841e28b9777c9bc14b4df009d" id="r_aead5d6d841e28b9777c9bc14b4df009d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#aead5d6d841e28b9777c9bc14b4df009d">border</a> [4] = {0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.30f, 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f}</td></tr>
+<tr class="separator:aead5d6d841e28b9777c9bc14b4df009d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07ea00aa640e95236510b6fc464933ad" id="r_a07ea00aa640e95236510b6fc464933ad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a07ea00aa640e95236510b6fc464933ad">frameBg</a> [4] = {0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a07ea00aa640e95236510b6fc464933ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd36204f95d166695bde0cde37222b47" id="r_abd36204f95d166695bde0cde37222b47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#abd36204f95d166695bde0cde37222b47">frameBgHovered</a> [4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.26<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.32<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:abd36204f95d166695bde0cde37222b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92bbfeacc5016c06fd6b4bc2ab321d0a" id="r_a92bbfeacc5016c06fd6b4bc2ab321d0a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a92bbfeacc5016c06fd6b4bc2ab321d0a">frameBgActive</a> [4] = {0.26<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.32<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.40f, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a92bbfeacc5016c06fd6b4bc2ab321d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0036a638025b308378e9abf217770195" id="r_a0036a638025b308378e9abf217770195"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a0036a638025b308378e9abf217770195">titleBg</a> [4] = {0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a0036a638025b308378e9abf217770195"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a565031c9b031ee388cabc09413a2c010" id="r_a565031c9b031ee388cabc09413a2c010"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a565031c9b031ee388cabc09413a2c010">titleBgActive</a> [4] = {0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a565031c9b031ee388cabc09413a2c010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a3a540f7bd17a2a5c51e0c22d16db10" id="r_a7a3a540f7bd17a2a5c51e0c22d16db10"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a7a3a540f7bd17a2a5c51e0c22d16db10">titleBgCollapsed</a> [4] = {0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a7a3a540f7bd17a2a5c51e0c22d16db10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad575176b44a39d2c1ec6df65063d4efd" id="r_ad575176b44a39d2c1ec6df65063d4efd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ad575176b44a39d2c1ec6df65063d4efd">button</a> [4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.78<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f}</td></tr>
+<tr class="separator:ad575176b44a39d2c1ec6df65063d4efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d94292cb240938b084bb217b17cd7af" id="r_a1d94292cb240938b084bb217b17cd7af"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a1d94292cb240938b084bb217b17cd7af">buttonHovered</a> [4] = {0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.92<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a1d94292cb240938b084bb217b17cd7af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b8010450b69a24480646a43a07f62ab" id="r_a3b8010450b69a24480646a43a07f62ab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a3b8010450b69a24480646a43a07f62ab">buttonActive</a> [4] = {0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.38<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.72<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a3b8010450b69a24480646a43a07f62ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ab334668e6a54b372b96b058a2fd3d" id="r_a66ab334668e6a54b372b96b058a2fd3d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a66ab334668e6a54b372b96b058a2fd3d">header</a> [4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.78<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a66ab334668e6a54b372b96b058a2fd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ababe2d47cde488b6c65a96d460aa802e" id="r_ababe2d47cde488b6c65a96d460aa802e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ababe2d47cde488b6c65a96d460aa802e">headerHovered</a> [4] = {0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.92<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f}</td></tr>
+<tr class="separator:ababe2d47cde488b6c65a96d460aa802e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29a54bbfb23ca470068bd427e71324c" id="r_ad29a54bbfb23ca470068bd427e71324c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ad29a54bbfb23ca470068bd427e71324c">headerActive</a> [4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.78<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:ad29a54bbfb23ca470068bd427e71324c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11c7e0203454231c59f0131691c21e41" id="r_a11c7e0203454231c59f0131691c21e41"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a11c7e0203454231c59f0131691c21e41">checkMark</a> [4] = {0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a11c7e0203454231c59f0131691c21e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a138308af85c1b33d54d35872b9040448" id="r_a138308af85c1b33d54d35872b9040448"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a138308af85c1b33d54d35872b9040448">sliderGrab</a> [4] = {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.60f, 0.95<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.90f}</td></tr>
+<tr class="separator:a138308af85c1b33d54d35872b9040448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaedeb747a7f8cfa9c4032ad7e2605476" id="r_aaedeb747a7f8cfa9c4032ad7e2605476"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#aaedeb747a7f8cfa9c4032ad7e2605476">sliderGrabActive</a> [4] = {0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aaedeb747a7f8cfa9c4032ad7e2605476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a524a83e7ea67e8bd51f2975e73eac3e4" id="r_a524a83e7ea67e8bd51f2975e73eac3e4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a524a83e7ea67e8bd51f2975e73eac3e4">separator</a> [4] = {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.38<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.42<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.60f}</td></tr>
+<tr class="separator:a524a83e7ea67e8bd51f2975e73eac3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad77a7e1e3867aa16671ff672b343bf30" id="r_ad77a7e1e3867aa16671ff672b343bf30"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ad77a7e1e3867aa16671ff672b343bf30">scrollbarBg</a> [4] = {0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.06<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:ad77a7e1e3867aa16671ff672b343bf30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15a3c14c1bea36a09a68095ea1877564" id="r_a15a3c14c1bea36a09a68095ea1877564"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a15a3c14c1bea36a09a68095ea1877564">scrollbarGrab</a> [4] = {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.38<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.42<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.80f}</td></tr>
+<tr class="separator:a15a3c14c1bea36a09a68095ea1877564"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cfdb3ebab4bf81198539d396958f125" id="r_a7cfdb3ebab4bf81198539d396958f125"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a7cfdb3ebab4bf81198539d396958f125">scrollbarGrabHovered</a> [4] = {0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.48<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.52<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.90f}</td></tr>
+<tr class="separator:a7cfdb3ebab4bf81198539d396958f125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a814f1cc38e59967281bbb43dd0d64836" id="r_a814f1cc38e59967281bbb43dd0d64836"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a814f1cc38e59967281bbb43dd0d64836">scrollbarGrabActive</a> [4] = {0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.58<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.62<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a814f1cc38e59967281bbb43dd0d64836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e70eab5a57b01e6f14ad1309f9a8029" id="r_a9e70eab5a57b01e6f14ad1309f9a8029"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a9e70eab5a57b01e6f14ad1309f9a8029">windowRounding</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9e70eab5a57b01e6f14ad1309f9a8029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a3ab6e9de727ad4830889358da3b7e" id="r_a45a3ab6e9de727ad4830889358da3b7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a45a3ab6e9de727ad4830889358da3b7e">childRounding</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a45a3ab6e9de727ad4830889358da3b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad18992b3ae8cdd41b304ef35d7c5de2a" id="r_ad18992b3ae8cdd41b304ef35d7c5de2a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ad18992b3ae8cdd41b304ef35d7c5de2a">frameRounding</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad18992b3ae8cdd41b304ef35d7c5de2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af671e7ef3431ffb5c7686bc6de62546c" id="r_af671e7ef3431ffb5c7686bc6de62546c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#af671e7ef3431ffb5c7686bc6de62546c">popupRounding</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af671e7ef3431ffb5c7686bc6de62546c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a075e2db6d33980bd4cea6d530f065b" id="r_a8a075e2db6d33980bd4cea6d530f065b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a8a075e2db6d33980bd4cea6d530f065b">scrollbarRounding</a> = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8a075e2db6d33980bd4cea6d530f065b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a919dc61da6a8194b09160b2432b633cb" id="r_a919dc61da6a8194b09160b2432b633cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a919dc61da6a8194b09160b2432b633cb">grabRounding</a> = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a919dc61da6a8194b09160b2432b633cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae67929613d270b2c86dd32998c4c7388" id="r_ae67929613d270b2c86dd32998c4c7388"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ae67929613d270b2c86dd32998c4c7388">tabRounding</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae67929613d270b2c86dd32998c4c7388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa122e90e69c54eb0d5f7a4c12990de71" id="r_aa122e90e69c54eb0d5f7a4c12990de71"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#aa122e90e69c54eb0d5f7a4c12990de71">windowBorderSize</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa122e90e69c54eb0d5f7a4c12990de71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad14b290db63154bd38a68e0cd5499fdf" id="r_ad14b290db63154bd38a68e0cd5499fdf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ad14b290db63154bd38a68e0cd5499fdf">childBorderSize</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad14b290db63154bd38a68e0cd5499fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9d9635bca6d67cf5605b9e75b4f503f" id="r_ac9d9635bca6d67cf5605b9e75b4f503f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ac9d9635bca6d67cf5605b9e75b4f503f">popupBorderSize</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac9d9635bca6d67cf5605b9e75b4f503f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42701c1c237564f2f84e687c5937cf4c" id="r_a42701c1c237564f2f84e687c5937cf4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a42701c1c237564f2f84e687c5937cf4c">frameBorderSize</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a42701c1c237564f2f84e687c5937cf4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d7f7f23dd8353dc4fc80e88f043cdf4" id="r_a3d7f7f23dd8353dc4fc80e88f043cdf4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a3d7f7f23dd8353dc4fc80e88f043cdf4">windowPaddingX</a> = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3d7f7f23dd8353dc4fc80e88f043cdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69d32ba8b6a7f7fa6baf19b374a2495e" id="r_a69d32ba8b6a7f7fa6baf19b374a2495e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a69d32ba8b6a7f7fa6baf19b374a2495e">windowPaddingY</a> = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a69d32ba8b6a7f7fa6baf19b374a2495e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa272d024f65983696920db446797af46" id="r_aa272d024f65983696920db446797af46"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#aa272d024f65983696920db446797af46">framePaddingX</a> = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa272d024f65983696920db446797af46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a9881217f502d7edf0f002474ef7ae1" id="r_a7a9881217f502d7edf0f002474ef7ae1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a7a9881217f502d7edf0f002474ef7ae1">framePaddingY</a> = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7a9881217f502d7edf0f002474ef7ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1227d900a74efce54746021c4a37d406" id="r_a1227d900a74efce54746021c4a37d406"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a1227d900a74efce54746021c4a37d406">itemSpacingX</a> = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1227d900a74efce54746021c4a37d406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a292a9cfc2f3808c567a47175556b55f9" id="r_a292a9cfc2f3808c567a47175556b55f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a292a9cfc2f3808c567a47175556b55f9">itemSpacingY</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a292a9cfc2f3808c567a47175556b55f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a805322f636305f60ecc99a06f8fab482" id="r_a805322f636305f60ecc99a06f8fab482"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a805322f636305f60ecc99a06f8fab482">itemInnerSpacingX</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a805322f636305f60ecc99a06f8fab482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab145cc96b8f68dbaddfde4aac488ee6a" id="r_ab145cc96b8f68dbaddfde4aac488ee6a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#ab145cc96b8f68dbaddfde4aac488ee6a">itemInnerSpacingY</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab145cc96b8f68dbaddfde4aac488ee6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a131d1810605f5ca56ccb6db64e951301" id="r_a131d1810605f5ca56ccb6db64e951301"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a131d1810605f5ca56ccb6db64e951301">indentSpacing</a> = 18.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a131d1810605f5ca56ccb6db64e951301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12c33f43baabc1c2fa35ce562e768656" id="r_a12c33f43baabc1c2fa35ce562e768656"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a12c33f43baabc1c2fa35ce562e768656">scrollbarSize</a> = 14.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a12c33f43baabc1c2fa35ce562e768656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ff6c0e4d45f07cda60a2637e437f36" id="r_a66ff6c0e4d45f07cda60a2637e437f36"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a66ff6c0e4d45f07cda60a2637e437f36">grabMinSize</a> = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a66ff6c0e4d45f07cda60a2637e437f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a601a8801c8a597d89854bd183c1ccf28" id="r_a601a8801c8a597d89854bd183c1ccf28"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a601a8801c8a597d89854bd183c1ccf28">fontScale</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a601a8801c8a597d89854bd183c1ccf28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7baff0b6f0855f5cc87982eaf57d9e3c" id="r_a7baff0b6f0855f5cc87982eaf57d9e3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#a7baff0b6f0855f5cc87982eaf57d9e3c">navEnableKeyboard</a> = true</td></tr>
+<tr class="separator:a7baff0b6f0855f5cc87982eaf57d9e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2ed5779970f66793224ac13656b6379" id="r_af2ed5779970f66793224ac13656b6379"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ui_1_1Theme.html#af2ed5779970f66793224ac13656b6379">navEnableGamepad</a> = false</td></tr>
+<tr class="separator:af2ed5779970f66793224ac13656b6379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Unified <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> design tokens (colors, geometry, typography). Applied to <a class="el" href="namespaceImGui.html">ImGui</a> each frame via applyThemeToImGui; metrics are design-time units at uiScale=1 and are multiplied by the current <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> scale. </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ae7973840dda5bfa855a3f8dc395625ab" name="ae7973840dda5bfa855a3f8dc395625ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7973840dda5bfa855a3f8dc395625ab">&#9670;&#160;</a></span>dark()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> eve::ui::Theme::dark </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in presets with matching geometry; only colors differ. </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00110">eve::ui::setThemeByName()</a>.</p>
+
+</div>
+</div>
+<a id="aa6f38435f781262e3a13caa00e63d56a" name="aa6f38435f781262e3a13caa00e63d56a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6f38435f781262e3a13caa00e63d56a">&#9670;&#160;</a></span>light()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1Theme.html">Theme</a> eve::ui::Theme::light </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8cpp_source.html">Theme.cpp</a> 第 <a class="el" href="Theme_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Theme_8h_source.html#l00019">border</a>, <a class="el" href="Theme_8h_source.html#l00026">button</a>, <a class="el" href="Theme_8h_source.html#l00028">buttonActive</a>, <a class="el" href="Theme_8h_source.html#l00027">buttonHovered</a>, <a class="el" href="Theme_8h_source.html#l00032">checkMark</a>, <a class="el" href="Theme_8h_source.html#l00017">childBg</a>, <a class="el" href="Theme_8h_source.html#l00020">frameBg</a>, <a class="el" href="Theme_8h_source.html#l00022">frameBgActive</a>, <a class="el" href="Theme_8h_source.html#l00021">frameBgHovered</a>, <a class="el" href="Theme_8h_source.html#l00029">header</a>, <a class="el" href="Theme_8h_source.html#l00031">headerActive</a>, <a class="el" href="Theme_8h_source.html#l00030">headerHovered</a>, <a class="el" href="Theme_8h_source.html#l00018">popupBg</a>, <a class="el" href="Theme_8h_source.html#l00036">scrollbarBg</a>, <a class="el" href="Theme_8h_source.html#l00037">scrollbarGrab</a>, <a class="el" href="Theme_8h_source.html#l00039">scrollbarGrabActive</a>, <a class="el" href="Theme_8h_source.html#l00038">scrollbarGrabHovered</a>, <a class="el" href="Theme_8h_source.html#l00035">separator</a>, <a class="el" href="Theme_8h_source.html#l00033">sliderGrab</a>, <a class="el" href="Theme_8h_source.html#l00034">sliderGrabActive</a>, <a class="el" href="Theme_8h_source.html#l00014">text</a>, <a class="el" href="Theme_8h_source.html#l00015">textDisabled</a>, <a class="el" href="Theme_8h_source.html#l00023">titleBg</a>, <a class="el" href="Theme_8h_source.html#l00024">titleBgActive</a>, <a class="el" href="Theme_8h_source.html#l00025">titleBgCollapsed</a> , 以及 <a class="el" href="Theme_8h_source.html#l00016">windowBg</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00110">eve::ui::setThemeByName()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aead5d6d841e28b9777c9bc14b4df009d" name="aead5d6d841e28b9777c9bc14b4df009d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aead5d6d841e28b9777c9bc14b4df009d">&#9670;&#160;</a></span>border</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::border[4] = {0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.30f, 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="ad575176b44a39d2c1ec6df65063d4efd" name="ad575176b44a39d2c1ec6df65063d4efd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad575176b44a39d2c1ec6df65063d4efd">&#9670;&#160;</a></span>button</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::button[4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.78<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a3b8010450b69a24480646a43a07f62ab" name="a3b8010450b69a24480646a43a07f62ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b8010450b69a24480646a43a07f62ab">&#9670;&#160;</a></span>buttonActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::buttonActive[4] = {0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.38<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.72<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a1d94292cb240938b084bb217b17cd7af" name="a1d94292cb240938b084bb217b17cd7af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d94292cb240938b084bb217b17cd7af">&#9670;&#160;</a></span>buttonHovered</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::buttonHovered[4] = {0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.92<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a11c7e0203454231c59f0131691c21e41" name="a11c7e0203454231c59f0131691c21e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11c7e0203454231c59f0131691c21e41">&#9670;&#160;</a></span>checkMark</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::checkMark[4] = {0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="acd152e649f07f34edfc56cf4616da067" name="acd152e649f07f34edfc56cf4616da067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd152e649f07f34edfc56cf4616da067">&#9670;&#160;</a></span>childBg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::childBg[4] = {0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 0.90f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="ad14b290db63154bd38a68e0cd5499fdf" name="ad14b290db63154bd38a68e0cd5499fdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad14b290db63154bd38a68e0cd5499fdf">&#9670;&#160;</a></span>childBorderSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::childBorderSize = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45a3ab6e9de727ad4830889358da3b7e" name="a45a3ab6e9de727ad4830889358da3b7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45a3ab6e9de727ad4830889358da3b7e">&#9670;&#160;</a></span>childRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::childRounding = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a601a8801c8a597d89854bd183c1ccf28" name="a601a8801c8a597d89854bd183c1ccf28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a601a8801c8a597d89854bd183c1ccf28">&#9670;&#160;</a></span>fontScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::fontScale = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Font size multiplier relative to the base <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> font (FontGlobalScale). Display DPI is cancelled out of FontGlobalScale so this stays logical. </p>
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a07ea00aa640e95236510b6fc464933ad" name="a07ea00aa640e95236510b6fc464933ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07ea00aa640e95236510b6fc464933ad">&#9670;&#160;</a></span>frameBg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::frameBg[4] = {0.16<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a92bbfeacc5016c06fd6b4bc2ab321d0a" name="a92bbfeacc5016c06fd6b4bc2ab321d0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92bbfeacc5016c06fd6b4bc2ab321d0a">&#9670;&#160;</a></span>frameBgActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::frameBgActive[4] = {0.26<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.32<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.40f, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="abd36204f95d166695bde0cde37222b47" name="abd36204f95d166695bde0cde37222b47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd36204f95d166695bde0cde37222b47">&#9670;&#160;</a></span>frameBgHovered</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::frameBgHovered[4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.26<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.32<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a42701c1c237564f2f84e687c5937cf4c" name="a42701c1c237564f2f84e687c5937cf4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42701c1c237564f2f84e687c5937cf4c">&#9670;&#160;</a></span>frameBorderSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::frameBorderSize = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa272d024f65983696920db446797af46" name="aa272d024f65983696920db446797af46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa272d024f65983696920db446797af46">&#9670;&#160;</a></span>framePaddingX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::framePaddingX = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a9881217f502d7edf0f002474ef7ae1" name="a7a9881217f502d7edf0f002474ef7ae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a9881217f502d7edf0f002474ef7ae1">&#9670;&#160;</a></span>framePaddingY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::framePaddingY = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad18992b3ae8cdd41b304ef35d7c5de2a" name="ad18992b3ae8cdd41b304ef35d7c5de2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad18992b3ae8cdd41b304ef35d7c5de2a">&#9670;&#160;</a></span>frameRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::frameRounding = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66ff6c0e4d45f07cda60a2637e437f36" name="a66ff6c0e4d45f07cda60a2637e437f36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ff6c0e4d45f07cda60a2637e437f36">&#9670;&#160;</a></span>grabMinSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::grabMinSize = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a919dc61da6a8194b09160b2432b633cb" name="a919dc61da6a8194b09160b2432b633cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a919dc61da6a8194b09160b2432b633cb">&#9670;&#160;</a></span>grabRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::grabRounding = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66ab334668e6a54b372b96b058a2fd3d" name="a66ab334668e6a54b372b96b058a2fd3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ab334668e6a54b372b96b058a2fd3d">&#9670;&#160;</a></span>header</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::header[4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.78<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="ad29a54bbfb23ca470068bd427e71324c" name="ad29a54bbfb23ca470068bd427e71324c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad29a54bbfb23ca470068bd427e71324c">&#9670;&#160;</a></span>headerActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::headerActive[4] = {0.22<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.78<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="ababe2d47cde488b6c65a96d460aa802e" name="ababe2d47cde488b6c65a96d460aa802e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ababe2d47cde488b6c65a96d460aa802e">&#9670;&#160;</a></span>headerHovered</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::headerHovered[4] = {0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.92<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a131d1810605f5ca56ccb6db64e951301" name="a131d1810605f5ca56ccb6db64e951301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a131d1810605f5ca56ccb6db64e951301">&#9670;&#160;</a></span>indentSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::indentSpacing = 18.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a805322f636305f60ecc99a06f8fab482" name="a805322f636305f60ecc99a06f8fab482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a805322f636305f60ecc99a06f8fab482">&#9670;&#160;</a></span>itemInnerSpacingX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::itemInnerSpacingX = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab145cc96b8f68dbaddfde4aac488ee6a" name="ab145cc96b8f68dbaddfde4aac488ee6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab145cc96b8f68dbaddfde4aac488ee6a">&#9670;&#160;</a></span>itemInnerSpacingY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::itemInnerSpacingY = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1227d900a74efce54746021c4a37d406" name="a1227d900a74efce54746021c4a37d406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1227d900a74efce54746021c4a37d406">&#9670;&#160;</a></span>itemSpacingX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::itemSpacingX = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a292a9cfc2f3808c567a47175556b55f9" name="a292a9cfc2f3808c567a47175556b55f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a292a9cfc2f3808c567a47175556b55f9">&#9670;&#160;</a></span>itemSpacingY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::itemSpacingY = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2ed5779970f66793224ac13656b6379" name="af2ed5779970f66793224ac13656b6379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2ed5779970f66793224ac13656b6379">&#9670;&#160;</a></span>navEnableGamepad</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::Theme::navEnableGamepad = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00782">eve::ui::UI::setNavGamepad()</a>.</p>
+
+</div>
+</div>
+<a id="a7baff0b6f0855f5cc87982eaf57d9e3c" name="a7baff0b6f0855f5cc87982eaf57d9e3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7baff0b6f0855f5cc87982eaf57d9e3c">&#9670;&#160;</a></span>navEnableKeyboard</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::Theme::navEnableKeyboard = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00778">eve::ui::UI::setNavKeyboard()</a>.</p>
+
+</div>
+</div>
+<a id="a565bd5411f280da0dd7ff79b4da4c2a2" name="a565bd5411f280da0dd7ff79b4da4c2a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a565bd5411f280da0dd7ff79b4da4c2a2">&#9670;&#160;</a></span>popupBg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::popupBg[4] = {0.11<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.98<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="ac9d9635bca6d67cf5605b9e75b4f503f" name="ac9d9635bca6d67cf5605b9e75b4f503f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d9635bca6d67cf5605b9e75b4f503f">&#9670;&#160;</a></span>popupBorderSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::popupBorderSize = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af671e7ef3431ffb5c7686bc6de62546c" name="af671e7ef3431ffb5c7686bc6de62546c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af671e7ef3431ffb5c7686bc6de62546c">&#9670;&#160;</a></span>popupRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::popupRounding = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad77a7e1e3867aa16671ff672b343bf30" name="ad77a7e1e3867aa16671ff672b343bf30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad77a7e1e3867aa16671ff672b343bf30">&#9670;&#160;</a></span>scrollbarBg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::scrollbarBg[4] = {0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.06<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a15a3c14c1bea36a09a68095ea1877564" name="a15a3c14c1bea36a09a68095ea1877564"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15a3c14c1bea36a09a68095ea1877564">&#9670;&#160;</a></span>scrollbarGrab</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::scrollbarGrab[4] = {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.38<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.42<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.80f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a814f1cc38e59967281bbb43dd0d64836" name="a814f1cc38e59967281bbb43dd0d64836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a814f1cc38e59967281bbb43dd0d64836">&#9670;&#160;</a></span>scrollbarGrabActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::scrollbarGrabActive[4] = {0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.58<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.62<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a7cfdb3ebab4bf81198539d396958f125" name="a7cfdb3ebab4bf81198539d396958f125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cfdb3ebab4bf81198539d396958f125">&#9670;&#160;</a></span>scrollbarGrabHovered</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::scrollbarGrabHovered[4] = {0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.48<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.52<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.90f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a8a075e2db6d33980bd4cea6d530f065b" name="a8a075e2db6d33980bd4cea6d530f065b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a075e2db6d33980bd4cea6d530f065b">&#9670;&#160;</a></span>scrollbarRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::scrollbarRounding = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12c33f43baabc1c2fa35ce562e768656" name="a12c33f43baabc1c2fa35ce562e768656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c33f43baabc1c2fa35ce562e768656">&#9670;&#160;</a></span>scrollbarSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::scrollbarSize = 14.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a524a83e7ea67e8bd51f2975e73eac3e4" name="a524a83e7ea67e8bd51f2975e73eac3e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a524a83e7ea67e8bd51f2975e73eac3e4">&#9670;&#160;</a></span>separator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::separator[4] = {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.38<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.42<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.60f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a138308af85c1b33d54d35872b9040448" name="a138308af85c1b33d54d35872b9040448"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a138308af85c1b33d54d35872b9040448">&#9670;&#160;</a></span>sliderGrab</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::sliderGrab[4] = {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.60f, 0.95<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.90f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="aaedeb747a7f8cfa9c4032ad7e2605476" name="aaedeb747a7f8cfa9c4032ad7e2605476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaedeb747a7f8cfa9c4032ad7e2605476">&#9670;&#160;</a></span>sliderGrabActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::sliderGrabActive[4] = {0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.70f, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="ae67929613d270b2c86dd32998c4c7388" name="ae67929613d270b2c86dd32998c4c7388"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae67929613d270b2c86dd32998c4c7388">&#9670;&#160;</a></span>tabRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::tabRounding = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80380b57fbbd0ddd9dae47392bd3f456" name="a80380b57fbbd0ddd9dae47392bd3f456"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80380b57fbbd0ddd9dae47392bd3f456">&#9670;&#160;</a></span>text</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::text[4] = {0.92<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.93<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.95<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a4b0abcf4985fc5838acb72f12f3aec17" name="a4b0abcf4985fc5838acb72f12f3aec17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b0abcf4985fc5838acb72f12f3aec17">&#9670;&#160;</a></span>textDisabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::textDisabled[4] = {0.50f, 0.52<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a0036a638025b308378e9abf217770195" name="a0036a638025b308378e9abf217770195"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0036a638025b308378e9abf217770195">&#9670;&#160;</a></span>titleBg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::titleBg[4] = {0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a565031c9b031ee388cabc09413a2c010" name="a565031c9b031ee388cabc09413a2c010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a565031c9b031ee388cabc09413a2c010">&#9670;&#160;</a></span>titleBgActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::titleBgActive[4] = {0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.18<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.28<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a7a3a540f7bd17a2a5c51e0c22d16db10" name="a7a3a540f7bd17a2a5c51e0c22d16db10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3a540f7bd17a2a5c51e0c22d16db10">&#9670;&#160;</a></span>titleBgCollapsed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::titleBgCollapsed[4] = {0.07<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="a992868a9264d44eafcb8b72d5cb8d159" name="a992868a9264d44eafcb8b72d5cb8d159"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a992868a9264d44eafcb8b72d5cb8d159">&#9670;&#160;</a></span>windowBg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::windowBg[4] = {0.09<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.10f, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.96<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Theme_8cpp_source.html#l00040">light()</a>.</p>
+
+</div>
+</div>
+<a id="aa122e90e69c54eb0d5f7a4c12990de71" name="aa122e90e69c54eb0d5f7a4c12990de71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa122e90e69c54eb0d5f7a4c12990de71">&#9670;&#160;</a></span>windowBorderSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::windowBorderSize = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d7f7f23dd8353dc4fc80e88f043cdf4" name="a3d7f7f23dd8353dc4fc80e88f043cdf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d7f7f23dd8353dc4fc80e88f043cdf4">&#9670;&#160;</a></span>windowPaddingX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::windowPaddingX = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69d32ba8b6a7f7fa6baf19b374a2495e" name="a69d32ba8b6a7f7fa6baf19b374a2495e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69d32ba8b6a7f7fa6baf19b374a2495e">&#9670;&#160;</a></span>windowPaddingY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::windowPaddingY = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e70eab5a57b01e6f14ad1309f9a8029" name="a9e70eab5a57b01e6f14ad1309f9a8029"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e70eab5a57b01e6f14ad1309f9a8029">&#9670;&#160;</a></span>windowRounding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::Theme::windowRounding = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Theme_8h_source.html">Theme.h</a> 第 <a class="el" href="Theme_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="Theme_8h_source.html">Theme.h</a></li>
+<li>src/modules/ui/<a class="el" href="Theme_8cpp_source.html">Theme.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

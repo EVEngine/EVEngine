@@ -1,0 +1,604 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::window::WindowSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window.html">window</a></li><li class="navelem"><a class="el" href="structeve_1_1window_1_1WindowSettings.html">WindowSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1window_1_1WindowSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::window::WindowSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Display settings for window creation/resize. width/height == 0 selects the desktop display mode size.  
+ <a href="structeve_1_1window_1_1WindowSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Window_8h_source.html">Window.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a5b6b40c28b6f29717f6dd54728c1f3d8" id="r_a5b6b40c28b6f29717f6dd54728c1f3d8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a5b6b40c28b6f29717f6dd54728c1f3d8">refreshrate</a> = 0.0</td></tr>
+<tr class="separator:a5b6b40c28b6f29717f6dd54728c1f3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae63fddbf803a130e58814a99c94ed6ae" id="r_ae63fddbf803a130e58814a99c94ed6ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#ae63fddbf803a130e58814a99c94ed6ae">dpi_scale</a> = 1.0</td></tr>
+<tr class="separator:ae63fddbf803a130e58814a99c94ed6ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4744b3c22b64b244d91022fd1d35f50f" id="r_a4744b3c22b64b244d91022fd1d35f50f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a4744b3c22b64b244d91022fd1d35f50f">x</a> = 0</td></tr>
+<tr class="separator:a4744b3c22b64b244d91022fd1d35f50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac12e381209e752765dd9ede9155dca9d" id="r_ac12e381209e752765dd9ede9155dca9d"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#ac12e381209e752765dd9ede9155dca9d">y</a> = 0</td></tr>
+<tr class="separator:ac12e381209e752765dd9ede9155dca9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6de30a57fe9f454c7949f77dbfdcf4" id="r_a3d6de30a57fe9f454c7949f77dbfdcf4"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a3d6de30a57fe9f454c7949f77dbfdcf4">width</a> = 1366</td></tr>
+<tr class="separator:a3d6de30a57fe9f454c7949f77dbfdcf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff75c70e0cfccad40e32736a00e2094a" id="r_aff75c70e0cfccad40e32736a00e2094a"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#aff75c70e0cfccad40e32736a00e2094a">height</a> = 768</td></tr>
+<tr class="separator:aff75c70e0cfccad40e32736a00e2094a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb6fae56c8f0ce72deae2cf1ce0bebe2" id="r_acb6fae56c8f0ce72deae2cf1ce0bebe2"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#acb6fae56c8f0ce72deae2cf1ce0bebe2">minwidth</a> = 1</td></tr>
+<tr class="separator:acb6fae56c8f0ce72deae2cf1ce0bebe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef1d9a4d49a04787730e72a44be44f28" id="r_aef1d9a4d49a04787730e72a44be44f28"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#aef1d9a4d49a04787730e72a44be44f28">minheight</a> = 1</td></tr>
+<tr class="separator:aef1d9a4d49a04787730e72a44be44f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05bc9443dd6c6f03bbe1e14fb8998733" id="r_a05bc9443dd6c6f03bbe1e14fb8998733"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a05bc9443dd6c6f03bbe1e14fb8998733">vsync</a> = 1</td></tr>
+<tr class="separator:a05bc9443dd6c6f03bbe1e14fb8998733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb6f2a7d16bea974fe3c1829d644be9b" id="r_afb6f2a7d16bea974fe3c1829d644be9b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#afb6f2a7d16bea974fe3c1829d644be9b">msaa</a> = 0</td></tr>
+<tr class="separator:afb6f2a7d16bea974fe3c1829d644be9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8facdd267825c2570a3316507803c016" id="r_a8facdd267825c2570a3316507803c016"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a8facdd267825c2570a3316507803c016">depth</a> = 0</td></tr>
+<tr class="separator:a8facdd267825c2570a3316507803c016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3712dbb2ae2e188e1d68d24142c40b9e" id="r_a3712dbb2ae2e188e1d68d24142c40b9e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a3712dbb2ae2e188e1d68d24142c40b9e">display</a> = 0</td></tr>
+<tr class="separator:a3712dbb2ae2e188e1d68d24142c40b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a364d724e3709c64fdd8545f28e35f971" id="r_a364d724e3709c64fdd8545f28e35f971"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a364d724e3709c64fdd8545f28e35f971">borderless</a> = false</td></tr>
+<tr class="separator:a364d724e3709c64fdd8545f28e35f971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a439fe4b944d347d6d8458fea55d3dc6c" id="r_a439fe4b944d347d6d8458fea55d3dc6c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a439fe4b944d347d6d8458fea55d3dc6c">centered</a> = true</td></tr>
+<tr class="separator:a439fe4b944d347d6d8458fea55d3dc6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca6a79b420135fd5ed74e895871bdc35" id="r_aca6a79b420135fd5ed74e895871bdc35"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#aca6a79b420135fd5ed74e895871bdc35">high_dpi</a> = true</td></tr>
+<tr class="separator:aca6a79b420135fd5ed74e895871bdc35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54480b10817f807135d9a7529ba3dfc" id="r_ab54480b10817f807135d9a7529ba3dfc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#ab54480b10817f807135d9a7529ba3dfc">use_dpi_scale</a> = true</td></tr>
+<tr class="separator:ab54480b10817f807135d9a7529ba3dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2197e28227804b833b4310575957cd63" id="r_a2197e28227804b833b4310575957cd63"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a2197e28227804b833b4310575957cd63">use_position</a> = false</td></tr>
+<tr class="separator:a2197e28227804b833b4310575957cd63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06023c5ee8a0169c785a881d6e237b7c" id="r_a06023c5ee8a0169c785a881d6e237b7c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a06023c5ee8a0169c785a881d6e237b7c">fullscreen</a> = false</td></tr>
+<tr class="separator:a06023c5ee8a0169c785a881d6e237b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03f888607f20abb975ef754bd8cde471" id="r_a03f888607f20abb975ef754bd8cde471"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a03f888607f20abb975ef754bd8cde471">desktop_mode</a> = true</td></tr>
+<tr class="separator:a03f888607f20abb975ef754bd8cde471"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a423c30f1e3f43bf955066e771cc3cda1" id="r_a423c30f1e3f43bf955066e771cc3cda1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a423c30f1e3f43bf955066e771cc3cda1">stencil</a> = true</td></tr>
+<tr class="separator:a423c30f1e3f43bf955066e771cc3cda1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a723325d78ba81943795c7066f89dc1c8" id="r_a723325d78ba81943795c7066f89dc1c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a723325d78ba81943795c7066f89dc1c8">resizable</a> = false</td></tr>
+<tr class="separator:a723325d78ba81943795c7066f89dc1c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4238449849d25d3149ad4b087801c615" id="r_a4238449849d25d3149ad4b087801c615"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1window_1_1WindowSettings.html#a4238449849d25d3149ad4b087801c615">always_on_top</a> = false</td></tr>
+<tr class="separator:a4238449849d25d3149ad4b087801c615"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Display settings for window creation/resize. width/height == 0 selects the desktop display mode size. </p>
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a4238449849d25d3149ad4b087801c615" name="a4238449849d25d3149ad4b087801c615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4238449849d25d3149ad4b087801c615">&#9670;&#160;</a></span>always_on_top</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::always_on_top = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a364d724e3709c64fdd8545f28e35f971" name="a364d724e3709c64fdd8545f28e35f971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a364d724e3709c64fdd8545f28e35f971">&#9670;&#160;</a></span>borderless</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::borderless = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a439fe4b944d347d6d8458fea55d3dc6c" name="a439fe4b944d347d6d8458fea55d3dc6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a439fe4b944d347d6d8458fea55d3dc6c">&#9670;&#160;</a></span>centered</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::centered = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8facdd267825c2570a3316507803c016" name="a8facdd267825c2570a3316507803c016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8facdd267825c2570a3316507803c016">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::window::WindowSettings::depth = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03f888607f20abb975ef754bd8cde471" name="a03f888607f20abb975ef754bd8cde471"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03f888607f20abb975ef754bd8cde471">&#9670;&#160;</a></span>desktop_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::desktop_mode = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3712dbb2ae2e188e1d68d24142c40b9e" name="a3712dbb2ae2e188e1d68d24142c40b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3712dbb2ae2e188e1d68d24142c40b9e">&#9670;&#160;</a></span>display</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::window::WindowSettings::display = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00299">eve::window::sdl::Window::getPosition()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00286">eve::window::sdl::Window::setPosition()</a>.</p>
+
+</div>
+</div>
+<a id="ae63fddbf803a130e58814a99c94ed6ae" name="ae63fddbf803a130e58814a99c94ed6ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae63fddbf803a130e58814a99c94ed6ae">&#9670;&#160;</a></span>dpi_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::window::WindowSettings::dpi_scale = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00352">eve::window::sdl::Window::getDPIScale()</a>.</p>
+
+</div>
+</div>
+<a id="a06023c5ee8a0169c785a881d6e237b7c" name="a06023c5ee8a0169c785a881d6e237b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06023c5ee8a0169c785a881d6e237b7c">&#9670;&#160;</a></span>fullscreen</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::fullscreen = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff75c70e0cfccad40e32736a00e2094a" name="aff75c70e0cfccad40e32736a00e2094a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff75c70e0cfccad40e32736a00e2094a">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::window::WindowSettings::height = 768</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00074">eve::window::sdl::Window::getHeight()</a>.</p>
+
+</div>
+</div>
+<a id="aca6a79b420135fd5ed74e895871bdc35" name="aca6a79b420135fd5ed74e895871bdc35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca6a79b420135fd5ed74e895871bdc35">&#9670;&#160;</a></span>high_dpi</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::high_dpi = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef1d9a4d49a04787730e72a44be44f28" name="aef1d9a4d49a04787730e72a44be44f28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef1d9a4d49a04787730e72a44be44f28">&#9670;&#160;</a></span>minheight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::window::WindowSettings::minheight = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb6fae56c8f0ce72deae2cf1ce0bebe2" name="acb6fae56c8f0ce72deae2cf1ce0bebe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb6fae56c8f0ce72deae2cf1ce0bebe2">&#9670;&#160;</a></span>minwidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::window::WindowSettings::minwidth = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb6f2a7d16bea974fe3c1829d644be9b" name="afb6f2a7d16bea974fe3c1829d644be9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb6f2a7d16bea974fe3c1829d644be9b">&#9670;&#160;</a></span>msaa</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::window::WindowSettings::msaa = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b6b40c28b6f29717f6dd54728c1f3d8" name="a5b6b40c28b6f29717f6dd54728c1f3d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b6b40c28b6f29717f6dd54728c1f3d8">&#9670;&#160;</a></span>refreshrate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::window::WindowSettings::refreshrate = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a723325d78ba81943795c7066f89dc1c8" name="a723325d78ba81943795c7066f89dc1c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a723325d78ba81943795c7066f89dc1c8">&#9670;&#160;</a></span>resizable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::resizable = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a423c30f1e3f43bf955066e771cc3cda1" name="a423c30f1e3f43bf955066e771cc3cda1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a423c30f1e3f43bf955066e771cc3cda1">&#9670;&#160;</a></span>stencil</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::stencil = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab54480b10817f807135d9a7529ba3dfc" name="ab54480b10817f807135d9a7529ba3dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab54480b10817f807135d9a7529ba3dfc">&#9670;&#160;</a></span>use_dpi_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::use_dpi_scale = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00352">eve::window::sdl::Window::getDPIScale()</a>.</p>
+
+</div>
+</div>
+<a id="a2197e28227804b833b4310575957cd63" name="a2197e28227804b833b4310575957cd63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2197e28227804b833b4310575957cd63">&#9670;&#160;</a></span>use_position</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::window::WindowSettings::use_position = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00286">eve::window::sdl::Window::setPosition()</a>.</p>
+
+</div>
+</div>
+<a id="a05bc9443dd6c6f03bbe1e14fb8998733" name="a05bc9443dd6c6f03bbe1e14fb8998733"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05bc9443dd6c6f03bbe1e14fb8998733">&#9670;&#160;</a></span>vsync</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::window::WindowSettings::vsync = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00341">eve::window::sdl::Window::getVSync()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00337">eve::window::sdl::Window::setVSync()</a>.</p>
+
+</div>
+</div>
+<a id="a3d6de30a57fe9f454c7949f77dbfdcf4" name="a3d6de30a57fe9f454c7949f77dbfdcf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d6de30a57fe9f454c7949f77dbfdcf4">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::window::WindowSettings::width = 1366</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00072">eve::window::sdl::Window::getWidth()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00571">eve::ui::EditorHost::openWindow()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00064">eve::window::sdl::Window::setSize()</a>.</p>
+
+</div>
+</div>
+<a id="a4744b3c22b64b244d91022fd1d35f50f" name="a4744b3c22b64b244d91022fd1d35f50f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4744b3c22b64b244d91022fd1d35f50f">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t eve::window::WindowSettings::x = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00299">eve::window::sdl::Window::getPosition()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00286">eve::window::sdl::Window::setPosition()</a>.</p>
+
+</div>
+</div>
+<a id="ac12e381209e752765dd9ede9155dca9d" name="ac12e381209e752765dd9ede9155dca9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac12e381209e752765dd9ede9155dca9d">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t eve::window::WindowSettings::y = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Window_8h_source.html">Window.h</a> 第 <a class="el" href="Window_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="sdl_2Window_8cpp_source.html#l00299">eve::window::sdl::Window::getPosition()</a> , 以及 <a class="el" href="sdl_2Window_8cpp_source.html#l00286">eve::window::sdl::Window::setPosition()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/window/<a class="el" href="Window_8h_source.html">Window.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

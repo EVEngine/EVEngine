@@ -1,0 +1,235 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1World.html">World</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::World 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a8858f397a273114ddc1443880bb5540e">Body</a></td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ae10ca9e852f2c9b640c7a4039a77d5c9">clearContactEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a5c8b33b3439c1ce480770a1d38ce4788">destroy</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a24a74985363dd02899ce8edf7c7f8716">destroyBody</a>(Body *body)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a4f02958e366bafc63316e3365adb2da3">drawDebug</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a7cc19ccd29f90e77e5332f42ab062038">Fixture</a></td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a36855df17cb40ec79254f378276a012c">forgetBody</a>(Body *body)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a3fd35a16d4dfa3ca91d2e5e15cd5869d">forgetFixture</a>(Fixture *fixture)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#aada75c262871b4b2541367b79d38977c">getBeginContactBodyAId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a55ef5ca7558197584a84ce78fecd0773">getBeginContactBodyBId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ab938c662057511d8117ef2e2ffcd2012">getBeginContactCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a34e503139ed204594fa3776bd0b0e881">getBeginContactFixtureATag</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ad9092de8829917e2e58a89642b1e5b89">getBeginContactFixtureBTag</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a6cf88cc90bbc2eaa38500fe9a6dcf0c8">getEndContactBodyAId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a54ca0dc329575525ab4dff798e7f7fc5">getEndContactBodyBId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ac297666a85ebdbea5b4acbc10d85d12f">getEndContactCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a435b6ae2eac6bd323af906f104ed85e5">getEndContactFixtureATag</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#acda3969c10611e2e5439a15fcebcafb5">getEndContactFixtureBTag</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a757aa891f0559aba5c26f7d2eb86fc4c">getGravityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ad41e983e2a900352523a17f891d579d4">getGravityY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ab43f4d0d047ea36ed0784af64928f373">getImpactBodyAId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#abe4058d1a191e9f3a892c999260dfe5e">getImpactBodyBId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a6ec718e73e3ec17643a6ed75b0e32f7b">getImpactCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#aeea37c87007543a03906492fd834dc1a">getImpactFixtureATag</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#aef28d8765465fb4a724c0b8bac78edbc">getImpactFixtureBTag</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#acb33776546c14a153dc3547cdef23d41">getImpactNormalImpulse</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a8f256b07b0a443fcedcdc724234035c3">getImpactNormalX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a1f0a7d65066daac5e4be3b32ce92c295">getImpactNormalY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a48c6f74dccaafcf3c0966cb5317ca94f">getImpactPointX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#afc8c4f1b6f48e110b5093e6c8d917c47">getImpactPointY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a92f4816bf8edc85bd1d9deaddbb531e0">getImpactRelativeNormalSpeed</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ad2870566b08dc0f535751bb0b0be8f58">getImpactTangentImpulse</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#af03b5217ad527a2754e33579b534a071">getMeter</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a506b405b45602b9e820dd86d2498e68f">getQueryBodyId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a513d26e68df89fe4310b72a12fd814c0">getQueryCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a03111efebc2ef681fb6920119503d501">getRayHitBodyId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a7a9ffc620de8a7499c60d276e78558d1">getRayHitFraction</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#abe4c6dad038a6787053f74eec668e2af">getRayHitNormalX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a7fb7d36e938d2642c02c2621ab575a5d">getRayHitNormalY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a024bc9412737b10c79478dfb738251a1">getRayHitX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a3d1f49a7d4ac97a4b12e4f56fa1739e4">getRayHitY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a88438d8b3deaf2599b7cf048053605de">hasRayHit</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#aa3ae89e72901d58785bd68512afeff8b">newBody</a>(const std::string &amp;bodyType, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ac0690950d32b240f12ebb7394bb7f5d4">nextBodyId</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a3431bedc9c65bc99740810b38c4df97e">onBeginContact</a>(b2Contact *contact)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a3da243a331c6d168b1e9ee8f979b4ed8">onEndContact</a>(b2Contact *contact)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a69353ce34b54ed7f92b2b9149796fe83">onPostSolve</a>(b2Contact *contact, const b2ContactImpulse *impulse)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ae3e12d24eb3031d6493e6be999693fea">onPreSolve</a>(b2Contact *contact, const b2Manifold *oldManifold)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#abcc65ebd4f0e3ef07f1657e15a9eefc5">operator=</a>(const World &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a1e334d8fb2efd3f0862fb69f25e76f17">queryAABB</a>(float x, float y, float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a9bf8d2aac41e66f22edf1dc29d8a0547">raw</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ac6c385fe4445a049b1de16125c24dd72">raw</a>() const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ad0150b0cafa2585778083a27c8f3d58d">rayCast</a>(float x1, float y1, float x2, float y2)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a66c9689fff33b5287054b651dafca833">setGravity</a>(float gx, float gy)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a00090a591f61f969148bca8d3f2c32b7">setMeter</a>(float pixelsPerMeter)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ae85b77019bc58bf9e0281dad49d1bba2">toMeters</a>(float pixels) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a7a2a3d89ce5acca81b3aabfc47f2b617">toPixels</a>(float meters) const</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a1ccfad673f1a74a9f37ea694d8405aa2">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#ae0c527cd199adaa93945a2c1d177b37c">updateFull</a>(float dt, int velocityIterations, int positionIterations)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#af82ff88bedb163332bec66efcf10f5b6">World</a>(float gravityX, float gravityY, bool sleep, float meter)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#a40eb722667c7f4dfa665357f38f8eb29">World</a>(const World &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html#aa138fed3d49ce2ea9f542b82eb7eed82">~World</a>()</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

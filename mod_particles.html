@@ -1,0 +1,380 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 粒子模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">粒子模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>粒子模块</h1>
+<p><b>脚本入口：</b> <code>eve.Particles()</code></p>
+<p>用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local particles = eve.Particles();</div>
+<div class="line">local fire = particles.newEmitterFromFile(&quot;particles/fire.json&quot;);</div>
+<div class="line">fire.setPosition(320, 420);</div>
+<div class="line">fire.start();</div>
+<div class="line">particles.update(dt);</div>
+<div class="line">particles.render(gfx);</div>
+</div><!-- fragment --><h2>绑定到动态骨骼</h2>
+<p>粒子仍是 2D。支持多种运行时骨骼源；每帧 <code>particles.update</code> 会自动 <code>syncAttach</code>。</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">源   </th><th class="markdownTableHeadNone">API   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">3D <code>AnimPose</code>   </td><td class="markdownTableBodyNone"><code>attachToBone</code> / <code>attachToBoneByName</code>   </td><td class="markdownTableBodyNone">骨骼世界坐标经 <code>plane</code>（<code>xy</code>/<code>xz</code>/<code>yz</code>）与 <code>scale</code> 投影    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">2D Spine   </td><td class="markdownTableBodyNone"><code>attachToSpineBone</code> / <code>attachToSpineBoneByName</code>   </td><td class="markdownTableBodyNone">像素空间；<code>scale</code> 仍生效，<code>plane</code> 忽略    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">IK <code>Skeleton2D</code>   </td><td class="markdownTableBodyNone"><code>attachToSkeleton2D</code>   </td><td class="markdownTableBodyNone">FABRIK 链骨位置（像素/世界单位 × <code>scale</code>）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">IK <code>Skeleton3D</code>   </td><td class="markdownTableBodyNone"><code>attachToSkeleton3D</code>   </td><td class="markdownTableBodyNone">3D 骨位置经 <code>plane</code>+<code>scale</code> 投影   </td></tr>
+</table>
+<div class="fragment"><div class="line">local anim = eve.Animation();</div>
+<div class="line">// … player/sm 驱动 pose，并 pose.computeWorld(sk) …</div>
+<div class="line">local spark = particles.newEmitter(128);</div>
+<div class="line">spark.applyPreset(&quot;spark&quot;);</div>
+<div class="line">spark.setAttachScale(100);      // 米 → 像素</div>
+<div class="line">spark.setAttachPlane(&quot;xy&quot;);</div>
+<div class="line">spark.setAttachOffset(0, 0.05, 0);</div>
+<div class="line">spark.setFollowBoneRotation(true);</div>
+<div class="line">spark.attachToBoneByName(pose, sk, &quot;LeftHand&quot;);</div>
+<div class="line">spark.start();</div>
+</div><!-- fragment --><p>Spine（2D）示例：</p>
+<div class="fragment"><div class="line">local spine = anim.newSpineSkeleton(data);</div>
+<div class="line">spine.updateWorldTransform();</div>
+<div class="line">local dust = particles.newEmitter(64);</div>
+<div class="line">dust.attachToSpineBoneByName(spine, &quot;hand&quot;);</div>
+<div class="line">dust.start();</div>
+</div><!-- fragment --><p>IK 2D/3D 示例：</p>
+<div class="fragment"><div class="line">local ik = eve.IK();</div>
+<div class="line">local sk2 = ik.newSkeleton2D();</div>
+<div class="line">// … createBone / solve …</div>
+<div class="line">local tipFx = particles.newEmitter(32);</div>
+<div class="line">tipFx.attachToSkeleton2D(sk2, tipBoneId);</div>
+<div class="line">tipFx.setFollowBoneRotation(true);</div>
+</div><!-- fragment --><p><code>detach()</code> 解除绑定；<code>getAttachKind()</code> 返回 <code>"anim"</code> / <code>"spine"</code> / <code>"ik2d"</code> / <code>"ik3d"</code> / <code>"none"</code>；也可手动 <code>syncAttach()</code>。</p>
+<h2>蒙皮表面发射（人物皮肤粒子）</h2>
+<p>从 CPU 蒙皮后的顶点采样发射位置，适合身体表面的火花、灰尘、能量层：</p>
+<div class="fragment"><div class="line">local skin = anim.newSkinFromModel(model, meshIndex, sk);</div>
+<div class="line">pose.computeWorld(sk);</div>
+<div class="line">local aura = particles.newEmitter(512);</div>
+<div class="line">aura.applyPreset(&quot;smoke&quot;);</div>
+<div class="line">aura.setSkinScale(100);</div>
+<div class="line">aura.setSkinPlane(&quot;xy&quot;);</div>
+<div class="line">aura.setSkinSource(skin, pose);</div>
+<div class="line">// 可选：只从某根骨附近的顶点发射</div>
+<div class="line">aura.setSkinBoneFilterByName(sk, &quot;Spine&quot;, 0.2);</div>
+<div class="line">aura.start();</div>
+<div class="line">// 或瞬时爆发：</div>
+<div class="line">aura.emitFromSkin(80);</div>
+</div><!-- fragment --><p>脚本侧也可主动刷新蒙皮缓存：<code>skin.updateSkinnedPositions(pose)</code>，再用 <code>getSkinnedPositionX/Y/Z(i)</code> 读取。</p>
+<h2>外观增强：混合模式、序列帧与生命周期曲线</h2>
+<p>发射器支持加法混合、精灵表序列帧动画、多段颜色渐变与大小/旋转曲线，均可通过 JSON 或脚本配置。</p>
+<div class="fragment"><div class="line">// 加法混合 + 序列帧（4x2 精灵表，12 帧/秒，随机起始帧 0~25%）</div>
+<div class="line">local burst = particles.newEmitter(256);</div>
+<div class="line">burst.setBlendMode(&quot;additive&quot;);</div>
+<div class="line">burst.setFlipbook(4, 2, 12, 0.25);</div>
+<div class="line">burst.setTexture(tex);  // 精灵表贴图</div>
+<div class="line">burst.start();</div>
+<div class="line"> </div>
+<div class="line">// 多段颜色渐变 + 大小曲线 + 初始随机旋转</div>
+<div class="line">burst.clearColorGradient();</div>
+<div class="line">burst.addColorStop(0.0, 1.0, 0.9, 0.4, 1.0);  // 白热</div>
+<div class="line">burst.addColorStop(0.5, 1.0, 0.3, 0.0, 0.8);  // 橙红</div>
+<div class="line">burst.addColorStop(1.0, 0.1, 0.0, 0.0, 0.0);  // 熄灭</div>
+<div class="line">burst.clearSizeCurve();</div>
+<div class="line">burst.addSizeCurvePoint(0.0, 0.3);</div>
+<div class="line">burst.addSizeCurvePoint(0.7, 1.0);</div>
+<div class="line">burst.addSizeCurvePoint(1.0, 0.1);</div>
+<div class="line">burst.setStartRotation(-30, 30);  // 度</div>
+</div><!-- fragment --><p>JSON 等价配置：</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;blendMode&quot;: &quot;additive&quot;,</div>
+<div class="line">  &quot;flipbook&quot;: { &quot;hframes&quot;: 4, &quot;vframes&quot;: 2, &quot;frameRate&quot;: 12, &quot;frameRandomStart&quot;: 0.25 },</div>
+<div class="line">  &quot;startRotation&quot;: [-30, 30],</div>
+<div class="line">  &quot;colorOverLifetime&quot;: [</div>
+<div class="line">    { &quot;t&quot;: 0.0, &quot;r&quot;: 1.0, &quot;g&quot;: 0.9, &quot;b&quot;: 0.4, &quot;a&quot;: 1.0 },</div>
+<div class="line">    { &quot;t&quot;: 0.5, &quot;r&quot;: 1.0, &quot;g&quot;: 0.3, &quot;b&quot;: 0.0, &quot;a&quot;: 0.8 },</div>
+<div class="line">    { &quot;t&quot;: 1.0, &quot;r&quot;: 0.1, &quot;g&quot;: 0.0, &quot;b&quot;: 0.0, &quot;a&quot;: 0.0 }</div>
+<div class="line">  ],</div>
+<div class="line">  &quot;sizeOverLifetime&quot;: [[0.0, 0.3], [0.7, 1.0], [1.0, 0.1]],</div>
+<div class="line">  &quot;rotationOverLifetime&quot;: [[0.0, 0.0], [1.0, 120.0]]</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>说明：</p>
+<ul>
+<li><code>blendMode</code>：<code>"alpha"</code>（默认）/ <code>"additive"</code> / <code>"opaque"</code>。加法混合适合火焰、火花、魔法等自发光效果。</li>
+<li><code>flipbook</code>：<code>hframes</code>/<code>vframes</code> 为精灵表行列数；<code>frameRate</code> 为每秒帧数（0 = 静止第一帧）；<code>frameRandomStart</code>（0~1）随机化起始帧。</li>
+<li><code>colorOverLifetime</code> / <code>sizeOverLifetime</code> / <code>rotationOverLifetime</code> 为按归一化寿命采样的多段渐变/曲线；不配置时回退到 <code>colorStart</code>/<code>colorEnd</code> 与 <code>sizes</code> 的两端线性插值。<code>rotationOverLifetime</code> 单位为度，叠加在初始旋转与自旋之上。</li>
+</ul>
+<h2>发射控制与受力增强</h2>
+<p>发射器支持定时爆发、预热、重力/阻尼/限速、速度曲线、继承速度与本地/世界仿真空间：</p>
+<div class="fragment"><div class="line">// 定时爆发 + 预热（一次性爆炸，开场即满）</div>
+<div class="line">local boom = particles.newEmitter(256);</div>
+<div class="line">boom.addBurst(0.0, 60);        // 第 0 秒爆发 60 个</div>
+<div class="line">boom.addBurst(0.15, 30);       // 第 0.15 秒再爆 30 个</div>
+<div class="line">boom.setEmitterLifetime(0.3);  // 单次效果</div>
+<div class="line">boom.setPrewarm(0.5);          // start() 时预模拟 0.5 秒</div>
+<div class="line">boom.start();</div>
+<div class="line"> </div>
+<div class="line">// 重力 + 阻尼 + 限速 + 继承发射器移动速度（角色跑动扬尘）</div>
+<div class="line">local dust = particles.newEmitter(128);</div>
+<div class="line">dust.setGravity(0, 40);</div>
+<div class="line">dust.setDamping(0.8);</div>
+<div class="line">dust.setLimitVelocity(120);</div>
+<div class="line">dust.setInheritVelocity(0.6);</div>
+<div class="line">dust.setSimulationSpace(&quot;local&quot;);  // 粒子跟随发射器（本地空间）</div>
+<div class="line">dust.start();</div>
+</div><!-- fragment --><p>JSON 等价配置：</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  &quot;bursts&quot;: [ { &quot;time&quot;: 0.0, &quot;count&quot;: 60 }, { &quot;time&quot;: 0.15, &quot;count&quot;: 30 } ],</div>
+<div class="line">  &quot;prewarm&quot;: 0.5,</div>
+<div class="line">  &quot;gravity&quot;: [0, 40],</div>
+<div class="line">  &quot;damping&quot;: 0.8,</div>
+<div class="line">  &quot;limitVelocity&quot;: 120,</div>
+<div class="line">  &quot;velocityOverLifetime&quot;: [[0.0, 1.0], [1.0, 0.2]],</div>
+<div class="line">  &quot;inheritVelocity&quot;: 0.6,</div>
+<div class="line">  &quot;simulationSpace&quot;: &quot;local&quot;,</div>
+<div class="line">  &quot;noise&quot;: { &quot;strength&quot;: 8, &quot;frequency&quot;: 0.05, &quot;speed&quot;: 1.5 },</div>
+<div class="line">  &quot;maxDeltaTime&quot;: 0.1</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>说明：</p>
+<ul>
+<li><code>bursts</code>：按发射器运行时间触发的爆发（数组元素为 <code>{time, count}</code> 或 <code>[time, count]</code>），每个爆发只触发一次。</li>
+<li><code>prewarm</code>：<code>start()</code> 时按 1/60 步长预模拟，让循环效果在首帧就是满的。</li>
+<li><code>gravity</code> 每步作为加速度叠加；<code>damping</code> 为每秒速度衰减比例（0~1）；<code>limitVelocity</code> 为速度上限（0 = 不限）；<code>velocityOverLifetime</code> 为速度倍率曲线。</li>
+<li><code>inheritVelocity</code>（0~1）把发射器当前移动速度按比例附加到新粒子；<code>simulationSpace: "local"</code> 时粒子随发射器平移（默认 <code>"world"</code>）。</li>
+<li><code>noise</code> 为 CPU 值噪声湍流（强度/频率/时间流速），适合烟雾、火焰的自然扰动。</li>
+<li><code>maxDeltaTime</code> 限制单帧模拟步长，防止卡顿后的粒子爆炸。</li>
+</ul>
+<h2>碰撞与子发射器</h2>
+<div class="fragment"><div class="line">// 世界边界反弹（雨滴落地溅射）</div>
+<div class="line">local rain = particles.newEmitter(512);</div>
+<div class="line">rain.setCollision(&quot;bounce&quot;, 2, 0.4, 0.1);   // 半径 2、弹性 0.4、每次碰撞损失 10% 寿命</div>
+<div class="line">rain.setCollisionBounds(true, 0, 0, 960, 640);</div>
+<div class="line">rain.setWorldCollision(true);               // 可选：查询引擎级碰撞解析器（tilemap/Box2D）</div>
+<div class="line"> </div>
+<div class="line">// 子发射器：出生时喷火花，死亡时冒烟</div>
+<div class="line">local sparks = particles.newEmitter(128);</div>
+<div class="line">local smoke = particles.newEmitter(128);</div>
+<div class="line">sparks.addSubEmitter(smoke, &quot;death&quot;, 0.3);  // 继承 30% 速度</div>
+</div><!-- fragment --><p>JSON：<code>collision: {mode, radius, restitution, lifetimeLoss}</code>、<code>collisionBounds: {enabled, minX, minY, maxX, maxY}</code>、<code>worldCollision: true</code>。子发射器目前通过脚本 <code>addSubEmitter(target, trigger, inherit)</code> 关联（trigger 为 <code>"birth"</code> / <code>"death"</code> / <code>"collision"</code>）。</p>
+<p>拖尾：<code>setRenderMode("stretched", factor)</code> 或 JSON <code>renderMode: "stretched"</code> + <code>stretch</code>，粒子沿速度方向拉伸成彗星/流光。</p>
+<p>健壮性：<code>overflowMode</code>（<code>"drop"</code> 默认 / <code>"pause"</code> 暂停发射直到有空位 / <code>"warn"</code> 日志提示）；<code>setMaxDeltaTime</code> 限制单帧步长；带相机的发射器在屏幕外且无存活粒子时会跳过模拟。</p>
+<h2>力场、自定义 Shader 与粒子灯光</h2>
+<div class="fragment"><div class="line">// 径向力场：黑洞（吸引）/ 斥力场；strength &gt; 0 吸引，&lt; 0 排斥</div>
+<div class="line">local vortex = particles.newEmitter(512);</div>
+<div class="line">vortex.addForceField(400, 300, 180, 90, 1.5);   // 中心 (400,300)，半径 180，强度 90，衰减指数 1.5</div>
+<div class="line"> </div>
+<div class="line">// 自定义粒子 Shader（仅作用于带贴图的粒子；需要先创建 Shader）</div>
+<div class="line">local glow = particles.newEmitter(256);</div>
+<div class="line">glow.setShader(myShader);</div>
+<div class="line"> </div>
+<div class="line">// 粒子灯光：跟随存活粒子的 2D 点光源（每个发射器最多 8 盏，引擎单画布每帧最多 8 盏）</div>
+<div class="line">local torch = particles.newEmitter(128);</div>
+<div class="line">torch.setLights(true, 120, 1.2, 1.0, 0.6, 0.2, 4);</div>
+</div><!-- fragment --><p>JSON：<code>forceFields: [{x, y, radius, strength, falloff}]</code>；<code>lights: {enabled, max, radius, intensity, color: [r,g,b]}</code>。粒子灯光由 <code>ParticleLightSystem</code>（随 <code>particles.update</code> 自动调用）维护一盏 <code>Light2D</code> 池，位置与最前面的存活粒子同步。</p>
+<h2>GPU 加速模拟</h2>
+<p><code>setGpuSimulation(true)</code> 或 JSON <code>"gpuSimulation": true</code> 可为单个发射器开启 GPU 模拟：每粒子的运动积分（重力、阻尼、限速、径向/切向加速度、速度帧、噪声湍流、旋转、序列帧推进、寿命衰减）在计算着色器中执行，生成与回收、碰撞、子发射器仍由 CPU 处理。不可用（无 GPU 设备/计算管线失败）时自动回退到 CPU 模拟，行为保持一致。</p>
+<div class="fragment"><div class="line">local embers = particles.newEmitter(20000);  // 上万粒子场景</div>
+<div class="line">embers.setGpuSimulation(true);</div>
+<div class="line">embers.setGravity(0, 30);</div>
+<div class="line">embers.start();</div>
+</div><!-- fragment --><p>实现说明：粒子状态以 16 个 float/粒子存放在 SSBO（<code><a class="el" href="ParticleGpuKernel_8h.html">ParticleGpuKernel.h</a></code>），每帧 upload → dispatch（64 线程/组）→ readback 后走原有渲染路径；渲染仍是 CPU 批量四边形，因此收益集中在把每粒子物理计算移到 GPU。该模式下暂不参与 GPU 的项：力场、噪声外的 CPU 专属逻辑仍在 CPU 侧生效（碰撞等）。GLSL 内核可通过 <code>glslc</code> 单独编译验证（<code><a class="el" href="ParticleGpuKernel_8h.html">ParticleGpuKernel.h</a></code> 内注释含布局说明）。</p>
+<h2>对象关系与调用时机</h2>
+<p><code>Particles</code> 管理 Emitter 及配置、模拟、渲染系统；Emitter 持有容量、发射配置与运行状态。模块 update 统一推进所有 emitter（含骨骼绑定同步与蒙皮表面采样），render 按 layer 提交。</p>
+<p>帧序建议：动画 <code>computeWorld</code> → <code>particles.update(dt)</code> → <code>particles.render(gfx)</code>。</p>
+<h2>目标导向指南</h2>
+<h3>从 JSON 创建火焰</h3>
+<p>配置 buffer、发射率、寿命、速度、颜色和 <code>autoReload</code>，调用 <code>newEmitterFromFile()</code>；设置位置后 <code>start()</code>。模块统一 <code>update(dt)</code> 和 <code>render(gfx)</code>，无需逐粒子操作。</p>
+<h3>制作一次性爆炸</h3>
+<p>创建容量足够的 emitter，设置有限 emitter life 和较高瞬时发射率，停止循环；播放结束后检查 active 状态并回收。预览时用 preset 起步，再逐项覆盖参数。</p>
+<h3>角色手上的拖尾 / 皮肤光晕</h3>
+<p>动画更新并 <code>computeWorld</code> 后，用 <code>attachToBoneByName</code> 绑定肢体，或用 <code>setSkinSource</code> 从蒙皮表面发射；<code>setAttachScale</code> / <code>setSkinScale</code> 把模型单位映射到像素空间。</p>
+<h2>常见问题</h2>
+<ul>
+<li>buffer 太小导致高发射率粒子被覆盖。</li>
+<li>只 render 不 update，粒子静止。</li>
+<li>无限 emitter 离开场景后未 stop/回收。</li>
+<li>骨骼绑定后位置不对：检查是否先更新姿态（<code>pose.computeWorld(sk)</code> / <code>spine.updateWorldTransform()</code> / IK <code>forwardKinematics</code>/<code>solve</code>），以及 <code>plane</code>/<code>scale</code> 是否匹配相机投影。</li>
+<li>蒙皮表面无粒子：确认 <code>setSkinSource</code> 与 <code>hasBones</code> 网格，且过滤器未把候选顶点剔光。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>addBurst()</code>、<code>addColorStop()</code>、<code>addForceField()</code>、<code>addRotationCurvePoint()</code>、<code>addSizeCurvePoint()</code>、<code>addSubEmitter()</code>、<code>addVelocityCurvePoint()</code>、<code>applyConfig()</code>、<code>applyPreset()</code>、<code>attachToBone()</code>、<code>attachToBoneByName()</code>、<code>attachToSkeleton2D()</code>、<code>attachToSkeleton3D()</code>、<code>attachToSpineBone()</code>、<code>attachToSpineBoneByName()</code>、<code>clearBursts()</code>、<code>clearColorGradient()</code>、<code>clearForceFields()</code>、<code>clearRotationCurve()</code>、<code>clearSizeCurve()</code>、<code>clearSkinSource()</code>、<code>clearSubEmitters()</code>、<code>clearVelocityCurve()</code>、<code>detach()</code>、<code>emit()</code>、<code>emitFromSkin()</code>、<code>getAttachBone()</code>、<code>getAttachKind()</code>、<code>getAutoReload()</code>、<code>getBlendMode()</code>、<code>getBufferSize()</code>、<code>getConfigPath()</code>、<code>getCount()</code>、<code>getDirection()</code>、<code>getGpuSimulation()</code>、<code>getLightsEnabled()</code>、<code>getPrewarmSeconds()</code>、<code>getShader()</code></li>
+<li><code>getEmissionAreaType()</code>、<code>getEmissionAreaX()</code>、<code>getEmissionAreaY()</code>、<code>getEmissionRate()</code>、<code>getEmitterCount()</code>、<code>getEmitterLifetime()</code>、<code>getLayer()</code>、<code>getName()</code></li>
+<li><code>getParticleHeight()</code>、<code>getParticleLifetimeMax()</code>、<code>getParticleLifetimeMin()</code>、<code>getParticleWidth()</code>、<code>getSizeVariation()</code>、<code>getSpread()</code>、<code>getX()</code>、<code>getY()</code></li>
+<li><code>hasSkinSource()</code>、<code>isActive()</code>、<code>isAttached()</code>、<code>isPaused()</code>、<code>isStopped()</code>、<code>isVisible()</code>、<code>loadConfig()</code>、<code>moveTo()</code>、<code>newEmitter()</code>、<code>newEmitterFromFile()</code></li>
+<li><code>pause()</code>、<code>pollConfigs()</code>、<code>reloadConfig()</code>、<code>render()</code>、<code>reset()</code>、<code>setAttachOffset()</code>、<code>setAttachPlane()</code>、<code>setAttachScale()</code>、<code>setAutoReload()</code>、<code>setCamera()</code>、<code>setCanvas()</code></li>
+<li><code>setBlendMode()</code>、<code>setCollision()</code>、<code>setCollisionBounds()</code>、<code>setColorEnd()</code>、<code>setColorStart()</code>、<code>setDamping()</code>、<code>setDirection()</code>、<code>setEmissionArea()</code>、<code>setEmissionRate()</code>、<code>setEmitterLife()</code>、<code>setEmitterLifetime()</code>、<code>setEmitterTime()</code>、<code>setFlipbook()</code>、<code>setGpuSimulation()</code>、<code>setGravity()</code>、<code>setInheritVelocity()</code>、<code>setLights()</code>、<code>setLimitVelocity()</code>、<code>setMaxDeltaTime()</code>、<code>setNoise()</code>、<code>setOverflowMode()</code>、<code>setPrewarm()</code>、<code>setRenderMode()</code>、<code>setShader()</code>、<code>setSimulationSpace()</code>、<code>setWorldCollision()</code></li>
+<li><code>setFollowBoneRotation()</code>、<code>setLayer()</code>、<code>setLinearAcceleration()</code>、<code>setParticleLife()</code>、<code>setParticleLifetime()</code>、<code>setParticleSize()</code>、<code>setPosition()</code>、<code>setRadialAcceleration()</code>、<code>setSizeVariation()</code></li>
+<li><code>setSizes()</code>、<code>setSkinBoneFilter()</code>、<code>setSkinBoneFilterByName()</code>、<code>setSkinPlane()</code>、<code>setSkinScale()</code>、<code>setSkinSource()</code>、<code>setSpeed()</code>、<code>setSpin()</code>、<code>setSpread()</code>、<code>setStartRotation()</code>、<code>setTangentialAcceleration()</code>、<code>setTexture()</code>、<code>setVisible()</code>、<code>start()</code></li>
+<li><code>stop()</code>、<code>syncAttach()</code>、<code>update()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/particles/"><code>src/modules/particles/</code></a> <b>相关测试：</b> <a href="../../../test/particles.cpp"><code>test/particles.cpp</code></a>、<a href="../../../test/particles_attach_skin.cpp"><code>test/particles_attach_skin.cpp</code></a>、<a href="../../../test/particles_dynamic_bones.cpp"><code>test/particles_dynamic_bones.cpp</code></a>、<a href="../../../test/particles_attach_more.cpp"><code>test/particles_attach_more.cpp</code></a>、<a href="../../../test/particles_attach_extra.cpp"><code>test/particles_attach_extra.cpp</code></a>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

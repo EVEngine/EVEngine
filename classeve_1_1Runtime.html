@@ -1,0 +1,2120 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Runtime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Runtime.html">Runtime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1Runtime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Runtime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Runtime_8h_source.html">Runtime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime_1_1Scope.html">Scope</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pushes this <a class="el" href="classeve_1_1Runtime.html">Runtime</a> on the current thread's runtime stack.  <a href="classeve_1_1Runtime_1_1Scope.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1Runtime_1_1ScriptRecord.html">ScriptRecord</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime_1_1StackGuard.html">StackGuard</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores the native Squirrel stack when a binding operation leaves scope.  <a href="classeve_1_1Runtime_1_1StackGuard.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:aac57cff080acdcadf580f9453dbbb1d5" id="r_aac57cff080acdcadf580f9453dbbb1d5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> = uint64_t</td></tr>
+<tr class="separator:aac57cff080acdcadf580f9453dbbb1d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5612fe206f62a53e2ccec354c7e2049c" id="r_a5612fe206f62a53e2ccec354c7e2049c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a5612fe206f62a53e2ccec354c7e2049c">ErrorHandler</a> = std::function&lt; void(const <a class="el" href="classeve_1_1ScriptException.html">ScriptException</a> &amp;)&gt;</td></tr>
+<tr class="separator:a5612fe206f62a53e2ccec354c7e2049c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1310b1b4b8201b03d45458c8c8572008" id="r_a1310b1b4b8201b03d45458c8c8572008"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a1310b1b4b8201b03d45458c8c8572008">LifecycleHandler</a> = std::function&lt; void(const <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> &amp;)&gt;</td></tr>
+<tr class="separator:a1310b1b4b8201b03d45458c8c8572008"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a33d8adb5d4812cc3652a79a51f1e3851" id="r_a33d8adb5d4812cc3652a79a51f1e3851"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a33d8adb5d4812cc3652a79a51f1e3851">Runtime</a> (size_t stackSize=2048, ssq::Libs::Flag libraries=ssq::Libs::ALL)</td></tr>
+<tr class="memdesc:a33d8adb5d4812cc3652a79a51f1e3851"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a script runtime with its own Squirrel VM.  <br /></td></tr>
+<tr class="separator:a33d8adb5d4812cc3652a79a51f1e3851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d532d2bafc4934097bf479cc05963bc" id="r_a1d532d2bafc4934097bf479cc05963bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a1d532d2bafc4934097bf479cc05963bc">~Runtime</a> ()</td></tr>
+<tr class="separator:a1d532d2bafc4934097bf479cc05963bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41b4a1bc9cb520eac1396c0862369581" id="r_a41b4a1bc9cb520eac1396c0862369581"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a41b4a1bc9cb520eac1396c0862369581">Runtime</a> (<a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a41b4a1bc9cb520eac1396c0862369581"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72826fa53cee67ccbc08e27cb855c5bb" id="r_a72826fa53cee67ccbc08e27cb855c5bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a72826fa53cee67ccbc08e27cb855c5bb">operator=</a> (<a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a72826fa53cee67ccbc08e27cb855c5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a894cab375ebb40ccddab4e2c2901aa9a" id="r_a894cab375ebb40ccddab4e2c2901aa9a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a894cab375ebb40ccddab4e2c2901aa9a">Runtime</a> (const <a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;)=delete</td></tr>
+<tr class="separator:a894cab375ebb40ccddab4e2c2901aa9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acad0c134754a137384381a9c45ca05ac" id="r_acad0c134754a137384381a9c45ca05ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#acad0c134754a137384381a9c45ca05ac">operator=</a> (const <a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;)=delete</td></tr>
+<tr class="separator:acad0c134754a137384381a9c45ca05ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa064f2d68c528449b7d25c197d415419" id="r_aa064f2d68c528449b7d25c197d415419"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#aa064f2d68c528449b7d25c197d415419">initialize</a> ()</td></tr>
+<tr class="memdesc:aa064f2d68c528449b7d25c197d415419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes registered engine modules into the script root table. Safe to call more than once.  <br /></td></tr>
+<tr class="separator:aa064f2d68c528449b7d25c197d415419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01901ddb4bff5da146a118cf2ac53d27" id="r_a01901ddb4bff5da146a118cf2ac53d27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a01901ddb4bff5da146a118cf2ac53d27">shutdown</a> () noexcept</td></tr>
+<tr class="memdesc:a01901ddb4bff5da146a118cf2ac53d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tears down the VM and detaches the runtime; idempotent and noexcept.  <br /></td></tr>
+<tr class="separator:a01901ddb4bff5da146a118cf2ac53d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e371fcd9be4b840a4780e5b9b11b458" id="r_a6e371fcd9be4b840a4780e5b9b11b458"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a6e371fcd9be4b840a4780e5b9b11b458">initialized</a> () const noexcept</td></tr>
+<tr class="memdesc:a6e371fcd9be4b840a4780e5b9b11b458"><td class="mdescLeft">&#160;</td><td class="mdescRight">True once <a class="el" href="classeve_1_1Runtime.html#aa064f2d68c528449b7d25c197d415419" title="Exposes registered engine modules into the script root table. Safe to call more than once.">initialize()</a> has completed successfully.  <br /></td></tr>
+<tr class="separator:a6e371fcd9be4b840a4780e5b9b11b458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef85ce08b4988ed37128b7d2dcd84311" id="r_aef85ce08b4988ed37128b7d2dcd84311"><td class="memItemLeft" align="right" valign="top">ssq::VM &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#aef85ce08b4988ed37128b7d2dcd84311">vm</a> () noexcept</td></tr>
+<tr class="memdesc:aef85ce08b4988ed37128b7d2dcd84311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Underlying SimpleSquirrel VM (requires a live, initialized runtime).  <br /></td></tr>
+<tr class="separator:aef85ce08b4988ed37128b7d2dcd84311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7c5ba5a8f575e04ef4dd7e33dfcba7a" id="r_ac7c5ba5a8f575e04ef4dd7e33dfcba7a"><td class="memItemLeft" align="right" valign="top">const ssq::VM &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#ac7c5ba5a8f575e04ef4dd7e33dfcba7a">vm</a> () const noexcept</td></tr>
+<tr class="separator:ac7c5ba5a8f575e04ef4dd7e33dfcba7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7d92b627e9710e5192053856e0851b0" id="r_ac7d92b627e9710e5192053856e0851b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#ac7d92b627e9710e5192053856e0851b0">handle</a> () const noexcept</td></tr>
+<tr class="memdesc:ac7d92b627e9710e5192053856e0851b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw Squirrel VM handle; nullptr after shutdown.  <br /></td></tr>
+<tr class="separator:ac7d92b627e9710e5192053856e0851b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3111df3ab0062e7a378b783c26f6282" id="r_ae3111df3ab0062e7a378b783c26f6282"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#ae3111df3ab0062e7a378b783c26f6282">root</a> () const</td></tr>
+<tr class="memdesc:ae3111df3ab0062e7a378b783c26f6282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root script table of the VM.  <br /></td></tr>
+<tr class="separator:ae3111df3ab0062e7a378b783c26f6282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a138027f364847cfa61f407990e2ae7f3" id="r_a138027f364847cfa61f407990e2ae7f3"><td class="memItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a138027f364847cfa61f407990e2ae7f3">table</a> (const char *<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="memdesc:a138027f364847cfa61f407990e2ae7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up a named global table.  <br /></td></tr>
+<tr class="separator:a138027f364847cfa61f407990e2ae7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b8e190e5ad0d4ccb9f233ceff584fd5" id="r_a6b8e190e5ad0d4ccb9f233ceff584fd5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime_1_1StackGuard.html">StackGuard</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a6b8e190e5ad0d4ccb9f233ceff584fd5">guard</a> () noexcept</td></tr>
+<tr class="memdesc:a6b8e190e5ad0d4ccb9f233ceff584fd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII guard that restores the Squirrel stack top on scope exit.  <br /></td></tr>
+<tr class="separator:a6b8e190e5ad0d4ccb9f233ceff584fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb3b043f4de739983f9c77a265fc1c14" id="r_aeb3b043f4de739983f9c77a265fc1c14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime_1_1Scope.html">Scope</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#aeb3b043f4de739983f9c77a265fc1c14">enter</a> ()</td></tr>
+<tr class="memdesc:aeb3b043f4de739983f9c77a265fc1c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pushes this runtime on the thread-local runtime stack (RAII pop).  <br /></td></tr>
+<tr class="separator:aeb3b043f4de739983f9c77a265fc1c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b0cc37471c6645a5f7deaf94a51ea95" id="r_a2b0cc37471c6645a5f7deaf94a51ea95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a2b0cc37471c6645a5f7deaf94a51ea95">compileSource</a> (std::string source, std::string sourceName=&quot;buffer&quot;)</td></tr>
+<tr class="memdesc:a2b0cc37471c6645a5f7deaf94a51ea95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compiles script source without running it.  <br /></td></tr>
+<tr class="separator:a2b0cc37471c6645a5f7deaf94a51ea95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8230ff2e1706270d0a6fa6ad042685fd" id="r_a8230ff2e1706270d0a6fa6ad042685fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a8230ff2e1706270d0a6fa6ad042685fd">compileFile</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a8230ff2e1706270d0a6fa6ad042685fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compiles a script file without running it.  <br /></td></tr>
+<tr class="separator:a8230ff2e1706270d0a6fa6ad042685fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb6747b253afcc55906e8a89e16b64c" id="r_afeb6747b253afcc55906e8a89e16b64c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#afeb6747b253afcc55906e8a89e16b64c">execute</a> (<a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:afeb6747b253afcc55906e8a89e16b64c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a previously compiled script; throws <a class="el" href="classeve_1_1ScriptException.html" title="Exception raised at the public Runtime boundary.">ScriptException</a> on failure.  <br /></td></tr>
+<tr class="separator:afeb6747b253afcc55906e8a89e16b64c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67d2be5644b34d7a74a9ae158fa43322" id="r_a67d2be5644b34d7a74a9ae158fa43322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a67d2be5644b34d7a74a9ae158fa43322">runSource</a> (std::string source, std::string sourceName=&quot;buffer&quot;)</td></tr>
+<tr class="memdesc:a67d2be5644b34d7a74a9ae158fa43322"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: <a class="el" href="classeve_1_1Runtime.html#a2b0cc37471c6645a5f7deaf94a51ea95" title="Compiles script source without running it.">compileSource()</a> then <a class="el" href="classeve_1_1Runtime.html#afeb6747b253afcc55906e8a89e16b64c" title="Runs a previously compiled script; throws ScriptException on failure.">execute()</a>.  <br /></td></tr>
+<tr class="separator:a67d2be5644b34d7a74a9ae158fa43322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0417a2c62725a1e384c77af16d97c5d4" id="r_a0417a2c62725a1e384c77af16d97c5d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a0417a2c62725a1e384c77af16d97c5d4">runFile</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a0417a2c62725a1e384c77af16d97c5d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: <a class="el" href="classeve_1_1Runtime.html#a8230ff2e1706270d0a6fa6ad042685fd" title="Compiles a script file without running it.">compileFile()</a> then <a class="el" href="classeve_1_1Runtime.html#afeb6747b253afcc55906e8a89e16b64c" title="Runs a previously compiled script; throws ScriptException on failure.">execute()</a>.  <br /></td></tr>
+<tr class="separator:a0417a2c62725a1e384c77af16d97c5d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2907114698f0e3f2b683502cbc6e81ea" id="r_a2907114698f0e3f2b683502cbc6e81ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a2907114698f0e3f2b683502cbc6e81ea">reflectFile</a> (const std::string &amp;path)</td></tr>
+<tr class="memdesc:a2907114698f0e3f2b683502cbc6e81ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alias of <a class="el" href="classeve_1_1Runtime.html#a0417a2c62725a1e384c77af16d97c5d4" title="Convenience: compileFile() then execute().">runFile()</a>; reflects classes declared by the file.  <br /></td></tr>
+<tr class="separator:a2907114698f0e3f2b683502cbc6e81ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf59058dae9aec37126e0d58b221236e" id="r_aaf59058dae9aec37126e0d58b221236e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#aaf59058dae9aec37126e0d58b221236e">reflectClass</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;source={})</td></tr>
+<tr class="memdesc:aaf59058dae9aec37126e0d58b221236e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reflects a class by name, storing its inspected members.  <br /></td></tr>
+<tr class="separator:aaf59058dae9aec37126e0d58b221236e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50181ddcef6007cbc108a542ea6621c3" id="r_a50181ddcef6007cbc108a542ea6621c3"><td class="memItemLeft" align="right" valign="top">ssq::Object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a50181ddcef6007cbc108a542ea6621c3">createInstance</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;source={})</td></tr>
+<tr class="memdesc:a50181ddcef6007cbc108a542ea6621c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a live instance of a script class (default constructor).  <br /></td></tr>
+<tr class="separator:a50181ddcef6007cbc108a542ea6621c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e89492bc62a173daf785d1370e3895b" id="r_a3e89492bc62a173daf785d1370e3895b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ReflectedMember.html">ReflectedMember</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a3e89492bc62a173daf785d1370e3895b">reflectInstance</a> (const ssq::Object &amp;instance) const</td></tr>
+<tr class="memdesc:a3e89492bc62a173daf785d1370e3895b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspects a live instance: own + inherited members with current values.  <br /></td></tr>
+<tr class="separator:a3e89492bc62a173daf785d1370e3895b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce62c1429552cd7df0ff3c309fd383f" id="r_acce62c1429552cd7df0ff3c309fd383f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#acce62c1429552cd7df0ff3c309fd383f">readProperty</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="memdesc:acce62c1429552cd7df0ff3c309fd383f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads one property of a live instance.  <br /></td></tr>
+<tr class="separator:acce62c1429552cd7df0ff3c309fd383f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a608cb4b117c0c44a0ff855164b50d6a5" id="r_a608cb4b117c0c44a0ff855164b50d6a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a608cb4b117c0c44a0ff855164b50d6a5">writeProperty</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) const</td></tr>
+<tr class="memdesc:a608cb4b117c0c44a0ff855164b50d6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes one property of a live instance.  <br /></td></tr>
+<tr class="separator:a608cb4b117c0c44a0ff855164b50d6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6335e1d8339b7832ff21893b317061f8" id="r_a6335e1d8339b7832ff21893b317061f8"><td class="memItemLeft" align="right" valign="top">ssq::Object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a6335e1d8339b7832ff21893b317061f8">readObjectProperty</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="memdesc:a6335e1d8339b7832ff21893b317061f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a live object-valued property (nested instance).  <br /></td></tr>
+<tr class="separator:a6335e1d8339b7832ff21893b317061f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a571011173d156083ebdb90f7796f9" id="r_ad8a571011173d156083ebdb90f7796f9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#ad8a571011173d156083ebdb90f7796f9">arraySize</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="memdesc:ad8a571011173d156083ebdb90f7796f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Element count of an array member (0 when missing/not an array).  <br /></td></tr>
+<tr class="separator:ad8a571011173d156083ebdb90f7796f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a2343ca1bd8790841751d7ac218b3f" id="r_af2a2343ca1bd8790841751d7ac218b3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#af2a2343ca1bd8790841751d7ac218b3f">arrayGet</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, size_t index) const</td></tr>
+<tr class="memdesc:af2a2343ca1bd8790841751d7ac218b3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Element value of an array member; empty when out of range.  <br /></td></tr>
+<tr class="separator:af2a2343ca1bd8790841751d7ac218b3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae14873f1b7fcbca432c5d02219bb44c3" id="r_ae14873f1b7fcbca432c5d02219bb44c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#ae14873f1b7fcbca432c5d02219bb44c3">arraySet</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, size_t index, const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) const</td></tr>
+<tr class="memdesc:ae14873f1b7fcbca432c5d02219bb44c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces one element of an array member.  <br /></td></tr>
+<tr class="separator:ae14873f1b7fcbca432c5d02219bb44c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7d5f97b01ac80b935f30b3482379f26" id="r_aa7d5f97b01ac80b935f30b3482379f26"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#aa7d5f97b01ac80b935f30b3482379f26">arrayAppend</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) const</td></tr>
+<tr class="memdesc:aa7d5f97b01ac80b935f30b3482379f26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends an element to an array member.  <br /></td></tr>
+<tr class="separator:aa7d5f97b01ac80b935f30b3482379f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2eb7dac0bd1dc16589ae50ac547d2d1f" id="r_a2eb7dac0bd1dc16589ae50ac547d2d1f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a2eb7dac0bd1dc16589ae50ac547d2d1f">arrayRemove</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, size_t index) const</td></tr>
+<tr class="memdesc:a2eb7dac0bd1dc16589ae50ac547d2d1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes one element of an array member (shifts the rest).  <br /></td></tr>
+<tr class="separator:a2eb7dac0bd1dc16589ae50ac547d2d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afde09c4b4fcb1d2aeca2da72b4b6ad69" id="r_afde09c4b4fcb1d2aeca2da72b4b6ad69"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#afde09c4b4fcb1d2aeca2da72b4b6ad69">tableKeys</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="memdesc:afde09c4b4fcb1d2aeca2da72b4b6ad69"><td class="mdescLeft">&#160;</td><td class="mdescRight">String keys of a table member.  <br /></td></tr>
+<tr class="separator:afde09c4b4fcb1d2aeca2da72b4b6ad69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e1785fc56ce86f3eddddf7fb679d2d9" id="r_a5e1785fc56ce86f3eddddf7fb679d2d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a5e1785fc56ce86f3eddddf7fb679d2d9">tableGet</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;key) const</td></tr>
+<tr class="memdesc:a5e1785fc56ce86f3eddddf7fb679d2d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value of a table member key; empty when missing.  <br /></td></tr>
+<tr class="separator:a5e1785fc56ce86f3eddddf7fb679d2d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86c97f1b46aa1d4e7af1ff453f8e2504" id="r_a86c97f1b46aa1d4e7af1ff453f8e2504"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a86c97f1b46aa1d4e7af1ff453f8e2504">tableSet</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;key, const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) const</td></tr>
+<tr class="memdesc:a86c97f1b46aa1d4e7af1ff453f8e2504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a key of a table member (creates the key when missing).  <br /></td></tr>
+<tr class="separator:a86c97f1b46aa1d4e7af1ff453f8e2504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d70c6992e20e1a7627454b821276311" id="r_a7d70c6992e20e1a7627454b821276311"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a7d70c6992e20e1a7627454b821276311">tableRemove</a> (const ssq::Object &amp;instance, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;key) const</td></tr>
+<tr class="memdesc:a7d70c6992e20e1a7627454b821276311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a key from a table member.  <br /></td></tr>
+<tr class="separator:a7d70c6992e20e1a7627454b821276311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311648a484eab503252fb7f022d386b9" id="r_a311648a484eab503252fb7f022d386b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a311648a484eab503252fb7f022d386b9">reload</a> (<a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a311648a484eab503252fb7f022d386b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recompiles and re-runs a script from its original source.  <br /></td></tr>
+<tr class="separator:a311648a484eab503252fb7f022d386b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ec44b522bb26e970d7653b3d6a7305a" id="r_a2ec44b522bb26e970d7653b3d6a7305a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a2ec44b522bb26e970d7653b3d6a7305a">unload</a> (<a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a2ec44b522bb26e970d7653b3d6a7305a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unloads a script and removes its declared classes; false if unknown/unloaded.  <br /></td></tr>
+<tr class="separator:a2ec44b522bb26e970d7653b3d6a7305a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087c20808f06783f36a98a829f29d3ed" id="r_a087c20808f06783f36a98a829f29d3ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a087c20808f06783f36a98a829f29d3ed">unloadAll</a> () noexcept</td></tr>
+<tr class="memdesc:a087c20808f06783f36a98a829f29d3ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unloads every script.  <br /></td></tr>
+<tr class="separator:a087c20808f06783f36a98a829f29d3ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb8425e7409ca07f20ba413711f90da" id="r_a1eb8425e7409ca07f20ba413711f90da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a1eb8425e7409ca07f20ba413711f90da">contains</a> (<a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const noexcept</td></tr>
+<tr class="memdesc:a1eb8425e7409ca07f20ba413711f90da"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if a script with the given id is tracked.  <br /></td></tr>
+<tr class="separator:a1eb8425e7409ca07f20ba413711f90da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0513e3af64163bffc4c207b0b68fdb0" id="r_ab0513e3af64163bffc4c207b0b68fdb0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#ab0513e3af64163bffc4c207b0b68fdb0">script</a> (<a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const noexcept</td></tr>
+<tr class="memdesc:ab0513e3af64163bffc4c207b0b68fdb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script metadata for an id, or nullptr if unknown.  <br /></td></tr>
+<tr class="separator:ab0513e3af64163bffc4c207b0b68fdb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7a733e070382478b1acfd094e2512ca" id="r_af7a733e070382478b1acfd094e2512ca"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#af7a733e070382478b1acfd094e2512ca">scripts</a> () const</td></tr>
+<tr class="memdesc:af7a733e070382478b1acfd094e2512ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metadata for all tracked scripts, sorted by id.  <br /></td></tr>
+<tr class="separator:af7a733e070382478b1acfd094e2512ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54624885a5d7f043f491dbf075c21367" id="r_a54624885a5d7f043f491dbf075c21367"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a54624885a5d7f043f491dbf075c21367">reflectedClass</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const noexcept</td></tr>
+<tr class="memdesc:a54624885a5d7f043f491dbf075c21367"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reflected class by name, or nullptr.  <br /></td></tr>
+<tr class="separator:a54624885a5d7f043f491dbf075c21367"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fa4f828e2b53cbfcd52003c5a70eb29" id="r_a3fa4f828e2b53cbfcd52003c5a70eb29"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a3fa4f828e2b53cbfcd52003c5a70eb29">reflectedClasses</a> () const</td></tr>
+<tr class="memdesc:a3fa4f828e2b53cbfcd52003c5a70eb29"><td class="mdescLeft">&#160;</td><td class="mdescRight">All reflected classes, sorted by name.  <br /></td></tr>
+<tr class="separator:a3fa4f828e2b53cbfcd52003c5a70eb29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eb23e2a8d4a5d429af5b38449aee80a" id="r_a7eb23e2a8d4a5d429af5b38449aee80a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a7eb23e2a8d4a5d429af5b38449aee80a">scanClasses</a> ()</td></tr>
+<tr class="memdesc:a7eb23e2a8d4a5d429af5b38449aee80a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans the root table for script classes and refreshes reflection.  <br /></td></tr>
+<tr class="separator:a7eb23e2a8d4a5d429af5b38449aee80a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0228e0cd8af89aeadf05906c3a71cad8" id="r_a0228e0cd8af89aeadf05906c3a71cad8"><td class="memItemLeft" align="right" valign="top">ssq::Class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a0228e0cd8af89aeadf05906c3a71cad8">findClass</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) const</td></tr>
+<tr class="memdesc:a0228e0cd8af89aeadf05906c3a71cad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a script class by name (throws if it does not exist).  <br /></td></tr>
+<tr class="separator:a0228e0cd8af89aeadf05906c3a71cad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abea875d656892416c50124b067e04c22" id="r_abea875d656892416c50124b067e04c22"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#abea875d656892416c50124b067e04c22">classNameOf</a> (const ssq::Object &amp;instance) const</td></tr>
+<tr class="memdesc:abea875d656892416c50124b067e04c22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the script class of a live instance ("" when unknown).  <br /></td></tr>
+<tr class="separator:abea875d656892416c50124b067e04c22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29881d56b5b9894efadf8e1cb8faeb8e" id="r_a29881d56b5b9894efadf8e1cb8faeb8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a29881d56b5b9894efadf8e1cb8faeb8e">setErrorHandler</a> (<a class="el" href="classeve_1_1Runtime.html#a5612fe206f62a53e2ccec354c7e2049c">ErrorHandler</a> handler)</td></tr>
+<tr class="memdesc:a29881d56b5b9894efadf8e1cb8faeb8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the handler invoked for script errors at the <a class="el" href="classeve_1_1Runtime.html">Runtime</a> boundary.  <br /></td></tr>
+<tr class="separator:a29881d56b5b9894efadf8e1cb8faeb8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9376dd4a0af2a23a3cb9911fd09b31a" id="r_af9376dd4a0af2a23a3cb9911fd09b31a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#af9376dd4a0af2a23a3cb9911fd09b31a">setLifecycleHandler</a> (<a class="el" href="classeve_1_1Runtime.html#a1310b1b4b8201b03d45458c8c8572008">LifecycleHandler</a> handler)</td></tr>
+<tr class="memdesc:af9376dd4a0af2a23a3cb9911fd09b31a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the handler notified on every script lifecycle change.  <br /></td></tr>
+<tr class="separator:af9376dd4a0af2a23a3cb9911fd09b31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a0d1f22d325b6e115dec4f8e8515d0bc9" id="r_a0d1f22d325b6e115dec4f8e8515d0bc9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Runtime.html">Runtime</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a0d1f22d325b6e115dec4f8e8515d0bc9">current</a> () noexcept</td></tr>
+<tr class="memdesc:a0d1f22d325b6e115dec4f8e8515d0bc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The runtime currently at the top of this thread's runtime stack, or nullptr.  <br /></td></tr>
+<tr class="separator:a0d1f22d325b6e115dec4f8e8515d0bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64b661c35f9ad33ad18dee24ca0c7fa4" id="r_a64b661c35f9ad33ad18dee24ca0c7fa4"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Runtime.html#a64b661c35f9ad33ad18dee24ca0c7fa4">stackDepth</a> () noexcept</td></tr>
+<tr class="memdesc:a64b661c35f9ad33ad18dee24ca0c7fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth of the thread-local runtime stack.  <br /></td></tr>
+<tr class="separator:a64b661c35f9ad33ad18dee24ca0c7fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00168">168</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a5612fe206f62a53e2ccec354c7e2049c" name="a5612fe206f62a53e2ccec354c7e2049c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5612fe206f62a53e2ccec354c7e2049c">&#9670;&#160;</a></span>ErrorHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1Runtime.html#a5612fe206f62a53e2ccec354c7e2049c">eve::Runtime::ErrorHandler</a> =  std::function&lt;void(const <a class="el" href="classeve_1_1ScriptException.html">ScriptException</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1310b1b4b8201b03d45458c8c8572008" name="a1310b1b4b8201b03d45458c8c8572008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1310b1b4b8201b03d45458c8c8572008">&#9670;&#160;</a></span>LifecycleHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1Runtime.html#a1310b1b4b8201b03d45458c8c8572008">eve::Runtime::LifecycleHandler</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac57cff080acdcadf580f9453dbbb1d5" name="aac57cff080acdcadf580f9453dbbb1d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac57cff080acdcadf580f9453dbbb1d5">&#9670;&#160;</a></span>ScriptId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">eve::Runtime::ScriptId</a> =  uint64_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a33d8adb5d4812cc3652a79a51f1e3851" name="a33d8adb5d4812cc3652a79a51f1e3851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33d8adb5d4812cc3652a79a51f1e3851">&#9670;&#160;</a></span>Runtime() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Runtime::Runtime </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>stackSize</em> = <code>2048</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Libs::Flag&#160;</td>
+          <td class="paramname"><em>libraries</em> = <code>ssq::Libs::ALL</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a script runtime with its own Squirrel VM. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stackSize</td><td>Initial Squirrel stack size in slots (must be &gt; 0). </td></tr>
+    <tr><td class="paramname">libraries</td><td>Squirrel standard libraries to register (default: all). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d532d2bafc4934097bf479cc05963bc" name="a1d532d2bafc4934097bf479cc05963bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d532d2bafc4934097bf479cc05963bc">&#9670;&#160;</a></span>~Runtime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Runtime::~Runtime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00409">409</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l00432">shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="a41b4a1bc9cb520eac1396c0862369581" name="a41b4a1bc9cb520eac1396c0862369581"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41b4a1bc9cb520eac1396c0862369581">&#9670;&#160;</a></span>Runtime() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Runtime::Runtime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a894cab375ebb40ccddab4e2c2901aa9a" name="a894cab375ebb40ccddab4e2c2901aa9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a894cab375ebb40ccddab4e2c2901aa9a">&#9670;&#160;</a></span>Runtime() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Runtime::Runtime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa7d5f97b01ac80b935f30b3482379f26" name="aa7d5f97b01ac80b935f30b3482379f26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7d5f97b01ac80b935f30b3482379f26">&#9670;&#160;</a></span>arrayAppend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::arrayAppend </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends an element to an array member. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00857">857</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="af2a2343ca1bd8790841751d7ac218b3f" name="af2a2343ca1bd8790841751d7ac218b3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a2343ca1bd8790841751d7ac218b3f">&#9670;&#160;</a></span>arrayGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> eve::Runtime::arrayGet </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Element value of an array member; empty when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00805">805</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="a2eb7dac0bd1dc16589ae50ac547d2d1f" name="a2eb7dac0bd1dc16589ae50ac547d2d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2eb7dac0bd1dc16589ae50ac547d2d1f">&#9670;&#160;</a></span>arrayRemove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::arrayRemove </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes one element of an array member (shifts the rest). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00877">877</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="ae14873f1b7fcbca432c5d02219bb44c3" name="ae14873f1b7fcbca432c5d02219bb44c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae14873f1b7fcbca432c5d02219bb44c3">&#9670;&#160;</a></span>arraySet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::arraySet </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces one element of an array member. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00829">829</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="ad8a571011173d156083ebdb90f7796f9" name="ad8a571011173d156083ebdb90f7796f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8a571011173d156083ebdb90f7796f9">&#9670;&#160;</a></span>arraySize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::Runtime::arraySize </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Element count of an array member (0 when missing/not an array). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00786">786</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="abea875d656892416c50124b067e04c22" name="abea875d656892416c50124b067e04c22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abea875d656892416c50124b067e04c22">&#9670;&#160;</a></span>classNameOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::Runtime::classNameOf </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Name of the script class of a live instance ("" when unknown). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01171">1171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>, <a class="el" href="Inspector_8cpp_source.html#l00159">eve::ui::Inspector::inspectObject()</a> , 以及 <a class="el" href="ObjectRegistry_8cpp_source.html#l00026">eve::ui::ObjectRegistry::registerObject()</a>.</p>
+
+</div>
+</div>
+<a id="a8230ff2e1706270d0a6fa6ad042685fd" name="a8230ff2e1706270d0a6fa6ad042685fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8230ff2e1706270d0a6fa6ad042685fd">&#9670;&#160;</a></span>compileFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">Runtime::ScriptId</a> eve::Runtime::compileFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compiles a script file without running it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>File path (must be non-empty). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>New script id. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1ScriptException.html" title="Exception raised at the public Runtime boundary.">ScriptException</a></td><td>on compile failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00491">491</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a3de9387fc230ce74214446e58c4fefde">eve::Compile</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00575">runFile()</a>.</p>
+
+</div>
+</div>
+<a id="a2b0cc37471c6645a5f7deaf94a51ea95" name="a2b0cc37471c6645a5f7deaf94a51ea95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b0cc37471c6645a5f7deaf94a51ea95">&#9670;&#160;</a></span>compileSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">Runtime::ScriptId</a> eve::Runtime::compileSource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>sourceName</em> = <code>&quot;buffer&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compiles script source without running it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Script source text. </td></tr>
+    <tr><td class="paramname">sourceName</td><td>Name used in errors and lifecycle events ("buffer" if omitted). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>New script id. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1ScriptException.html" title="Exception raised at the public Runtime boundary.">ScriptException</a></td><td>on compile failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00469">469</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a3de9387fc230ce74214446e58c4fefde">eve::Compile</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00569">runSource()</a>.</p>
+
+</div>
+</div>
+<a id="a1eb8425e7409ca07f20ba413711f90da" name="a1eb8425e7409ca07f20ba413711f90da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb8425e7409ca07f20ba413711f90da">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::contains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True if a script with the given id is tracked. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01083">1083</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a50181ddcef6007cbc108a542ea6621c3" name="a50181ddcef6007cbc108a542ea6621c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50181ddcef6007cbc108a542ea6621c3">&#9670;&#160;</a></span>createInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Object eve::Runtime::createInstance </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a live instance of a script class (default constructor). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Class name (must be non-empty). </td></tr>
+    <tr><td class="paramname">source</td><td>Optional source label used in errors. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A rooted instance; the caller's ssq::Object releases it on destruction. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1ScriptException.html" title="Exception raised at the public Runtime boundary.">ScriptException</a></td><td>when the class is missing or the constructor fails. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00595">595</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8h_source.html#l00036">eve::script::ScriptErrorContext::empty()</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a74de3e45e4491e956e8dc18d841d9b00">eve::Reflect</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="ScriptError_8cpp_source.html#l00211">eve::script::takeLastScriptError()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inspector_8cpp_source.html#l00180">eve::ui::Inspector::addInstance()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00015">eve::ui::ObjectRegistry::create()</a>, <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a> , 以及 <a class="el" href="Inspector_8cpp_source.html#l00135">eve::ui::Inspector::selectClass()</a>.</p>
+
+</div>
+</div>
+<a id="a0d1f22d325b6e115dec4f8e8515d0bc9" name="a0d1f22d325b6e115dec4f8e8515d0bc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d1f22d325b6e115dec4f8e8515d0bc9">&#9670;&#160;</a></span>current()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> * eve::Runtime::current </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The runtime currently at the top of this thread's runtime stack, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00463">463</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb3b043f4de739983f9c77a265fc1c14" name="aeb3b043f4de739983f9c77a265fc1c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb3b043f4de739983f9c77a265fc1c14">&#9670;&#160;</a></span>enter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime_1_1Scope.html">Scope</a> eve::Runtime::enter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pushes this runtime on the thread-local runtime stack (RAII pop). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00857">arrayAppend()</a>, <a class="el" href="Runtime_8cpp_source.html#l00805">arrayGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00877">arrayRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00829">arraySet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00786">arraySize()</a>, <a class="el" href="Runtime_8cpp_source.html#l01171">classNameOf()</a>, <a class="el" href="Runtime_8cpp_source.html#l00491">compileFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00469">compileSource()</a>, <a class="el" href="Runtime_8cpp_source.html#l00595">createInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">execute()</a>, <a class="el" href="Module_8cpp_source.html#l00086">eve::ModuleManager::expose_pending()</a>, <a class="el" href="Runtime_8cpp_source.html#l00411">initialize()</a>, <a class="el" href="Runtime_8cpp_source.html#l00764">readObjectProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00682">readProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00581">reflectClass()</a>, <a class="el" href="Runtime_8cpp_source.html#l00635">reflectInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l01115">scanClasses()</a>, <a class="el" href="Runtime_8cpp_source.html#l00933">tableGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00904">tableKeys()</a>, <a class="el" href="Runtime_8cpp_source.html#l01000">tableRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00958">tableSet()</a>, <a class="el" href="Runtime_8cpp_source.html#l01031">unload()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00701">writeProperty()</a>.</p>
+
+</div>
+</div>
+<a id="afeb6747b253afcc55906e8a89e16b64c" name="afeb6747b253afcc55906e8a89e16b64c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb6747b253afcc55906e8a89e16b64c">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> &amp; eve::Runtime::execute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs a previously compiled script; throws <a class="el" href="classeve_1_1ScriptException.html" title="Exception raised at the public Runtime boundary.">ScriptException</a> on failure. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8h_source.html#l00036">eve::script::ScriptErrorContext::empty()</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a40cd014b7b6251e3a22e6a45a73a64e1">eve::Execute</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="ScriptError_8cpp_source.html#l00189">eve::script::formatScriptError()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa7381d487d18845b379422325c0a768d6">eve::Loaded</a>, <a class="el" href="ScriptError_8h_source.html#l00026">eve::script::ScriptErrorContext::message</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa5bda814c4aedb126839228f1a3d92f09">eve::Running</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="ScriptError_8cpp_source.html#l00211">eve::script::takeLastScriptError()</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daaa5ae20aa7fda5bd38bf0dce98e65bd2d">eve::Unloaded</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00453">vm()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00575">runFile()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00569">runSource()</a>.</p>
+
+</div>
+</div>
+<a id="a0228e0cd8af89aeadf05906c3a71cad8" name="a0228e0cd8af89aeadf05906c3a71cad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0228e0cd8af89aeadf05906c3a71cad8">&#9670;&#160;</a></span>findClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Class eve::Runtime::findClass </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds a script class by name (throws if it does not exist). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01165">1165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a6b8e190e5ad0d4ccb9f233ceff584fd5" name="a6b8e190e5ad0d4ccb9f233ceff584fd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b8e190e5ad0d4ccb9f233ceff584fd5">&#9670;&#160;</a></span>guard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime_1_1StackGuard.html">StackGuard</a> eve::Runtime::guard </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>RAII guard that restores the Squirrel stack top on scope exit. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00857">arrayAppend()</a>, <a class="el" href="Runtime_8cpp_source.html#l00805">arrayGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00877">arrayRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00829">arraySet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00786">arraySize()</a>, <a class="el" href="Runtime_8cpp_source.html#l01171">classNameOf()</a>, <a class="el" href="Runtime_8cpp_source.html#l00491">compileFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00469">compileSource()</a>, <a class="el" href="Runtime_8cpp_source.html#l00595">createInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">execute()</a>, <a class="el" href="Runtime_8cpp_source.html#l00411">initialize()</a>, <a class="el" href="Runtime_8cpp_source.html#l00764">readObjectProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00682">readProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00581">reflectClass()</a>, <a class="el" href="Runtime_8cpp_source.html#l00635">reflectInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l01115">scanClasses()</a>, <a class="el" href="Runtime_8cpp_source.html#l00933">tableGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00904">tableKeys()</a>, <a class="el" href="Runtime_8cpp_source.html#l01000">tableRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00958">tableSet()</a>, <a class="el" href="Runtime_8cpp_source.html#l01031">unload()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00701">writeProperty()</a>.</p>
+
+</div>
+</div>
+<a id="ac7d92b627e9710e5192053856e0851b0" name="ac7d92b627e9710e5192053856e0851b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7d92b627e9710e5192053856e0851b0">&#9670;&#160;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> eve::Runtime::handle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Raw Squirrel VM handle; nullptr after shutdown. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00455">455</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00857">arrayAppend()</a>, <a class="el" href="Runtime_8cpp_source.html#l00805">arrayGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00877">arrayRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00829">arraySet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00786">arraySize()</a>, <a class="el" href="Runtime_8cpp_source.html#l01171">classNameOf()</a>, <a class="el" href="Runtime_8cpp_source.html#l00595">createInstance()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">execute()</a>, <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>, <a class="el" href="UI_8cpp_source.html#l01136">eve::ui::UI::inspectSetPickHandler()</a>, <a class="el" href="Runtime_8cpp_source.html#l00764">readObjectProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00682">readProperty()</a>, <a class="el" href="Runtime_8cpp_source.html#l00635">reflectInstance()</a>, <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>, <a class="el" href="Runtime_8cpp_source.html#l01115">scanClasses()</a>, <a class="el" href="UI_8cpp_source.html#l01284">eve::ui::UI::sceneSetPickHandler()</a>, <a class="el" href="Runtime_8cpp_source.html#l00432">shutdown()</a>, <a class="el" href="Runtime_8cpp_source.html#l00933">tableGet()</a>, <a class="el" href="Runtime_8cpp_source.html#l00904">tableKeys()</a>, <a class="el" href="Runtime_8cpp_source.html#l01000">tableRemove()</a>, <a class="el" href="Runtime_8cpp_source.html#l00958">tableSet()</a>, <a class="el" href="Runtime_8cpp_source.html#l01031">unload()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00701">writeProperty()</a>.</p>
+
+</div>
+</div>
+<a id="aa064f2d68c528449b7d25c197d415419" name="aa064f2d68c528449b7d25c197d415419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa064f2d68c528449b7d25c197d415419">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Runtime::initialize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exposes registered engine modules into the script root table. Safe to call more than once. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Module_8cpp_source.html#l00082">eve::ModuleManager::detach()</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a40cd014b7b6251e3a22e6a45a73a64e1">eve::Execute</a>, <a class="el" href="Module_8cpp_source.html#l00065">eve::ModuleManager::expose()</a>, <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00457">table()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mcp_8cpp_source.html#l00069">eve::cmd::Cmdline::McpHost()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a6e371fcd9be4b840a4780e5b9b11b458" name="a6e371fcd9be4b840a4780e5b9b11b458"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e371fcd9be4b840a4780e5b9b11b458">&#9670;&#160;</a></span>initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::initialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True once <a class="el" href="classeve_1_1Runtime.html#aa064f2d68c528449b7d25c197d415419" title="Exposes registered engine modules into the script root table. Safe to call more than once.">initialize()</a> has completed successfully. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acad0c134754a137384381a9c45ca05ac" name="acad0c134754a137384381a9c45ca05ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acad0c134754a137384381a9c45ca05ac">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp; eve::Runtime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72826fa53cee67ccbc08e27cb855c5bb" name="a72826fa53cee67ccbc08e27cb855c5bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72826fa53cee67ccbc08e27cb855c5bb">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp; eve::Runtime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6335e1d8339b7832ff21893b317061f8" name="a6335e1d8339b7832ff21893b317061f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6335e1d8339b7832ff21893b317061f8">&#9670;&#160;</a></span>readObjectProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Object eve::Runtime::readObjectProperty </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a live object-valued property (nested instance). </p>
+<dl class="section return"><dt>返回</dt><dd>The rooted nested instance; an empty object when the slot is missing or not an instance. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00764">764</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="acce62c1429552cd7df0ff3c309fd383f" name="acce62c1429552cd7df0ff3c309fd383f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acce62c1429552cd7df0ff3c309fd383f">&#9670;&#160;</a></span>readProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> eve::Runtime::readProperty </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads one property of a live instance. </p>
+<dl class="section return"><dt>返回</dt><dd>Value snapshot; empty when the slot is missing. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00682">682</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00232">eve::ui::DatabasePanel::build()</a>, <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00296">eve::ui::DatabasePanel::sync()</a> , 以及 <a class="el" href="Inspector_8cpp_source.html#l00607">eve::ui::Inspector::sync()</a>.</p>
+
+</div>
+</div>
+<a id="aaf59058dae9aec37126e0d58b221236e" name="aaf59058dae9aec37126e0d58b221236e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf59058dae9aec37126e0d58b221236e">&#9670;&#160;</a></span>reflectClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a> &amp; eve::Runtime::reflectClass </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reflects a class by name, storing its inspected members. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Class name (must be non-empty). </td></tr>
+    <tr><td class="paramname">source</td><td>Optional source label used in errors. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00581">581</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00021">cls</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a74de3e45e4491e956e8dc18d841d9b00">eve::Reflect</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+</div>
+</div>
+<a id="a54624885a5d7f043f491dbf075c21367" name="a54624885a5d7f043f491dbf075c21367"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54624885a5d7f043f491dbf075c21367">&#9670;&#160;</a></span>reflectedClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a> * eve::Runtime::reflectedClass </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reflected class by name, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01100">1100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inspector_8cpp_source.html#l00507">eve::ui::Inspector::build()</a> , 以及 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="a3fa4f828e2b53cbfcd52003c5a70eb29" name="a3fa4f828e2b53cbfcd52003c5a70eb29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa4f828e2b53cbfcd52003c5a70eb29">&#9670;&#160;</a></span>reflectedClasses()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ReflectedClass.html">ReflectedClass</a> &gt; eve::Runtime::reflectedClasses </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>All reflected classes, sorted by name. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01105">1105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="a2907114698f0e3f2b683502cbc6e81ea" name="a2907114698f0e3f2b683502cbc6e81ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2907114698f0e3f2b683502cbc6e81ea">&#9670;&#160;</a></span>reflectFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a> eve::Runtime::reflectFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Alias of <a class="el" href="classeve_1_1Runtime.html#a0417a2c62725a1e384c77af16d97c5d4" title="Convenience: compileFile() then execute().">runFile()</a>; reflects classes declared by the file. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00269">269</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e89492bc62a173daf785d1370e3895b" name="a3e89492bc62a173daf785d1370e3895b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e89492bc62a173daf785d1370e3895b">&#9670;&#160;</a></span>reflectInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ReflectedMember.html">ReflectedMember</a> &gt; eve::Runtime::reflectInstance </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inspects a live instance: own + inherited members with current values. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instance</td><td>Live script instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00635">635</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a> , 以及 <a class="el" href="Inspector_8cpp_source.html#l00607">eve::ui::Inspector::sync()</a>.</p>
+
+</div>
+</div>
+<a id="a311648a484eab503252fb7f022d386b9" name="a311648a484eab503252fb7f022d386b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a311648a484eab503252fb7f022d386b9">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">Runtime::ScriptId</a> eve::Runtime::reload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recompiles and re-runs a script from its original source. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01020">1020</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a3de9387fc230ce74214446e58c4fefde">eve::Compile</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="Runtime_8cpp_source.html#l00575">runFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00569">runSource()</a>, <a class="el" href="Runtime_8h_source.html#l00068">eve::ScriptException::source()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l01031">unload()</a>.</p>
+
+</div>
+</div>
+<a id="ae3111df3ab0062e7a378b783c26f6282" name="ae3111df3ab0062e7a378b783c26f6282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3111df3ab0062e7a378b783c26f6282">&#9670;&#160;</a></span>root()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::Runtime::root </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Root script table of the VM. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a0417a2c62725a1e384c77af16d97c5d4" name="a0417a2c62725a1e384c77af16d97c5d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0417a2c62725a1e384c77af16d97c5d4">&#9670;&#160;</a></span>runFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">Runtime::ScriptId</a> eve::Runtime::runFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: <a class="el" href="classeve_1_1Runtime.html#a8230ff2e1706270d0a6fa6ad042685fd" title="Compiles a script file without running it.">compileFile()</a> then <a class="el" href="classeve_1_1Runtime.html#afeb6747b253afcc55906e8a89e16b64c" title="Runs a previously compiled script; throws ScriptException on failure.">execute()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00575">575</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l00491">compileFile()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">execute()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l01020">reload()</a>.</p>
+
+</div>
+</div>
+<a id="a67d2be5644b34d7a74a9ae158fa43322" name="a67d2be5644b34d7a74a9ae158fa43322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67d2be5644b34d7a74a9ae158fa43322">&#9670;&#160;</a></span>runSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">Runtime::ScriptId</a> eve::Runtime::runSource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>sourceName</em> = <code>&quot;buffer&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: <a class="el" href="classeve_1_1Runtime.html#a2b0cc37471c6645a5f7deaf94a51ea95" title="Compiles script source without running it.">compileSource()</a> then <a class="el" href="classeve_1_1Runtime.html#afeb6747b253afcc55906e8a89e16b64c" title="Runs a previously compiled script; throws ScriptException on failure.">execute()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00569">569</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l00469">compileSource()</a>, <a class="el" href="Runtime_8cpp_source.html#l00515">execute()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l01020">reload()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a7eb23e2a8d4a5d429af5b38449aee80a" name="a7eb23e2a8d4a5d429af5b38449aee80a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eb23e2a8d4a5d429af5b38449aee80a">&#9670;&#160;</a></span>scanClasses()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::Runtime::scanClasses </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scans the root table for script classes and refreshes reflection. </p>
+<p>Picks up classes defined through dofile()/compilestring() outside the <a class="el" href="classeve_1_1Runtime.html">Runtime</a> API and re-inspects classes replaced by hot reload. Returns the number of classes that were (re)scanned. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01115">1115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00021">cls</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="ab0513e3af64163bffc4c207b0b68fdb0" name="ab0513e3af64163bffc4c207b0b68fdb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0513e3af64163bffc4c207b0b68fdb0">&#9670;&#160;</a></span>script()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> * eve::Runtime::script </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Script metadata for an id, or nullptr if unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01085">1085</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af7a733e070382478b1acfd094e2512ca" name="af7a733e070382478b1acfd094e2512ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7a733e070382478b1acfd094e2512ca">&#9670;&#160;</a></span>scripts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ScriptInfo.html">ScriptInfo</a> &gt; eve::Runtime::scripts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Metadata for all tracked scripts, sorted by id. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01090">1090</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="a29881d56b5b9894efadf8e1cb8faeb8e" name="a29881d56b5b9894efadf8e1cb8faeb8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29881d56b5b9894efadf8e1cb8faeb8e">&#9670;&#160;</a></span>setErrorHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Runtime::setErrorHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#a5612fe206f62a53e2ccec354c7e2049c">ErrorHandler</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces the handler invoked for script errors at the <a class="el" href="classeve_1_1Runtime.html">Runtime</a> boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af9376dd4a0af2a23a3cb9911fd09b31a" name="af9376dd4a0af2a23a3cb9911fd09b31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9376dd4a0af2a23a3cb9911fd09b31a">&#9670;&#160;</a></span>setLifecycleHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Runtime::setLifecycleHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#a1310b1b4b8201b03d45458c8c8572008">LifecycleHandler</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces the handler notified on every script lifecycle change. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00376">376</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01901ddb4bff5da146a118cf2ac53d27" name="a01901ddb4bff5da146a118cf2ac53d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01901ddb4bff5da146a118cf2ac53d27">&#9670;&#160;</a></span>shutdown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Runtime::shutdown </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tears down the VM and detaches the runtime; idempotent and noexcept. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8cpp_source.html#l00226">eve::script::clearLastScriptError()</a>, <a class="el" href="Module_8cpp_source.html#l00082">eve::ModuleManager::detach()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l01069">unloadAll()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00409">~Runtime()</a>.</p>
+
+</div>
+</div>
+<a id="a64b661c35f9ad33ad18dee24ca0c7fa4" name="a64b661c35f9ad33ad18dee24ca0c7fa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64b661c35f9ad33ad18dee24ca0c7fa4">&#9670;&#160;</a></span>stackDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::Runtime::stackDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Depth of the thread-local runtime stack. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00467">467</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a138027f364847cfa61f407990e2ae7f3" name="a138027f364847cfa61f407990e2ae7f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a138027f364847cfa61f407990e2ae7f3">&#9670;&#160;</a></span>table()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::Runtime::table </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Looks up a named global table. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Name of the global table (must be non-null and non-empty). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00411">initialize()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a5e1785fc56ce86f3eddddf7fb679d2d9" name="a5e1785fc56ce86f3eddddf7fb679d2d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e1785fc56ce86f3eddddf7fb679d2d9">&#9670;&#160;</a></span>tableGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> eve::Runtime::tableGet </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Value of a table member key; empty when missing. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00933">933</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+</div>
+</div>
+<a id="afde09c4b4fcb1d2aeca2da72b4b6ad69" name="afde09c4b4fcb1d2aeca2da72b4b6ad69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afde09c4b4fcb1d2aeca2da72b4b6ad69">&#9670;&#160;</a></span>tableKeys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::Runtime::tableKeys </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>String keys of a table member. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00904">904</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="a7d70c6992e20e1a7627454b821276311" name="a7d70c6992e20e1a7627454b821276311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d70c6992e20e1a7627454b821276311">&#9670;&#160;</a></span>tableRemove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::tableRemove </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a key from a table member. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01000">1000</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="a86c97f1b46aa1d4e7af1ff453f8e2504" name="a86c97f1b46aa1d4e7af1ff453f8e2504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86c97f1b46aa1d4e7af1ff453f8e2504">&#9670;&#160;</a></span>tableSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::tableSet </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a key of a table member (creates the key when missing). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00958">958</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<a id="a2ec44b522bb26e970d7653b3d6a7305a" name="a2ec44b522bb26e970d7653b3d6a7305a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ec44b522bb26e970d7653b3d6a7305a">&#9670;&#160;</a></span>unload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::unload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html#aac57cff080acdcadf580f9453dbbb1d5">ScriptId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unloads a script and removes its declared classes; false if unknown/unloaded. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01031">1031</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l00286">eve::Runtime::ScriptRecord::class_objects</a>, <a class="el" href="Runtime_8cpp_source.html#l00285">eve::Runtime::ScriptRecord::compiled</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="Runtime_8h_source.html#l00165">eve::ScriptInfo::error</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00171">error</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="Runtime_8cpp_source.html#l00282">eve::Runtime::ScriptRecord::info</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="Runtime_8h_source.html#l00162">eve::ScriptInfo::source</a>, <a class="el" href="Runtime_8h_source.html#l00163">eve::ScriptInfo::state</a>, <a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445aae11d3ee071e72953c90b02bff1a19cb">eve::Unload</a>, <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daaa5ae20aa7fda5bd38bf0dce98e65bd2d">eve::Unloaded</a> , 以及 <a class="el" href="namespaceeve.html#a61faae4d6488bb9756f624196fc503daa62168dff2fc801c4ff6ee24619bc314c">eve::Unloading</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l01020">reload()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l01069">unloadAll()</a>.</p>
+
+</div>
+</div>
+<a id="a087c20808f06783f36a98a829f29d3ed" name="a087c20808f06783f36a98a829f29d3ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a087c20808f06783f36a98a829f29d3ed">&#9670;&#160;</a></span>unloadAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Runtime::unloadAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unloads every script. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l01069">1069</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l01031">unload()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00432">shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="ac7c5ba5a8f575e04ef4dd7e33dfcba7a" name="ac7c5ba5a8f575e04ef4dd7e33dfcba7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7c5ba5a8f575e04ef4dd7e33dfcba7a">&#9670;&#160;</a></span>vm() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const ssq::VM &amp; eve::Runtime::vm </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef85ce08b4988ed37128b7d2dcd84311" name="aef85ce08b4988ed37128b7d2dcd84311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef85ce08b4988ed37128b7d2dcd84311">&#9670;&#160;</a></span>vm() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::VM &amp; eve::Runtime::vm </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Underlying SimpleSquirrel VM (requires a live, initialized runtime). </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00515">execute()</a>, <a class="el" href="Module_8cpp_source.html#l00065">eve::ModuleManager::expose()</a>, <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>, <a class="el" href="Mcp_8cpp_source.html#l00069">eve::cmd::Cmdline::McpHost()</a> , 以及 <a class="el" href="Run_8cpp_source.html#l00353">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a608cb4b117c0c44a0ff855164b50d6a5" name="a608cb4b117c0c44a0ff855164b50d6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a608cb4b117c0c44a0ff855164b50d6a5">&#9670;&#160;</a></span>writeProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Runtime::writeProperty </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ReflectedValue.html">ReflectedValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes one property of a live instance. </p>
+<p>The existing slot type is preserved (bool stays bool, integer stays integer, float stays float, string stays string); null slots take the type of the incoming value. </p><dl class="section return"><dt>返回</dt><dd>False when the member does not exist or is a method. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00701">701</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034">eve::Bool</a>, <a class="el" href="Runtime_8h_source.html#l00241">enter()</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b">eve::Float</a>, <a class="el" href="Runtime_8h_source.html#l00239">guard()</a>, <a class="el" href="Runtime_8cpp_source.html#l00455">handle()</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2baa0faef0851b4294c06f2b94bb1cb2044">eve::Integer</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98">eve::String</a> , 以及 <a class="el" href="DnutParser_8cpp_source.html#l00018">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectScript_8cpp_source.html#l00163">eve::exposeReflection()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Runtime_8h_source.html">Runtime.h</a></li>
+<li>src/engine/common/<a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,968 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::IEditorHost类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1IEditorHost.html">IEditorHost</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1IEditorHost-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::IEditorHost类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Declarative editor-host control (provided by the ui module).  
+ <a href="classeve_1_1IEditorHost.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="engine_2common_2EditorHost_8h_source.html">EditorHost.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a96c2d9ddd6a6ddc6b391ccad153a7ffc" id="r_a96c2d9ddd6a6ddc6b391ccad153a7ffc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a96c2d9ddd6a6ddc6b391ccad153a7ffc">~IEditorHost</a> ()=default</td></tr>
+<tr class="separator:a96c2d9ddd6a6ddc6b391ccad153a7ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a0ce70138347e8d35823d7112daa579" id="r_a8a0ce70138347e8d35823d7112daa579"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a8a0ce70138347e8d35823d7112daa579">status</a> () const =0</td></tr>
+<tr class="separator:a8a0ce70138347e8d35823d7112daa579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16301630db071699b037b9efb796b65f" id="r_a16301630db071699b037b9efb796b65f"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a16301630db071699b037b9efb796b65f">openWindow</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, int <a class="el" href="Pathfinder_8cpp.html#a2474a5474cbff19523a51eb1de01cda4">width</a>, int <a class="el" href="Grass_8cpp.html#a48083b65ac9a863566dc3e3fff09a5b4">height</a>)=0</td></tr>
+<tr class="separator:a16301630db071699b037b9efb796b65f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a48031d92cbf7a27056fd36b0d4ebf0" id="r_a4a48031d92cbf7a27056fd36b0d4ebf0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a4a48031d92cbf7a27056fd36b0d4ebf0">closeWindow</a> ()=0</td></tr>
+<tr class="separator:a4a48031d92cbf7a27056fd36b0d4ebf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db0c5f409593829f12b74ae535ff047" id="r_a5db0c5f409593829f12b74ae535ff047"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a5db0c5f409593829f12b74ae535ff047">windowState</a> () const =0</td></tr>
+<tr class="separator:a5db0c5f409593829f12b74ae535ff047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf4406a802be51231ca0d09a5ee8acb1" id="r_acf4406a802be51231ca0d09a5ee8acb1"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#acf4406a802be51231ca0d09a5ee8acb1">applyEditor</a> (const std::string &amp;json)=0</td></tr>
+<tr class="separator:acf4406a802be51231ca0d09a5ee8acb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638a248b3fffe813511a8541de95850e" id="r_a638a248b3fffe813511a8541de95850e"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a638a248b3fffe813511a8541de95850e">removeEditor</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)=0</td></tr>
+<tr class="separator:a638a248b3fffe813511a8541de95850e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7b7614d41d7e8419d5651854c708d63" id="r_ac7b7614d41d7e8419d5651854c708d63"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#ac7b7614d41d7e8419d5651854c708d63">listEditors</a> () const =0</td></tr>
+<tr class="separator:ac7b7614d41d7e8419d5651854c708d63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19e5a2ea05272ba73f20a6b9afe111df" id="r_a19e5a2ea05272ba73f20a6b9afe111df"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a19e5a2ea05272ba73f20a6b9afe111df">editorState</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const =0</td></tr>
+<tr class="separator:a19e5a2ea05272ba73f20a6b9afe111df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade63eaacf90f11f2d30a73f75b031f62" id="r_ade63eaacf90f11f2d30a73f75b031f62"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#ade63eaacf90f11f2d30a73f75b031f62">setEditorValue</a> (const std::string &amp;editorId, const std::string &amp;widgetId, const std::string &amp;<a class="el" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>)=0</td></tr>
+<tr class="separator:ade63eaacf90f11f2d30a73f75b031f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae238bc2897599cc18cefba20569300b" id="r_aae238bc2897599cc18cefba20569300b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#aae238bc2897599cc18cefba20569300b">consumeEvents</a> (const std::string &amp;editorId)=0</td></tr>
+<tr class="separator:aae238bc2897599cc18cefba20569300b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b9c17fa8af900e9be720c250316258e" id="r_a3b9c17fa8af900e9be720c250316258e"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a3b9c17fa8af900e9be720c250316258e">widgetRect</a> (const std::string &amp;editorId, const std::string &amp;widgetId) const =0</td></tr>
+<tr class="separator:a3b9c17fa8af900e9be720c250316258e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fbe1c803c6d7b77d5da81f40f0ca5ae" id="r_a7fbe1c803c6d7b77d5da81f40f0ca5ae"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a7fbe1c803c6d7b77d5da81f40f0ca5ae">registerVM</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, const std::string &amp;source)=0</td></tr>
+<tr class="separator:a7fbe1c803c6d7b77d5da81f40f0ca5ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad139316bf87c819f24706253e6f9ee08" id="r_ad139316bf87c819f24706253e6f9ee08"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#ad139316bf87c819f24706253e6f9ee08">unregisterVM</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)=0</td></tr>
+<tr class="separator:ad139316bf87c819f24706253e6f9ee08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab3d3a3a74db6f640187545a3bcffed0" id="r_aab3d3a3a74db6f640187545a3bcffed0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#aab3d3a3a74db6f640187545a3bcffed0">saveEditor</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)=0</td></tr>
+<tr class="separator:aab3d3a3a74db6f640187545a3bcffed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b69bed0ee739b1dedafc5e5270c86a8" id="r_a8b69bed0ee739b1dedafc5e5270c86a8"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a8b69bed0ee739b1dedafc5e5270c86a8">unloadEditor</a> (const std::string &amp;<a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)=0</td></tr>
+<tr class="separator:a8b69bed0ee739b1dedafc5e5270c86a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b12a370e62f169186d03865c0f6018e" id="r_a6b12a370e62f169186d03865c0f6018e"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a6b12a370e62f169186d03865c0f6018e">capture</a> (const std::string &amp;path)=0</td></tr>
+<tr class="separator:a6b12a370e62f169186d03865c0f6018e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd3e0a74319cad43bf91d897b60504a7" id="r_afd3e0a74319cad43bf91d897b60504a7"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#afd3e0a74319cad43bf91d897b60504a7">runScript</a> (const std::string &amp;source)=0</td></tr>
+<tr class="separator:afd3e0a74319cad43bf91d897b60504a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bde4a93f1f7df440261ce9e05e0babd" id="r_a9bde4a93f1f7df440261ce9e05e0babd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a9bde4a93f1f7df440261ce9e05e0babd">requestExit</a> ()=0</td></tr>
+<tr class="separator:a9bde4a93f1f7df440261ce9e05e0babd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0238e4101e0dc87d3dbdd92366675555" id="r_a0238e4101e0dc87d3dbdd92366675555"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a0238e4101e0dc87d3dbdd92366675555">exitRequested</a> ()=0</td></tr>
+<tr class="memdesc:a0238e4101e0dc87d3dbdd92366675555"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after <a class="el" href="classeve_1_1IEditorHost.html#a9bde4a93f1f7df440261ce9e05e0babd">requestExit()</a> (main loop exit condition).  <br /></td></tr>
+<tr class="separator:a0238e4101e0dc87d3dbdd92366675555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a190eaba546476a60c902d382e016cd9f" id="r_a190eaba546476a60c902d382e016cd9f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a190eaba546476a60c902d382e016cd9f">frame</a> ()=0</td></tr>
+<tr class="memdesc:a190eaba546476a60c902d382e016cd9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pump the host's per-frame update (frame loop).  <br /></td></tr>
+<tr class="separator:a190eaba546476a60c902d382e016cd9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a269f9b1a2fcd463cab08f5bb858c8267" id="r_a269f9b1a2fcd463cab08f5bb858c8267"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a269f9b1a2fcd463cab08f5bb858c8267">stop</a> ()=0</td></tr>
+<tr class="memdesc:a269f9b1a2fcd463cab08f5bb858c8267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shut the host down (stops window + workers).  <br /></td></tr>
+<tr class="separator:a269f9b1a2fcd463cab08f5bb858c8267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac870e39322ec44321d2104dc080f702c" id="r_ac870e39322ec44321d2104dc080f702c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#ac870e39322ec44321d2104dc080f702c">start</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const std::string &amp;gameRoot, bool allowWindow)=0</td></tr>
+<tr class="memdesc:ac870e39322ec44321d2104dc080f702c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the host against a Squirrel VM (cmdline integration).  <br /></td></tr>
+<tr class="separator:ac870e39322ec44321d2104dc080f702c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa90397410610a9f94e59d91b6d08d28a" id="r_aa90397410610a9f94e59d91b6d08d28a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#aa90397410610a9f94e59d91b6d08d28a">exposeScriptApi</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)=0</td></tr>
+<tr class="memdesc:aa90397410610a9f94e59d91b6d08d28a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose the host's script API on the VM.  <br /></td></tr>
+<tr class="separator:aa90397410610a9f94e59d91b6d08d28a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a735d209512885072c3bd8667bf542956" id="r_a735d209512885072c3bd8667bf542956"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEditorHost.html#a735d209512885072c3bd8667bf542956">capabilityName</a> = &quot;IEditorHost&quot;</td></tr>
+<tr class="separator:a735d209512885072c3bd8667bf542956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Declarative editor-host control (provided by the ui module). </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2EditorHost_8h_source.html">EditorHost.h</a> 第 <a class="el" href="engine_2common_2EditorHost_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a96c2d9ddd6a6ddc6b391ccad153a7ffc" name="a96c2d9ddd6a6ddc6b391ccad153a7ffc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96c2d9ddd6a6ddc6b391ccad153a7ffc">&#9670;&#160;</a></span>~IEditorHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::IEditorHost::~IEditorHost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="acf4406a802be51231ca0d09a5ee8acb1" name="acf4406a802be51231ca0d09a5ee8acb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf4406a802be51231ca0d09a5ee8acb1">&#9670;&#160;</a></span>applyEditor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::applyEditor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b12a370e62f169186d03865c0f6018e" name="a6b12a370e62f169186d03865c0f6018e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b12a370e62f169186d03865c0f6018e">&#9670;&#160;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::capture </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a48031d92cbf7a27056fd36b0d4ebf0" name="a4a48031d92cbf7a27056fd36b0d4ebf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a48031d92cbf7a27056fd36b0d4ebf0">&#9670;&#160;</a></span>closeWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::closeWindow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae238bc2897599cc18cefba20569300b" name="aae238bc2897599cc18cefba20569300b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae238bc2897599cc18cefba20569300b">&#9670;&#160;</a></span>consumeEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::consumeEvents </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>editorId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19e5a2ea05272ba73f20a6b9afe111df" name="a19e5a2ea05272ba73f20a6b9afe111df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19e5a2ea05272ba73f20a6b9afe111df">&#9670;&#160;</a></span>editorState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::editorState </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0238e4101e0dc87d3dbdd92366675555" name="a0238e4101e0dc87d3dbdd92366675555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0238e4101e0dc87d3dbdd92366675555">&#9670;&#160;</a></span>exitRequested()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IEditorHost::exitRequested </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after <a class="el" href="classeve_1_1IEditorHost.html#a9bde4a93f1f7df440261ce9e05e0babd">requestExit()</a> (main loop exit condition). </p>
+
+</div>
+</div>
+<a id="aa90397410610a9f94e59d91b6d08d28a" name="aa90397410610a9f94e59d91b6d08d28a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa90397410610a9f94e59d91b6d08d28a">&#9670;&#160;</a></span>exposeScriptApi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IEditorHost::exposeScriptApi </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Expose the host's script API on the VM. </p>
+
+</div>
+</div>
+<a id="a190eaba546476a60c902d382e016cd9f" name="a190eaba546476a60c902d382e016cd9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a190eaba546476a60c902d382e016cd9f">&#9670;&#160;</a></span>frame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IEditorHost::frame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pump the host's per-frame update (frame loop). </p>
+
+</div>
+</div>
+<a id="ac7b7614d41d7e8419d5651854c708d63" name="ac7b7614d41d7e8419d5651854c708d63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7b7614d41d7e8419d5651854c708d63">&#9670;&#160;</a></span>listEditors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::listEditors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a16301630db071699b037b9efb796b65f" name="a16301630db071699b037b9efb796b65f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16301630db071699b037b9efb796b65f">&#9670;&#160;</a></span>openWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::openWindow </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7fbe1c803c6d7b77d5da81f40f0ca5ae" name="a7fbe1c803c6d7b77d5da81f40f0ca5ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fbe1c803c6d7b77d5da81f40f0ca5ae">&#9670;&#160;</a></span>registerVM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::registerVM </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a638a248b3fffe813511a8541de95850e" name="a638a248b3fffe813511a8541de95850e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638a248b3fffe813511a8541de95850e">&#9670;&#160;</a></span>removeEditor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::removeEditor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9bde4a93f1f7df440261ce9e05e0babd" name="a9bde4a93f1f7df440261ce9e05e0babd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bde4a93f1f7df440261ce9e05e0babd">&#9670;&#160;</a></span>requestExit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IEditorHost::requestExit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd3e0a74319cad43bf91d897b60504a7" name="afd3e0a74319cad43bf91d897b60504a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd3e0a74319cad43bf91d897b60504a7">&#9670;&#160;</a></span>runScript()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::runScript </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab3d3a3a74db6f640187545a3bcffed0" name="aab3d3a3a74db6f640187545a3bcffed0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab3d3a3a74db6f640187545a3bcffed0">&#9670;&#160;</a></span>saveEditor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::saveEditor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ade63eaacf90f11f2d30a73f75b031f62" name="ade63eaacf90f11f2d30a73f75b031f62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade63eaacf90f11f2d30a73f75b031f62">&#9670;&#160;</a></span>setEditorValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::setEditorValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>editorId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>widgetId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac870e39322ec44321d2104dc080f702c" name="ac870e39322ec44321d2104dc080f702c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac870e39322ec44321d2104dc080f702c">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IEditorHost::start </td>
+          <td>(</td>
+          <td class="paramtype">ssq::VM &amp;&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>gameRoot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allowWindow</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start the host against a Squirrel VM (cmdline integration). </p>
+
+</div>
+</div>
+<a id="a8a0ce70138347e8d35823d7112daa579" name="a8a0ce70138347e8d35823d7112daa579"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a0ce70138347e8d35823d7112daa579">&#9670;&#160;</a></span>status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::status </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a269f9b1a2fcd463cab08f5bb858c8267" name="a269f9b1a2fcd463cab08f5bb858c8267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a269f9b1a2fcd463cab08f5bb858c8267">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IEditorHost::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shut the host down (stops window + workers). </p>
+
+</div>
+</div>
+<a id="a8b69bed0ee739b1dedafc5e5270c86a8" name="a8b69bed0ee739b1dedafc5e5270c86a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b69bed0ee739b1dedafc5e5270c86a8">&#9670;&#160;</a></span>unloadEditor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::unloadEditor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad139316bf87c819f24706253e6f9ee08" name="ad139316bf87c819f24706253e6f9ee08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad139316bf87c819f24706253e6f9ee08">&#9670;&#160;</a></span>unregisterVM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::unregisterVM </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3b9c17fa8af900e9be720c250316258e" name="a3b9c17fa8af900e9be720c250316258e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b9c17fa8af900e9be720c250316258e">&#9670;&#160;</a></span>widgetRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::widgetRect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>editorId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>widgetId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5db0c5f409593829f12b74ae535ff047" name="a5db0c5f409593829f12b74ae535ff047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5db0c5f409593829f12b74ae535ff047">&#9670;&#160;</a></span>windowState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IEditorHost::windowState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a735d209512885072c3bd8667bf542956" name="a735d209512885072c3bd8667bf542956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a735d209512885072c3bd8667bf542956">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::IEditorHost::capabilityName = &quot;IEditorHost&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2EditorHost_8h_source.html">EditorHost.h</a> 第 <a class="el" href="engine_2common_2EditorHost_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="engine_2common_2EditorHost_8h_source.html">EditorHost.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

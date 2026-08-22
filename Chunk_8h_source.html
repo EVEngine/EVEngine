@@ -1,0 +1,358 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/voxel/Chunk.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bb2c7d78d36a3976db7e40beef6b2dea.html">voxel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Chunk.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Chunk_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CubeTypeRegistry_8h.html">voxel/CubeTypeRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="FaceDir_8h.html">voxel/FaceDir.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="GreedyMesher_8h.html">voxel/GreedyMesher.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="VoxelPack_8h.html">voxel/VoxelPack.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1voxel.html">   12</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1voxel.html">eve::voxel</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#ae9d861b9ade374a5e621087f5ea98867">   20</a></span>    <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#ae9d861b9ade374a5e621087f5ea98867">Chunk</a>(<span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">cx</a> = 0, <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">cy</a> = 0, <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">cz</a> = 0) : cx_(<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">cx</a>), cy_(<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">cy</a>), cz_(<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">cz</a>) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        std::memset(voxels_, 0, <span class="keyword">sizeof</span>(voxels_));</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">   24</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">cx</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cx_; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">   25</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">cy</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cy_; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">   26</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">cz</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cz_; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a37205905f5e0dfe3d55e78b561242c0c">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a37205905f5e0dfe3d55e78b561242c0c">originX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> float(cx_ * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>); }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a68910802e3fbbf7ce74407a30fa1d3a0">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a68910802e3fbbf7ce74407a30fa1d3a0">originY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> float(cy_ * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>); }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a10e43a93115ee83a251710bb53d45e23">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a10e43a93115ee83a251710bb53d45e23">originZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> float(cz_ * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a1cc529a4bc20446911c45056bfa02493">   32</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a1cc529a4bc20446911c45056bfa02493">worldAABB</a>(<span class="keywordtype">float</span> &amp;minX, <span class="keywordtype">float</span> &amp;minY, <span class="keywordtype">float</span> &amp;minZ, <span class="keywordtype">float</span> &amp;maxX, <span class="keywordtype">float</span> &amp;maxY,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                   <span class="keywordtype">float</span> &amp;maxZ)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        minX = <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a37205905f5e0dfe3d55e78b561242c0c">originX</a>();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        minY = <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a68910802e3fbbf7ce74407a30fa1d3a0">originY</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        minZ = <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a10e43a93115ee83a251710bb53d45e23">originZ</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        maxX = minX + float(<a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        maxY = minY + float(<a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        maxZ = minZ + float(<a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">   42</a></span>    uint8_t <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">get</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; 0 || <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; 0 || z &lt; 0 || x &gt;= <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> || <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &gt;= <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> || <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> &gt;= <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> voxels_[index(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)];</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#adb19daea0dd8abd944e0d59b5f2f654e">   48</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#adb19daea0dd8abd944e0d59b5f2f654e">set</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, uint8_t texId) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> &lt; 0 || <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &lt; 0 || z &lt; 0 || x &gt;= <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> || <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> &gt;= <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> || <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> &gt;= <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        voxels_[index(<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>)] = texId;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        dirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a1bd3d97825b2275623cd5cf83ec0d607">   54</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a1bd3d97825b2275623cd5cf83ec0d607">fill</a>(uint8_t texId) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::memset(voxels_, texId, <span class="keyword">sizeof</span>(voxels_));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        dirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a4a446a20841c2cddf1e0470f07a2be76">   59</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a4a446a20841c2cddf1e0470f07a2be76">clear</a>() { <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a1bd3d97825b2275623cd5cf83ec0d607">fill</a>(0); }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a1346fbce0d8a315de199bf12b8448e0c">   62</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a1346fbce0d8a315de199bf12b8448e0c">setVoxelData</a>(<span class="keyword">const</span> uint8_t *src) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::memcpy(voxels_, src, <span class="keyword">sizeof</span>(voxels_));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        dirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a4c56d5b060e1a58068b82f879242c9f1">   67</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a4c56d5b060e1a58068b82f879242c9f1">isDirty</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a7547866800ea890c7e9605ebe876b08e">   70</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a7547866800ea890c7e9605ebe876b08e">markDirty</a>() { dirty_ = <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#ac06dc8a9e66929e6aa2a691f93f9fdb0">   73</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#ac06dc8a9e66929e6aa2a691f93f9fdb0">remesh</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types = <a class="code hl_function" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>(),</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                <a class="code hl_typedef" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a> sampler = <span class="keyword">nullptr</span>,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keywordtype">void</span> *samplerUserData = <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <a class="code hl_function" href="classeve_1_1voxel_1_1GreedyMesher.html#a3fea423bfc898d1fa9cf6bf5040b84d1">GreedyMesher::meshChunk</a>(voxels_, faces_, types, sampler, samplerUserData, cx_, cy_, cz_,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                ao_);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        dirty_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a181e76a67268d73fc4beb626df8e18d9">   82</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a181e76a67268d73fc4beb626df8e18d9">ensureMeshed</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types = <a class="code hl_function" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>(),</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                      <a class="code hl_typedef" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a> sampler = <span class="keyword">nullptr</span>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                      <span class="keywordtype">void</span> *samplerUserData = <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">if</span> (dirty_) <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#ac06dc8a9e66929e6aa2a691f93f9fdb0">remesh</a>(types, sampler, samplerUserData);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a314f2ab4a245587d55cdba5c3b6c153e">   88</a></span>    <span class="keyword">const</span> std::vector&lt;PackedRect&gt; &amp;<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a314f2ab4a245587d55cdba5c3b6c153e">faceRects</a>(<a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> faces_[int(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)];</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a6297b0e5d156e48e369f48f0a9163fbf">   92</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a6297b0e5d156e48e369f48f0a9163fbf">faceRectCount</a>(<a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(faces_[<span class="keywordtype">int</span>(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)].size()); }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a34b7aee0d6541977846d9ae82242c82d">   94</a></span>    <span class="keyword">const</span> uint32_t *<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a34b7aee0d6541977846d9ae82242c82d">facePackedData</a>(<a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = faces_[int(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)];</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.empty() ? nullptr : <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>uint32_t *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.data());</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a014359085aac79431507bf34f742aa07">  103</a></span>    <span class="keyword">const</span> uint32_t *<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a014359085aac79431507bf34f742aa07">faceAOPackedData</a>(<a class="code hl_enumeration" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = ao_[int(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)];</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.empty() ? nullptr : <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.data();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="foldopen" id="foldopen00108" data-start="{" data-end="}">
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#a95f5a6836a532b62afd63cf0900d4cd2">  108</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#a95f5a6836a532b62afd63cf0900d4cd2">totalRectCount</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = 0;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_function" href="namespaceeve_1_1voxel.html#a3bf088c68febdca4636c2640709e5596">faceDirCount</a>(); ++i) <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> += <span class="keywordtype">int</span>(faces_[i].size());</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1voxel_1_1Chunk.html#add354dba348a9bfe0143b7442161a69c">  114</a></span>    <span class="keyword">const</span> uint8_t *<a class="code hl_function" href="classeve_1_1voxel_1_1Chunk.html#add354dba348a9bfe0143b7442161a69c">rawVoxels</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> voxels_; }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> index(<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> + <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> + <a class="code hl_variable" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">int</span> cx_ = 0;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">int</span> cy_ = 0;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">int</span> cz_ = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    uint8_t voxels_[<a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a> * <a class="code hl_variable" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">kChunkSize</a>]{};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    std::vector&lt;PackedRect&gt; faces_[6];</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::vector&lt;uint32_t&gt; ao_[6];</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">bool</span> dirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>};</div>
+</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}  <span class="comment">// namespace eve::voxel</span></div>
+</div>
+<div class="ttc" id="aCubeTypeRegistry_8h_html"><div class="ttname"><a href="CubeTypeRegistry_8h.html">CubeTypeRegistry.h</a></div></div>
+<div class="ttc" id="aFaceDir_8h_html"><div class="ttname"><a href="FaceDir_8h.html">FaceDir.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aGreedyMesher_8h_html"><div class="ttname"><a href="GreedyMesher_8h.html">GreedyMesher.h</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00121">TreeMesh.cpp:121</a></div></div>
+<div class="ttc" id="aVoxelPack_8h_html"><div class="ttname"><a href="VoxelPack_8h.html">VoxelPack.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html">eve::voxel::Chunk</a></div><div class="ttdoc">One 32³ voxel chunk with six direction-sorted packed-rect instance buffers. Coordinates: chunk (cx,...</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00018">Chunk.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a014359085aac79431507bf34f742aa07"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a014359085aac79431507bf34f742aa07">eve::voxel::Chunk::faceAOPackedData</a></div><div class="ttdeci">const uint32_t * faceAOPackedData(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00103">Chunk.h:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a0e16dae3f2de61cb4960327d781f9824"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">eve::voxel::Chunk::cy</a></div><div class="ttdeci">int cy() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00025">Chunk.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a10e43a93115ee83a251710bb53d45e23"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a10e43a93115ee83a251710bb53d45e23">eve::voxel::Chunk::originZ</a></div><div class="ttdeci">float originZ() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00030">Chunk.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a1346fbce0d8a315de199bf12b8448e0c"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a1346fbce0d8a315de199bf12b8448e0c">eve::voxel::Chunk::setVoxelData</a></div><div class="ttdeci">void setVoxelData(const uint8_t *src)</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00062">Chunk.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a181e76a67268d73fc4beb626df8e18d9"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a181e76a67268d73fc4beb626df8e18d9">eve::voxel::Chunk::ensureMeshed</a></div><div class="ttdeci">void ensureMeshed(const CubeTypeRegistry &amp;types=CubeTypeRegistry::empty(), ChunkSampler sampler=nullptr, void *samplerUserData=nullptr)</div><div class="ttdoc">Ensure mesh is up to date; remesh if dirty.</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00082">Chunk.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a1bd3d97825b2275623cd5cf83ec0d607"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a1bd3d97825b2275623cd5cf83ec0d607">eve::voxel::Chunk::fill</a></div><div class="ttdeci">void fill(uint8_t texId)</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00054">Chunk.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a1cc529a4bc20446911c45056bfa02493"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a1cc529a4bc20446911c45056bfa02493">eve::voxel::Chunk::worldAABB</a></div><div class="ttdeci">void worldAABB(float &amp;minX, float &amp;minY, float &amp;minZ, float &amp;maxX, float &amp;maxY, float &amp;maxZ) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00032">Chunk.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a314f2ab4a245587d55cdba5c3b6c153e"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a314f2ab4a245587d55cdba5c3b6c153e">eve::voxel::Chunk::faceRects</a></div><div class="ttdeci">const std::vector&lt; PackedRect &gt; &amp; faceRects(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00088">Chunk.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a34b7aee0d6541977846d9ae82242c82d"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a34b7aee0d6541977846d9ae82242c82d">eve::voxel::Chunk::facePackedData</a></div><div class="ttdeci">const uint32_t * facePackedData(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00094">Chunk.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a37205905f5e0dfe3d55e78b561242c0c"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a37205905f5e0dfe3d55e78b561242c0c">eve::voxel::Chunk::originX</a></div><div class="ttdeci">float originX() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00028">Chunk.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a4a446a20841c2cddf1e0470f07a2be76"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a4a446a20841c2cddf1e0470f07a2be76">eve::voxel::Chunk::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00059">Chunk.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a4c56d5b060e1a58068b82f879242c9f1"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a4c56d5b060e1a58068b82f879242c9f1">eve::voxel::Chunk::isDirty</a></div><div class="ttdeci">bool isDirty() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00067">Chunk.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a6297b0e5d156e48e369f48f0a9163fbf"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a6297b0e5d156e48e369f48f0a9163fbf">eve::voxel::Chunk::faceRectCount</a></div><div class="ttdeci">int faceRectCount(FaceDir dir) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00092">Chunk.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a68910802e3fbbf7ce74407a30fa1d3a0"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a68910802e3fbbf7ce74407a30fa1d3a0">eve::voxel::Chunk::originY</a></div><div class="ttdeci">float originY() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00029">Chunk.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a7547866800ea890c7e9605ebe876b08e"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a7547866800ea890c7e9605ebe876b08e">eve::voxel::Chunk::markDirty</a></div><div class="ttdeci">void markDirty()</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00070">Chunk.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_a95f5a6836a532b62afd63cf0900d4cd2"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#a95f5a6836a532b62afd63cf0900d4cd2">eve::voxel::Chunk::totalRectCount</a></div><div class="ttdeci">int totalRectCount() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00108">Chunk.h:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_ab05d1c46ff24633c83e8f2dc29d9c437"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">eve::voxel::Chunk::cz</a></div><div class="ttdeci">int cz() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00026">Chunk.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_abaa0ed5e7bb7845a02c16e15273e6f68"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">eve::voxel::Chunk::cx</a></div><div class="ttdeci">int cx() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00024">Chunk.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_abd1de75aa70dbef569278cd680b152a1"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">eve::voxel::Chunk::get</a></div><div class="ttdeci">uint8_t get(int x, int y, int z) const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00042">Chunk.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_ac06dc8a9e66929e6aa2a691f93f9fdb0"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#ac06dc8a9e66929e6aa2a691f93f9fdb0">eve::voxel::Chunk::remesh</a></div><div class="ttdeci">void remesh(const CubeTypeRegistry &amp;types=CubeTypeRegistry::empty(), ChunkSampler sampler=nullptr, void *samplerUserData=nullptr)</div><div class="ttdoc">Rebuild six face instance buffers via greedy meshing.</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00073">Chunk.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_adb19daea0dd8abd944e0d59b5f2f654e"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#adb19daea0dd8abd944e0d59b5f2f654e">eve::voxel::Chunk::set</a></div><div class="ttdeci">void set(int x, int y, int z, uint8_t texId)</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00048">Chunk.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_add354dba348a9bfe0143b7442161a69c"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#add354dba348a9bfe0143b7442161a69c">eve::voxel::Chunk::rawVoxels</a></div><div class="ttdeci">const uint8_t * rawVoxels() const</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00114">Chunk.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1Chunk_html_ae9d861b9ade374a5e621087f5ea98867"><div class="ttname"><a href="classeve_1_1voxel_1_1Chunk.html#ae9d861b9ade374a5e621087f5ea98867">eve::voxel::Chunk::Chunk</a></div><div class="ttdeci">Chunk(int cx=0, int cy=0, int cz=0)</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00020">Chunk.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1CubeTypeRegistry_html"><div class="ttname"><a href="classeve_1_1voxel_1_1CubeTypeRegistry.html">eve::voxel::CubeTypeRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="CubeTypeRegistry_8h_source.html#l00018">CubeTypeRegistry.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1CubeTypeRegistry_html_a7ed5f3ff5e2da3ed985577ee70a1aff6"><div class="ttname"><a href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">eve::voxel::CubeTypeRegistry::empty</a></div><div class="ttdeci">static const CubeTypeRegistry &amp; empty()</div><div class="ttdoc">进程级空注册表（默认参数与向后兼容回退用）。</div><div class="ttdef"><b>Definition</b> <a href="CubeTypeRegistry_8cpp_source.html#l00047">CubeTypeRegistry.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1voxel_1_1GreedyMesher_html_a3fea423bfc898d1fa9cf6bf5040b84d1"><div class="ttname"><a href="classeve_1_1voxel_1_1GreedyMesher.html#a3fea423bfc898d1fa9cf6bf5040b84d1">eve::voxel::GreedyMesher::meshChunk</a></div><div class="ttdeci">static void meshChunk(const uint8_t *voxels, std::vector&lt; PackedRect &gt; outFaces[6], const CubeTypeRegistry &amp;types=CubeTypeRegistry::empty(), ChunkSampler sampler=nullptr, void *samplerUserData=nullptr, int chunkX=0, int chunkY=0, int chunkZ=0, std::vector&lt; uint32_t &gt; aoOut[6]=nullptr)</div><div class="ttdoc">Mesh all six faces. Clears and fills outFaces[6].</div><div class="ttdef"><b>Definition</b> <a href="GreedyMesher_8cpp_source.html#l00254">GreedyMesher.cpp:254</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html"><div class="ttname"><a href="namespaceeve_1_1voxel.html">eve::voxel</a></div><div class="ttdoc">方块类型定义：名字、各面图集纹理、方向性、组合声明。 方向性方块在注册时按 orientation 绕 Y 轴展开成多个&quot;具体类型&quot;变体， 每个变体持有旋转后的各面纹理；渲染端只消费纹理 id，不接触 ...</div><div class="ttdef"><b>Definition</b> <a href="Chunk_8h_source.html#l00012">Chunk.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a0bc3632942a212e240afaf1c156d6f9a"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">eve::voxel::kChunkSize</a></div><div class="ttdeci">constexpr int kChunkSize</div><div class="ttdoc">Chunk edge length in voxels (fixed).</div><div class="ttdef"><b>Definition</b> <a href="VoxelPack_8h_source.html#l00008">VoxelPack.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a3bf088c68febdca4636c2640709e5596"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a3bf088c68febdca4636c2640709e5596">eve::voxel::faceDirCount</a></div><div class="ttdeci">constexpr int faceDirCount()</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00027">FaceDir.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_a43c825590b8dff5389f66623339eabd6"><div class="ttname"><a href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">eve::voxel::ChunkSampler</a></div><div class="ttdeci">uint8_t(*)(void *userData, int chunkX, int chunkY, int chunkZ, int localX, int localY, int localZ) ChunkSampler</div><div class="ttdoc">Optional out-of-chunk neighbor sampler for seam culling. Receives chunk coordinates plus the (possibl...</div><div class="ttdef"><b>Definition</b> <a href="GreedyMesher_8h_source.html#l00018">GreedyMesher.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1voxel_html_af3d82bdb81c03035006348742ee8e877"><div class="ttname"><a href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">eve::voxel::FaceDir</a></div><div class="ttdeci">FaceDir</div><div class="ttdoc">Six axis-aligned face directions. Each chunk keeps a separate instance buffer per direction so camera...</div><div class="ttdef"><b>Definition</b> <a href="FaceDir_8h_source.html#l00017">FaceDir.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

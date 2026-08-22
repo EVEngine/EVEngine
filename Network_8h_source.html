@@ -1,0 +1,325 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/network/Network.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_01fbf463d294056048b691191265bf7f.html">network</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Network.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Network_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ServiceInterfaces_8h.html">common/ServiceInterfaces.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="NetTypes_8h.html">NetTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1network.html">eve::network</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>TcpSocket;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>UdpSocket;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>HttpRequest;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca781dc97dc62331eec3ea9ec4373a3ca8">Channel</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>Session;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>NetWorker;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>NetWriter;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>NetReader;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span>UdpLink;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>NetHost;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span>NetRpc;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1Network.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a>, <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1Network.html#ad2bec8d0b5f203c74f9ccfb1a3aa7ecc">   34</a></span>    <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ad2bec8d0b5f203c74f9ccfb1a3aa7ecc">Module_REG</a>(<a class="code hl_class" href="classeve_1_1network_1_1Network.html">Network</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_function" href="classeve_1_1network_1_1Network.html#adc7a28a6c4e8f10d421ae07ebaf42266">Network</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_function" href="classeve_1_1network_1_1Network.html#aa50288ed52d5bde8c72a9da4f952c063">~Network</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>*   <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ae7908efcdf3a28856bf866d6c6307a9c">newTcp</a>();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>*   <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ade1afd80ee40c8581fd72a06a17462d1">newUdp</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classeve_1_1network_1_1HttpRequest.html">HttpRequest</a>* <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a833c665de6229e86c92620d16412110c">newHttp</a>(std::string method, std::string url);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_class" href="classeve_1_1network_1_1Channel.html">Channel</a>*     <a class="code hl_function" href="classeve_1_1network_1_1Network.html#afae798209a187fe1ffd0d8bb5985787f">newChannel</a>(<a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>* socket);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_class" href="classeve_1_1network_1_1Session.html">Session</a>*     <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a3a77b45b08baeabe3d7c15ab71c81c5c">newSession</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1network_1_1NetWriter.html">NetWriter</a>*   <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ad8686a804baa7cb7055ea39bfca00675">newWriter</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_class" href="classeve_1_1network_1_1NetReader.html">NetReader</a>*   <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a2b6376c852e1619a4feeff8d040409c9">newReader</a>(std::string bytes);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a>*     <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a626a087a1fbb520f25f2b5303cce11c3">newUdpLink</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* socket);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_class" href="classeve_1_1network_1_1NetRpc.html">NetRpc</a>*      <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ad2c6f57ebdb983af65850250fefc8d55">newRpc</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a>* link);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_class" href="classeve_1_1network_1_1NetHost.html">NetHost</a>*     <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a2339abe22bc38c4d1cfb08fe177ab98f">newHost</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a32cbb89dd26d035266421dcb2bdc2ac1">setTimeout</a>(<span class="keywordtype">int</span> ms);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a9f782f6298798e28229f41adc7bf3c69">getTimeout</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a7529107784f9f3f364931fcd5d2a33d2">setVerifySsl</a>(<span class="keywordtype">bool</span> verify);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a30d7bbf3fe7e0c9aca9fdf974060ebfe">getVerifySsl</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8">pump</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#af3b833417d3d5f94a789a944f03ec6a6">post</a>(<a class="code hl_struct" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ae56536519514d859183b05821cbf76b4">drainForTest</a>(std::vector&lt;NetCompletion&gt;&amp; out);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1network_1_1Network.html#a7a3edc292f79d10c10921ede17d20d8e">   75</a></span>    <a class="code hl_class" href="classeve_1_1network_1_1NetWorker.html">NetWorker</a>* <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a7a3edc292f79d10c10921ede17d20d8e">worker</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> worker_.get(); }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a78510cf408868b49dfb728f76afbcb67">httpRequest</a>(<span class="keyword">const</span> std::string&amp; method, <span class="keyword">const</span> std::string&amp; url,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                     <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a>, <span class="keywordtype">int</span> timeoutMs, <span class="keywordtype">int</span>&amp; <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a7f6a03c6c8e79a334b53f883363aec3a">status</a>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                     std::string&amp; responseBody) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a53b166f738d2670d798e0a36076fd57f">watchTcp</a>(<a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>* sock);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ae8616c059df4243a7cdcfe975a2a8d02">unwatchTcp</a>(<a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>* sock);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#abdd42a2175104fa8e7a067ab7c89a2d0">watchUdp</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a724fa08df29b3cbc93e51a88ceb4ada3">unwatchUdp</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ae08db7992bd03d5c8b38c8d36e1b2049">pollSockets</a>();  <span class="comment">// called from NetWorker thread</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a7e7957d36ccc258f7385b0adddbc35aa">bindChannel</a>(<a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>* sock, <a class="code hl_class" href="classeve_1_1network_1_1Channel.html">Channel</a>* ch);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#af598844699afe909565e5099dbe375d6">unbindChannel</a>(<a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>* sock);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_class" href="classeve_1_1network_1_1Channel.html">Channel</a>* <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ac86f3c1b43b89dca598caa711d8ae6b3">channelFor</a>(<a class="code hl_class" href="classeve_1_1network_1_1TcpSocket.html">TcpSocket</a>* sock) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="comment">// Main-thread only (script calls + pump). The worker never touches these.</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a953a61b015dcfd186a4d9167dd0e611e">bindUdpLink</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock, <a class="code hl_class" href="classeve_1_1network_1_1UdpLink.html">UdpLink</a>* link);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#a556f2f68cb16928a816525ec6e5cc52f">unbindUdpLink</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#afd98634b05758af1f491403a1f0ec3f3">bindUdpHost</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock, <a class="code hl_class" href="classeve_1_1network_1_1NetHost.html">NetHost</a>* host);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1network_1_1Network.html#ac29a6a084ea53b94343ff1b093fe2c20">unbindUdpHost</a>(<a class="code hl_class" href="classeve_1_1network_1_1UdpSocket.html">UdpSocket</a>* sock);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">void</span> emitCompletion(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1network_1_1NetCompletion.html">NetCompletion</a>&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">int</span>  timeoutMs_ = 10000;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">bool</span> verifySsl_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::unique_ptr&lt;NetWorker&gt; worker_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">mutable</span> std::mutex watchMu_;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::vector&lt;TcpSocket*&gt; watchedTcp_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::vector&lt;UdpSocket*&gt; watchedUdp_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">mutable</span> std::mutex channelMu_;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::unordered_map&lt;TcpSocket*, Channel*&gt; channels_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    std::unordered_map&lt;UdpSocket*, UdpLink*&gt; udpLinks_;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::unordered_map&lt;UdpSocket*, NetHost*&gt; udpHosts_;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}  <span class="comment">// namespace eve::network</span></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a503889937f87ab447382207f9d5cba56"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a503889937f87ab447382207f9d5cba56">body</a></div><div class="ttdeci">JobFunc body</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00159">JobSystemThreadPool.cpp:159</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a7f6a03c6c8e79a334b53f883363aec3a"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a7f6a03c6c8e79a334b53f883363aec3a">status</a></div><div class="ttdeci">JobStatus status</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00164">JobSystemThreadPool.cpp:164</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aNetTypes_8h_html"><div class="ttname"><a href="NetTypes_8h.html">NetTypes.h</a></div></div>
+<div class="ttc" id="aServiceInterfaces_8h_html"><div class="ttname"><a href="ServiceInterfaces_8h.html">ServiceInterfaces.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00043">Module.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Channel_html"><div class="ttname"><a href="classeve_1_1network_1_1Channel.html">eve::network::Channel</a></div><div class="ttdoc">Length-prefixed (big-endian uint32) message framing over a TcpSocket. sendMsg() writes one framed mes...</div><div class="ttdef"><b>Definition</b> <a href="network_2Channel_8h_source.html#l00021">Channel.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1HttpRequest_html"><div class="ttname"><a href="classeve_1_1network_1_1HttpRequest.html">eve::network::HttpRequest</a></div><div class="ttdoc">Asynchronous HTTP request (Poco-based). Configure headers/body, call submit(), then receive the respo...</div><div class="ttdef"><b>Definition</b> <a href="HttpRequest_8h_source.html#l00024">HttpRequest.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1NetHost_html"><div class="ttname"><a href="classeve_1_1network_1_1NetHost.html">eve::network::NetHost</a></div><div class="ttdef"><b>Definition</b> <a href="NetHost_8h_source.html#l00022">NetHost.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1NetReader_html"><div class="ttname"><a href="classeve_1_1network_1_1NetReader.html">eve::network::NetReader</a></div><div class="ttdef"><b>Definition</b> <a href="NetStream_8h_source.html#l00048">NetStream.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1NetRpc_html"><div class="ttname"><a href="classeve_1_1network_1_1NetRpc.html">eve::network::NetRpc</a></div><div class="ttdef"><b>Definition</b> <a href="NetRpc_8h_source.html#l00025">NetRpc.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1NetWorker_html"><div class="ttname"><a href="classeve_1_1network_1_1NetWorker.html">eve::network::NetWorker</a></div><div class="ttdoc">Background thread that runs blocking socket I/O and HTTP jobs. Completions are queued and drained by ...</div><div class="ttdef"><b>Definition</b> <a href="NetWorker_8h_source.html#l00020">NetWorker.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1NetWriter_html"><div class="ttname"><a href="classeve_1_1network_1_1NetWriter.html">eve::network::NetWriter</a></div><div class="ttdef"><b>Definition</b> <a href="NetStream_8h_source.html#l00017">NetStream.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html"><div class="ttname"><a href="classeve_1_1network_1_1Network.html">eve::network::Network</a></div><div class="ttdoc">Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing....</div><div class="ttdef"><b>Definition</b> <a href="Network_8h_source.html#l00032">Network.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a2339abe22bc38c4d1cfb08fe177ab98f"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a2339abe22bc38c4d1cfb08fe177ab98f">eve::network::Network::newHost</a></div><div class="ttdeci">NetHost * newHost()</div><div class="ttdoc">Creates a UDP host (peer discovery / broadcast).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00148">Network.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a2b6376c852e1619a4feeff8d040409c9"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a2b6376c852e1619a4feeff8d040409c9">eve::network::Network::newReader</a></div><div class="ttdeci">NetReader * newReader(std::string bytes)</div><div class="ttdoc">Creates a streaming byte reader over a string buffer.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00131">Network.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a30d7bbf3fe7e0c9aca9fdf974060ebfe"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a30d7bbf3fe7e0c9aca9fdf974060ebfe">eve::network::Network::getVerifySsl</a></div><div class="ttdeci">bool getVerifySsl() const</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00180">Network.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a32cbb89dd26d035266421dcb2bdc2ac1"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a32cbb89dd26d035266421dcb2bdc2ac1">eve::network::Network::setTimeout</a></div><div class="ttdeci">void setTimeout(int ms)</div><div class="ttdoc">Default socket/HTTP timeout in milliseconds.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00168">Network.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a3a77b45b08baeabe3d7c15ab71c81c5c"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a3a77b45b08baeabe3d7c15ab71c81c5c">eve::network::Network::newSession</a></div><div class="ttdeci">Session * newSession()</div><div class="ttdoc">Creates a named-channel session container.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00123">Network.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a53b166f738d2670d798e0a36076fd57f"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a53b166f738d2670d798e0a36076fd57f">eve::network::Network::watchTcp</a></div><div class="ttdeci">void watchTcp(TcpSocket *sock)</div><div class="ttdoc">Internal: register/unregister sockets for pump polling.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00192">Network.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a556f2f68cb16928a816525ec6e5cc52f"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a556f2f68cb16928a816525ec6e5cc52f">eve::network::Network::unbindUdpLink</a></div><div class="ttdeci">void unbindUdpLink(UdpSocket *sock)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00156">Network.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a626a087a1fbb520f25f2b5303cce11c3"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a626a087a1fbb520f25f2b5303cce11c3">eve::network::Network::newUdpLink</a></div><div class="ttdeci">UdpLink * newUdpLink(UdpSocket *socket)</div><div class="ttdoc">Creates a framed UDP link over a socket.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00137">Network.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a724fa08df29b3cbc93e51a88ceb4ada3"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a724fa08df29b3cbc93e51a88ceb4ada3">eve::network::Network::unwatchUdp</a></div><div class="ttdeci">void unwatchUdp(UdpSocket *sock)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00209">Network.cpp:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a7529107784f9f3f364931fcd5d2a33d2"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a7529107784f9f3f364931fcd5d2a33d2">eve::network::Network::setVerifySsl</a></div><div class="ttdeci">void setVerifySsl(bool verify)</div><div class="ttdoc">Whether TLS peer certificates are verified (default true).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00176">Network.cpp:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a78510cf408868b49dfb728f76afbcb67"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a78510cf408868b49dfb728f76afbcb67">eve::network::Network::httpRequest</a></div><div class="ttdeci">bool httpRequest(const std::string &amp;method, const std::string &amp;url, const std::string &amp;body, int timeoutMs, int &amp;status, std::string &amp;responseBody) override</div><div class="ttdoc">Synchronous HTTP request (blocks up to timeoutMs on the worker).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00088">Network.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a7a3edc292f79d10c10921ede17d20d8e"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a7a3edc292f79d10c10921ede17d20d8e">eve::network::Network::worker</a></div><div class="ttdeci">NetWorker * worker() const</div><div class="ttdoc">Background worker thread handle (advanced).</div><div class="ttdef"><b>Definition</b> <a href="Network_8h_source.html#l00075">Network.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a7e7957d36ccc258f7385b0adddbc35aa"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a7e7957d36ccc258f7385b0adddbc35aa">eve::network::Network::bindChannel</a></div><div class="ttdeci">void bindChannel(TcpSocket *sock, Channel *ch)</div><div class="ttdoc">Internal: bind a Channel to its socket (and reverse lookup).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00214">Network.cpp:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a833c665de6229e86c92620d16412110c"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a833c665de6229e86c92620d16412110c">eve::network::Network::newHttp</a></div><div class="ttdeci">HttpRequest * newHttp(std::string method, std::string url)</div><div class="ttdoc">Creates a new HTTP request (method e.g. &quot;GET&quot;/&quot;POST&quot;, full URL).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00084">Network.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a953a61b015dcfd186a4d9167dd0e611e"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a953a61b015dcfd186a4d9167dd0e611e">eve::network::Network::bindUdpLink</a></div><div class="ttdeci">void bindUdpLink(UdpSocket *sock, UdpLink *link)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00152">Network.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_a9f782f6298798e28229f41adc7bf3c69"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#a9f782f6298798e28229f41adc7bf3c69">eve::network::Network::getTimeout</a></div><div class="ttdeci">int getTimeout() const</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00172">Network.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_aa50288ed52d5bde8c72a9da4f952c063"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#aa50288ed52d5bde8c72a9da4f952c063">eve::network::Network::~Network</a></div><div class="ttdeci">~Network() override</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00071">Network.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_abdd42a2175104fa8e7a067ab7c89a2d0"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#abdd42a2175104fa8e7a067ab7c89a2d0">eve::network::Network::watchUdp</a></div><div class="ttdeci">void watchUdp(UdpSocket *sock)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00203">Network.cpp:203</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ac29a6a084ea53b94343ff1b093fe2c20"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ac29a6a084ea53b94343ff1b093fe2c20">eve::network::Network::unbindUdpHost</a></div><div class="ttdeci">void unbindUdpHost(UdpSocket *sock)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00164">Network.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ac86f3c1b43b89dca598caa711d8ae6b3"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ac86f3c1b43b89dca598caa711d8ae6b3">eve::network::Network::channelFor</a></div><div class="ttdeci">Channel * channelFor(TcpSocket *sock) const</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00224">Network.cpp:224</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ad2bec8d0b5f203c74f9ccfb1a3aa7ecc"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ad2bec8d0b5f203c74f9ccfb1a3aa7ecc">eve::network::Network::Module_REG</a></div><div class="ttdeci">Module_REG(Network)</div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ad2c6f57ebdb983af65850250fefc8d55"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ad2c6f57ebdb983af65850250fefc8d55">eve::network::Network::newRpc</a></div><div class="ttdeci">NetRpc * newRpc(UdpLink *link)</div><div class="ttdoc">Creates an RPC client over a UDP link.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00144">Network.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ad4439b95566a3c93b6d20ad407319fd8"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ad4439b95566a3c93b6d20ad407319fd8">eve::network::Network::pump</a></div><div class="ttdeci">void pump()</div><div class="ttdoc">Drains worker completions and emits them as events; call per frame.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00380">Network.cpp:380</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ad8686a804baa7cb7055ea39bfca00675"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ad8686a804baa7cb7055ea39bfca00675">eve::network::Network::newWriter</a></div><div class="ttdeci">NetWriter * newWriter()</div><div class="ttdoc">Creates a streaming byte writer.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00127">Network.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_adc7a28a6c4e8f10d421ae07ebaf42266"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#adc7a28a6c4e8f10d421ae07ebaf42266">eve::network::Network::Network</a></div><div class="ttdeci">Network()</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00065">Network.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ade1afd80ee40c8581fd72a06a17462d1"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ade1afd80ee40c8581fd72a06a17462d1">eve::network::Network::newUdp</a></div><div class="ttdeci">UdpSocket * newUdp()</div><div class="ttdoc">Creates a new UDP socket.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00080">Network.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ae08db7992bd03d5c8b38c8d36e1b2049"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ae08db7992bd03d5c8b38c8d36e1b2049">eve::network::Network::pollSockets</a></div><div class="ttdeci">void pollSockets()</div><div class="ttdoc">Internal: polls watched sockets; called from the NetWorker thread.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00230">Network.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ae56536519514d859183b05821cbf76b4"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ae56536519514d859183b05821cbf76b4">eve::network::Network::drainForTest</a></div><div class="ttdeci">void drainForTest(std::vector&lt; NetCompletion &gt; &amp;out)</div><div class="ttdoc">Test helper: drains pending completions into out.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00188">Network.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ae7908efcdf3a28856bf866d6c6307a9c"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ae7908efcdf3a28856bf866d6c6307a9c">eve::network::Network::newTcp</a></div><div class="ttdeci">TcpSocket * newTcp()</div><div class="ttdoc">Creates a new TCP socket (client or server).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00076">Network.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_ae8616c059df4243a7cdcfe975a2a8d02"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#ae8616c059df4243a7cdcfe975a2a8d02">eve::network::Network::unwatchTcp</a></div><div class="ttdeci">void unwatchTcp(TcpSocket *sock)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00198">Network.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_af3b833417d3d5f94a789a944f03ec6a6"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#af3b833417d3d5f94a789a944f03ec6a6">eve::network::Network::post</a></div><div class="ttdeci">void post(NetCompletion c)</div><div class="ttdoc">Posts a completion to the worker queue (thread-safe).</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00184">Network.cpp:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_af598844699afe909565e5099dbe375d6"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#af598844699afe909565e5099dbe375d6">eve::network::Network::unbindChannel</a></div><div class="ttdeci">void unbindChannel(TcpSocket *sock)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00219">Network.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_afae798209a187fe1ffd0d8bb5985787f"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#afae798209a187fe1ffd0d8bb5985787f">eve::network::Network::newChannel</a></div><div class="ttdeci">Channel * newChannel(TcpSocket *socket)</div><div class="ttdoc">Creates a length-prefixed Channel over a TCP socket.</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00116">Network.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Network_html_afd98634b05758af1f491403a1f0ec3f3"><div class="ttname"><a href="classeve_1_1network_1_1Network.html#afd98634b05758af1f491403a1f0ec3f3">eve::network::Network::bindUdpHost</a></div><div class="ttdeci">void bindUdpHost(UdpSocket *sock, NetHost *host)</div><div class="ttdef"><b>Definition</b> <a href="Network_8cpp_source.html#l00160">Network.cpp:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1Session_html"><div class="ttname"><a href="classeve_1_1network_1_1Session.html">eve::network::Session</a></div><div class="ttdoc">Named collection of Channels (a &quot;session&quot;). Lookup by name, close all. Does not own the channels; the...</div><div class="ttdef"><b>Definition</b> <a href="Session_8h_source.html#l00014">Session.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1TcpSocket_html"><div class="ttname"><a href="classeve_1_1network_1_1TcpSocket.html">eve::network::TcpSocket</a></div><div class="ttdoc">TCP socket backed by Poco::Net; supports both client (connect) and server (listen/accept) roles....</div><div class="ttdef"><b>Definition</b> <a href="TcpSocket_8h_source.html#l00028">TcpSocket.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpLink_html"><div class="ttname"><a href="classeve_1_1network_1_1UdpLink.html">eve::network::UdpLink</a></div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8h_source.html#l00029">UdpLink.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1network_1_1UdpSocket_html"><div class="ttname"><a href="classeve_1_1network_1_1UdpSocket.html">eve::network::UdpSocket</a></div><div class="ttdoc">UDP socket backed by Poco::Net; supports connect/bind and datagram send.</div><div class="ttdef"><b>Definition</b> <a href="UdpSocket_8h_source.html#l00024">UdpSocket.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1INetwork_html"><div class="ttname"><a href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a></div><div class="ttdoc">Minimal synchronous HTTP request surface. Providers: eve::network::Network. Mocks return canned statu...</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00041">ServiceInterfaces.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html"><div class="ttname"><a href="namespaceeve_1_1network.html">eve::network</a></div><div class="ttdef"><b>Definition</b> <a href="network_2Channel_8cpp_source.html#l00012">Channel.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1network_html_a2f14ffdce8f7a706e8da6a864c05965ca781dc97dc62331eec3ea9ec4373a3ca8"><div class="ttname"><a href="namespaceeve_1_1network.html#a2f14ffdce8f7a706e8da6a864c05965ca781dc97dc62331eec3ea9ec4373a3ca8">eve::network::NetKind::Channel</a></div><div class="ttdeci">@ Channel</div></div>
+<div class="ttc" id="astructeve_1_1network_1_1NetCompletion_html"><div class="ttname"><a href="structeve_1_1network_1_1NetCompletion.html">eve::network::NetCompletion</a></div><div class="ttdoc">One asynchronous network result/event. handle points at the originating TcpSocket/UdpSocket/HttpReque...</div><div class="ttdef"><b>Definition</b> <a href="NetTypes_8h_source.html#l00033">NetTypes.h:33</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

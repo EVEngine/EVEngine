@@ -1,0 +1,266 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/AntiAliasing.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AntiAliasing.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AntiAliasing_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span>Canvas;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Shader;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#ab27057fed3a813cab9347fc4181bf3e5">   27</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#ab27057fed3a813cab9347fc4181bf3e5">~AntiAliasing</a>();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#af83ee36e3380b310575f766ef11ea5da">   29</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#af83ee36e3380b310575f766ef11ea5da">AntiAliasing</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#addbe31326d9a540e6b561934a567c616">   30</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#addbe31326d9a540e6b561934a567c616">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#afaad5a5690d88472aefab9a0ce96be01">setQuality</a>(<span class="keyword">const</span> std::string &amp;quality);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#a847bf054fcc48269909ea193b8e658ad">   34</a></span>    std::string <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a847bf054fcc48269909ea193b8e658ad">getQuality</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> quality_; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a3f3907ee453c170775ce817d91c7bc27">setMode</a>(<span class="keyword">const</span> std::string &amp;mode);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#aff50461fdce5a15d50dd6844fee9d6c8">   38</a></span>    std::string <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#aff50461fdce5a15d50dd6844fee9d6c8">getMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode_; }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a0912841a5950d5dbe0e8a232da8ef352">hasParam</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#ac87de1ab2271e35266037729ea96a547">setFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#ab5cd03d4bd6576f40070acf189454de8">getFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a994787d880389a4cbf9d4ce80303314e">suggestScale</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#ae0c3dbeea3323e16dd1d7a3e869db1b3">resolutionFor</a>(<span class="keywordtype">int</span> destSize) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a13c141d90fd92625eafd6f744e305fc5">apply</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *source);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a99f286224076a615e467a130108ab0e9">applyTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *source, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#ad20ed082a18fa07e1639b22c5ce3195c">applyCanvas</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *source);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#af3634f4c34d278830cf0d9f0503b3245">applyCanvasTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *source, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a6cd8afc2a6bcc466f0ee4faea7bf23ac">prepareSource</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *source);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#ab7beb2298bd9a1aff278a1b564fa88b2">   67</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#ab7beb2298bd9a1aff278a1b564fa88b2">getFxaaShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fxaa_; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#a20847a49a2a511e9e1d3d06c4acc447b">   68</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a20847a49a2a511e9e1d3d06c4acc447b">getSmaaShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> smaa_; }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#a58a3c8f3e23f8d6339e9107dff6517b5">   69</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a58a3c8f3e23f8d6339e9107dff6517b5">getSsaaShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ssaa_; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1AntiAliasing.html#a3aa20cd637b0639651b7be1a5192a81d">   70</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#a3aa20cd637b0639651b7be1a5192a81d">getNfaaShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nfaa_; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1AntiAliasing.html#abbbfe8cede8c8ef8e3d2343d5f26d201">getShader</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> applyQualityDefaults();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> uploadScreenUniforms(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *source);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> drawFullscreen(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *source, <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *shaderForMode() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx_ = <span class="keyword">nullptr</span>;  <span class="comment">// not owned</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *fxaa_ = <span class="keyword">nullptr</span>;   <span class="comment">// owned by Graphics</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *smaa_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *ssaa_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *nfaa_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    std::string quality_ = <span class="stringliteral">&quot;medium&quot;</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::string mode_ = <span class="stringliteral">&quot;fxaa&quot;</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00529">RenderSystem3D.cpp:529</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html">eve::graphics::AntiAliasing</a></div><div class="ttdoc">Classic image-space anti-aliasing.</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00024">AntiAliasing.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a0912841a5950d5dbe0e8a232da8ef352"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a0912841a5950d5dbe0e8a232da8ef352">eve::graphics::AntiAliasing::hasParam</a></div><div class="ttdeci">bool hasParam(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00192">AntiAliasing.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a13c141d90fd92625eafd6f744e305fc5"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a13c141d90fd92625eafd6f744e305fc5">eve::graphics::AntiAliasing::apply</a></div><div class="ttdeci">void apply(Graphics *gfx, Texture *source)</div><div class="ttdoc">Apply current mode to source, writing into the currently bound canvas / screen. Uploads texelW/texelH...</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00255">AntiAliasing.cpp:255</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a20847a49a2a511e9e1d3d06c4acc447b"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a20847a49a2a511e9e1d3d06c4acc447b">eve::graphics::AntiAliasing::getSmaaShader</a></div><div class="ttdeci">Shader * getSmaaShader() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00068">AntiAliasing.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a3aa20cd637b0639651b7be1a5192a81d"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a3aa20cd637b0639651b7be1a5192a81d">eve::graphics::AntiAliasing::getNfaaShader</a></div><div class="ttdeci">Shader * getNfaaShader() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00070">AntiAliasing.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a3f3907ee453c170775ce817d91c7bc27"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a3f3907ee453c170775ce817d91c7bc27">eve::graphics::AntiAliasing::setMode</a></div><div class="ttdeci">void setMode(const std::string &amp;mode)</div><div class="ttdoc">&quot;fxaa&quot; | &quot;smaa&quot; | &quot;ssaa&quot; | &quot;nfaa&quot; (unknown → fxaa).</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00176">AntiAliasing.cpp:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a58a3c8f3e23f8d6339e9107dff6517b5"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a58a3c8f3e23f8d6339e9107dff6517b5">eve::graphics::AntiAliasing::getSsaaShader</a></div><div class="ttdeci">Shader * getSsaaShader() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00069">AntiAliasing.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a6cd8afc2a6bcc466f0ee4faea7bf23ac"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a6cd8afc2a6bcc466f0ee4faea7bf23ac">eve::graphics::AntiAliasing::prepareSource</a></div><div class="ttdeci">void prepareSource(Texture *source)</div><div class="ttdoc">Upload texel uniforms from source without drawing (3D scene-color resolve).</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00253">AntiAliasing.cpp:253</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a847bf054fcc48269909ea193b8e658ad"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a847bf054fcc48269909ea193b8e658ad">eve::graphics::AntiAliasing::getQuality</a></div><div class="ttdeci">std::string getQuality() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00034">AntiAliasing.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a994787d880389a4cbf9d4ce80303314e"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a994787d880389a4cbf9d4ce80303314e">eve::graphics::AntiAliasing::suggestScale</a></div><div class="ttdeci">float suggestScale() const</div><div class="ttdoc">Suggested supersample scale for the active quality when using &quot;ssaa&quot; (2 for low/medium,...</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00212">AntiAliasing.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_a99f286224076a615e467a130108ab0e9"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#a99f286224076a615e467a130108ab0e9">eve::graphics::AntiAliasing::applyTo</a></div><div class="ttdeci">void applyTo(Graphics *gfx, Texture *source, Canvas *dest)</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00259">AntiAliasing.cpp:259</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_ab27057fed3a813cab9347fc4181bf3e5"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#ab27057fed3a813cab9347fc4181bf3e5">eve::graphics::AntiAliasing::~AntiAliasing</a></div><div class="ttdeci">~AntiAliasing()</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_ab5cd03d4bd6576f40070acf189454de8"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#ab5cd03d4bd6576f40070acf189454de8">eve::graphics::AntiAliasing::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00203">AntiAliasing.cpp:203</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_ab7beb2298bd9a1aff278a1b564fa88b2"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#ab7beb2298bd9a1aff278a1b564fa88b2">eve::graphics::AntiAliasing::getFxaaShader</a></div><div class="ttdeci">Shader * getFxaaShader() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00067">AntiAliasing.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_abbbfe8cede8c8ef8e3d2343d5f26d201"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#abbbfe8cede8c8ef8e3d2343d5f26d201">eve::graphics::AntiAliasing::getShader</a></div><div class="ttdeci">Shader * getShader() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00190">AntiAliasing.cpp:190</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_ac87de1ab2271e35266037729ea96a547"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#ac87de1ab2271e35266037729ea96a547">eve::graphics::AntiAliasing::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;name, float value)</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00197">AntiAliasing.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_ad20ed082a18fa07e1639b22c5ce3195c"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#ad20ed082a18fa07e1639b22c5ce3195c">eve::graphics::AntiAliasing::applyCanvas</a></div><div class="ttdeci">void applyCanvas(Graphics *gfx, Canvas *source)</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00268">AntiAliasing.cpp:268</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_addbe31326d9a540e6b561934a567c616"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#addbe31326d9a540e6b561934a567c616">eve::graphics::AntiAliasing::operator=</a></div><div class="ttdeci">AntiAliasing &amp; operator=(const AntiAliasing &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_ae0c3dbeea3323e16dd1d7a3e869db1b3"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#ae0c3dbeea3323e16dd1d7a3e869db1b3">eve::graphics::AntiAliasing::resolutionFor</a></div><div class="ttdeci">int resolutionFor(int destSize) const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00218">AntiAliasing.cpp:218</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_af3634f4c34d278830cf0d9f0503b3245"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#af3634f4c34d278830cf0d9f0503b3245">eve::graphics::AntiAliasing::applyCanvasTo</a></div><div class="ttdeci">void applyCanvasTo(Graphics *gfx, Canvas *source, Canvas *dest)</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00275">AntiAliasing.cpp:275</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_af83ee36e3380b310575f766ef11ea5da"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#af83ee36e3380b310575f766ef11ea5da">eve::graphics::AntiAliasing::AntiAliasing</a></div><div class="ttdeci">AntiAliasing(const AntiAliasing &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_afaad5a5690d88472aefab9a0ce96be01"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#afaad5a5690d88472aefab9a0ce96be01">eve::graphics::AntiAliasing::setQuality</a></div><div class="ttdeci">void setQuality(const std::string &amp;quality)</div><div class="ttdoc">&quot;low&quot; | &quot;medium&quot; | &quot;high&quot; (unknown → medium).</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8cpp_source.html#l00168">AntiAliasing.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html_aff50461fdce5a15d50dd6844fee9d6c8"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html#aff50461fdce5a15d50dd6844fee9d6c8">eve::graphics::AntiAliasing::getMode</a></div><div class="ttdeci">std::string getMode() const</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00038">AntiAliasing.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00017">Texture.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

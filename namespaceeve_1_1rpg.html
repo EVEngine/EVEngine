@@ -1,0 +1,433 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。  
+<a href="namespaceeve_1_1rpg.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1AttributeModifier.html">AttributeModifier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">单条修改器。附加在某个属性上，参与最终值计算。  <a href="structeve_1_1rpg_1_1AttributeModifier.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">自定义 op 注册表：opName -&gt; <a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f(currentResult, modifierValue)</a> -&gt; newResult。  <a href="structeve_1_1rpg_1_1AttributeOpTable.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html">AttributeSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">面向 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> 的属性操作静态入口。数据本身存放在 <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Attributes.html" title="属性表：任意字符串 -&gt; AttributeValue（base + modifiers）。">RPGActor::Attributes</a> 组件里， 这里只是围绕组件的一组无状态操作函数（+ 一张全局自定义 op 表）。  <a href="classeve_1_1rpg_1_1AttributeSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1AttributeValue.html">AttributeValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">单个属性的完整状态：基础值 + 修改器列表 + 计算结果缓存。  <a href="structeve_1_1rpg_1_1AttributeValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1CastingState.html">CastingState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">施法状态：同一时间每个 actor 只有一个进行中的引导/读条（可按需扩展为多槽）。  <a href="structeve_1_1rpg_1_1CastingState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EffectDefinition.html">EffectDefinition</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1EffectModifierSpec.html">EffectModifierSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">效果里携带的一条属性修改规格（应用到 AttributeSystem::addModifier）。  <a href="structeve_1_1rpg_1_1EffectModifierSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1EffectRegistry.html">EffectRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。  <a href="classeve_1_1rpg_1_1EffectRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPG.html">RPG</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。  <a href="classeve_1_1rpg_1_1RPG.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">属性 / 状态 / 技能三表合一的 ECS 实体。  <a href="classeve_1_1rpg_1_1RPGActor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1SettlementContext.html">SettlementContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">结算上下文：通用的读写数据袋，字段完全由调用方与各阶段自行约定。  <a href="structeve_1_1rpg_1_1SettlementContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SettlementPipeline.html">SettlementPipeline</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1SkillCastEvent.html">SkillCastEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">技能释放结算事件：由 <a class="el" href="classeve_1_1rpg_1_1SkillSystem.html">SkillSystem</a> 在读条完成 / 瞬发技能释放时产生。  <a href="structeve_1_1rpg_1_1SkillCastEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1SkillCostSpec.html">SkillCostSpec</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillRegistry.html">SkillRegistry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1SkillRuntime.html">SkillRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">单个已学会技能的运行时状态（冷却）。  <a href="structeve_1_1rpg_1_1SkillRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillSystem.html">SkillSystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusChangeEvent.html">StatusChangeEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">状态生命周期变更事件（施加 / 刷新 / 叠层 / 延长 / 移除 / 到期 / 拒绝）。 与 <a class="el" href="structeve_1_1rpg_1_1StatusTickEvent.html" title="周期性状态触发的 tick 事件。周期效果（period &gt; 0）不会自动修改属性， 而是每个周期产生一个 tick 事件交给上层（脚本或 C++ 结算系统）处理—— 这样伤害/治疗类周期效果可以完整地...">StatusTickEvent</a> 分开：tick 是周期性数值触发，change 是实例结构变化。  <a href="structeve_1_1rpg_1_1StatusChangeEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusInstance.html">StatusInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">状态实例：某个 Effect 施加到某个 actor 后的运行时记录。  <a href="structeve_1_1rpg_1_1StatusInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">StatusSystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1StatusTickEvent.html">StatusTickEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">周期性状态触发的 tick 事件。周期效果（period &gt; 0）不会自动修改属性， 而是每个周期产生一个 tick 事件交给上层（脚本或 C++ 结算系统）处理—— 这样伤害/治疗类周期效果可以完整地走 Settlement 流水线（护甲、抗性、暴击……）， 而不是被引擎硬编码为直接扣血。  <a href="structeve_1_1rpg_1_1StatusTickEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a9bd3c45f1c14abb0db3f19d73428b37f" id="r_a9bd3c45f1c14abb0db3f19d73428b37f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html#a9bd3c45f1c14abb0db3f19d73428b37f">computeAttributeValue</a> (const <a class="el" href="structeve_1_1rpg_1_1AttributeValue.html">AttributeValue</a> &amp;attr, const <a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a> *customOps)</td></tr>
+<tr class="separator:a9bd3c45f1c14abb0db3f19d73428b37f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac862a1fdc7ebbe8a141d338181c46287" id="r_ac862a1fdc7ebbe8a141d338181c46287"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html#ac862a1fdc7ebbe8a141d338181c46287">computeAttributeValue</a> (const <a class="el" href="structeve_1_1rpg_1_1AttributeValue.html">AttributeValue</a> &amp;attr, const struct <a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a> *customOps=nullptr)</td></tr>
+<tr class="memdesc:ac862a1fdc7ebbe8a141d338181c46287"><td class="mdescLeft">&#160;</td><td class="mdescRight">纯函数：根据 base + modifiers 计算最终值。不依赖任何 ECS / 全局状态， 自定义 op 通过 customOps 传入（AttributeSystem 内部会传入全局注册表）。  <br /></td></tr>
+<tr class="separator:ac862a1fdc7ebbe8a141d338181c46287"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a2d52f60275b1c5badf5624383028c7" id="r_a2a2d52f60275b1c5badf5624383028c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html#a2a2d52f60275b1c5badf5624383028c7">Module_IMPL</a> (<a class="el" href="classeve_1_1rpg_1_1RPG.html">RPG</a>, new <a class="el" href="classeve_1_1rpg_1_1RPG.html">RPG</a>())</td></tr>
+<tr class="separator:a2a2d52f60275b1c5badf5624383028c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe5232c0bdb119130f6c7d5cd8777726" id="r_abe5232c0bdb119130f6c7d5cd8777726"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html#abe5232c0bdb119130f6c7d5cd8777726">captureRpgState</a> (<a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;out)</td></tr>
+<tr class="memdesc:abe5232c0bdb119130f6c7d5cd8777726"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> skill-state serialization for state hot reload.  <br /></td></tr>
+<tr class="separator:abe5232c0bdb119130f6c7d5cd8777726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad544fb9f8be736db78ef250db6770095" id="r_ad544fb9f8be736db78ef250db6770095"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html#ad544fb9f8be736db78ef250db6770095">restoreRpgState</a> (const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;in, std::string *err=nullptr)</td></tr>
+<tr class="separator:ad544fb9f8be736db78ef250db6770095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34f6b300dc35c35bfdd73fd3672d0ae6" id="r_a34f6b300dc35c35bfdd73fd3672d0ae6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rpg.html#a34f6b300dc35c35bfdd73fd3672d0ae6">resetRpgState</a> ()</td></tr>
+<tr class="separator:a34f6b300dc35c35bfdd73fd3672d0ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。 </p>
+<p><a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</p>
+<p>各系统的完整设计说明见对应头文件： <a class="el" href="AttributeSystem_8h.html">AttributeSystem.h</a> / <a class="el" href="AttributeTypes_8h.html">AttributeTypes.h</a> — 属性 <a class="el" href="Effect_8h.html">Effect.h</a> — 效果（数据驱动定义） <a class="el" href="StatusSystem_8h.html">StatusSystem.h</a> / <a class="el" href="StatusTypes_8h.html">StatusTypes.h</a> — 状态（运行时实例，buff/debuff） <a class="el" href="Skill_8h.html">Skill.h</a> / <a class="el" href="SkillSystem_8h.html">SkillSystem.h</a> / <a class="el" href="SkillTypes_8h.html">SkillTypes.h</a> — 技能 <a class="el" href="Settlement_8h.html">Settlement.h</a> — 结算流水线 以及总体设计文档：docs/2026-08-08-rpg-module-design.md</p>
+<p>与引擎其他模块一致（参考 particles/ParticleEmitter、map/TileLayer）， 组件是纯数据结构体，行为都放在对应的 *System 静态类里。</p>
+<p>可扩展性：游戏可以直接使用 RPGActor，也可以仿照 docs/游戏模型设计.md 的示例，从 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> 派生出自己的实体类型 （例如 Player : public <a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> / Monster : public RPGActor）， 在子类上追加自己的组件，同时天然复用属性/状态/技能三大组件与配套 System （View&lt;RPGActor, RPGActor::Attributes&gt; 等能看到所有派生实体）。 </p>
+</div><h2 class="groupheader">函数说明</h2>
+<a id="abe5232c0bdb119130f6c7d5cd8777726" name="abe5232c0bdb119130f6c7d5cd8777726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe5232c0bdb119130f6c7d5cd8777726">&#9670;&#160;</a></span>captureRpgState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::captureRpgState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1rpg_1_1RPGActor.html" title="属性 / 状态 / 技能三表合一的 ECS 实体。">RPGActor</a> skill-state serialization for state hot reload. </p>
+<p>Captures per-actor known-skill cooldowns and the in-flight casting state. Casting targets are raw pointers and are not serialized (restored as null). </p>
+
+<p class="definition">在文件 <a class="el" href="RpgStateProvider_8cpp_source.html">RpgStateProvider.cpp</a> 第 <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00037">eve::StateValue::array()</a>, <a class="el" href="StateValue_8cpp_source.html#l00050">eve::StateValue::boolean()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="RPGActor_8cpp_source.html#l00033">eve::rpg::RPGActor::liveActors()</a>, <a class="el" href="StateValue_8cpp_source.html#l00044">eve::StateValue::number()</a>, <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>, <a class="el" href="StateValue_8cpp_source.html#l00062">eve::StateValue::pushBack()</a>, <a class="el" href="StateValue_8cpp_source.html#l00064">eve::StateValue::set()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00056">eve::StateValue::string()</a>.</p>
+
+</div>
+</div>
+<a id="a9bd3c45f1c14abb0db3f19d73428b37f" name="a9bd3c45f1c14abb0db3f19d73428b37f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bd3c45f1c14abb0db3f19d73428b37f">&#9670;&#160;</a></span>computeAttributeValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::computeAttributeValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1AttributeValue.html">AttributeValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>attr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a> *&#160;</td>
+          <td class="paramname"><em>customOps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSystem_8cpp_source.html">AttributeSystem.cpp</a> 第 <a class="el" href="AttributeSystem_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00015">eve::rpg::AttributeOpTable::apply()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="AttributeTypes_8h_source.html#l00040">eve::rpg::AttributeValue::base</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00013">eve::rpg::AttributeOpTable::has()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a> , 以及 <a class="el" href="AttributeTypes_8h_source.html#l00041">eve::rpg::AttributeValue::modifiers</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSystem_8cpp_source.html#l00168">eve::rpg::AttributeSystem::getFinal()</a>.</p>
+
+</div>
+</div>
+<a id="ac862a1fdc7ebbe8a141d338181c46287" name="ac862a1fdc7ebbe8a141d338181c46287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac862a1fdc7ebbe8a141d338181c46287">&#9670;&#160;</a></span>computeAttributeValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::computeAttributeValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1AttributeValue.html">AttributeValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>attr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const struct <a class="el" href="structeve_1_1rpg_1_1AttributeOpTable.html">AttributeOpTable</a> *&#160;</td>
+          <td class="paramname"><em>customOps</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>纯函数：根据 base + modifiers 计算最终值。不依赖任何 ECS / 全局状态， 自定义 op 通过 customOps 传入（AttributeSystem 内部会传入全局注册表）。 </p>
+
+</div>
+</div>
+<a id="a2a2d52f60275b1c5badf5624383028c7" name="a2a2d52f60275b1c5badf5624383028c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a2d52f60275b1c5badf5624383028c7">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPG.html">RPG</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>RPG</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a34f6b300dc35c35bfdd73fd3672d0ae6" name="a34f6b300dc35c35bfdd73fd3672d0ae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34f6b300dc35c35bfdd73fd3672d0ae6">&#9670;&#160;</a></span>resetRpgState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::resetRpgState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RpgStateProvider_8cpp_source.html">RpgStateProvider.cpp</a> 第 <a class="el" href="RpgStateProvider_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00125">eve::rpg::SkillSystem::cancelCast()</a> , 以及 <a class="el" href="RPGActor_8cpp_source.html#l00033">eve::rpg::RPGActor::liveActors()</a>.</p>
+
+</div>
+</div>
+<a id="ad544fb9f8be736db78ef250db6770095" name="ad544fb9f8be736db78ef250db6770095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad544fb9f8be736db78ef250db6770095">&#9670;&#160;</a></span>restoreRpgState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::restoreRpgState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RpgStateProvider_8cpp_source.html">RpgStateProvider.cpp</a> 第 <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00034">active</a>, <a class="el" href="SkillTypes_8h_source.html#l00017">eve::rpg::CastingState::active</a>, <a class="el" href="StateValue_8h_source.html#l00064">eve::StateValue::arraySize()</a>, <a class="el" href="StateValue_8h_source.html#l00059">eve::StateValue::asString()</a>, <a class="el" href="StateValue_8h_source.html#l00066">eve::StateValue::at()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">c</a>, <a class="el" href="StateValue_8cpp_source.html#l00074">eve::StateValue::find()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a>, <a class="el" href="StateValue_8h_source.html#l00050">eve::StateValue::isArray()</a>, <a class="el" href="StateValue_8h_source.html#l00049">eve::StateValue::isObject()</a>, <a class="el" href="StateValue_8h_source.html#l00048">eve::StateValue::isString()</a>, <a class="el" href="SkillSystem_8cpp_source.html#l00060">eve::rpg::SkillSystem::knows()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00033">eve::rpg::RPGActor::liveActors()</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="SkillTypes_8h_source.html#l00019">eve::rpg::CastingState::remaining</a>, <a class="el" href="SkillSystem_8cpp_source.html#l00078">eve::rpg::SkillSystem::setCooldownRemaining()</a>, <a class="el" href="SkillTypes_8h_source.html#l00018">eve::rpg::CastingState::skillId</a>, <a class="el" href="SkillTypes_8h_source.html#l00021">eve::rpg::CastingState::target</a>, <a class="el" href="SkillTypes_8h_source.html#l00020">eve::rpg::CastingState::totalCastTime</a> , 以及 <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

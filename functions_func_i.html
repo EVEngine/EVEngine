@@ -1,0 +1,345 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 类成员 - 函数</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
+<li>i16()&#160;:&#160;<a class="el" href="classeve_1_1network_1_1NetReader.html#a448ff8641d782cd528c3211518347c02">eve::network::NetReader</a></li>
+<li>I18n()&#160;:&#160;<a class="el" href="classeve_1_1i18n_1_1I18n.html#aa6edc0e41864a438bf0c90bbae9ad2d9">eve::i18n::I18n</a></li>
+<li>i32()&#160;:&#160;<a class="el" href="classeve_1_1network_1_1NetReader.html#a89c885c1d2c30b8639cdb929f3bacbe4">eve::network::NetReader</a></li>
+<li>i64()&#160;:&#160;<a class="el" href="classeve_1_1network_1_1NetReader.html#ab600efa439b3467c69e323cb975512e6">eve::network::NetReader</a></li>
+<li>i8()&#160;:&#160;<a class="el" href="classeve_1_1network_1_1NetReader.html#afab95170ef1a1c2f8216c135c063910e">eve::network::NetReader</a></li>
+<li>identity()&#160;:&#160;<a class="el" href="structeve_1_1animation_1_1Mat4.html#a59abf3a056ecffdecea17ab03af21aa6">eve::animation::Mat4</a>, <a class="el" href="structeve_1_1animation_1_1TransformTRS.html#a5a874a608f3f5ec2e43ea4a668c9e829">eve::animation::TransformTRS</a>, <a class="el" href="classeve_1_1math_1_1Mat4.html#a6af568700ba38a5a2e7eaff48ff42933">eve::math::Mat4</a></li>
+<li>ids()&#160;:&#160;<a class="el" href="classeve_1_1housegen_1_1HouseComponentLibrary.html#abdfe85bfa4f9da4da517f36fd1e3dd3c">eve::housegen::HouseComponentLibrary</a>, <a class="el" href="classeve_1_1spatial_1_1QueryIds.html#a1d1664e7c2d39ba716d48f3d8acb45c5">eve::spatial::QueryIds</a></li>
+<li>IK()&#160;:&#160;<a class="el" href="classeve_1_1ik_1_1IK.html#a1c2282a614e736f038f622db8937abcf">eve::ik::IK</a></li>
+<li>Image()&#160;:&#160;<a class="el" href="classeve_1_1image_1_1Image.html#a31dc91216fb5c5b4cf86ed92b48c21d9">eve::image::Image</a></li>
+<li>ImageData()&#160;:&#160;<a class="el" href="classeve_1_1image_1_1ImageData.html#ad40b18748c1f62e7238572fbb409313c">eve::image::ImageData</a></li>
+<li>imageView()&#160;:&#160;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a626d7e11d5915cf67b1a067b762ae08d">eve::graphics::vulkan::GpuTexture</a></li>
+<li>ImGuiBackend()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#ac94506f293c07dc860e92b562c0f781f">eve::ui::ImGuiBackend</a></li>
+<li>Immortal()&#160;:&#160;<a class="el" href="structeve_1_1dev_1_1Immortal.html#af79d59d81c721608246df4e580e5b1d2">eve::dev::Immortal&lt; T &gt;</a></li>
+<li>importEva()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1AnimImporter.html#ac6d783a5edd9c83953ac358e62419850">eve::animation::AnimImporter</a></li>
+<li>importEvaFile()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1AnimImporter.html#a364581a9242413b17e95e7ac15a1848e">eve::animation::AnimImporter</a></li>
+<li>impulse()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1ControlAnim.html#afb188e4d820ab08d7fa08fb3d116aceb">eve::animation::ControlAnim</a></li>
+<li>inBounds()&#160;:&#160;<a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a0dc0bd88c0f1d725493b8334e70cd077">eve::building::PlacementWorld</a>, <a class="el" href="classeve_1_1editor_1_1TileBuffer.html#aa0f07ad31c91e7fe6a286501596fd39b">eve::editor::TileBuffer</a>, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html#affafe9d572eb8308936f1df0731f9c32">eve::procgen::Heightmap</a></li>
+<li>inBounds2()&#160;:&#160;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae2a9dde8b329cc39ff74cc121dc4f937">eve::map::Fov::Impl</a></li>
+<li>inBounds3()&#160;:&#160;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a6fddd9361c78f2cc5d40c757a8ce9d5f">eve::map::Fov::Impl</a></li>
+<li>index2()&#160;:&#160;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a44da8b2d2478bcfe01bad4ba5c793f39">eve::map::Fov::Impl</a></li>
+<li>index3()&#160;:&#160;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae2475168c9caafdcdf08bb92deb6ebd5">eve::map::Fov::Impl</a></li>
+<li>indices()&#160;:&#160;<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#afe6ea9d578f2fcc507d6491392d2a394">eve::procgen::MeshBuild</a></li>
+<li>init()&#160;:&#160;<a class="el" href="classeve_1_1daynight_1_1DayNight.html#a4df5641d851f4ab34a929cb77c21ebb2">eve::daynight::DayNight</a>, <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a261a8b436c9c53ceab1a485af0d5bea5">eve::filesystem::Filesystem</a>, <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aae917aeb6cc097037a5184cd1d341e97">eve::filesystem::physfs::Filesystem</a>, <a class="el" href="classeve_1_1network_1_1NetReader.html#affd6306d89000e8a14ab6679a45e31ac">eve::network::NetReader</a>, <a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#aafba1825ce836bf836783ffc0ff2cc6a">eve::ui::ImGuiBackend</a>, <a class="el" href="classeve_1_1ui_1_1UIBackend.html#a48677a8288122272e18eef40bbaebf19">eve::ui::UIBackend</a>, <a class="el" href="classeve_1_1weather_1_1Weather.html#a38244930a6b6a836ee58a4a8c2a9ba9b">eve::weather::Weather</a></li>
+<li>initBackend()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a12c60df5f0b1760e563cb41f3c94a58a">eve::ui::UI</a></li>
+<li>initHeadless()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#ae948cb59868486e1a4ab7f7c2234245a">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeb1eea9599c2c3df5180b5d06e720187">eve::graphics::vulkan::Graphics</a></li>
+<li>initialize()&#160;:&#160;<a class="el" href="classeve_1_1Runtime.html#aa064f2d68c528449b7d25c197d415419">eve::Runtime</a></li>
+<li>initialized()&#160;:&#160;<a class="el" href="classeve_1_1Runtime.html#a6e371fcd9be4b840a4780e5b9b11b458">eve::Runtime</a></li>
+<li>initMorphBase()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Mesh.html#a1c3943e674994c49789dba24183e12fe">eve::graphics::Mesh</a></li>
+<li>initStraightPose()&#160;:&#160;<a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a68068ae99bd67c66987fb2dddd36fead">eve::ik::Skeleton2D</a>, <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html#a959cfa107c7532fc89bf6bf091a9135f">eve::ik::Skeleton3D</a></li>
+<li>initWithWindow()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a602f127c983ee273bc195c969a3a8c45">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a62c3afb5f5bc73720dbfe30c03ebfd14">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a7e374092ab4ee3e201763c145ae62ed4">eve::graphics::webgpu::Graphics</a>, <a class="el" href="classeve_1_1IWindowSurfaceHost.html#a7d9f4eb5164566dbc12bb7e247032e98">eve::IWindowSurfaceHost</a></li>
+<li>input1()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#a46ab47324d7a11f2ce46862bc72c2eb4">eve::tensor::Func</a></li>
+<li>input2()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#a9b3cb442f7a7fe541b398d7470f96994">eve::tensor::Func</a></li>
+<li>input3()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#ad5527114f249d2de49932cc39c0c45b6">eve::tensor::Func</a></li>
+<li>input4()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#a3e951d7939beaed0295d4c28719cef83">eve::tensor::Func</a></li>
+<li>input5()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#a58742de6b73622303fa698e09a10f172">eve::tensor::Func</a></li>
+<li>input6()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#a373b625696f9cd02c8a1da2904d12b2d">eve::tensor::Func</a></li>
+<li>inRadius2()&#160;:&#160;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aea8b0e8d64335952208780ec3b92da66">eve::map::Fov::Impl</a></li>
+<li>inRadius3()&#160;:&#160;<a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa673b1f77dd788a40ec1e78a044919af">eve::map::Fov::Impl</a></li>
+<li>insert()&#160;:&#160;<a class="el" href="classeve_1_1database_1_1Connection.html#a7c3f0b6dacd3b33dfdeaf9eb09e6a454">eve::database::Connection</a>, <a class="el" href="classeve_1_1database_1_1Repository.html#a6e78e5233717841fe687087842dfb1da">eve::database::Repository&lt; T &gt;</a>, <a class="el" href="classeve_1_1ModuleManager.html#ad25a9c02f064f1ea0ee1e2ed1d1c1018">eve::ModuleManager</a>, <a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ad2632212d70cceb811f3e88f71eab225">eve::spatial::BSPTree2D</a>, <a class="el" href="classeve_1_1spatial_1_1BSPTree3D.html#aa4ce91b140cd215ae612aa8595996144">eve::spatial::BSPTree3D</a>, <a class="el" href="classeve_1_1spatial_1_1Octree.html#a3213bd289d006b716d4598a1dbe21cfb">eve::spatial::Octree</a>, <a class="el" href="classeve_1_1spatial_1_1QuadTree.html#a10cdd0f35041f960efceae7078fde9f9">eve::spatial::QuadTree</a>, <a class="el" href="classeve_1_1spatial_1_1SpatialHash2D.html#ae2590330beb57b3712ab8a8dd9c3b0c0">eve::spatial::SpatialHash2D</a>, <a class="el" href="classeve_1_1spatial_1_1SpatialHash3D.html#a573c1ba0b6505e3eb252cb13869e021e">eve::spatial::SpatialHash3D</a></li>
+<li>insertJson()&#160;:&#160;<a class="el" href="classeve_1_1database_1_1Connection.html#af6ad14c11d0b5920c9c5c758208d7b4f">eve::database::Connection</a>, <a class="el" href="classeve_1_1database_1_1Model.html#a7faac3a9ae10dbf88bf4a8b58deaad29">eve::database::Model</a></li>
+<li>inside()&#160;:&#160;<a class="el" href="classeve_1_1image_1_1ImageData.html#a0f269f0a7c5ebcf7b08f7c106f29d48b">eve::image::ImageData</a></li>
+<li>inspectAddInstance()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#ac81b6969e54df2bd691eea12ec55a8ba">eve::ui::UI</a></li>
+<li>inspectClose()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#ae8f952c49075e3cb80ace716fe7ee3b0">eve::ui::UI</a></li>
+<li>inspectObject()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1Inspector.html#a356c431ed80f75d9382c401b03373f2d">eve::ui::Inspector</a>, <a class="el" href="classeve_1_1ui_1_1UI.html#abff27c72e2b4b7eb3b64ed13fcc7a68b">eve::ui::UI</a></li>
+<li>inspectOpen()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a2af4ccb50a40ef8e4e2a55535c532884">eve::ui::UI</a></li>
+<li>Inspector()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1Inspector.html#a299c49300e46b62fcda4c54950cccc75">eve::ui::Inspector</a></li>
+<li>inspectPickScene()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a1fcde7d99dcc8424b5210842b2326f6a">eve::ui::UI</a></li>
+<li>inspectRefresh()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a809e22f0f2115a68ab5465bdbc09f27d">eve::ui::UI</a></li>
+<li>inspectSelectClass()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a02f6c33733f6fa9274cc610bddf88229">eve::ui::UI</a></li>
+<li>inspectSetPickHandler()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#adead5619b6e912b7ef3b51b54bebc096">eve::ui::UI</a></li>
+<li>inst()&#160;:&#160;<a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6ca0cb67f111123cf1066c92c3267507">eve::building::PlacementSystem</a>, <a class="el" href="classeve_1_1ModuleManager.html#aacc29b78872d17c2041e94f56ce46aa3">eve::ModuleManager</a></li>
+<li>instance()&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1AiPanel.html#aa003e9bdb1a0a8ed9319e648ce3911d2">eve::dev::AiPanel</a>, <a class="el" href="classeve_1_1dev_1_1ConsolePanel.html#a808e78004eb4f143a3d3560c3f060c32">eve::dev::ConsolePanel</a>, <a class="el" href="classeve_1_1dev_1_1DebugAdapter.html#afab51cc0ddf373dc9d9a606c3f4283c1">eve::dev::DebugAdapter</a>, <a class="el" href="classeve_1_1dev_1_1Debugger.html#aacc0e6e663b8094a98421d78b26d09c4">eve::dev::Debugger</a>, <a class="el" href="classeve_1_1dev_1_1DevTool.html#ad8c6a691ea8e9f9d99b58cbd8a56ebc3">eve::dev::DevTool</a>, <a class="el" href="classeve_1_1dev_1_1McpServer.html#ae845bb4e0929dc85b4063046ff4fb2cf">eve::dev::McpServer</a>, <a class="el" href="classeve_1_1dev_1_1ReloadSession.html#af862d5ac1f270a06dc94b8466d93e5ef">eve::dev::ReloadSession</a>, <a class="el" href="classeve_1_1dev_1_1RenderVision.html#a85ebbb1388d7883344ee37b32f5ad1b8">eve::dev::RenderVision</a>, <a class="el" href="classeve_1_1dev_1_1SceneInspect.html#aab3c8cc8864f5ce15841733ae42ddf1e">eve::dev::SceneInspect</a>, <a class="el" href="classeve_1_1dev_1_1Snapshot.html#ac4702086e72f5a0390b86bf284a83b79">eve::dev::Snapshot</a>, <a class="el" href="classeve_1_1procgen_1_1GeneratorRegistry.html#a47b04714876582f5b574aad20cd9b98e">eve::procgen::GeneratorRegistry</a>, <a class="el" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html#a69d31ca250ab21da3a23dd8fd2d703df">eve::procgen::MeshRecipeRegistry</a>, <a class="el" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html#a8fe0de7d4e5d9d931631e256d085807c">eve::procgen::PbrRecipeRegistry</a>, <a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#af87db9b8047f8d463e0ba9a307ca871a">eve::procgen::TextureRecipeRegistry</a>, <a class="el" href="classeve_1_1ui_1_1EditorHost.html#a9ee23a9b7ae2c528f9f69c78a044a938">eve::ui::EditorHost</a>, <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">eve::ui::ObjectRegistry</a></li>
+<li>instanceCount()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1Inspector.html#af001282d5a56f03ce05d14cb76952334">eve::ui::Inspector</a></li>
+<li>instantiate()&#160;:&#160;<a class="el" href="classeve_1_1housegen_1_1HouseLayout.html#a6a8be261e70d4ff45e53fc265da0f3ce">eve::housegen::HouseLayout</a></li>
+<li>integer()&#160;:&#160;<a class="el" href="structeve_1_1dialogue_1_1DataValue.html#a6be05ed41f56b91820ad9e7a395d76fc">eve::dialogue::DataValue</a>, <a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#aa28f866030f982a2b7fef5e677f8493f">eve::dialogue::Dialogue::VarValue</a>, <a class="el" href="classeve_1_1StateValue.html#a4bc1f200083d80d1415e72bc56c4cc6f">eve::StateValue</a></li>
+<li>interactAt()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Fluid.html#ae0c23837f02bc490e378aa547a262155">eve::physics::Fluid</a></li>
+<li>intersectsAABB()&#160;:&#160;<a class="el" href="structeve_1_1spatial_1_1AABB2.html#a7fb854634d0603c19179fcfc41f87eed">eve::spatial::AABB2</a>, <a class="el" href="structeve_1_1spatial_1_1AABB3.html#a90e733ca99c3a6e931e850c53b54fb49">eve::spatial::AABB3</a>, <a class="el" href="structeve_1_1voxel_1_1Frustum.html#a88303b74aaadb959039e2331edff371f">eve::voxel::Frustum</a></li>
+<li>intersectsCircle()&#160;:&#160;<a class="el" href="structeve_1_1spatial_1_1AABB2.html#a8fa894b5b9afb23261d0558dad076467">eve::spatial::AABB2</a></li>
+<li>intersectsSphere()&#160;:&#160;<a class="el" href="structeve_1_1spatial_1_1AABB3.html#acc37e45087b02c49c0bc4da217a8759e">eve::spatial::AABB3</a></li>
+<li>invalidate()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body3D.html#a96977cdca5c92fae7363de3def6fc280">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Body.html#aaf399522023949e1541cdbaa0c3d7e73">eve::physics::Body</a>, <a class="el" href="classeve_1_1physics_1_1Fixture.html#a720acd459e640688910eeb4ab75ec7b5">eve::physics::Fixture</a>, <a class="el" href="classeve_1_1physics_1_1Shape3D.html#a0d3c418d463b8a704ec7e0b2a469613a">eve::physics::Shape3D</a>, <a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html#a81965ceed43cda35e7b15e26c5a979e3">eve::rpg::AttributeSystem</a></li>
+<li>invalidateCache()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Pathfinder.html#a3363726e9d3a404143f1875197f9a327">eve::map::Pathfinder</a></li>
+<li>invalidateIndex()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1SceneHost.html#acb406eb168c743070094ab4e1a2c5068">eve::scene::SceneHost</a></li>
+<li>Inventory()&#160;:&#160;<a class="el" href="classeve_1_1inventory_1_1Inventory.html#ad1a98a2b8fcc482b74875613d52105d8">eve::inventory::Inventory</a></li>
+<li>inverseLerp()&#160;:&#160;<a class="el" href="classeve_1_1math_1_1Math.html#ad96f1568a98af16fb37e1fbef35c0cb1">eve::math::Math</a></li>
+<li>inverseTransformPoint()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5411c5d4a4f41a61800dc8952df9679a">eve::graphics::Graphics</a></li>
+<li>isActive()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Tween.html#a8e89203cc8c4ee67a794534a617e05c4">eve::animation::Tween</a>, <a class="el" href="classeve_1_1building_1_1PlacementSession.html#a271a7f9bfb53c1d395ff36ec493a8aba">eve::building::PlacementSession</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa05d1cbe350701719caf3773a74dbc3f">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a29280072a184ca5f85b7f8f11644e6df">eve::particles::ParticleEmitter</a>, <a class="el" href="classeve_1_1physics_1_1Body3D.html#a1d778853631e7178bc2ff95df10d55d8">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Body.html#a2fda8109e1ef40ac4e1dbaef47f9259a">eve::physics::Body</a></li>
+<li>isAlive()&#160;:&#160;<a class="el" href="classeve_1_1network_1_1UdpLink.html#a2b2e4225fb33b82bea9bc306a1ee96b6">eve::network::UdpLink</a></li>
+<li>isAncestor()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1Scene.html#a85eb30257474526809a89c72f48be119">eve::scene::Scene</a></li>
+<li>isAncestorOf()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1SceneHost.html#a48853a6778e373f882d7ff2107a96c05">eve::scene::SceneHost</a></li>
+<li>isAncestorOfById()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1SceneHost.html#a0a978ecccdf9fc91f768572a032abe76">eve::scene::SceneHost</a></li>
+<li>isAndroidSaveExternal()&#160;:&#160;<a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a345fef033dc2f2f31bc866756943b184">eve::filesystem::Filesystem</a></li>
+<li>isArray()&#160;:&#160;<a class="el" href="classeve_1_1data_1_1JsonDocument.html#ab4cca75620cbd92ae057fc05d0056b61">eve::data::JsonDocument</a>, <a class="el" href="classeve_1_1json_1_1Value.html#a440dafbb98ed79ac46e027ea76db21c6">eve::json::Value</a>, <a class="el" href="classeve_1_1StateValue.html#aabb639ea8a63e067ce9bfc23e956972d">eve::StateValue</a></li>
+<li>isAttached()&#160;:&#160;<a class="el" href="classeve_1_1buildingfx_1_1BuildingFx.html#a962890958bc7b8e620cb354088067791">eve::buildingfx::BuildingFx</a>, <a class="el" href="classeve_1_1dev_1_1ConsolePanel.html#af71e177afd14174d9bdc60a1041bddb0">eve::dev::ConsolePanel</a>, <a class="el" href="classeve_1_1dev_1_1Debugger.html#a02aa54fb95e37fa3a583b9fe484b151f">eve::dev::Debugger</a>, <a class="el" href="classeve_1_1dev_1_1DevTool.html#aad65e10bff5059442bcd9aeb1d33fb0c">eve::dev::DevTool</a>, <a class="el" href="classeve_1_1editor_1_1GizmoManager.html#a590c5d462a34b563f63a15cb052ca7f7">eve::editor::GizmoManager</a>, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aaf3aabe8a51ebf391abb3b136479d43b">eve::particles::ParticleEmitter</a></li>
+<li>isAutoReload()&#160;:&#160;<a class="el" href="classeve_1_1i18n_1_1I18n.html#a41d8519dd1116cf1c7e9924ba2ae295c">eve::i18n::I18n</a></li>
+<li>isAvailable()&#160;:&#160;<a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html#a63c72a268fc63b1c82e252f7b2dfe221">eve::gpgpu::Gpgpu</a>, <a class="el" href="classeve_1_1gpgpu_1_1Sequence.html#ad6a38b8cead117ed856f2890665ebd8b">eve::gpgpu::Sequence</a>, <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html#a9b1d6a7d5c345296ed4dff116b3ea295">eve::virtualgeometry::VirtualGeometry</a></li>
+<li>isAwake()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body3D.html#ac91b57e1643d87881ef167ad2dc1df7e">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Body.html#a6a6f40b514f656a35ec65b384e7a2e72">eve::physics::Body</a></li>
+<li>isBackendReady()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a842b51198f51d4acea9e31f94a023796">eve::ui::UI</a></li>
+<li>isBaked()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a6f25390f7ea3290d45c4470b2321aa40">eve::animation::MotionDatabase</a></li>
+<li>isBlending()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html#ac8567302864792b6b3aeefb927d90a6b">eve::animation::AnimStateMachine</a></li>
+<li>isBool()&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Value.html#ac4e5b5d08b8825b51b27d70d27a31b9c">eve::json::Value</a>, <a class="el" href="classeve_1_1rx_1_1Value.html#ae96129c912d96848c3748af853692125">eve::rx::Value</a>, <a class="el" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">eve::StateValue</a></li>
+<li>isBound()&#160;:&#160;<a class="el" href="classeve_1_1network_1_1UdpSocket.html#aa4ca5ea75ec2512e1344f334fbd1c4ff">eve::network::UdpSocket</a></li>
+<li>isBullet()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body3D.html#a162d720379e96a3a422f05230796d741">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Body.html#a789ec76a267216dd820ee8850b4d8efd">eve::physics::Body</a></li>
+<li>isCanvasActive()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a9b206749260306e622c6cf6a317bc53b">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ac46241339374afc44b17d1789f384c53">eve::graphics::IGraphics2D</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a582a489a45756c25ac9ba768379afb73">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#aef8c39155e1bd03b7040496796a1792b">eve::graphics::webgpu::Graphics</a></li>
+<li>isCasting()&#160;:&#160;<a class="el" href="classeve_1_1rpg_1_1SkillSystem.html#a46938fcbc7706e45a86821fcbdad345d">eve::rpg::SkillSystem</a></li>
+<li>isCastingSkill()&#160;:&#160;<a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0e5083571cf515ae18babee186f99972">eve::rpg::RPGActor</a></li>
+<li>isCellEmpty()&#160;:&#160;<a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a87013db666525ccac4bbc370eb087790">eve::building::PlacementWorld</a></li>
+<li>isCellEmptyInChannel()&#160;:&#160;<a class="el" href="classeve_1_1building_1_1PlacementWorld.html#a4912a793800865d4e43a21f8e39b848d">eve::building::PlacementWorld</a></li>
+<li>isClamped()&#160;:&#160;<a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a58bfa0318b9b0bef711c6c5a17978381">eve::procgen::TerrainSampler</a></li>
+<li>isCompiled()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1RenderControl.html#a39d6fb7d063b2c8d32e993c588e40e43">eve::graphics::RenderControl</a></li>
+<li>isCompressed()&#160;:&#160;<a class="el" href="classeve_1_1image_1_1Image.html#a8dc777886fdc08a22cb5bfb50f60701a">eve::image::Image</a></li>
+<li>isConfigured()&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1DebugAdapter.html#a13be150ca651ca5a983013987d23a4d6">eve::dev::DebugAdapter</a></li>
+<li>isConnected()&#160;:&#160;<a class="el" href="classeve_1_1database_1_1Connection.html#ab448b3bbd910978ad49c9f33e98e69ff">eve::database::Connection</a>, <a class="el" href="classeve_1_1joystick_1_1Pad.html#afa468c7973d7990b50ca1e034201ea74">eve::joystick::Pad</a>, <a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a55848b77ef9f5a12ebeefe3cc517e818">eve::joystick::sdl::Pad</a>, <a class="el" href="classeve_1_1network_1_1TcpSocket.html#add890a5ad230fce12d8e6b614a70df98">eve::network::TcpSocket</a></li>
+<li>isCursorSupported()&#160;:&#160;<a class="el" href="classeve_1_1mouse_1_1Mouse.html#a711d633d2daca7d149657c9e4dfb42df">eve::mouse::Mouse</a>, <a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0c7b394d11b20f2720644b215ba0d4a9">eve::mouse::sdl::Mouse</a></li>
+<li>isCustom()&#160;:&#160;<a class="el" href="classeve_1_1mouse_1_1Cursor.html#a6700b3863b4a1b6f4145fe26c374e301">eve::mouse::Cursor</a>, <a class="el" href="classeve_1_1mouse_1_1sdl_1_1Cursor.html#a484139261049b0a0d3f1011f4bd009eb">eve::mouse::sdl::Cursor</a></li>
+<li>isDelayed()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Tween.html#a860ed6b5fa463f68cbea350fd807e17c">eve::animation::Tween</a></li>
+<li>isDescendant()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1Scene.html#ae1ae34d7a7c79271aefe35d428b97632">eve::scene::Scene</a></li>
+<li>isDescendantOf()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1SceneHost.html#a04dbd38aea05197e238ff75f5f12b84d">eve::scene::SceneHost</a></li>
+<li>isDescendantOfById()&#160;:&#160;<a class="el" href="classeve_1_1scene_1_1SceneHost.html#a13ac23cb13fec00d3ccf942861f45b6e">eve::scene::SceneHost</a></li>
+<li>isDirty()&#160;:&#160;<a class="el" href="classeve_1_1editor_1_1EditorInspector.html#a13b5b1a54538e7462c7e4d368e589b8c">eve::editor::EditorInspector</a>, <a class="el" href="classeve_1_1graphics_1_1RenderControl.html#aa270aa3f7f01cfb53f97241b90d6a764">eve::graphics::RenderControl</a>, <a class="el" href="classeve_1_1map_1_1Fov.html#a9d300487b882ed29db54cd8365274ea5">eve::map::Fov</a>, <a class="el" href="classeve_1_1Object.html#ab010b8dc4a18ca9771e0b354042c7055">eve::Object</a>, <a class="el" href="classeve_1_1scene_1_1SceneComponent.html#af25418dad0a579e618c4fa20bd805ac4">eve::scene::SceneComponent</a>, <a class="el" href="classeve_1_1ui_1_1Component.html#a0f519b64dd735726a39d203cb55e97eb">eve::ui::Component</a>, <a class="el" href="classeve_1_1voxel_1_1Chunk.html#a4c56d5b060e1a58068b82f879242c9f1">eve::voxel::Chunk</a></li>
+<li>isDisposed()&#160;:&#160;<a class="el" href="classeve_1_1rx_1_1Subscription.html#a5cc5398ff3c13be73882914b3bde7a11">eve::rx::Subscription</a></li>
+<li>isDone()&#160;:&#160;<a class="el" href="classeve_1_1thread_1_1Job.html#af57432c8fee2057fc485952de943660f">eve::thread::Job</a>, <a class="el" href="classeve_1_1thread_1_1Task.html#ac32bb08559bd2b3e3a1ec6b7003bcc26">eve::thread::Task</a></li>
+<li>isDown()&#160;:&#160;<a class="el" href="classeve_1_1joystick_1_1Pad.html#a0b668804528580fdf1967016287a4fde">eve::joystick::Pad</a>, <a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#ae5947835f0d8ca9be94b163f44e66c06">eve::joystick::sdl::Pad</a>, <a class="el" href="classeve_1_1keyboard_1_1Keyboard.html#a77413913a1be181e585d8662f0e49577">eve::keyboard::Keyboard</a>, <a class="el" href="classeve_1_1keyboard_1_1sdl_1_1Keyboard.html#aec708c69f8671db36c35c2b14dd8442c">eve::keyboard::sdl::Keyboard</a>, <a class="el" href="classeve_1_1mouse_1_1Mouse.html#a2cb30ec6a15ddd2c4eca0b80303b650d">eve::mouse::Mouse</a>, <a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aed4fbc72d467ff2808d0a1c5b233eac0">eve::mouse::sdl::Mouse</a></li>
+<li>isDragging()&#160;:&#160;<a class="el" href="classeve_1_1editor_1_1GizmoManager.html#a0fe6086fa269a636b0d57bd59df06ed9">eve::editor::GizmoManager</a>, <a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a31f7c1339117e3cd9ed7061b3382d40d">eve::editor::TransformGizmo</a></li>
+<li>isEager()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#ad7505a476f19ffbed83e5aac6ccc76e5">eve::tensor::Tensor</a></li>
+<li>isEmpty()&#160;:&#160;<a class="el" href="classeve_1_1card_1_1Deck.html#a00ffa18cce2be750ba1c80e628a5d647">eve::card::Deck</a></li>
+<li>isEnabled()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Light2D.html#a61c81fed5963eda1a23a55d79abfb13d">eve::graphics::Light2D</a>, <a class="el" href="classeve_1_1graphics_1_1Light3D.html#ac79eaa0b760027505a0e220885830b5f">eve::graphics::Light3D</a>, <a class="el" href="classeve_1_1graphics_1_1RenderControl.html#ac281857a1cfb33f163970c48257675b2">eve::graphics::RenderControl</a></li>
+<li>isEngineBinding()&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1Snapshot.html#a7b22c15ff2d2de2ca61a9f91cb255cb0">eve::dev::Snapshot</a></li>
+<li>isEOF()&#160;:&#160;<a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#abdb36ffedd6d0f12c87b11da1cb33423">eve::filesystem::cppfs::File</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#acea9178158b2af68d869edad320e50a9">eve::filesystem::File</a>, <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#a05bc5adde06b9958fe7ebe5977c55dfc">eve::filesystem::physfs::File</a></li>
+<li>isExplored()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Fov.html#a0fc39cd8270b112644ce4022c2a4badf">eve::map::Fov</a></li>
+<li>isExplored3()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Fov.html#a6bfd6bd8e72774535ef3d2f398ec8685">eve::map::Fov</a></li>
+<li>isFinished()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a66d7490195151d4b84f0f4fddaa21f47">eve::animation::SpineAnim</a>, <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#a12c69b9d0616e21de73396345c102477">eve::animation::SpriteAnim</a>, <a class="el" href="classeve_1_1animation_1_1Tween.html#a04e67b4c3b84618450fcd5a8bb4691ca">eve::animation::Tween</a>, <a class="el" href="classeve_1_1sound_1_1Decoder.html#a2fb98ccafa929858def356242e95f36a">eve::sound::Decoder</a></li>
+<li>isFixedRotation()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Body3D.html#a4eb82a2379bea029b27a967eee71dad5">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Body.html#a778f9a6db10804151df57d317ecff803">eve::physics::Body</a></li>
+<li>isFloat()&#160;:&#160;<a class="el" href="classeve_1_1rx_1_1Value.html#a5e19fe41eae0e9efdbf96e9a558b621b">eve::rx::Value</a>, <a class="el" href="classeve_1_1StateValue.html#a03d2eeb3641117d4fb03f4de3c3e18b7">eve::StateValue</a></li>
+<li>isFused()&#160;:&#160;<a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aa5c4a4ba1fce20b24ac74d3bce62c8a7">eve::filesystem::Filesystem</a>, <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a64e7c291e8a537ba0305331bc5f477f1">eve::filesystem::physfs::Filesystem</a></li>
+<li>isGamepad()&#160;:&#160;<a class="el" href="classeve_1_1joystick_1_1Pad.html#af1c4fb49a2a71b2f46695371a97ad140">eve::joystick::Pad</a>, <a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a3bff4de890fbc94059fc8e66fc273926">eve::joystick::sdl::Pad</a></li>
+<li>isGamepadDown()&#160;:&#160;<a class="el" href="classeve_1_1joystick_1_1Pad.html#a05d015556c3bdb3013c4c21084382a08">eve::joystick::Pad</a>, <a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a59b38b55672e2d1bac21fc02b9690e44">eve::joystick::sdl::Pad</a></li>
+<li>isGrabbed()&#160;:&#160;<a class="el" href="classeve_1_1mouse_1_1Mouse.html#ab1fbd0969d6c8ed0e74978c8858a7749">eve::mouse::Mouse</a>, <a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0dd94431f01e26c4066a33330bc06852">eve::mouse::sdl::Mouse</a></li>
+<li>isGrabbing()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Cloth.html#a9d9e5716471842b910793544070bd161">eve::physics::Cloth</a></li>
+<li>isGrouping()&#160;:&#160;<a class="el" href="classeve_1_1editor_1_1EditorHistory.html#aea9572b7d4511cf06b296081a1ac7c07">eve::editor::EditorHistory</a></li>
+<li>isHeadless()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa55f9011c9df653e8ae61b0528016247">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aeeb09cfbaa1c42b06fc360985e50d74a">eve::graphics::vulkan::Graphics</a></li>
+<li>isHovered()&#160;:&#160;<a class="el" href="classeve_1_1editor_1_1GizmoManager.html#a42b9a0c33575ed76ebd9dc8f539826b7">eve::editor::GizmoManager</a>, <a class="el" href="classeve_1_1editor_1_1TransformGizmo.html#a4a80a061c941d1ce8cc6284ed65aec6d">eve::editor::TransformGizmo</a></li>
+<li>isIdle()&#160;:&#160;<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a2ba33f740a16229f14491b8b36ebb8e2">eve::dialogue::Dialogue</a></li>
+<li>isInitialized()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#a030c42262a1a136f46ecaa1df6fc7f80">eve::ui::ImGuiBackend</a>, <a class="el" href="classeve_1_1ui_1_1UIBackend.html#aeff2542b16c03acfdfd81f1bed31adb8">eve::ui::UIBackend</a></li>
+<li>isInt()&#160;:&#160;<a class="el" href="classeve_1_1rx_1_1Value.html#a43c07dddc087640c25e4404c23f7fab6">eve::rx::Value</a>, <a class="el" href="classeve_1_1StateValue.html#ae8e18b7b4439151dd818e53212a56200">eve::StateValue</a></li>
+<li>isLightningEnabled()&#160;:&#160;<a class="el" href="classeve_1_1weather_1_1Weather.html#ac3d647d2f8ce9c25d10995c538b04d1b">eve::weather::Weather</a></li>
+<li>isLipSyncEnabled()&#160;:&#160;<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#aed5a64ae0e094615283e85bda90884a0">eve::dialogue::Dialogue</a></li>
+<li>isListening()&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1DebugAdapter.html#abae121bc9720b1c815ef846e04bafef6">eve::dev::DebugAdapter</a>, <a class="el" href="classeve_1_1dev_1_1McpServer.html#ad6d543828115b86d2165f1f918121acb">eve::dev::McpServer</a>, <a class="el" href="classeve_1_1network_1_1TcpSocket.html#af289f73631beac99b96d986ae62693b1">eve::network::TcpSocket</a></li>
+<li>isLoaded()&#160;:&#160;<a class="el" href="classeve_1_1plugins_1_1Plugins.html#a36f46784867f4a90f5889365760a05d1">eve::plugins::Plugins</a></li>
+<li>isLooping()&#160;:&#160;<a class="el" href="classeve_1_1audio_1_1Source.html#aea3105c10ec38c7d3febea0e4070ed2b">eve::audio::Source</a></li>
+<li>isMaximized()&#160;:&#160;<a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1d75884aae81b9461cfb30cfde67796b">eve::window::sdl::Window</a>, <a class="el" href="classeve_1_1window_1_1Window.html#ac225c18559f693eeed62b8a3fe39d114">eve::window::Window</a></li>
+<li>isMinimized()&#160;:&#160;<a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a784212943e8ddb5b11572a368ef7e322">eve::window::sdl::Window</a>, <a class="el" href="classeve_1_1window_1_1Window.html#a4437ca04a353da4f28c81c1267f7a02d">eve::window::Window</a></li>
+<li>isMorphDirty()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Mesh.html#a23ab8afd06381ccda01b672f397fd3c6">eve::graphics::Mesh</a></li>
+<li>isNight()&#160;:&#160;<a class="el" href="classeve_1_1daynight_1_1DayNight.html#a38c1d6e753ea6fd4f806bce83c9d68af">eve::daynight::DayNight</a></li>
+<li>isNightLight()&#160;:&#160;<a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5f394a311fd934be44603517b2177018">eve::daynight::DayNight</a></li>
+<li>isNil()&#160;:&#160;<a class="el" href="classeve_1_1rx_1_1Value.html#a42b8b9877688562820d29ba2da6fdbd2">eve::rx::Value</a></li>
+<li>isNull()&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Value.html#a6c11d045ef14ff2900af7a947cf69e15">eve::json::Value</a>, <a class="el" href="classeve_1_1StateValue.html#a733c9a14cd992e8d9b8ce01092ea504f">eve::StateValue</a></li>
+<li>isNumber()&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Value.html#a6c8675fa24590abc0b8f56a123e833dc">eve::json::Value</a></li>
+<li>isNumeric()&#160;:&#160;<a class="el" href="structeve_1_1dialogue_1_1Dialogue_1_1VarValue.html#a3bb58434b9b323b6aefe785fa1ba1771">eve::dialogue::Dialogue::VarValue</a></li>
+<li>isObject()&#160;:&#160;<a class="el" href="classeve_1_1data_1_1JsonDocument.html#aa6c0f3ff4da751bdcb2a57fa94a747f1">eve::data::JsonDocument</a>, <a class="el" href="classeve_1_1json_1_1Value.html#a160d4ef6354c4ce50d082713f765f7b1">eve::json::Value</a>, <a class="el" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">eve::StateValue</a></li>
+<li>isOpaque()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Fov.html#a113ac83eb1253b5acd57b8bf9fd8a5b1">eve::map::Fov</a></li>
+<li>isOpaque3()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Fov.html#ace73878db4be2a1a40aed859981aa2dc">eve::map::Fov</a></li>
+<li>isOpen()&#160;:&#160;<a class="el" href="classeve_1_1filesystem_1_1cppfs_1_1File.html#a714518a98907c57a14d7031547973699">eve::filesystem::cppfs::File</a>, <a class="el" href="classeve_1_1filesystem_1_1File.html#a7624f4981c3c42d2d16767ed1c61fafc">eve::filesystem::File</a>, <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1File.html#aeb365e1c8db82763a9b3eb7a50c98dd5">eve::filesystem::physfs::File</a>, <a class="el" href="classeve_1_1ui_1_1DatabasePanel.html#aaf8ac1e976db5ffe291c899a096d6c86">eve::ui::DatabasePanel</a>, <a class="el" href="classeve_1_1ui_1_1EditorShell.html#a65a4ea8890ed9a4340cfff51d5cce714">eve::ui::EditorShell</a>, <a class="el" href="classeve_1_1ui_1_1Inspector.html#a435e1a5f93a46ebbfff5ba781b309c6e">eve::ui::Inspector</a>, <a class="el" href="classeve_1_1ui_1_1ScenePanel.html#ac81146e4f5b31d00c76fda8bb3fb461f">eve::ui::ScenePanel</a>, <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aaf37cb2433dd9e2d78d76c18d8a14816">eve::window::sdl::Window</a>, <a class="el" href="classeve_1_1window_1_1Window.html#a94bb3c9427d43895a50574d175c70dc6">eve::window::Window</a></li>
+<li>isPaused()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a679399f8de994084fb9b78af07cb797b">eve::animation::AnimPlayer</a>, <a class="el" href="classeve_1_1animation_1_1SpineAnim.html#a3d775b24a9719e5ebde22e9945a55bd8">eve::animation::SpineAnim</a>, <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#abcfeb046a77cfad062d4e5215707b976">eve::animation::SpriteAnim</a>, <a class="el" href="classeve_1_1animation_1_1Tween.html#a665f201c03485a5d825077d8d8c68f59">eve::animation::Tween</a>, <a class="el" href="classeve_1_1daynight_1_1DayNight.html#a14b2087301947bdf6fffd71e848a002a">eve::daynight::DayNight</a>, <a class="el" href="classeve_1_1dev_1_1Debugger.html#a4649a3fe820e7ee5225b41d840b204b8">eve::dev::Debugger</a>, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab5dd080de182b6a609fc1ecc7be3fffa">eve::particles::ParticleEmitter</a></li>
+<li>isPinned()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Cloth.html#a601c095ec9fecf5d5f647eb98f018fc8">eve::physics::Cloth</a></li>
+<li>isPlaying()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#ae8e681f4888d125560341f1081c61982">eve::animation::AnimPlayer</a>, <a class="el" href="classeve_1_1animation_1_1SpineAnim.html#ae1cef663907eaa0364d5e444ac33a43c">eve::animation::SpineAnim</a>, <a class="el" href="classeve_1_1animation_1_1SpriteAnim.html#aabf466ef79c8ebc267c48746d233ae1c">eve::animation::SpriteAnim</a>, <a class="el" href="classeve_1_1audio_1_1Source.html#a683e67912deeec0d9a0a173ec3b0fc8f">eve::audio::Source</a>, <a class="el" href="classeve_1_1camera_1_1CameraController.html#a93dfd58712f97237e76d098129ee024e">eve::camera::CameraController</a></li>
+<li>isPtr()&#160;:&#160;<a class="el" href="classeve_1_1rx_1_1Value.html#af33069aa656a076bbfbdd292a2147b03">eve::rx::Value</a></li>
+<li>isQuantized()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#a26cc92b5c9ef9dabe9fc8d9d18814704">eve::tensor::Tensor</a></li>
+<li>isReachable()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1FlowField.html#a083aaf0b82d918b0e70f37907bca4991">eve::map::FlowField</a></li>
+<li>isReady()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a48423274c5b77c41fccd996016feb376">eve::graphics::webgpu::Graphics</a>, <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#aa0c8656f606ba01f0901b1745c6906f3">eve::virtualgeometry::VirtualGeometryRenderer</a></li>
+<li>isRealDirectory()&#160;:&#160;<a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ab7c99345da7c3b26d0905768a2121f24">eve::filesystem::Filesystem</a></li>
+<li>isRemoteSyncing()&#160;:&#160;<a class="el" href="classeve_1_1filesystem_1_1HotReload.html#a416cb069fd977a49f2b937d35bf522d9">eve::filesystem::HotReload</a></li>
+<li>isRunning()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Tween.html#a0fb7a73b8274ac439313e2ebe00dc799">eve::animation::Tween</a>, <a class="el" href="classeve_1_1thread_1_1JobSystem.html#adf34e6f35de830e30851118cc7e8c58d">eve::thread::JobSystem</a>, <a class="el" href="classeve_1_1thread_1_1JobSystemThreadPool.html#ab13c0699b81ff767a7e385c741f54ddd">eve::thread::JobSystemThreadPool</a>, <a class="el" href="classeve_1_1thread_1_1ThreadPool.html#ad9a91d937825556ae4fbf67010b223c7">eve::thread::ThreadPool</a></li>
+<li>isScancodeDown()&#160;:&#160;<a class="el" href="classeve_1_1keyboard_1_1Keyboard.html#a197a2f8bd44e16f39f1509cca44e121c">eve::keyboard::Keyboard</a>, <a class="el" href="classeve_1_1keyboard_1_1sdl_1_1Keyboard.html#a44191665a7a5ffb1f58649fffe9dd917">eve::keyboard::sdl::Keyboard</a></li>
+<li>isScreenReadbackEnabled()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a2d3fbf09aeef9666afe4628cbd934c88">eve::graphics::Graphics</a></li>
+<li>isSeekable()&#160;:&#160;<a class="el" href="classeve_1_1sound_1_1Decoder.html#a36321bbfe9df3dad69ff8171c2e477e2">eve::sound::Decoder</a></li>
+<li>isSensor()&#160;:&#160;<a class="el" href="classeve_1_1physics_1_1Fixture.html#a98b48b793133a90af9cb54410747e7a4">eve::physics::Fixture</a>, <a class="el" href="classeve_1_1physics_1_1Shape3D.html#a5b33505bf48e52c3b6e4c1174a5e738d">eve::physics::Shape3D</a></li>
+<li>isShown()&#160;:&#160;<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ab5ca22f023c5e90adb7c56034c8ac775">eve::dialogue::Dialogue</a></li>
+<li>isSkyboxEnabled()&#160;:&#160;<a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7e9ad2b8ed3b44a986217940a06bfdd1">eve::daynight::DayNight</a></li>
+<li>isSlotEmpty()&#160;:&#160;<a class="el" href="classeve_1_1inventory_1_1Bag.html#abea4c343f160067a4cc272251525b671">eve::inventory::Bag</a>, <a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html#aae63fbcb0f4863f995fb9ea1ad49424d">eve::inventory::EquipmentSet</a></li>
+<li>isSRGB()&#160;:&#160;<a class="el" href="classeve_1_1image_1_1ImageData.html#ad53a0c469e68457ff3d2ad0c704b23fb">eve::image::ImageData</a></li>
+<li>isStopped()&#160;:&#160;<a class="el" href="classeve_1_1animation_1_1Tween.html#afaf8abb3a1d2ce149b9a9f8c29de6e3c">eve::animation::Tween</a>, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aae39222f193afef343734a97732232ce">eve::particles::ParticleEmitter</a>, <a class="el" href="classeve_1_1rx_1_1Observer.html#a3d8c8baeae97fd514faa3a1b7464acc0">eve::rx::Observer&lt; T &gt;</a></li>
+<li>isStreaming()&#160;:&#160;<a class="el" href="classeve_1_1audio_1_1Source.html#a25eded75596606726e4c77c90d2d14d0">eve::audio::Source</a></li>
+<li>isString()&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Value.html#a50421ef4724b705aa82d7bd12f63b0a8">eve::json::Value</a>, <a class="el" href="classeve_1_1rx_1_1Value.html#a7ff656a52914f9d656ee6118f03ea321">eve::rx::Value</a>, <a class="el" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">eve::StateValue</a></li>
+<li>isSupported()&#160;:&#160;<a class="el" href="classeve_1_1data_1_1Compressor.html#ad54c24af478211fa25fb1bb163727e6c">eve::data::Compressor</a>, <a class="el" href="classeve_1_1data_1_1HashFunction.html#a8cba3c04442e56d466e617fdf552c05e">eve::data::HashFunction</a>, <a class="el" href="classeve_1_1data_1_1LZ4Compressor.html#a95f75cfeeac9c16cdad78f140984ffd7">eve::data::LZ4Compressor</a>, <a class="el" href="classeve_1_1data_1_1zlibCompressor.html#a3115c91b3f9a5a07b1612c0468e1d1bc">eve::data::zlibCompressor</a></li>
+<li>isSymbolic()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Tensor.html#aa2dc8f124088595d64072b562a91313d">eve::tensor::Tensor</a></li>
+<li>isTracing()&#160;:&#160;<a class="el" href="classeve_1_1tensor_1_1Func.html#ad3355feaa2dea289a760884629812a87">eve::tensor::Func</a></li>
+<li>isTransparentHair()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Material.html#a75235bf7d886528143954ff1560551bb">eve::graphics::Material</a></li>
+<li>isTyping()&#160;:&#160;<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a55be1db54839368a9c409bf7207d0850">eve::dialogue::Dialogue</a></li>
+<li>isValid()&#160;:&#160;<a class="el" href="classeve_1_1building_1_1Ghost.html#a8001bf782aac83c1b8ebfceb0d075365">eve::building::Ghost</a>, <a class="el" href="classeve_1_1building_1_1PlacementSession.html#a71391787cd266bf640277a196345638a">eve::building::PlacementSession</a>, <a class="el" href="classeve_1_1graphics_1_1GBuffer.html#afedbbc64c8bb254e335cd90c2ba4f86c">eve::graphics::GBuffer</a>, <a class="el" href="classeve_1_1physics_1_1Body3D.html#a5e2822c0204d893a1e505f2c0cd33986">eve::physics::Body3D</a>, <a class="el" href="classeve_1_1physics_1_1Shape3D.html#a7a1d262b5c01957ba9fac869d12cea58">eve::physics::Shape3D</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html#a8f6bdc3370bac35a43fef5c76c645b02">eve::physics::World3D</a>, <a class="el" href="classeve_1_1scene_1_1SceneNodeRef.html#a16b30b4c0e6fac55f33e64ed1dc6d2df">eve::scene::SceneNodeRef</a></li>
+<li>isVibrationSupported()&#160;:&#160;<a class="el" href="classeve_1_1joystick_1_1Pad.html#a1c4e68373723411e481e7a8702bd8403">eve::joystick::Pad</a>, <a class="el" href="classeve_1_1joystick_1_1sdl_1_1Pad.html#a478fa88d9d7cf321c7b68c0a2f02152b">eve::joystick::sdl::Pad</a></li>
+<li>isVisible()&#160;:&#160;<a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a1f2dfd59bb9171d3464aa8d82ee6afb2">eve::avatar::AvatarInstance</a>, <a class="el" href="classeve_1_1dev_1_1AiPanel.html#ae9cc36e2c724e0f78cbd3fdcdb5e6c65">eve::dev::AiPanel</a>, <a class="el" href="classeve_1_1dev_1_1ConsolePanel.html#acc7d9adc726a1be878d029aaf2022041">eve::dev::ConsolePanel</a>, <a class="el" href="classeve_1_1map_1_1Fov.html#a390111bc22f7d5a1e13501daa3d18b65">eve::map::Fov</a>, <a class="el" href="classeve_1_1map_1_1TileLayer.html#ac92c03f8ba8a6b67cc256cdf0ca0e1c6">eve::map::TileLayer</a>, <a class="el" href="classeve_1_1mouse_1_1Mouse.html#ae722ca470c30395111455f201db1e06f">eve::mouse::Mouse</a>, <a class="el" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a88af31663fadef0afd754de928ef8ab0">eve::mouse::sdl::Mouse</a>, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#afe7b812eefdbd95566ae4f8fc3a01adf">eve::particles::ParticleEmitter</a>, <a class="el" href="classeve_1_1scene_1_1SceneNodeRef.html#acc7415331a28c9f8f8a6e420065fec78">eve::scene::SceneNodeRef</a>, <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1ea52a8d58e775c4b2b67055087481b2">eve::window::sdl::Window</a>, <a class="el" href="classeve_1_1window_1_1Window.html#a67b3d326825a0c5566f41d72f4b0fafa">eve::window::Window</a></li>
+<li>isVisible3()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Fov.html#a32ff2921c8f29cffd137da944f3f3345">eve::map::Fov</a></li>
+<li>isVSync()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Graphics.html#a2087c8fac5333af0c36623b91cc0f209">eve::graphics::Graphics</a></li>
+<li>isWaitingAdvance()&#160;:&#160;<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#ae2a8a89f6097f33d4f8b1f916c30a604">eve::dialogue::Dialogue</a></li>
+<li>isWaitingChoice()&#160;:&#160;<a class="el" href="classeve_1_1dialogue_1_1Dialogue.html#a9050137052e19640ea24c741cc96f9e5">eve::dialogue::Dialogue</a></li>
+<li>isWalkable()&#160;:&#160;<a class="el" href="classeve_1_1map_1_1Pathfinder.html#a91335b20cd93840a87246a6ec2bd900b">eve::map::Pathfinder</a></li>
+<li>isXray()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Shader.html#a5842e6510ba06b56ee607c37028fbda5">eve::graphics::Shader</a></li>
+<li>itemHasTag()&#160;:&#160;<a class="el" href="classeve_1_1inventory_1_1Inventory.html#ab7a5219a8b4575f457f51c56c90e52be">eve::inventory::Inventory</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

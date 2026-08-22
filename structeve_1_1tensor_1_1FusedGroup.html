@@ -1,0 +1,597 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::FusedGroup结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1tensor_1_1FusedGroup-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::FusedGroup结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Optimizer_8h_source.html">Optimizer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad857d0136ec3b596ba361082c0a9805d" id="r_ad857d0136ec3b596ba361082c0a9805d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599">GroupKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ad857d0136ec3b596ba361082c0a9805d">kind</a> = <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec">GroupKind::Elementwise</a></td></tr>
+<tr class="separator:ad857d0136ec3b596ba361082c0a9805d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a121f7726559ef7bd41fed40929fcd144" id="r_a121f7726559ef7bd41fed40929fcd144"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a121f7726559ef7bd41fed40929fcd144">op</a> = <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf">OpType::Const</a></td></tr>
+<tr class="separator:a121f7726559ef7bd41fed40929fcd144"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a615bf56802304cd61d60a8d6026da97a" id="r_a615bf56802304cd61d60a8d6026da97a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a615bf56802304cd61d60a8d6026da97a">nodes</a></td></tr>
+<tr class="separator:a615bf56802304cd61d60a8d6026da97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9cdbdafa91eefae728d8eaec3cdf8de" id="r_ab9cdbdafa91eefae728d8eaec3cdf8de"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ab9cdbdafa91eefae728d8eaec3cdf8de">inputs</a></td></tr>
+<tr class="separator:ab9cdbdafa91eefae728d8eaec3cdf8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2486cf54297be4fbe73e0657062529" id="r_abc2486cf54297be4fbe73e0657062529"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#abc2486cf54297be4fbe73e0657062529">outputNode</a> = -1</td></tr>
+<tr class="separator:abc2486cf54297be4fbe73e0657062529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86c61f0a92c96b5469d5432843d86e53" id="r_a86c61f0a92c96b5469d5432843d86e53"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a86c61f0a92c96b5469d5432843d86e53">s0</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a86c61f0a92c96b5469d5432843d86e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f0e9469ffbcfffce4b113812cbdfdb" id="r_a54f0e9469ffbcfffce4b113812cbdfdb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a54f0e9469ffbcfffce4b113812cbdfdb">s1</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a54f0e9469ffbcfffce4b113812cbdfdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76fb80e212f004f53e40d0f659f9b9a3" id="r_a76fb80e212f004f53e40d0f659f9b9a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a76fb80e212f004f53e40d0f659f9b9a3">s2</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a76fb80e212f004f53e40d0f659f9b9a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3da5060d93edb16580d17af24d0e8ecb" id="r_a3da5060d93edb16580d17af24d0e8ecb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a3da5060d93edb16580d17af24d0e8ecb">s3</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3da5060d93edb16580d17af24d0e8ecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a667493580e9108fff7307d08bd4386d3" id="r_a667493580e9108fff7307d08bd4386d3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a667493580e9108fff7307d08bd4386d3">i0</a> = 0</td></tr>
+<tr class="separator:a667493580e9108fff7307d08bd4386d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4a8ec23b02d5fbfd2c539d75e57199f" id="r_ad4a8ec23b02d5fbfd2c539d75e57199f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ad4a8ec23b02d5fbfd2c539d75e57199f">i1</a> = 0</td></tr>
+<tr class="separator:ad4a8ec23b02d5fbfd2c539d75e57199f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a790270cbcc9969e908dc402936c049c8" id="r_a790270cbcc9969e908dc402936c049c8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a790270cbcc9969e908dc402936c049c8">i2</a> = 0</td></tr>
+<tr class="separator:a790270cbcc9969e908dc402936c049c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5975d75dc723d207517674160d2f411c" id="r_a5975d75dc723d207517674160d2f411c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a5975d75dc723d207517674160d2f411c">i3</a> = 0</td></tr>
+<tr class="separator:a5975d75dc723d207517674160d2f411c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1718e006fe43a9b1591008caa77cc89a" id="r_a1718e006fe43a9b1591008caa77cc89a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a1718e006fe43a9b1591008caa77cc89a">perm</a> [<a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3b5bcc40b612cd0923fe9f5853eb2295">Tensor::kMaxRank</a>] = {0, 1, 2, 3, 4, 5}</td></tr>
+<tr class="separator:a1718e006fe43a9b1591008caa77cc89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a882ec95ca8322e387207402ccdc2ed9a" id="r_a882ec95ca8322e387207402ccdc2ed9a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a882ec95ca8322e387207402ccdc2ed9a">permRank</a> = 0</td></tr>
+<tr class="separator:a882ec95ca8322e387207402ccdc2ed9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad28a3810fc76109eb068149c6af71601" id="r_ad28a3810fc76109eb068149c6af71601"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ad28a3810fc76109eb068149c6af71601">dtype</a> = static_cast&lt;int&gt;(<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">DType::Float32</a>)</td></tr>
+<tr class="separator:ad28a3810fc76109eb068149c6af71601"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b255f337d80fedc9ea40d472ab777cd" id="r_a5b255f337d80fedc9ea40d472ab777cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a5b255f337d80fedc9ea40d472ab777cd">biasNode</a> = -1</td></tr>
+<tr class="separator:a5b255f337d80fedc9ea40d472ab777cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e4a8cbb4b4610ce04c2b13648c30862" id="r_a0e4a8cbb4b4610ce04c2b13648c30862"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a0e4a8cbb4b4610ce04c2b13648c30862">epilogue</a></td></tr>
+<tr class="separator:a0e4a8cbb4b4610ce04c2b13648c30862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac891e5d4627060c70e73d1242c988fe6" id="r_ac891e5d4627060c70e73d1242c988fe6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#ac891e5d4627060c70e73d1242c988fe6">hasScale</a> = false</td></tr>
+<tr class="separator:ac891e5d4627060c70e73d1242c988fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeda44f56d7f7a841c889c89d1550819d" id="r_aeda44f56d7f7a841c889c89d1550819d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#aeda44f56d7f7a841c889c89d1550819d">hasBias</a> = false</td></tr>
+<tr class="separator:aeda44f56d7f7a841c889c89d1550819d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e9962d1324b18958ecefc54f7f47542" id="r_a9e9962d1324b18958ecefc54f7f47542"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a9e9962d1324b18958ecefc54f7f47542">masked</a> = false</td></tr>
+<tr class="separator:a9e9962d1324b18958ecefc54f7f47542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a850dcdcfcc98dcf031b00574e29bf8b3" id="r_a850dcdcfcc98dcf031b00574e29bf8b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1FusedGroup.html#a850dcdcfcc98dcf031b00574e29bf8b3">logMode</a> = false</td></tr>
+<tr class="separator:a850dcdcfcc98dcf031b00574e29bf8b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00042">42</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a5b255f337d80fedc9ea40d472ab777cd" name="a5b255f337d80fedc9ea40d472ab777cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b255f337d80fedc9ea40d472ab777cd">&#9670;&#160;</a></span>biasNode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::biasNode = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ad28a3810fc76109eb068149c6af71601" name="ad28a3810fc76109eb068149c6af71601"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad28a3810fc76109eb068149c6af71601">&#9670;&#160;</a></span>dtype</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::dtype = static_cast&lt;int&gt;(<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba166495adc0d0f53bee6baecc577f5204">DType::Float32</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e4a8cbb4b4610ce04c2b13648c30862" name="a0e4a8cbb4b4610ce04c2b13648c30862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e4a8cbb4b4610ce04c2b13648c30862">&#9670;&#160;</a></span>epilogue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::tensor::FusedGroup::epilogue</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aeda44f56d7f7a841c889c89d1550819d" name="aeda44f56d7f7a841c889c89d1550819d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeda44f56d7f7a841c889c89d1550819d">&#9670;&#160;</a></span>hasBias</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::FusedGroup::hasBias = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac891e5d4627060c70e73d1242c988fe6" name="ac891e5d4627060c70e73d1242c988fe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac891e5d4627060c70e73d1242c988fe6">&#9670;&#160;</a></span>hasScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::FusedGroup::hasScale = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a667493580e9108fff7307d08bd4386d3" name="a667493580e9108fff7307d08bd4386d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a667493580e9108fff7307d08bd4386d3">&#9670;&#160;</a></span>i0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::i0 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4a8ec23b02d5fbfd2c539d75e57199f" name="ad4a8ec23b02d5fbfd2c539d75e57199f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4a8ec23b02d5fbfd2c539d75e57199f">&#9670;&#160;</a></span>i1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::i1 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a790270cbcc9969e908dc402936c049c8" name="a790270cbcc9969e908dc402936c049c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a790270cbcc9969e908dc402936c049c8">&#9670;&#160;</a></span>i2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::i2 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5975d75dc723d207517674160d2f411c" name="a5975d75dc723d207517674160d2f411c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5975d75dc723d207517674160d2f411c">&#9670;&#160;</a></span>i3</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::i3 = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9cdbdafa91eefae728d8eaec3cdf8de" name="ab9cdbdafa91eefae728d8eaec3cdf8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9cdbdafa91eefae728d8eaec3cdf8de">&#9670;&#160;</a></span>inputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::tensor::FusedGroup::inputs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>External producer node ids (deduped, ordered by first use). </p>
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ad857d0136ec3b596ba361082c0a9805d" name="ad857d0136ec3b596ba361082c0a9805d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad857d0136ec3b596ba361082c0a9805d">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599">GroupKind</a> eve::tensor::FusedGroup::kind = <a class="el" href="namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aab6e9fd932f9015e01b8813e750049ec">GroupKind::Elementwise</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00970">eve::tensor::generateKernel()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00998">eve::tensor::generateMatMulVariant()</a> , 以及 <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a850dcdcfcc98dcf031b00574e29bf8b3" name="a850dcdcfcc98dcf031b00574e29bf8b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a850dcdcfcc98dcf031b00574e29bf8b3">&#9670;&#160;</a></span>logMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::FusedGroup::logMode = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e9962d1324b18958ecefc54f7f47542" name="a9e9962d1324b18958ecefc54f7f47542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e9962d1324b18958ecefc54f7f47542">&#9670;&#160;</a></span>masked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::FusedGroup::masked = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a615bf56802304cd61d60a8d6026da97a" name="a615bf56802304cd61d60a8d6026da97a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615bf56802304cd61d60a8d6026da97a">&#9670;&#160;</a></span>nodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::tensor::FusedGroup::nodes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> node ids in execution order (elementwise chains: all chain nodes). </p>
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a121f7726559ef7bd41fed40929fcd144" name="a121f7726559ef7bd41fed40929fcd144"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a121f7726559ef7bd41fed40929fcd144">&#9670;&#160;</a></span>op</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67">OpType</a> eve::tensor::FusedGroup::op = <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a79ceee9f8e3c1f0cc74223e05d2448bf">OpType::Const</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Actual op for polymorphic groups (Reduce sum/mean/min/max, Softmax/LogSoftmax). </p>
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc2486cf54297be4fbe73e0657062529" name="abc2486cf54297be4fbe73e0657062529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc2486cf54297be4fbe73e0657062529">&#9670;&#160;</a></span>outputNode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::outputNode = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1718e006fe43a9b1591008caa77cc89a" name="a1718e006fe43a9b1591008caa77cc89a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1718e006fe43a9b1591008caa77cc89a">&#9670;&#160;</a></span>perm</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::perm[<a class="el" href="classeve_1_1tensor_1_1Tensor.html#a3b5bcc40b612cd0923fe9f5853eb2295">Tensor::kMaxRank</a>] = {0, 1, 2, 3, 4, 5}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a882ec95ca8322e387207402ccdc2ed9a" name="a882ec95ca8322e387207402ccdc2ed9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a882ec95ca8322e387207402ccdc2ed9a">&#9670;&#160;</a></span>permRank</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::FusedGroup::permRank = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86c61f0a92c96b5469d5432843d86e53" name="a86c61f0a92c96b5469d5432843d86e53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86c61f0a92c96b5469d5432843d86e53">&#9670;&#160;</a></span>s0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::FusedGroup::s0 = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54f0e9469ffbcfffce4b113812cbdfdb" name="a54f0e9469ffbcfffce4b113812cbdfdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f0e9469ffbcfffce4b113812cbdfdb">&#9670;&#160;</a></span>s1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::FusedGroup::s1 = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76fb80e212f004f53e40d0f659f9b9a3" name="a76fb80e212f004f53e40d0f659f9b9a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76fb80e212f004f53e40d0f659f9b9a3">&#9670;&#160;</a></span>s2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::FusedGroup::s2 = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3da5060d93edb16580d17af24d0e8ecb" name="a3da5060d93edb16580d17af24d0e8ecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3da5060d93edb16580d17af24d0e8ecb">&#9670;&#160;</a></span>s3</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::tensor::FusedGroup::s3 = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Optimizer_8h_source.html">Optimizer.h</a> 第 <a class="el" href="Optimizer_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/tensor/<a class="el" href="Optimizer_8h_source.html">Optimizer.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

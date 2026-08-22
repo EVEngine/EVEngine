@@ -1,0 +1,1006 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ik::Solver3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ik.html">ik</a></li><li class="navelem"><a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ik_1_1Solver3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ik::Solver3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>FABRIK solver for <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html" title="Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d). Local angles are yaw/pitch in th...">Skeleton3D</a>. Script type: <code><a class="el" href="classeve_1_1ik_1_1Solver3D.html" title="FABRIK solver for Skeleton3D. Script type: Solver3D.">Solver3D</a></code>.  
+ <a href="classeve_1_1ik_1_1Solver3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Solver3D_8h_source.html">Solver3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab82cbddea1eb798822f301d2b2e3ddfe" id="r_ab82cbddea1eb798822f301d2b2e3ddfe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ab82cbddea1eb798822f301d2b2e3ddfe">Solver3D</a> ()=default</td></tr>
+<tr class="separator:ab82cbddea1eb798822f301d2b2e3ddfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6cbdb646541d610bdb4bbdcd12eb3b4" id="r_ac6cbdb646541d610bdb4bbdcd12eb3b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ac6cbdb646541d610bdb4bbdcd12eb3b4">~Solver3D</a> ()=default</td></tr>
+<tr class="separator:ac6cbdb646541d610bdb4bbdcd12eb3b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b68c1198622325a165753a10340b59" id="r_a24b68c1198622325a165753a10340b59"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a24b68c1198622325a165753a10340b59">Solver3D</a> (const <a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a24b68c1198622325a165753a10340b59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8eda0defa42afaef23aba1920561c00" id="r_ad8eda0defa42afaef23aba1920561c00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ad8eda0defa42afaef23aba1920561c00">operator=</a> (const <a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a> &amp;)=delete</td></tr>
+<tr class="separator:ad8eda0defa42afaef23aba1920561c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb2fa8b331a4fb7e92e22752620f03a6" id="r_afb2fa8b331a4fb7e92e22752620f03a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#afb2fa8b331a4fb7e92e22752620f03a6">setKeepTrace</a> (bool keep)</td></tr>
+<tr class="separator:afb2fa8b331a4fb7e92e22752620f03a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2be1ba2dc848d7d262fbca9bd1376e6" id="r_ae2be1ba2dc848d7d262fbca9bd1376e6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ae2be1ba2dc848d7d262fbca9bd1376e6">getKeepTrace</a> () const</td></tr>
+<tr class="separator:ae2be1ba2dc848d7d262fbca9bd1376e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf2af22afff8d2ddd6b57b071d58125" id="r_accf2af22afff8d2ddd6b57b071d58125"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#accf2af22afff8d2ddd6b57b071d58125">setMaxIterations</a> (int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="separator:accf2af22afff8d2ddd6b57b071d58125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79cf35773e47a68002bc4a82bce9fa59" id="r_a79cf35773e47a68002bc4a82bce9fa59"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a79cf35773e47a68002bc4a82bce9fa59">getMaxIterations</a> () const</td></tr>
+<tr class="separator:a79cf35773e47a68002bc4a82bce9fa59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a78c1639bce0f086c94064da97b265b" id="r_a2a78c1639bce0f086c94064da97b265b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a2a78c1639bce0f086c94064da97b265b">setTolerance</a> (float tol)</td></tr>
+<tr class="separator:a2a78c1639bce0f086c94064da97b265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7bcc08b98653066a2d02cf458dfbf4f" id="r_af7bcc08b98653066a2d02cf458dfbf4f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#af7bcc08b98653066a2d02cf458dfbf4f">getTolerance</a> () const</td></tr>
+<tr class="separator:af7bcc08b98653066a2d02cf458dfbf4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a891656cf352de646ca4f612c6d4e03d2" id="r_a891656cf352de646ca4f612c6d4e03d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a891656cf352de646ca4f612c6d4e03d2">setForce</a> (float force)</td></tr>
+<tr class="separator:a891656cf352de646ca4f612c6d4e03d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a231810a58d79256daf60540fd40a3e3b" id="r_a231810a58d79256daf60540fd40a3e3b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a231810a58d79256daf60540fd40a3e3b">getForce</a> () const</td></tr>
+<tr class="separator:a231810a58d79256daf60540fd40a3e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e03832003f922731d5171aa9c1b1a18" id="r_a5e03832003f922731d5171aa9c1b1a18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a5e03832003f922731d5171aa9c1b1a18">setInfluence</a> (float influence)</td></tr>
+<tr class="memdesc:a5e03832003f922731d5171aa9c1b1a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overall pose blend: 0 = keep the input pose, 1 = full solve (default).  <br /></td></tr>
+<tr class="separator:a5e03832003f922731d5171aa9c1b1a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7409b530d87b7941b69e51fb69001e9" id="r_ac7409b530d87b7941b69e51fb69001e9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ac7409b530d87b7941b69e51fb69001e9">getInfluence</a> () const</td></tr>
+<tr class="separator:ac7409b530d87b7941b69e51fb69001e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7aa5365df2390ebbc94e8e924da9047" id="r_ab7aa5365df2390ebbc94e8e924da9047"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ab7aa5365df2390ebbc94e8e924da9047">clearTargets</a> ()</td></tr>
+<tr class="separator:ab7aa5365df2390ebbc94e8e924da9047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02d42be0ff74fb1a58f75a32a3c5ac03" id="r_a02d42be0ff74fb1a58f75a32a3c5ac03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a02d42be0ff74fb1a58f75a32a3c5ac03">addTarget</a> (int boneId, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a02d42be0ff74fb1a58f75a32a3c5ac03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf0f13c6b3259267c675b7e43c2b327e" id="r_adf0f13c6b3259267c675b7e43c2b327e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#adf0f13c6b3259267c675b7e43c2b327e">getTargetCount</a> () const</td></tr>
+<tr class="separator:adf0f13c6b3259267c675b7e43c2b327e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a475c3b7839e7165dbbb15608954f7686" id="r_a475c3b7839e7165dbbb15608954f7686"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a475c3b7839e7165dbbb15608954f7686">solve</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *skeleton)</td></tr>
+<tr class="separator:a475c3b7839e7165dbbb15608954f7686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad663d61a9f9f912dcdbc666605f614b5" id="r_ad663d61a9f9f912dcdbc666605f614b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ad663d61a9f9f912dcdbc666605f614b5">step</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *skeleton, float dt=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ad663d61a9f9f912dcdbc666605f614b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8960f5a756608ac94c7790df3cbdd252" id="r_a8960f5a756608ac94c7790df3cbdd252"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a8960f5a756608ac94c7790df3cbdd252">solveChain</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *skeleton, int rootBoneId, int tipBoneId)</td></tr>
+<tr class="memdesc:a8960f5a756608ac94c7790df3cbdd252"><td class="mdescLeft">&#160;</td><td class="mdescRight">FABRIK solve restricted to the bone chain rootBoneId..tipBoneId. The chain root stays pinned and bones outside the chain are untouched; only targets on the chain participate. See <a class="el" href="ChainSolver_8h.html">ChainSolver.h</a> for details.  <br /></td></tr>
+<tr class="separator:a8960f5a756608ac94c7790df3cbdd252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f9ff8098acae435e4ee6ff983604ed2" id="r_a7f9ff8098acae435e4ee6ff983604ed2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a7f9ff8098acae435e4ee6ff983604ed2">stepChain</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *skeleton, int rootBoneId, int tipBoneId, float dt=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a7f9ff8098acae435e4ee6ff983604ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f2ce97f0c47d9d1905cfcedb9dc9a7" id="r_ae8f2ce97f0c47d9d1905cfcedb9dc9a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ae8f2ce97f0c47d9d1905cfcedb9dc9a7">setPole</a> (float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, float <a class="el" href="Grass_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, float weight)</td></tr>
+<tr class="memdesc:ae8f2ce97f0c47d9d1905cfcedb9dc9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pole vector (magnet / hint): pulls the middle joints of a chain toward a point so the limb bends in the desired direction. Applies to solveChain / stepChain; weight is clamped to [0, 1].  <br /></td></tr>
+<tr class="separator:ae8f2ce97f0c47d9d1905cfcedb9dc9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a681160869f11a12058b08d353985482e" id="r_a681160869f11a12058b08d353985482e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a681160869f11a12058b08d353985482e">clearPole</a> ()</td></tr>
+<tr class="separator:a681160869f11a12058b08d353985482e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc240b95385decef6c14d367d660ac23" id="r_acc240b95385decef6c14d367d660ac23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#acc240b95385decef6c14d367d660ac23">hasPole</a> () const</td></tr>
+<tr class="separator:acc240b95385decef6c14d367d660ac23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a117b880f66d8e3dc108c726b395a80df" id="r_a117b880f66d8e3dc108c726b395a80df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a117b880f66d8e3dc108c726b395a80df">getPoleWeight</a> () const</td></tr>
+<tr class="separator:a117b880f66d8e3dc108c726b395a80df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0754d15a409f7ba77099dd124275cc58" id="r_a0754d15a409f7ba77099dd124275cc58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a0754d15a409f7ba77099dd124275cc58">setTipRotation</a> (int boneId, float yaw, float pitch, float weight)</td></tr>
+<tr class="memdesc:a0754d15a409f7ba77099dd124275cc58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tip orientation override: after solving, blends the tip bone's local yaw/pitch toward the given angles (weight in [0, 1]). Mirrors Godot's override_tip_basis / Unity's target rotation weight.  <br /></td></tr>
+<tr class="separator:a0754d15a409f7ba77099dd124275cc58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4158782aa6f26f460032fafb4cc919a3" id="r_a4158782aa6f26f460032fafb4cc919a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a4158782aa6f26f460032fafb4cc919a3">clearTipRotation</a> ()</td></tr>
+<tr class="separator:a4158782aa6f26f460032fafb4cc919a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d7abb06016cc5a568457e1d677d856b" id="r_a0d7abb06016cc5a568457e1d677d856b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a0d7abb06016cc5a568457e1d677d856b">getTipRotationWeight</a> () const</td></tr>
+<tr class="separator:a0d7abb06016cc5a568457e1d677d856b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0649f2ce3b06dcce2bc5ebd652f6769" id="r_ae0649f2ce3b06dcce2bc5ebd652f6769"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#ae0649f2ce3b06dcce2bc5ebd652f6769">getTraceSize</a> () const</td></tr>
+<tr class="separator:ae0649f2ce3b06dcce2bc5ebd652f6769"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fcb0fea3213516b7c17f68991a2c1c3" id="r_a3fcb0fea3213516b7c17f68991a2c1c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver3D.html#a3fcb0fea3213516b7c17f68991a2c1c3">clearTrace</a> ()</td></tr>
+<tr class="separator:a3fcb0fea3213516b7c17f68991a2c1c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>FABRIK solver for <a class="el" href="classeve_1_1ik_1_1Skeleton3D.html" title="Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d). Local angles are yaw/pitch in th...">Skeleton3D</a>. Script type: <code><a class="el" href="classeve_1_1ik_1_1Solver3D.html" title="FABRIK solver for Skeleton3D. Script type: Solver3D.">Solver3D</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8h_source.html">Solver3D.h</a> 第 <a class="el" href="Solver3D_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab82cbddea1eb798822f301d2b2e3ddfe" name="ab82cbddea1eb798822f301d2b2e3ddfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab82cbddea1eb798822f301d2b2e3ddfe">&#9670;&#160;</a></span>Solver3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Solver3D::Solver3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac6cbdb646541d610bdb4bbdcd12eb3b4" name="ac6cbdb646541d610bdb4bbdcd12eb3b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6cbdb646541d610bdb4bbdcd12eb3b4">&#9670;&#160;</a></span>~Solver3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Solver3D::~Solver3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24b68c1198622325a165753a10340b59" name="a24b68c1198622325a165753a10340b59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b68c1198622325a165753a10340b59">&#9670;&#160;</a></span>Solver3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Solver3D::Solver3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a02d42be0ff74fb1a58f75a32a3c5ac03" name="a02d42be0ff74fb1a58f75a32a3c5ac03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02d42be0ff74fb1a58f75a32a3c5ac03">&#9670;&#160;</a></span>addTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::addTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a681160869f11a12058b08d353985482e" name="a681160869f11a12058b08d353985482e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a681160869f11a12058b08d353985482e">&#9670;&#160;</a></span>clearPole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::clearPole </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7aa5365df2390ebbc94e8e924da9047" name="ab7aa5365df2390ebbc94e8e924da9047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7aa5365df2390ebbc94e8e924da9047">&#9670;&#160;</a></span>clearTargets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::clearTargets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4158782aa6f26f460032fafb4cc919a3" name="a4158782aa6f26f460032fafb4cc919a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4158782aa6f26f460032fafb4cc919a3">&#9670;&#160;</a></span>clearTipRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::clearTipRotation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3fcb0fea3213516b7c17f68991a2c1c3" name="a3fcb0fea3213516b7c17f68991a2c1c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fcb0fea3213516b7c17f68991a2c1c3">&#9670;&#160;</a></span>clearTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::clearTrace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a231810a58d79256daf60540fd40a3e3b" name="a231810a58d79256daf60540fd40a3e3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a231810a58d79256daf60540fd40a3e3b">&#9670;&#160;</a></span>getForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver3D::getForce </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7409b530d87b7941b69e51fb69001e9" name="ac7409b530d87b7941b69e51fb69001e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7409b530d87b7941b69e51fb69001e9">&#9670;&#160;</a></span>getInfluence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver3D::getInfluence </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2be1ba2dc848d7d262fbca9bd1376e6" name="ae2be1ba2dc848d7d262fbca9bd1376e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2be1ba2dc848d7d262fbca9bd1376e6">&#9670;&#160;</a></span>getKeepTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver3D::getKeepTrace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79cf35773e47a68002bc4a82bce9fa59" name="a79cf35773e47a68002bc4a82bce9fa59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79cf35773e47a68002bc4a82bce9fa59">&#9670;&#160;</a></span>getMaxIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Solver3D::getMaxIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a117b880f66d8e3dc108c726b395a80df" name="a117b880f66d8e3dc108c726b395a80df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a117b880f66d8e3dc108c726b395a80df">&#9670;&#160;</a></span>getPoleWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver3D::getPoleWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf0f13c6b3259267c675b7e43c2b327e" name="adf0f13c6b3259267c675b7e43c2b327e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0f13c6b3259267c675b7e43c2b327e">&#9670;&#160;</a></span>getTargetCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Solver3D::getTargetCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d7abb06016cc5a568457e1d677d856b" name="a0d7abb06016cc5a568457e1d677d856b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d7abb06016cc5a568457e1d677d856b">&#9670;&#160;</a></span>getTipRotationWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver3D::getTipRotationWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af7bcc08b98653066a2d02cf458dfbf4f" name="af7bcc08b98653066a2d02cf458dfbf4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7bcc08b98653066a2d02cf458dfbf4f">&#9670;&#160;</a></span>getTolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver3D::getTolerance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0649f2ce3b06dcce2bc5ebd652f6769" name="ae0649f2ce3b06dcce2bc5ebd652f6769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0649f2ce3b06dcce2bc5ebd652f6769">&#9670;&#160;</a></span>getTraceSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Solver3D::getTraceSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc240b95385decef6c14d367d660ac23" name="acc240b95385decef6c14d367d660ac23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc240b95385decef6c14d367d660ac23">&#9670;&#160;</a></span>hasPole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver3D::hasPole </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8eda0defa42afaef23aba1920561c00" name="ad8eda0defa42afaef23aba1920561c00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8eda0defa42afaef23aba1920561c00">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a> &amp; eve::ik::Solver3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ik_1_1Solver3D.html">Solver3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a891656cf352de646ca4f612c6d4e03d2" name="a891656cf352de646ca4f612c6d4e03d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a891656cf352de646ca4f612c6d4e03d2">&#9670;&#160;</a></span>setForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>force</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e03832003f922731d5171aa9c1b1a18" name="a5e03832003f922731d5171aa9c1b1a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e03832003f922731d5171aa9c1b1a18">&#9670;&#160;</a></span>setInfluence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setInfluence </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>influence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overall pose blend: 0 = keep the input pose, 1 = full solve (default). </p>
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb2fa8b331a4fb7e92e22752620f03a6" name="afb2fa8b331a4fb7e92e22752620f03a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb2fa8b331a4fb7e92e22752620f03a6">&#9670;&#160;</a></span>setKeepTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setKeepTrace </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keep</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="accf2af22afff8d2ddd6b57b071d58125" name="accf2af22afff8d2ddd6b57b071d58125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf2af22afff8d2ddd6b57b071d58125">&#9670;&#160;</a></span>setMaxIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setMaxIterations </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>.</p>
+
+</div>
+</div>
+<a id="ae8f2ce97f0c47d9d1905cfcedb9dc9a7" name="ae8f2ce97f0c47d9d1905cfcedb9dc9a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8f2ce97f0c47d9d1905cfcedb9dc9a7">&#9670;&#160;</a></span>setPole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setPole </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pole vector (magnet / hint): pulls the middle joints of a chain toward a point so the limb bends in the desired direction. Applies to solveChain / stepChain; weight is clamped to [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="Grass_8cpp_source.html#l00135">y</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">z</a>.</p>
+
+</div>
+</div>
+<a id="a0754d15a409f7ba77099dd124275cc58" name="a0754d15a409f7ba77099dd124275cc58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0754d15a409f7ba77099dd124275cc58">&#9670;&#160;</a></span>setTipRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setTipRotation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tip orientation override: after solving, blends the tip bone's local yaw/pitch toward the given angles (weight in [0, 1]). Mirrors Godot's override_tip_basis / Unity's target rotation weight. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a78c1639bce0f086c94064da97b265b" name="a2a78c1639bce0f086c94064da97b265b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a78c1639bce0f086c94064da97b265b">&#9670;&#160;</a></span>setTolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::setTolerance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tol</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a475c3b7839e7165dbbb15608954f7686" name="a475c3b7839e7165dbbb15608954f7686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a475c3b7839e7165dbbb15608954f7686">&#9670;&#160;</a></span>solve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver3D::solve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Skeleton3D_8h_source.html#l00056">eve::ik::Skeleton3D::native()</a>, <a class="el" href="Skeleton3D_8h_source.html#l00057">eve::ik::Skeleton3D::state()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00157">state</a>.</p>
+
+</div>
+</div>
+<a id="a8960f5a756608ac94c7790df3cbdd252" name="a8960f5a756608ac94c7790df3cbdd252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8960f5a756608ac94c7790df3cbdd252">&#9670;&#160;</a></span>solveChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver3D::solveChain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootBoneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tipBoneId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>FABRIK solve restricted to the bone chain rootBoneId..tipBoneId. The chain root stays pinned and bones outside the chain are untouched; only targets on the chain participate. See <a class="el" href="ChainSolver_8h.html">ChainSolver.h</a> for details. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ChainSolver_8h_source.html#l00021">eve::ik::detail::ChainOptions&lt; D &gt;::force</a>, <a class="el" href="ChainSolver_8h_source.html#l00022">eve::ik::detail::ChainOptions&lt; D &gt;::influence</a>, <a class="el" href="ChainSolver_8h_source.html#l00020">eve::ik::detail::ChainOptions&lt; D &gt;::max_iterations</a>, <a class="el" href="ChainSolver_8h_source.html#l00025">eve::ik::detail::ChainOptions&lt; D &gt;::pole</a>, <a class="el" href="ChainSolver_8h_source.html#l00026">eve::ik::detail::ChainOptions&lt; D &gt;::pole_weight</a>, <a class="el" href="ChainSolver_8h_source.html#l00019">eve::ik::detail::ChainOptions&lt; D &gt;::tolerance</a> , 以及 <a class="el" href="ChainSolver_8h_source.html#l00024">eve::ik::detail::ChainOptions&lt; D &gt;::use_pole</a>.</p>
+
+</div>
+</div>
+<a id="ad663d61a9f9f912dcdbc666605f614b5" name="ad663d61a9f9f912dcdbc666605f614b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad663d61a9f9f912dcdbc666605f614b5">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Skeleton3D_8h_source.html#l00056">eve::ik::Skeleton3D::native()</a>, <a class="el" href="Skeleton3D_8h_source.html#l00057">eve::ik::Skeleton3D::state()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00157">state</a>.</p>
+
+</div>
+</div>
+<a id="a7f9ff8098acae435e4ee6ff983604ed2" name="a7f9ff8098acae435e4ee6ff983604ed2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f9ff8098acae435e4ee6ff983604ed2">&#9670;&#160;</a></span>stepChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver3D::stepChain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">Skeleton3D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootBoneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tipBoneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a> 第 <a class="el" href="Solver3D_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00289">f</a>, <a class="el" href="ChainSolver_8h_source.html#l00021">eve::ik::detail::ChainOptions&lt; D &gt;::force</a>, <a class="el" href="ChainSolver_8h_source.html#l00022">eve::ik::detail::ChainOptions&lt; D &gt;::influence</a>, <a class="el" href="ChainSolver_8h_source.html#l00020">eve::ik::detail::ChainOptions&lt; D &gt;::max_iterations</a>, <a class="el" href="ChainSolver_8h_source.html#l00025">eve::ik::detail::ChainOptions&lt; D &gt;::pole</a>, <a class="el" href="ChainSolver_8h_source.html#l00026">eve::ik::detail::ChainOptions&lt; D &gt;::pole_weight</a>, <a class="el" href="ChainSolver_8h_source.html#l00019">eve::ik::detail::ChainOptions&lt; D &gt;::tolerance</a> , 以及 <a class="el" href="ChainSolver_8h_source.html#l00024">eve::ik::detail::ChainOptions&lt; D &gt;::use_pole</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ik/<a class="el" href="Solver3D_8h_source.html">Solver3D.h</a></li>
+<li>src/modules/ik/<a class="el" href="Solver3D_8cpp_source.html">Solver3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

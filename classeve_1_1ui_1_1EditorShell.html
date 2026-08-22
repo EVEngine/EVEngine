@@ -1,0 +1,496 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::EditorShell类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1EditorShell-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::EditorShell类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>DevTools editor shell (main menu bar + docked panel layout).  
+ <a href="classeve_1_1ui_1_1EditorShell.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorShell_8h_source.html">EditorShell.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aaa2861c988ad3fbdbfef070446c084f3" id="r_aaa2861c988ad3fbdbfef070446c084f3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#aaa2861c988ad3fbdbfef070446c084f3">EditorShell</a> ()=default</td></tr>
+<tr class="separator:aaa2861c988ad3fbdbfef070446c084f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0719cc3778d227cb79470f73152b2b9e" id="r_a0719cc3778d227cb79470f73152b2b9e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a0719cc3778d227cb79470f73152b2b9e">~EditorShell</a> ()</td></tr>
+<tr class="separator:a0719cc3778d227cb79470f73152b2b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f82eb3c58e6b21294050a3d7f4e567c" id="r_a2f82eb3c58e6b21294050a3d7f4e567c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a2f82eb3c58e6b21294050a3d7f4e567c">EditorShell</a> (const <a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a> &amp;)=delete</td></tr>
+<tr class="separator:a2f82eb3c58e6b21294050a3d7f4e567c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ca59906f926ed562cfd5e32b7955d71" id="r_a4ca59906f926ed562cfd5e32b7955d71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a4ca59906f926ed562cfd5e32b7955d71">operator=</a> (const <a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a> &amp;)=delete</td></tr>
+<tr class="separator:a4ca59906f926ed562cfd5e32b7955d71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2514ffbd657361774018548e8c68736f" id="r_a2514ffbd657361774018548e8c68736f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a2514ffbd657361774018548e8c68736f">open</a> (<a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *inspector, <a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *database, <a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *scene)</td></tr>
+<tr class="memdesc:a2514ffbd657361774018548e8c68736f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounts the menu bar and docks the given panel hosts.  <br /></td></tr>
+<tr class="separator:a2514ffbd657361774018548e8c68736f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a473f35f207bff0919fb39f90a752451d" id="r_a473f35f207bff0919fb39f90a752451d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a473f35f207bff0919fb39f90a752451d">close</a> ()</td></tr>
+<tr class="memdesc:a473f35f207bff0919fb39f90a752451d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hides the menu bar and every docked panel.  <br /></td></tr>
+<tr class="separator:a473f35f207bff0919fb39f90a752451d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65a4ea8890ed9a4340cfff51d5cce714" id="r_a65a4ea8890ed9a4340cfff51d5cce714"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a65a4ea8890ed9a4340cfff51d5cce714">isOpen</a> () const</td></tr>
+<tr class="memdesc:a65a4ea8890ed9a4340cfff51d5cce714"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while the shell is mounted and visible.  <br /></td></tr>
+<tr class="separator:a65a4ea8890ed9a4340cfff51d5cce714"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adddd39f4f9927ef31fabef7ac36a9660" id="r_adddd39f4f9927ef31fabef7ac36a9660"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#adddd39f4f9927ef31fabef7ac36a9660">host</a> () const</td></tr>
+<tr class="memdesc:adddd39f4f9927ef31fabef7ac36a9660"><td class="mdescLeft">&#160;</td><td class="mdescRight">The menu-bar host (nullptr until <a class="el" href="classeve_1_1ui_1_1EditorShell.html#a2514ffbd657361774018548e8c68736f" title="Mounts the menu bar and docks the given panel hosts.">open()</a>); for tests/embedding.  <br /></td></tr>
+<tr class="separator:adddd39f4f9927ef31fabef7ac36a9660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d56c127c0ce0d57c5fb1e82eda1ac5f" id="r_a3d56c127c0ce0d57c5fb1e82eda1ac5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#a3d56c127c0ce0d57c5fb1e82eda1ac5f">selectPanel</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="memdesc:a3d56c127c0ce0d57c5fb1e82eda1ac5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows one panel and hides the others.  <br /></td></tr>
+<tr class="separator:a3d56c127c0ce0d57c5fb1e82eda1ac5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2b32c010ce320ae9b602e3a3618190a" id="r_ae2b32c010ce320ae9b602e3a3618190a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1EditorShell.html#ae2b32c010ce320ae9b602e3a3618190a">build</a> ()</td></tr>
+<tr class="memdesc:ae2b32c010ce320ae9b602e3a3618190a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative tree of the menu bar.  <br /></td></tr>
+<tr class="separator:ae2b32c010ce320ae9b602e3a3618190a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>DevTools editor shell (main menu bar + docked panel layout). </p>
+<p>Owns a thin menu-bar host ("eve_editor") with one button per tool panel. Clicking a button shows the matching panel host and hides the others, and the panel hosts are positioned as a simple left/right dock. Console / AI / debugger panels stay independent <a class="el" href="namespaceImGui.html">ImGui</a> windows (different render path). </p>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8h_source.html">EditorShell.h</a> 第 <a class="el" href="EditorShell_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aaa2861c988ad3fbdbfef070446c084f3" name="aaa2861c988ad3fbdbfef070446c084f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa2861c988ad3fbdbfef070446c084f3">&#9670;&#160;</a></span>EditorShell() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::EditorShell::EditorShell </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0719cc3778d227cb79470f73152b2b9e" name="a0719cc3778d227cb79470f73152b2b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0719cc3778d227cb79470f73152b2b9e">&#9670;&#160;</a></span>~EditorShell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::EditorShell::~EditorShell </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a> 第 <a class="el" href="EditorShell_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIHost_8cpp_source.html#l00026">eve::ui::UIHost::setTree()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00225">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="a2f82eb3c58e6b21294050a3d7f4e567c" name="a2f82eb3c58e6b21294050a3d7f4e567c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f82eb3c58e6b21294050a3d7f4e567c">&#9670;&#160;</a></span>EditorShell() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::EditorShell::EditorShell </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae2b32c010ce320ae9b602e3a3618190a" name="ae2b32c010ce320ae9b602e3a3618190a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b32c010ce320ae9b602e3a3618190a">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::EditorShell::build </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Declarative tree of the menu bar. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a> 第 <a class="el" href="EditorShell_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00244">eve::ui::button()</a>, <a class="el" href="Widget_8cpp_source.html#l00431">eve::ui::row()</a>, <a class="el" href="EditorShell_8cpp_source.html#l00047">selectPanel()</a>, <a class="el" href="Widget_8cpp_source.html#l00439">eve::ui::spacer()</a>, <a class="el" href="Widget_8cpp_source.html#l00235">eve::ui::text()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00225">eve::ui::window()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorShell_8cpp_source.html#l00016">open()</a>.</p>
+
+</div>
+</div>
+<a id="a473f35f207bff0919fb39f90a752451d" name="a473f35f207bff0919fb39f90a752451d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a473f35f207bff0919fb39f90a752451d">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::EditorShell::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hides the menu bar and every docked panel. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a> 第 <a class="el" href="EditorShell_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIHost_8h_source.html#l00208">eve::ui::UIHost::setVisible()</a>.</p>
+
+</div>
+</div>
+<a id="adddd39f4f9927ef31fabef7ac36a9660" name="adddd39f4f9927ef31fabef7ac36a9660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adddd39f4f9927ef31fabef7ac36a9660">&#9670;&#160;</a></span>host()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> * eve::ui::EditorShell::host </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The menu-bar host (nullptr until <a class="el" href="classeve_1_1ui_1_1EditorShell.html#a2514ffbd657361774018548e8c68736f" title="Mounts the menu bar and docks the given panel hosts.">open()</a>); for tests/embedding. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8h_source.html">EditorShell.h</a> 第 <a class="el" href="EditorShell_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a65a4ea8890ed9a4340cfff51d5cce714" name="a65a4ea8890ed9a4340cfff51d5cce714"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65a4ea8890ed9a4340cfff51d5cce714">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::EditorShell::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True while the shell is mounted and visible. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a> 第 <a class="el" href="EditorShell_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2514ffbd657361774018548e8c68736f" name="a2514ffbd657361774018548e8c68736f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2514ffbd657361774018548e8c68736f">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::EditorShell::open </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *&#160;</td>
+          <td class="paramname"><em>inspector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *&#160;</td>
+          <td class="paramname"><em>database</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ui_1_1UIHost.html">UIHost</a> *&#160;</td>
+          <td class="paramname"><em>scene</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mounts the menu bar and docks the given panel hosts. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inspector</td><td><a class="el" href="classeve_1_1ui_1_1Inspector.html" title="Reflection-driven property inspector (DevTools phase C, MVVM).">Inspector</a> panel host (may be null). </td></tr>
+    <tr><td class="paramname">database</td><td>Database panel host (may be null). </td></tr>
+    <tr><td class="paramname">scene</td><td>Scene panel host (may be null). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a> 第 <a class="el" href="EditorShell_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorShell_8cpp_source.html#l00076">build()</a>, <a class="el" href="UIHost_8cpp_source.html#l00011">eve::ui::UIHost::createHost()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00026">eve::ui::UIHost::setTree()</a>.</p>
+
+</div>
+</div>
+<a id="a4ca59906f926ed562cfd5e32b7955d71" name="a4ca59906f926ed562cfd5e32b7955d71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ca59906f926ed562cfd5e32b7955d71">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a> &amp; eve::ui::EditorShell::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1EditorShell.html">EditorShell</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3d56c127c0ce0d57c5fb1e82eda1ac5f" name="a3d56c127c0ce0d57c5fb1e82eda1ac5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d56c127c0ce0d57c5fb1e82eda1ac5f">&#9670;&#160;</a></span>selectPanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::EditorShell::selectPanel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shows one panel and hides the others. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>"inspector" | "database" | "scene" ("" hides all panels). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>False when the name is unknown or the shell is not open. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a> 第 <a class="el" href="EditorShell_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a> , 以及 <a class="el" href="UIHost_8h_source.html#l00208">eve::ui::UIHost::setVisible()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorShell_8cpp_source.html#l00076">build()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="EditorShell_8h_source.html">EditorShell.h</a></li>
+<li>src/modules/ui/<a class="el" href="EditorShell_8cpp_source.html">EditorShell.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 类成员 - 函数</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_v" name="index_v"></a>- v -</h3><ul>
+<li>valid()&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Document.html#a0b9fa2a18dbb8cae05b8740958710af6">eve::json::Document</a>, <a class="el" href="structeve_1_1spatial_1_1AABB2.html#a256ddae5b87e9b155ba1c2e3e14e3bff">eve::spatial::AABB2</a>, <a class="el" href="structeve_1_1spatial_1_1AABB3.html#aa6c7d521292a23d179dec435f9e97803">eve::spatial::AABB3</a></li>
+<li>validate()&#160;:&#160;<a class="el" href="classeve_1_1building_1_1Ghost.html#a586af914011f2d5329c658e15c63d2ae">eve::building::Ghost</a>, <a class="el" href="classeve_1_1housegen_1_1HouseLayout.html#a23b99438464da30e3a47b427837585fc">eve::housegen::HouseLayout</a></li>
+<li>validPixelFormat()&#160;:&#160;<a class="el" href="classeve_1_1image_1_1ImageData.html#aa932acb44696bf80c29ef21a6c6afe89">eve::image::ImageData</a></li>
+<li>Value()&#160;:&#160;<a class="el" href="classeve_1_1json_1_1Value.html#a6ae696bd658d5875f313ec9dc7fc78b9">eve::json::Value</a></li>
+<li>valueNoise()&#160;:&#160;<a class="el" href="structeve_1_1procgen_1_1NoiseField.html#af820ea5bb40a091482379e24190892f1">eve::procgen::NoiseField</a></li>
+<li>variantCount()&#160;:&#160;<a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a1eb6fcd12e4065380b362e5842094998">eve::voxel::CubeTypeRegistry</a></li>
+<li>variantId()&#160;:&#160;<a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#ad7f09e0305b906f5503fa5203ca0a1cd">eve::voxel::CubeTypeRegistry</a></li>
+<li>Vec2()&#160;:&#160;<a class="el" href="classeve_1_1math_1_1Vec2.html#aada729ca52777f34c0152e93ca819fcf">eve::math::Vec2</a></li>
+<li>Vec3()&#160;:&#160;<a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">eve::math::Vec3</a></li>
+<li>vertexSpirv()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Shader.html#a87276f80bb90c0ed78a9dc4e10997bed">eve::graphics::Shader</a></li>
+<li>vertices()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Batcher.html#ae72636885e6bd0537c75c511a81fcebc">eve::graphics::Batcher</a></li>
+<li>viewportActive()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a3bc6240624f218a723bdfca3e58907d2">eve::ui::UI</a></li>
+<li>viewportCanvas()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a9969397bc9115a4179f7a7f9ea65fa17">eve::ui::UI</a></li>
+<li>viewportDragDX()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a3149d1f636e7613954252a12b788755d">eve::ui::UI</a></li>
+<li>viewportDragDY()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#addbce742ae62d186f6b8b89e31c00d7a">eve::ui::UI</a></li>
+<li>viewportHovered()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a74325bc048a020a9f124c92572003724">eve::ui::UI</a></li>
+<li>viewportMouseX()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a0868b79bf4a4193b199567dc19ef8715">eve::ui::UI</a></li>
+<li>viewportMouseY()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#afc732c8648396534577f2d57aee34625">eve::ui::UI</a></li>
+<li>viewportState()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UISystem.html#afc2001dba3f81db97d426ce320a82e2a">eve::ui::UISystem</a></li>
+<li>viewportWheel()&#160;:&#160;<a class="el" href="classeve_1_1ui_1_1UI.html#a78f744691acc2bced06a90d73e225bed">eve::ui::UI</a></li>
+<li>VirtualGeometry()&#160;:&#160;<a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html#a856711b7e0412ad7d06b473a202a778f">eve::virtualgeometry::VirtualGeometry</a></li>
+<li>VirtualGeometryRenderer()&#160;:&#160;<a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#acc7ffd908759621b92261db6d794db7f">eve::virtualgeometry::VirtualGeometryRenderer</a></li>
+<li>visibleEntitiesJson()&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1SceneInspect.html#a9b7c7def0906a8e386ad02a2380c9558">eve::dev::SceneInspect</a>, <a class="el" href="classeve_1_1IRenderCapture.html#aa1fbca5cd088b760d2e735214ad442e9">eve::IRenderCapture</a></li>
+<li>visibleEntitiesJsonAt()&#160;:&#160;<a class="el" href="classeve_1_1IRenderCapture.html#a946fecad074d43fb1e2936861a2b4d15">eve::IRenderCapture</a></li>
+<li>vm()&#160;:&#160;<a class="el" href="classeve_1_1dev_1_1Debugger.html#a289396deb5090bbacd28effa41f50446">eve::dev::Debugger</a>, <a class="el" href="classeve_1_1ModuleManager.html#ac6c179140700984c0a82147a849b221f">eve::ModuleManager</a>, <a class="el" href="classeve_1_1Runtime.html#aef85ce08b4988ed37128b7d2dcd84311">eve::Runtime</a></li>
+<li>volume()&#160;:&#160;<a class="el" href="classeve_1_1IAudioQuery.html#a75b1e51a1b7a84bfb9469b2228304683">eve::IAudioQuery</a></li>
+<li>Volumetric()&#160;:&#160;<a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a3613c8bc90def6e69048b3f1d7161497">eve::graphics::Volumetric</a></li>
+<li>voronoi2()&#160;:&#160;<a class="el" href="classeve_1_1math_1_1Math.html#a1a3bdbaba41e948776be5cb0670a0015">eve::math::Math</a></li>
+<li>voronoiEdge2()&#160;:&#160;<a class="el" href="classeve_1_1math_1_1Math.html#a7ae26e33eae1afb9ca529361df64d315">eve::math::Math</a></li>
+<li>Voxel()&#160;:&#160;<a class="el" href="classeve_1_1voxel_1_1Voxel.html#a21e2c353d6d89b0bfc7e252f2ddfe6fb">eve::voxel::Voxel</a></li>
+<li>VoxelWorld()&#160;:&#160;<a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a77645fa6f08effc78f0548c6337b8179">eve::voxel::VoxelWorld</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

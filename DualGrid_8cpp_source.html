@@ -1,0 +1,382 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/map/DualGrid.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_582b002fc0c2f43475ae6ca1126d8de3.html">map</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DualGrid.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DualGrid_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="DualGrid_8h.html">map/DualGrid.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="TileOrientation_8h.html">map/TileOrientation.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1map.html">eve::map</a> {</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// SpriteCook / common dual-grid 4×4 sheet: index by 4-bit corner mask.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// mask 0 → empty; other values map to atlas local ids 0..15.</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">constexpr</span> std::array&lt;int, 16&gt; kDefaultFrameByMask = {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    -1, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">int</span> resolveFirstGid(TileLayer *display, <span class="keywordtype">int</span> firstDisplayGid) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (firstDisplayGid &gt; 0) <span class="keywordflow">return</span> firstDisplayGid;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> ts = display-&gt;getTilesetFirstGid();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> ts &gt; 0 ? ts : 1;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">float</span> staggerPitchY(<span class="keyword">const</span> TileLayer::Config &amp;cfg) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> hex = cfg.orientation == <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a28666f62a0ffe4485fb7c7e878234dda">MapOrientation::Hexagonal</a> &amp;&amp; cfg.hexSideLength &gt; 0.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> hex ? (cfg.tileH + cfg.hexSideLength) * 0.5f : cfg.<a class="code hl_variable" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a> * 0.5f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">float</span> staggerPitchX(<span class="keyword">const</span> TileLayer::Config &amp;cfg) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> hex = cfg.orientation == <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a28666f62a0ffe4485fb7c7e878234dda">MapOrientation::Hexagonal</a> &amp;&amp; cfg.hexSideLength &gt; 0.f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> hex ? (cfg.tileW + cfg.hexSideLength) * 0.5f : cfg.<a class="code hl_variable" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a> * 0.5f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#af467a06626b674009a528341d7df59c4">   31</a></span><span class="keyword">const</span> std::array&lt;int, 16&gt; &amp;<a class="code hl_function" href="namespaceeve_1_1map.html#af467a06626b674009a528341d7df59c4">dualGridDefaultFrameTable</a>() { <span class="keywordflow">return</span> kDefaultFrameByMask; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#a390c1405c829f50f57772127b45c0539">   33</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1map.html#a390c1405c829f50f57772127b45c0539">dualGridDefaultFrame</a>(<span class="keywordtype">int</span> mask) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (mask &lt; 0 || mask &gt; 15) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> kDefaultFrameByMask[size_t(mask)];</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#ab1155246c1730d47fc8b49073e6eca67">   38</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1map.html#ab1155246c1730d47fc8b49073e6eca67">dualGridHalfOffset</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1map_1_1TileLayer_1_1Config.html">TileLayer::Config</a> &amp;cfg, <span class="keywordtype">float</span> &amp;offX, <span class="keywordtype">float</span> &amp;offY) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">switch</span> (cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a6717196e8c67cb1f342a479232d6169a">orientation</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a93fe1f7c5ca2e09af063aca96d0625cc">MapOrientation::Isometric</a>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="comment">// tileToWorld(tx-0.5, ty-0.5) with same iso formula ⇒ origin (ox, oy - th/2).</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        offX = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        offY = -cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a819f01b1f527dceb2fe9b6ce5f774f90">tileH</a> * 0.5f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09af421d06a10620aa57ae6ebaec46cffe9">MapOrientation::Staggered</a>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a28666f62a0ffe4485fb7c7e878234dda">MapOrientation::Hexagonal</a>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">if</span> (cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a7184ef93cb5cacbfef5dc331bb36c344">staggerAxis</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#ac97ce228e159c7398e6956682b051486a57cec4137b614c87cb4e24a3d003a3e0">StaggerAxis::Y</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            offX = -cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a873db278801328b0dc3227df3d306f9c">tileW</a> * 0.5f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            offY = -staggerPitchY(cfg) * 0.5f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            offX = -staggerPitchX(cfg) * 0.5f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            offY = -cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a819f01b1f527dceb2fe9b6ce5f774f90">tileH</a> * 0.5f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a7b2e80981e360c8634aef96cbcb62e57">MapOrientation::Orthogonal</a>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        offX = -cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a873db278801328b0dc3227df3d306f9c">tileW</a> * 0.5f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        offY = -cfg.<a class="code hl_variable" href="structeve_1_1map_1_1TileLayer_1_1Config.html#a819f01b1f527dceb2fe9b6ce5f774f90">tileH</a> * 0.5f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">   63</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">dualGridLogicFilled</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> &amp;logic, <span class="keywordtype">int</span> tx, <span class="keywordtype">int</span> ty, <span class="keywordtype">int</span> filledGid) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">auto</span> cfg = logic.config();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (tx &lt; 0 || ty &lt; 0 || tx &gt;= cfg-&gt;mapW || ty &gt;= cfg-&gt;mapH) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> gid = int(<a class="code hl_function" href="namespaceeve_1_1map.html#a67cd4876317e3a1d2a3d148c4096293f">tileGid</a>(uint32_t(logic.<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a98ebad56f77dc292df24964881f96356">getTile</a>(tx, ty))));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (gid == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (filledGid == 0) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> gid == filledGid;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#a07bbb0fbdcf8b0abda0c6de2d3cb0956">   72</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1map.html#a07bbb0fbdcf8b0abda0c6de2d3cb0956">dualGridMaskAt</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> &amp;logic, <span class="keywordtype">int</span> dx, <span class="keywordtype">int</span> dy, <span class="keywordtype">int</span> filledGid) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> tl = <a class="code hl_function" href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">dualGridLogicFilled</a>(logic, dx - 1, dy - 1, filledGid);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> = <a class="code hl_function" href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">dualGridLogicFilled</a>(logic, dx, dy - 1, filledGid);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> bl = <a class="code hl_function" href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">dualGridLogicFilled</a>(logic, dx - 1, dy, filledGid);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> br = <a class="code hl_function" href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">dualGridLogicFilled</a>(logic, dx, dy, filledGid);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1map.html#a463c955a1d7d3ee3ae2e0836a56cbaab">dualGridMaskFromCorners</a>(tl, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>, bl, br);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#ab595e0d99136249827160213016f8432">   80</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1map.html#ab595e0d99136249827160213016f8432">resolveDualGrid</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic, <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *display, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1map_1_1DualGridOptions.html">DualGridOptions</a> &amp;opts,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                     std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (!logic || !display) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;resolveDualGrid: logic and display layers required&quot;</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (logic == display) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;resolveDualGrid: logic and display must be different layers&quot;</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> logicW = logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#af683d287a81e0c5e3bcaf6b22ca93278">getMapWidth</a>();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> logicH = logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a0b86d985e3e15336051ead3c7c36fe83">getMapHeight</a>();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (logicW &lt;= 0 || logicH &lt;= 0) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="stringliteral">&quot;resolveDualGrid: logic layer has empty size&quot;</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a> = logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a25f82da3a5111d95f130a5c3df35f26f">getTileWidth</a>();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a> = logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#afe93984ac326e0ddb104aa916e18e62f">getTileHeight</a>();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#ac55de53da121d14077949a60dc3ed87f">setTileSize</a>(<a class="code hl_variable" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a>, <a class="code hl_variable" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a706426926b27f194461100d3a18ebd31">resize</a>(logicW + 1, logicH + 1);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">auto</span> lc = logic-&gt;config();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">auto</span> dc = display-&gt;config();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    dc-&gt;orientation = lc-&gt;orientation;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    dc-&gt;staggerAxis = lc-&gt;staggerAxis;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    dc-&gt;staggerIndex = lc-&gt;staggerIndex;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    dc-&gt;hexSideLength = lc-&gt;hexSideLength;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">if</span> (opts.<a class="code hl_variable" href="structeve_1_1map_1_1DualGridOptions.html#a70e8f32e080152f309f7dfa3c69c8519">applyHalfOffset</a>) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">float</span> offX = 0.f, offY = 0.f;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <a class="code hl_function" href="namespaceeve_1_1map.html#ab1155246c1730d47fc8b49073e6eca67">dualGridHalfOffset</a>(*lc, offX, offY);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a44d0498b47b5b3c09103830d32996e67">setOrigin</a>(logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#aee07fc1849b90fe9fd9fbcd884fa356d">getX</a>() + offX, logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#afb52d27e8bc1219bf94566728746ad1a">getY</a>() + offY);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a44d0498b47b5b3c09103830d32996e67">setOrigin</a>(logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#aee07fc1849b90fe9fd9fbcd884fa356d">getX</a>(), logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#afb52d27e8bc1219bf94566728746ad1a">getY</a>());</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="comment">// Keep draw bookkeeping in sync when display is freshly created.</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a840f0f2455665c594543d32802fde63f">setLayer</a>(logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a890f711fdaf05a3a30dc78ad23defc67">getLayer</a>());</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a8bdd2f929bf27ab48a9bb55249d238fa">setCamera</a>(logic-&gt;draw()-&gt;camera);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#aca3c9ef7cf1d13064336463327c0b4f8">setCanvas</a>(logic-&gt;draw()-&gt;canvas);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a184765c5f162353836ea1ebc60e2b8bf">firstGid</a> = resolveFirstGid(display, opts.<a class="code hl_variable" href="structeve_1_1map_1_1DualGridOptions.html#ad31c208a6e4b21a3826ad1c7f5fe4399">firstDisplayGid</a>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> filledGid = opts.<a class="code hl_variable" href="structeve_1_1map_1_1DualGridOptions.html#a31c6b81e4d8824792393e424d6b6cfa5">filledGid</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dy = 0; dy &lt; logicH + 1; ++dy) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> dx = 0; dx &lt; logicW + 1; ++dx) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> mask = <a class="code hl_function" href="namespaceeve_1_1map.html#a07bbb0fbdcf8b0abda0c6de2d3cb0956">dualGridMaskAt</a>(*logic, dx, dy, filledGid);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            <span class="keywordtype">int</span> frame = -1;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keywordflow">if</span> (opts.<a class="code hl_variable" href="structeve_1_1map_1_1DualGridOptions.html#aecd53a410964f575966091f82893d98f">useDefaultFrameTable</a>) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                frame = <a class="code hl_function" href="namespaceeve_1_1map.html#a390c1405c829f50f57772127b45c0539">dualGridDefaultFrame</a>(mask);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mask != 0) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                frame = mask;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> gid = (frame &lt; 0) ? 0 : <a class="code hl_variable" href="TileConfig_8cpp.html#a184765c5f162353836ea1ebc60e2b8bf">firstGid</a> + frame;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#a5ab56c169d64bccb415810ed47250ced">setTile</a>(dx, dy, gid);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (opts.<a class="code hl_variable" href="structeve_1_1map_1_1DualGridOptions.html#a22f7b7c63af1129a645ac1b522b41134">hideLogic</a>) logic-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#ae41eac72be4548133d8e11865b4b4db1">setVisible</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    display-&gt;<a class="code hl_function" href="classeve_1_1map_1_1TileLayer.html#ae41eac72be4548133d8e11865b4b4db1">setVisible</a>(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>-&gt;clear();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#ab51f42cc934b10c445e82e5fd8513811">  147</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1map.html#ab595e0d99136249827160213016f8432">resolveDualGrid</a>(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *logic, <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *display, std::string *<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1map.html#ab595e0d99136249827160213016f8432">resolveDualGrid</a>(logic, display, <a class="code hl_struct" href="structeve_1_1map_1_1DualGridOptions.html">DualGridOptions</a>{}, <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>}</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}  <span class="comment">// namespace eve::map</span></div>
+<div class="ttc" id="aDualGrid_8h_html"><div class="ttname"><a href="DualGrid_8h.html">DualGrid.h</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00171">JobSystemThreadPool.cpp:171</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a6af87187b494e66b82de2561eaa5f93a"><div class="ttname"><a href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a></div><div class="ttdeci">float tr</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00094">ModelRenderer.cpp:94</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a184765c5f162353836ea1ebc60e2b8bf"><div class="ttname"><a href="TileConfig_8cpp.html#a184765c5f162353836ea1ebc60e2b8bf">firstGid</a></div><div class="ttdeci">int firstGid</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00112">TileConfig.cpp:112</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a610e16748328942de9e86ea346d25fde"><div class="ttname"><a href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a></div><div class="ttdeci">int tileW</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00114">TileConfig.cpp:114</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a874b28363d25afff3707792758892c19"><div class="ttname"><a href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a></div><div class="ttdeci">int tileH</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00115">TileConfig.cpp:115</a></div></div>
+<div class="ttc" id="aTileOrientation_8h_html"><div class="ttname"><a href="TileOrientation_8h.html">TileOrientation.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></div><div class="ttdoc">ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem batch-draws atlas ...</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00030">TileLayer.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a0b86d985e3e15336051ead3c7c36fe83"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a0b86d985e3e15336051ead3c7c36fe83">eve::map::TileLayer::getMapHeight</a></div><div class="ttdeci">int getMapHeight()</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00034">TileLayer.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a25f82da3a5111d95f130a5c3df35f26f"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a25f82da3a5111d95f130a5c3df35f26f">eve::map::TileLayer::getTileWidth</a></div><div class="ttdeci">float getTileWidth()</div><div class="ttdoc">Tile size in pixels.</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00035">TileLayer.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a44d0498b47b5b3c09103830d32996e67"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a44d0498b47b5b3c09103830d32996e67">eve::map::TileLayer::setOrigin</a></div><div class="ttdeci">void setOrigin(float x, float y)</div><div class="ttdoc">World origin of the layer (pixels).</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00025">TileLayer.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a5ab56c169d64bccb415810ed47250ced"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a5ab56c169d64bccb415810ed47250ced">eve::map::TileLayer::setTile</a></div><div class="ttdeci">void setTile(int tx, int ty, int gid)</div><div class="ttdoc">Tile GID access; 0 = empty.</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00052">TileLayer.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a706426926b27f194461100d3a18ebd31"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a706426926b27f194461100d3a18ebd31">eve::map::TileLayer::resize</a></div><div class="ttdeci">void resize(int mapW, int mapH)</div><div class="ttdoc">Resizes the tile grid (existing GIDs preserved where possible).</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00044">TileLayer.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a840f0f2455665c594543d32802fde63f"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a840f0f2455665c594543d32802fde63f">eve::map::TileLayer::setLayer</a></div><div class="ttdeci">void setLayer(int layer)</div><div class="ttdoc">Draw order layer / visibility / tint.</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00099">TileLayer.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a890f711fdaf05a3a30dc78ad23defc67"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a890f711fdaf05a3a30dc78ad23defc67">eve::map::TileLayer::getLayer</a></div><div class="ttdeci">int getLayer()</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00100">TileLayer.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a8bdd2f929bf27ab48a9bb55249d238fa"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a8bdd2f929bf27ab48a9bb55249d238fa">eve::map::TileLayer::setCamera</a></div><div class="ttdeci">void setCamera(graphics::Camera2D *camera)</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00097">TileLayer.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_a98ebad56f77dc292df24964881f96356"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#a98ebad56f77dc292df24964881f96356">eve::map::TileLayer::getTile</a></div><div class="ttdeci">int getTile(int tx, int ty)</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00058">TileLayer.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_ac55de53da121d14077949a60dc3ed87f"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#ac55de53da121d14077949a60dc3ed87f">eve::map::TileLayer::setTileSize</a></div><div class="ttdeci">void setTileSize(float tileW, float tileH)</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00038">TileLayer.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_aca3c9ef7cf1d13064336463327c0b4f8"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#aca3c9ef7cf1d13064336463327c0b4f8">eve::map::TileLayer::setCanvas</a></div><div class="ttdeci">void setCanvas(graphics::Canvas *canvas)</div><div class="ttdoc">Draw target canvas / camera.</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00096">TileLayer.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_ae41eac72be4548133d8e11865b4b4db1"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#ae41eac72be4548133d8e11865b4b4db1">eve::map::TileLayer::setVisible</a></div><div class="ttdeci">void setVisible(bool visible)</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00102">TileLayer.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_aee07fc1849b90fe9fd9fbcd884fa356d"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#aee07fc1849b90fe9fd9fbcd884fa356d">eve::map::TileLayer::getX</a></div><div class="ttdeci">float getX()</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00030">TileLayer.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_af683d287a81e0c5e3bcaf6b22ca93278"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#af683d287a81e0c5e3bcaf6b22ca93278">eve::map::TileLayer::getMapWidth</a></div><div class="ttdeci">int getMapWidth()</div><div class="ttdoc">Map dimensions in tiles.</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00033">TileLayer.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_afb52d27e8bc1219bf94566728746ad1a"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#afb52d27e8bc1219bf94566728746ad1a">eve::map::TileLayer::getY</a></div><div class="ttdeci">float getY()</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00031">TileLayer.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html_afe93984ac326e0ddb104aa916e18e62f"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html#afe93984ac326e0ddb104aa916e18e62f">eve::map::TileLayer::getTileHeight</a></div><div class="ttdeci">float getTileHeight()</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8cpp_source.html#l00036">TileLayer.cpp:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html"><div class="ttname"><a href="namespaceeve_1_1map.html">eve::map</a></div><div class="ttdoc">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectang...</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00016">PlacementWorld.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a0460d893ec1b82eed3415c05b27a3b09a28666f62a0ffe4485fb7c7e878234dda"><div class="ttname"><a href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a28666f62a0ffe4485fb7c7e878234dda">eve::map::MapOrientation::Hexagonal</a></div><div class="ttdeci">@ Hexagonal</div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a0460d893ec1b82eed3415c05b27a3b09a7b2e80981e360c8634aef96cbcb62e57"><div class="ttname"><a href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a7b2e80981e360c8634aef96cbcb62e57">eve::map::MapOrientation::Orthogonal</a></div><div class="ttdeci">@ Orthogonal</div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a0460d893ec1b82eed3415c05b27a3b09a93fe1f7c5ca2e09af063aca96d0625cc"><div class="ttname"><a href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09a93fe1f7c5ca2e09af063aca96d0625cc">eve::map::MapOrientation::Isometric</a></div><div class="ttdeci">@ Isometric</div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a0460d893ec1b82eed3415c05b27a3b09af421d06a10620aa57ae6ebaec46cffe9"><div class="ttname"><a href="namespaceeve_1_1map.html#a0460d893ec1b82eed3415c05b27a3b09af421d06a10620aa57ae6ebaec46cffe9">eve::map::MapOrientation::Staggered</a></div><div class="ttdeci">@ Staggered</div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a07bbb0fbdcf8b0abda0c6de2d3cb0956"><div class="ttname"><a href="namespaceeve_1_1map.html#a07bbb0fbdcf8b0abda0c6de2d3cb0956">eve::map::dualGridMaskAt</a></div><div class="ttdeci">int dualGridMaskAt(TileLayer &amp;logic, int dx, int dy, int filledGid)</div><div class="ttdoc">4-bit corner mask for display cell (dx,dy) on a (logicW+1)×(logicH+1) grid. Samples logic (dx-1,...</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8cpp_source.html#l00072">DualGrid.cpp:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a1fa2644da2cc4afd8a89c60492eae906"><div class="ttname"><a href="namespaceeve_1_1map.html#a1fa2644da2cc4afd8a89c60492eae906">eve::map::dualGridLogicFilled</a></div><div class="ttdeci">bool dualGridLogicFilled(TileLayer &amp;logic, int tx, int ty, int filledGid)</div><div class="ttdoc">Whether logic cell (tx,ty) is filled under options. Out of bounds → false.</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8cpp_source.html#l00063">DualGrid.cpp:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a390c1405c829f50f57772127b45c0539"><div class="ttname"><a href="namespaceeve_1_1map.html#a390c1405c829f50f57772127b45c0539">eve::map::dualGridDefaultFrame</a></div><div class="ttdeci">int dualGridDefaultFrame(int mask)</div><div class="ttdoc">Default 4x4 atlas frame index for mask 0..15. -1 means draw nothing. Matches the SpriteCook / common ...</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8cpp_source.html#l00033">DualGrid.cpp:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a463c955a1d7d3ee3ae2e0836a56cbaab"><div class="ttname"><a href="namespaceeve_1_1map.html#a463c955a1d7d3ee3ae2e0836a56cbaab">eve::map::dualGridMaskFromCorners</a></div><div class="ttdeci">int dualGridMaskFromCorners(bool tl, bool tr, bool bl, bool br)</div><div class="ttdoc">Pack four corner occupancy bits: TL=1, TR=2, BL=4, BR=8.</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00048">DualGrid.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a67cd4876317e3a1d2a3d148c4096293f"><div class="ttname"><a href="namespaceeve_1_1map.html#a67cd4876317e3a1d2a3d148c4096293f">eve::map::tileGid</a></div><div class="ttdeci">uint32_t tileGid(uint32_t raw)</div><div class="ttdoc">Strip Tiled flip / rotate flags; keep low 28 bits.</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00161">TileLayer.h:161</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_ab1155246c1730d47fc8b49073e6eca67"><div class="ttname"><a href="namespaceeve_1_1map.html#ab1155246c1730d47fc8b49073e6eca67">eve::map::dualGridHalfOffset</a></div><div class="ttdeci">void dualGridHalfOffset(const TileLayer::Config &amp;cfg, float &amp;offX, float &amp;offY)</div><div class="ttdoc">Half-step origin delta for the display layer (added to logic origin). Orthogonal: (-tileW/2,...</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8cpp_source.html#l00038">DualGrid.cpp:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_ab595e0d99136249827160213016f8432"><div class="ttname"><a href="namespaceeve_1_1map.html#ab595e0d99136249827160213016f8432">eve::map::resolveDualGrid</a></div><div class="ttdeci">bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions &amp;opts, std::string *error)</div><div class="ttdoc">Resolve logic → display dual-grid tiles. Resizes display to (logicW+1)×(logicH+1),...</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8cpp_source.html#l00080">DualGrid.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_ac97ce228e159c7398e6956682b051486a57cec4137b614c87cb4e24a3d003a3e0"><div class="ttname"><a href="namespaceeve_1_1map.html#ac97ce228e159c7398e6956682b051486a57cec4137b614c87cb4e24a3d003a3e0">eve::map::StaggerAxis::Y</a></div><div class="ttdeci">@ Y</div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_af467a06626b674009a528341d7df59c4"><div class="ttname"><a href="namespaceeve_1_1map.html#af467a06626b674009a528341d7df59c4">eve::map::dualGridDefaultFrameTable</a></div><div class="ttdeci">const std::array&lt; int, 16 &gt; &amp; dualGridDefaultFrameTable()</div><div class="ttdoc">Copy of the default frame table (16 entries).</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8cpp_source.html#l00031">DualGrid.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1DualGridOptions_html"><div class="ttname"><a href="structeve_1_1map_1_1DualGridOptions.html">eve::map::DualGridOptions</a></div><div class="ttdoc">Dual-grid autotile (Oskar Stålberg style).</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00028">DualGrid.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1DualGridOptions_html_a22f7b7c63af1129a645ac1b522b41134"><div class="ttname"><a href="structeve_1_1map_1_1DualGridOptions.html#a22f7b7c63af1129a645ac1b522b41134">eve::map::DualGridOptions::hideLogic</a></div><div class="ttdeci">bool hideLogic</div><div class="ttdoc">Hide the logic layer after resolve (logic stays for gameplay queries).</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00039">DualGrid.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1DualGridOptions_html_a31c6b81e4d8824792393e424d6b6cfa5"><div class="ttname"><a href="structeve_1_1map_1_1DualGridOptions.html#a31c6b81e4d8824792393e424d6b6cfa5">eve::map::DualGridOptions::filledGid</a></div><div class="ttdeci">int filledGid</div><div class="ttdoc">0 = any non-zero logic GID counts as filled; else only this GID.</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00030">DualGrid.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1DualGridOptions_html_a70e8f32e080152f309f7dfa3c69c8519"><div class="ttname"><a href="structeve_1_1map_1_1DualGridOptions.html#a70e8f32e080152f309f7dfa3c69c8519">eve::map::DualGridOptions::applyHalfOffset</a></div><div class="ttdeci">bool applyHalfOffset</div><div class="ttdoc">Apply projection-correct half-step origin offset on the display layer.</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00037">DualGrid.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1DualGridOptions_html_ad31c208a6e4b21a3826ad1c7f5fe4399"><div class="ttname"><a href="structeve_1_1map_1_1DualGridOptions.html#ad31c208a6e4b21a3826ad1c7f5fe4399">eve::map::DualGridOptions::firstDisplayGid</a></div><div class="ttdeci">int firstDisplayGid</div><div class="ttdoc">GID of atlas local id 0 on the display tileset. 0 = use display-&gt;getTilesetFirstGid() (fallback 1).</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00035">DualGrid.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1DualGridOptions_html_aecd53a410964f575966091f82893d98f"><div class="ttname"><a href="structeve_1_1map_1_1DualGridOptions.html#aecd53a410964f575966091f82893d98f">eve::map::DualGridOptions::useDefaultFrameTable</a></div><div class="ttdeci">bool useDefaultFrameTable</div><div class="ttdoc">When true, use the default SpriteCook-style 4x4 atlas frame table. When false, GID = firstDisplayGid ...</div><div class="ttdef"><b>Definition</b> <a href="DualGrid_8h_source.html#l00044">DualGrid.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1TileLayer_1_1Config_html"><div class="ttname"><a href="structeve_1_1map_1_1TileLayer_1_1Config.html">eve::map::TileLayer::Config</a></div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00036">TileLayer.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1TileLayer_1_1Config_html_a6717196e8c67cb1f342a479232d6169a"><div class="ttname"><a href="structeve_1_1map_1_1TileLayer_1_1Config.html#a6717196e8c67cb1f342a479232d6169a">eve::map::TileLayer::Config::orientation</a></div><div class="ttdeci">MapOrientation orientation</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00043">TileLayer.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1TileLayer_1_1Config_html_a7184ef93cb5cacbfef5dc331bb36c344"><div class="ttname"><a href="structeve_1_1map_1_1TileLayer_1_1Config.html#a7184ef93cb5cacbfef5dc331bb36c344">eve::map::TileLayer::Config::staggerAxis</a></div><div class="ttdeci">StaggerAxis staggerAxis</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00044">TileLayer.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1TileLayer_1_1Config_html_a819f01b1f527dceb2fe9b6ce5f774f90"><div class="ttname"><a href="structeve_1_1map_1_1TileLayer_1_1Config.html#a819f01b1f527dceb2fe9b6ce5f774f90">eve::map::TileLayer::Config::tileH</a></div><div class="ttdeci">float tileH</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00040">TileLayer.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1TileLayer_1_1Config_html_a873db278801328b0dc3227df3d306f9c"><div class="ttname"><a href="structeve_1_1map_1_1TileLayer_1_1Config.html#a873db278801328b0dc3227df3d306f9c">eve::map::TileLayer::Config::tileW</a></div><div class="ttdeci">float tileW</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00039">TileLayer.h:39</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

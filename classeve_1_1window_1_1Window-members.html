@@ -1,0 +1,222 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window.html">window</a></li><li class="navelem"><a class="el" href="classeve_1_1window_1_1Window.html">Window</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::window::Window 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ac8bce05cdc317a16a24f42690ced321f">close</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ab5ea157deab5af4ebee0f20865dec5d9">DPIToWindowCoords</a>(double *x, double *y) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ae0a3ebab6b28fc89ffc90cf06e1f2cab">fromPixels</a>(double x) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#af4c0ab7d306c9e932b5bf1951e48b15d">fromPixelsXY</a>(double px, double py, double &amp;wx, double &amp;wy) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a9e0b85913838d20d5cceac27514e3b82">getDesktopDimensions</a>(int display, int &amp;width, int &amp;height) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a0e54083aa23b3100ac0f0f99e917dd32">getDisplayCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a518a769935235872f35d50ea225cf91e">getDisplayName</a>(int display) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ac2069f5e837c5cd603cfdac7e60cc5bb">getDisplayOrientation</a>(int display) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aa97368a8e5402a9417542100911b6800">getDPIScale</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a7af5e960255a85e324486920b2eb01b8">getFullscreenSizes</a>(int display) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aee2fcb703b93acb71de793ad70a51280">getHandle</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ae9c1035279bc746a0e97820320d0fa80">getHeight</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a2f4b1e102b6204b6fd8b7096225229a6">getNativeDPIScale</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#afbd62ff320550282d56c9afdc72a719c">getPixelHeight</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aeb0be647ed6de6d5c8967eeae96b9358">getPixelWidth</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ae3a91f70345b4c00d0bbf7b0811cc6ee">getPosition</a>(int &amp;x, int &amp;y, int &amp;display)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#afa3622701ae426f3e4f6becd8882a862">getVSync</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aa2dc82329dfeb26602c472e2d0c78574">getWidth</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ae710cf78a331f6fb0abfc4f852b6dab7">getWindowSettings</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a889033315a12b2174bcf07d970681f25">getWindowTitle</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a31367d5006048d5017fbd87bee936998">hasFocus</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a98d75ddbf2155a0ec1ef8672ccea9851">hasMouseFocus</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ac225c18559f693eeed62b8a3fe39d114">isMaximized</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a4437ca04a353da4f28c81c1267f7a02d">isMinimized</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a94bb3c9427d43895a50574d175c70dc6">isOpen</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a67b3d326825a0c5566f41d72f4b0fafa">isVisible</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a22f20a45ba38ff4ddd8570d4d80789be">maximize</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aa675184700cbf7ac0378d5f45e35ef31">minimize</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aadefa9b3bb4766e78b05c7ca9e7180ff">Module_REG</a>(Window)</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ad08b6c33417155c6d3fbaa8c32ae6661">pixelToWindowCoords</a>(double *x, double *y) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ab213cdadf775d5e379969fae7919194b">requestAttention</a>(bool continuous)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a4e4576e4a55a3ba36a5533efaf84ea7b">restore</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a1f69e102f44e4deef67320ed5a1effbc">setFullscreenDesktop</a>(bool fullscreen)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a7ec57f58ca7c800920a62dbe0293e7b5">setFullscreenExclusive</a>(bool fullscreen)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a899bc3bbeec4b035c9586d41045291ff">setIconRGBA</a>(const uint8_t *rgba, int width, int height)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ae73f6b5f787a82bf6b28a15e60ea83c4">setPosition</a>(int x, int y, int display)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#af13db08906c3d90f2ab2f21196095136">setSize</a>(int width, int height)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a0cd19d3d87a665399be82c99b44cba49">setVSync</a>(int vsync)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aad33fa5bc7c45e09bf31245386823d2c">setWindowSettings</a>(WindowSettings settings)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a8217d33317238df12ea8ff880804499b">setWindowTitle</a>(const std::string &amp;title)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a61f0a4b0800de8a92ebebea3d7c223ba">showMessageBox</a>(const std::string &amp;title, const std::string &amp;message, const std::string &amp;type, bool attachToWindow)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a17132e70ada992567ecf7ddb39438d3a">showMessageBoxData</a>(const MessageBoxData &amp;data)=0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#ab5a7f454eaa55654a24d9f66caafb8a1">toPixels</a>(double x) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a4fd9ad4d6aa381b23bc6d428787626e2">toPixelsXY</a>(double wx, double wy, double &amp;px, double &amp;py) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a84c39371ae8fc22cc4e32c2d6b26d57f">windowToDPICoords</a>(double *x, double *y) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aaadc6beb65d17e4bd5c29aae58c1e7c7">windowToPixelCoords</a>(double *x, double *y) const =0</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#a4bc2070e1ce229a3885cf8f573f135e2">~Window</a>()</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

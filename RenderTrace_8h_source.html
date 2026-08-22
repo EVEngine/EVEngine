@@ -1,0 +1,285 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/RenderTrace.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RenderTrace.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RenderTrace_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1debug.html">eve::debug</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html">   14</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#adfcd1c50038e6868e5e026334953cfa8">   16</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#adfcd1c50038e6868e5e026334953cfa8">~IRenderTracer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#aa28233e22dab9c1a63c9a469315f91f5">   17</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#aa28233e22dab9c1a63c9a469315f91f5">frameBegin</a>() {}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#aff70e0d011d464a1a35ef88ea350d8b6">   18</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#aff70e0d011d464a1a35ef88ea350d8b6">frameEnd</a>() {}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#a9f9c59c280d253701df5c7968382298f">   19</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#a9f9c59c280d253701df5c7968382298f">passBegin</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#ae0dc1b140a43d183606673361d7de531">   20</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#ae0dc1b140a43d183606673361d7de531">passEnd</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#af3c13bc8e7f350b9236c4b32455710dd">   21</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#af3c13bc8e7f350b9236c4b32455710dd">target</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {}  <span class="comment">// screen / canvas</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#a877e3636b0701c2b958efbe955261c5d">   22</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#a877e3636b0701c2b958efbe955261c5d">bind</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#ad29202300ee107fd4f278ae1c1f16b65">   23</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#ad29202300ee107fd4f278ae1c1f16b65">draw</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* api, <span class="keyword">const</span> <span class="keywordtype">char</span>* detail) {}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1IRenderTracer.html#a04beecd64c289b1d110093e0b08f6435">   24</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1debug_1_1IRenderTracer.html#a04beecd64c289b1d110093e0b08f6435">error</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* message) {}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#a04f40579bd5af12fb1ceac5baabe81a5">setRenderTracer</a>(IRenderTracer* tracer);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> IRenderTracer* <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#a93c9ad9107f66aef97bd010c9f2780ff">   30</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#a93c9ad9107f66aef97bd010c9f2780ff">rtFrameBegin</a>() {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;frameBegin();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#aaaec25797526a2aaea9fadfbc59c9a7e">   33</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#aaaec25797526a2aaea9fadfbc59c9a7e">rtFrameEnd</a>() {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;frameEnd();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#a8b8732ca91db1fae264d1318e0b6af7d">   36</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#a8b8732ca91db1fae264d1318e0b6af7d">rtPassBegin</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;passBegin(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#aca5f5221ff03f67344a3255b2d5f416d">   39</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#aca5f5221ff03f67344a3255b2d5f416d">rtPassEnd</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;passEnd(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#a179091d995802564e9d76d56ab7d16b8">   42</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#a179091d995802564e9d76d56ab7d16b8">rtTarget</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;target(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">   45</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">rtBind</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;bind(<a class="code hl_variable" href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a>, <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">   48</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">rtDraw</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* api, <span class="keyword">const</span> <span class="keywordtype">char</span>* detail = <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;draw(api, detail ? detail : <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceeve_1_1debug.html#aad96c357290dadb22c29e41d08c19121">   51</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1debug.html#aad96c357290dadb22c29e41d08c19121">rtError</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* message) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (<a class="code hl_class" href="classeve_1_1debug_1_1IRenderTracer.html">IRenderTracer</a>* t = <a class="code hl_function" href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">renderTracer</a>()) t-&gt;error(message ? message : <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1RenderPassScope.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1debug_1_1RenderPassScope.html">RenderPassScope</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1RenderPassScope.html#aa1d1e425b2f41871b7b636353f256f0f">   58</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1debug_1_1RenderPassScope.html#aa1d1e425b2f41871b7b636353f256f0f">RenderPassScope</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) : name_(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a> ? <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a> : <span class="stringliteral">&quot;&quot;</span>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_function" href="namespaceeve_1_1debug.html#a8b8732ca91db1fae264d1318e0b6af7d">rtPassBegin</a>(name_.c_str());</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1RenderPassScope.html#a45a82ec5904d5288aac591679f00a5a5">   61</a></span>    <a class="code hl_function" href="classeve_1_1debug_1_1RenderPassScope.html#a45a82ec5904d5288aac591679f00a5a5">~RenderPassScope</a>() { <a class="code hl_function" href="namespaceeve_1_1debug.html#aca5f5221ff03f67344a3255b2d5f416d">rtPassEnd</a>(name_.c_str()); }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1RenderPassScope.html#a8a7a2f45fcef3e0c8b2f0e5865dd6486">   62</a></span>    <a class="code hl_function" href="classeve_1_1debug_1_1RenderPassScope.html#a8a7a2f45fcef3e0c8b2f0e5865dd6486">RenderPassScope</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1debug_1_1RenderPassScope.html">RenderPassScope</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1debug_1_1RenderPassScope.html#ad8acbe05e29ba53234bad8c7a8016729">   63</a></span>    <a class="code hl_class" href="classeve_1_1debug_1_1RenderPassScope.html">RenderPassScope</a>&amp; <a class="code hl_function" href="classeve_1_1debug_1_1RenderPassScope.html#ad8acbe05e29ba53234bad8c7a8016729">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1debug_1_1RenderPassScope.html">RenderPassScope</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string name_;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}  <span class="comment">// namespace eve::debug</span></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5744cedb1550b25c28b21ecb540428ca"><div class="ttname"><a href="DnutParser_8cpp.html#a5744cedb1550b25c28b21ecb540428ca">kind</a></div><div class="ttdeci">Tok kind</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00017">DnutParser.cpp:17</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html">eve::debug::IRenderTracer</a></div><div class="ttdoc">Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers; when no tracer is inst...</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00014">RenderTrace.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_a04beecd64c289b1d110093e0b08f6435"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#a04beecd64c289b1d110093e0b08f6435">eve::debug::IRenderTracer::error</a></div><div class="ttdeci">virtual void error(const char *message)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00024">RenderTrace.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_a877e3636b0701c2b958efbe955261c5d"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#a877e3636b0701c2b958efbe955261c5d">eve::debug::IRenderTracer::bind</a></div><div class="ttdeci">virtual void bind(const char *kind, const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00022">RenderTrace.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_a9f9c59c280d253701df5c7968382298f"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#a9f9c59c280d253701df5c7968382298f">eve::debug::IRenderTracer::passBegin</a></div><div class="ttdeci">virtual void passBegin(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00019">RenderTrace.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_aa28233e22dab9c1a63c9a469315f91f5"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#aa28233e22dab9c1a63c9a469315f91f5">eve::debug::IRenderTracer::frameBegin</a></div><div class="ttdeci">virtual void frameBegin()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00017">RenderTrace.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_ad29202300ee107fd4f278ae1c1f16b65"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#ad29202300ee107fd4f278ae1c1f16b65">eve::debug::IRenderTracer::draw</a></div><div class="ttdeci">virtual void draw(const char *api, const char *detail)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00023">RenderTrace.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_adfcd1c50038e6868e5e026334953cfa8"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#adfcd1c50038e6868e5e026334953cfa8">eve::debug::IRenderTracer::~IRenderTracer</a></div><div class="ttdeci">virtual ~IRenderTracer()=default</div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_ae0dc1b140a43d183606673361d7de531"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#ae0dc1b140a43d183606673361d7de531">eve::debug::IRenderTracer::passEnd</a></div><div class="ttdeci">virtual void passEnd(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00020">RenderTrace.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_af3c13bc8e7f350b9236c4b32455710dd"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#af3c13bc8e7f350b9236c4b32455710dd">eve::debug::IRenderTracer::target</a></div><div class="ttdeci">virtual void target(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00021">RenderTrace.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1IRenderTracer_html_aff70e0d011d464a1a35ef88ea350d8b6"><div class="ttname"><a href="classeve_1_1debug_1_1IRenderTracer.html#aff70e0d011d464a1a35ef88ea350d8b6">eve::debug::IRenderTracer::frameEnd</a></div><div class="ttdeci">virtual void frameEnd()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00018">RenderTrace.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1RenderPassScope_html"><div class="ttname"><a href="classeve_1_1debug_1_1RenderPassScope.html">eve::debug::RenderPassScope</a></div><div class="ttdoc">RAII pass scope for C++ call sites.</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00056">RenderTrace.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1RenderPassScope_html_a45a82ec5904d5288aac591679f00a5a5"><div class="ttname"><a href="classeve_1_1debug_1_1RenderPassScope.html#a45a82ec5904d5288aac591679f00a5a5">eve::debug::RenderPassScope::~RenderPassScope</a></div><div class="ttdeci">~RenderPassScope()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00061">RenderTrace.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1RenderPassScope_html_a8a7a2f45fcef3e0c8b2f0e5865dd6486"><div class="ttname"><a href="classeve_1_1debug_1_1RenderPassScope.html#a8a7a2f45fcef3e0c8b2f0e5865dd6486">eve::debug::RenderPassScope::RenderPassScope</a></div><div class="ttdeci">RenderPassScope(const RenderPassScope &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1RenderPassScope_html_aa1d1e425b2f41871b7b636353f256f0f"><div class="ttname"><a href="classeve_1_1debug_1_1RenderPassScope.html#aa1d1e425b2f41871b7b636353f256f0f">eve::debug::RenderPassScope::RenderPassScope</a></div><div class="ttdeci">RenderPassScope(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00058">RenderTrace.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1debug_1_1RenderPassScope_html_ad8acbe05e29ba53234bad8c7a8016729"><div class="ttname"><a href="classeve_1_1debug_1_1RenderPassScope.html#ad8acbe05e29ba53234bad8c7a8016729">eve::debug::RenderPassScope::operator=</a></div><div class="ttdeci">RenderPassScope &amp; operator=(const RenderPassScope &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html"><div class="ttname"><a href="namespaceeve_1_1debug.html">eve::debug</a></div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8cpp_source.html#l00003">RenderTrace.cpp:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a04f40579bd5af12fb1ceac5baabe81a5"><div class="ttname"><a href="namespaceeve_1_1debug.html#a04f40579bd5af12fb1ceac5baabe81a5">eve::debug::setRenderTracer</a></div><div class="ttdeci">void setRenderTracer(IRenderTracer *tracer)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8cpp_source.html#l00008">RenderTrace.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a0e4f9b64bb3b4b9e7b42b44a8952b383"><div class="ttname"><a href="namespaceeve_1_1debug.html#a0e4f9b64bb3b4b9e7b42b44a8952b383">eve::debug::rtBind</a></div><div class="ttdeci">void rtBind(const char *kind, const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00045">RenderTrace.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a179091d995802564e9d76d56ab7d16b8"><div class="ttname"><a href="namespaceeve_1_1debug.html#a179091d995802564e9d76d56ab7d16b8">eve::debug::rtTarget</a></div><div class="ttdeci">void rtTarget(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00042">RenderTrace.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a8b8732ca91db1fae264d1318e0b6af7d"><div class="ttname"><a href="namespaceeve_1_1debug.html#a8b8732ca91db1fae264d1318e0b6af7d">eve::debug::rtPassBegin</a></div><div class="ttdeci">void rtPassBegin(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00036">RenderTrace.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_a93c9ad9107f66aef97bd010c9f2780ff"><div class="ttname"><a href="namespaceeve_1_1debug.html#a93c9ad9107f66aef97bd010c9f2780ff">eve::debug::rtFrameBegin</a></div><div class="ttdeci">void rtFrameBegin()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00030">RenderTrace.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_aa76f871f5922788e49bbc3bc03c5eb98"><div class="ttname"><a href="namespaceeve_1_1debug.html#aa76f871f5922788e49bbc3bc03c5eb98">eve::debug::renderTracer</a></div><div class="ttdeci">IRenderTracer * renderTracer()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8cpp_source.html#l00010">RenderTrace.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_aaaec25797526a2aaea9fadfbc59c9a7e"><div class="ttname"><a href="namespaceeve_1_1debug.html#aaaec25797526a2aaea9fadfbc59c9a7e">eve::debug::rtFrameEnd</a></div><div class="ttdeci">void rtFrameEnd()</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00033">RenderTrace.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_aad96c357290dadb22c29e41d08c19121"><div class="ttname"><a href="namespaceeve_1_1debug.html#aad96c357290dadb22c29e41d08c19121">eve::debug::rtError</a></div><div class="ttdeci">void rtError(const char *message)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00051">RenderTrace.h:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_ac3c4af2bdb399697e520d059215b87bb"><div class="ttname"><a href="namespaceeve_1_1debug.html#ac3c4af2bdb399697e520d059215b87bb">eve::debug::rtDraw</a></div><div class="ttdeci">void rtDraw(const char *api, const char *detail=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00048">RenderTrace.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1debug_html_aca5f5221ff03f67344a3255b2d5f416d"><div class="ttname"><a href="namespaceeve_1_1debug.html#aca5f5221ff03f67344a3255b2d5f416d">eve::debug::rtPassEnd</a></div><div class="ttdeci">void rtPassEnd(const char *name)</div><div class="ttdef"><b>Definition</b> <a href="RenderTrace_8h_source.html#l00039">RenderTrace.h:39</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

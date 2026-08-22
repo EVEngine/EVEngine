@@ -1,0 +1,671 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimStateMachine.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimStateMachine.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimStateMachine_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AnimStateMachine_8h.html">animation/AnimStateMachine.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimSkeleton_8h.html">animation/AnimSkeleton.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="IStateProvider_8h.html">common/IStateProvider.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>std::vector&lt;AnimStateMachine*&gt;&amp; machines() {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">static</span> std::vector&lt;AnimStateMachine*&gt; instances;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> instances;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">double</span> stateNumber(<span class="keyword">const</span> StateValue&amp; <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.isInt() ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.asInt()) : <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>.asDouble(); }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span>AnimStateProvider : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1caps_1_1IStateProvider.html">eve::caps::IStateProvider</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* stateKind()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;anim&quot;</span>; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">bool</span> captureState(StateValue&amp; out)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        StateValue arr = <a class="code hl_function" href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">StateValue::array</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">for</span> (AnimStateMachine* <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> : machines()) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            StateValue sv;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>-&gt;captureState(sv)) arr.pushBack(std::move(sv));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        out = std::move(arr);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span> restoreState(<span class="keyword">const</span> StateValue&amp; in, std::string* err)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">if</span> (!in.isArray()) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;anim: expected array of state machines&quot;</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = std::min(in.arraySize(), machines().size());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">if</span> (!machines()[i]-&gt;restoreState(in.at(i), err)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">bool</span> resetToDefaults()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">for</span> (AnimStateMachine* <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a> : machines()) <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>-&gt;resetToDefaults();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">struct </span>Register {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    Register() {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">static</span> AnimStateProvider provider;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_function" href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">eve::cap::addListener&lt;eve::caps::IStateProvider&gt;</a>(&amp;provider);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>} g_register;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a4f532a89c5b68da875ccbb2dfb17acad">   65</a></span><a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a4f532a89c5b68da875ccbb2dfb17acad">AnimStateMachine::AnimStateMachine</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton) : skeleton_(skeleton) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!skeleton_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine: skeleton is null&quot;</span>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    fromPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>());</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    toPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>());</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">applyBindPose</a>(&amp;pose_);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    machines().push_back(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#ac091c84b83bc33227b73b9be78f2ffd0">   74</a></span><a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#ac091c84b83bc33227b73b9be78f2ffd0">AnimStateMachine::~AnimStateMachine</a>() {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    machines().erase(std::remove(machines().begin(), machines().end(), <span class="keyword">this</span>), machines().end());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keywordtype">void</span> AnimStateMachine::requireState(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (states_.find(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) == states_.end()) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine: unknown state &#39;%s&#39;&quot;</span>, <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>.c_str());</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>AnimStateMachine::Transition &amp;AnimStateMachine::requireTransition(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (id &lt; 0 || id &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(transitions_.size())) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">throw</span> Exception(<span class="stringliteral">&quot;AnimStateMachine: invalid transition id %d&quot;</span>, <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> transitions_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)];</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>AnimStateMachine::FloatOp AnimStateMachine::parseFloatOp(<span class="keyword">const</span> std::string &amp;op) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (op == <span class="stringliteral">&quot;&gt;&quot;</span>) <span class="keywordflow">return</span> FloatOp::Gt;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (op == <span class="stringliteral">&quot;&gt;=&quot;</span>) <span class="keywordflow">return</span> FloatOp::Ge;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (op == <span class="stringliteral">&quot;&lt;&quot;</span>) <span class="keywordflow">return</span> FloatOp::Lt;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">if</span> (op == <span class="stringliteral">&quot;&lt;=&quot;</span>) <span class="keywordflow">return</span> FloatOp::Le;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (op == <span class="stringliteral">&quot;==&quot;</span>) <span class="keywordflow">return</span> FloatOp::Eq;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (op == <span class="stringliteral">&quot;!=&quot;</span>) <span class="keywordflow">return</span> FloatOp::Ne;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">throw</span> <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine: unknown float op &#39;%s&#39;&quot;</span>, op.c_str());</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a994008e17ae74d848733410beb12f673">  101</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a994008e17ae74d848733410beb12f673">AnimStateMachine::addState</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *clip) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>.empty()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addState: name empty&quot;</span>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!clip) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addState: clip is null&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (states_.count(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addState: duplicate state &#39;%s&#39;&quot;</span>, <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>.c_str());</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    states_[<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>] = State{<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, clip};</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    stateOrder_.push_back(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#acca29c0f9d89fcea166b035b51a66646">  111</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#acca29c0f9d89fcea166b035b51a66646">AnimStateMachine::setEntry</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    requireState(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    currentState_ = <a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    stateTime_    = 0.f;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    blending_     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    started_      = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    states_[<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>].clip-&gt;sample(0.f, &amp;pose_, skeleton_);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a4d9daf35c66dd35cae2b66c42a1d0f39">  120</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a4d9daf35c66dd35cae2b66c42a1d0f39">AnimStateMachine::hasState</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> states_.count(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) &gt; 0;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a208fd4db8d3c016125fbaa601b950bff">  124</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a208fd4db8d3c016125fbaa601b950bff">AnimStateMachine::addTransition</a>(<span class="keyword">const</span> std::string &amp;from, <span class="keyword">const</span> std::string &amp;to,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                    <span class="keywordtype">float</span> blendSeconds) {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    requireState(from);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    requireState(to);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (blendSeconds &lt; 0.f) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addTransition: blendSeconds must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    Transition <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.from         = from;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.to           = to;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.blendSeconds = blendSeconds;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    transitions_.push_back(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(transitions_.size()) - 1;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}</div>
+</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="foldopen" id="foldopen00139" data-start="{" data-end="}">
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a8affc280618842163a6fd3ec22cee39e">  139</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a8affc280618842163a6fd3ec22cee39e">AnimStateMachine::addFloatCondition</a>(<span class="keywordtype">int</span> transitionId, <span class="keyword">const</span> std::string &amp;param,</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                                         <span class="keyword">const</span> std::string &amp;op, <span class="keywordtype">float</span> threshold) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (param.empty()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addFloatCondition: param empty&quot;</span>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    Transition &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> = requireTransition(transitionId);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    Condition <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.kind      = CondKind::Float;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param     = param;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.op        = parseFloatOp(op);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold = threshold;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.conditions.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    floats_.emplace(param, 0.f);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>}</div>
+</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a5af30f52304707bddb5850d1f8c0520a">  152</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a5af30f52304707bddb5850d1f8c0520a">AnimStateMachine::addBoolCondition</a>(<span class="keywordtype">int</span> transitionId, <span class="keyword">const</span> std::string &amp;param, <span class="keywordtype">bool</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (param.empty()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addBoolCondition: param empty&quot;</span>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    Transition &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> = requireTransition(transitionId);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    Condition <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.kind      = CondKind::Bool;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param     = param;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.boolValue = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.conditions.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    bools_.emplace(param, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>}</div>
+</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="foldopen" id="foldopen00163" data-start="{" data-end="}">
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a2aa53207ed6b635c7923ee077342c461">  163</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a2aa53207ed6b635c7923ee077342c461">AnimStateMachine::addTriggerCondition</a>(<span class="keywordtype">int</span> transitionId, <span class="keyword">const</span> std::string &amp;param) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">if</span> (param.empty()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.addTriggerCondition: param empty&quot;</span>);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    Transition &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> = requireTransition(transitionId);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    Condition <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.kind  = CondKind::Trigger;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param = param;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.conditions.push_back(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    triggers_.emplace(param, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}</div>
+</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#aee99485ed1fbd6cde59ce2e4e1dd1c26">  173</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#aee99485ed1fbd6cde59ce2e4e1dd1c26">AnimStateMachine::setExitTime</a>(<span class="keywordtype">int</span> transitionId, <span class="keywordtype">float</span> normalizedTime) {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    Transition &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> = requireTransition(transitionId);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.exitTime    = <a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(normalizedTime, 0.f, 1.f);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.hasExitTime = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>}</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="foldopen" id="foldopen00179" data-start="{" data-end="}">
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a09bb158407e9b7296a1fcdca9976bce3">  179</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a09bb158407e9b7296a1fcdca9976bce3">AnimStateMachine::setHasExitTime</a>(<span class="keywordtype">int</span> transitionId, <span class="keywordtype">bool</span> <a class="code hl_variable" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    requireTransition(transitionId).hasExitTime = <a class="code hl_variable" href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>}</div>
+</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a94eecd684a524903fda9894ca4f4d7be">  183</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a94eecd684a524903fda9894ca4f4d7be">AnimStateMachine::setFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) { floats_[<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>] = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>; }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="foldopen" id="foldopen00185" data-start="{" data-end="}">
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a1d1971aaf9b3ae92a1fa3d3e108f36ff">  185</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a1d1971aaf9b3ae92a1fa3d3e108f36ff">AnimStateMachine::getFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">auto</span> it = floats_.find(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">return</span> it == floats_.end() ? 0.f : it-&gt;second;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>}</div>
+</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a8bd54883b4e0145cf6058dbe68f54900">  190</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a8bd54883b4e0145cf6058dbe68f54900">AnimStateMachine::setBool</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>) { bools_[<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>] = <a class="code hl_variable" href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a>; }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#aa369ee10b32be6d7f536227fea473859">  192</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#aa369ee10b32be6d7f536227fea473859">AnimStateMachine::getBool</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keyword">auto</span> it = bools_.find(<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">return</span> it == bools_.end() ? false : it-&gt;second;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}</div>
+</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a81ae6f87dc7e191b55f4b912a10a0616">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a81ae6f87dc7e191b55f4b912a10a0616">AnimStateMachine::setTrigger</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) { triggers_[<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>] = <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a5aa552ecbb38e575c672e35f1096def0">  199</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a5aa552ecbb38e575c672e35f1096def0">AnimStateMachine::resetTrigger</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) { triggers_[<a class="code hl_variable" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>] = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#ac74832f772ebb1febad0799ba32dc37f">  201</a></span><a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *<a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#ac74832f772ebb1febad0799ba32dc37f">AnimStateMachine::getPose</a>() { <span class="keywordflow">return</span> &amp;pose_; }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="keywordtype">bool</span> AnimStateMachine::conditionsMet(<span class="keyword">const</span> Transition &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> Condition &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.conditions) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keywordflow">switch</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.kind) {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            <span class="keywordflow">case</span> CondKind::Float: {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a1d1971aaf9b3ae92a1fa3d3e108f36ff">getFloat</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                <span class="keywordtype">bool</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                <span class="keywordflow">switch</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.op) {</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                    <span class="keywordflow">case</span> FloatOp::Gt: <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &gt; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                    <span class="keywordflow">case</span> FloatOp::Ge: <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &gt;= <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                    <span class="keywordflow">case</span> FloatOp::Lt: <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &lt; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                    <span class="keywordflow">case</span> FloatOp::Le: <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &lt;= <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                    <span class="keywordflow">case</span> FloatOp::Eq: <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = std::fabs(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold) &lt; 1e-5f; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                    <span class="keywordflow">case</span> FloatOp::Ne: <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = std::fabs(<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.threshold) &gt;= 1e-5f; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            }</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            <span class="keywordflow">case</span> CondKind::Bool: {</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>                <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#aa369ee10b32be6d7f536227fea473859">getBool</a>(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param) != <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.boolValue) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            }</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keywordflow">case</span> CondKind::Trigger: {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>                <span class="keyword">auto</span> it = triggers_.find(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <span class="keywordflow">if</span> (it == triggers_.end() || !it-&gt;second) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    }</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>}</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="keywordtype">bool</span> AnimStateMachine::tryTransition() {</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">if</span> (currentState_.empty() || blending_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keyword">const</span> State &amp;cur = states_.at(currentState_);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dur  = cur.clip ? cur.clip-&gt;getDuration() : 0.f;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> norm = dur &gt; 1e-8f ? <a class="code hl_function" href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">clampf</a>(stateTime_ / dur, 0.f, 1.f) : 1.f;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> Transition &amp;<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a> : transitions_) {</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.from != currentState_) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.hasExitTime &amp;&amp; norm &lt; <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.exitTime) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        <span class="keywordflow">if</span> (!conditionsMet(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="comment">// Consume triggers used by this transition.</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> Condition &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> : <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.conditions) {</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.kind == CondKind::Trigger) triggers_[<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.param] = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        }</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        nextState_     = <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.to;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        blendDuration_ = <a class="code hl_variable" href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a>.blendSeconds;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        blendElapsed_  = 0.f;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        stateTime_     = 0.f;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">if</span> (blendDuration_ &lt;= 1e-6f) {</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            currentState_ = nextState_;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            blending_     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            states_.at(currentState_).clip-&gt;sample(0.f, &amp;pose_, skeleton_);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            <span class="comment">// Switch logical state immediately; pose cross-fades from previous.</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            fromPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">copyFrom</a>(&amp;pose_);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            currentState_ = nextState_;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            blending_     = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            states_.at(currentState_).clip-&gt;sample(0.f, &amp;toPose_, skeleton_);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a3bd44da81cb6b3119875da2deb2eeb56">blendFrom</a>(&amp;fromPose_, &amp;toPose_, 0.f);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        }</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    }</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>}</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="foldopen" id="foldopen00271" data-start="{" data-end="}">
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a3c858d2a120764faec211054e03f1605">  271</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a3c858d2a120764faec211054e03f1605">AnimStateMachine::update</a>(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keywordflow">if</span> (dt &lt; 0.f) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;AnimStateMachine.update: dt must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">if</span> (!started_) {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">if</span> (!stateOrder_.empty()) <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#acca29c0f9d89fcea166b035b51a66646">setEntry</a>(stateOrder_.front());</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordflow">else</span> <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    }</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordflow">if</span> (currentState_.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordflow">if</span> (blending_) {</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        blendElapsed_ += dt;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        stateTime_ += dt;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        <span class="keyword">const</span> State &amp;dst = states_.at(currentState_);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        dst.clip-&gt;sample(stateTime_, &amp;toPose_, skeleton_);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keywordtype">float</span> t = blendDuration_ &gt; 1e-8f ? blendElapsed_ / blendDuration_ : 1.f;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordflow">if</span> (t &gt;= 1.f) {</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            blending_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">copyFrom</a>(&amp;toPose_);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            <span class="comment">// Keep fromPose frozen at transition start for stable crossfade.</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            pose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a3bd44da81cb6b3119875da2deb2eeb56">blendFrom</a>(&amp;fromPose_, &amp;toPose_, t);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        }</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        <span class="comment">// Allow chained transitions after blend completes next frame.</span></div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="keywordflow">if</span> (!blending_) tryTransition();</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    }</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    stateTime_ += dt;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keyword">const</span> State &amp;st = states_.at(currentState_);</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    st.clip-&gt;sample(stateTime_, &amp;pose_, skeleton_);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    tryTransition();</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>}</div>
+</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
+<div class="foldopen" id="foldopen00303" data-start="{" data-end="}">
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a3a4c6935f390e036daa7dabfa74870f4">  303</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a3a4c6935f390e036daa7dabfa74870f4">AnimStateMachine::captureState</a>(<a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; out)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    out = <a class="code hl_function" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">StateValue::object</a>();</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;currentState&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#aed9daf3f70ad735a6615625b0061b8a1">StateValue::string</a>(currentState_));</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;nextState&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#aed9daf3f70ad735a6615625b0061b8a1">StateValue::string</a>(nextState_));</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;stateTime&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">StateValue::number</a>(stateTime_));</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;blendDuration&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">StateValue::number</a>(blendDuration_));</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;blendElapsed&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">StateValue::number</a>(blendElapsed_));</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;blending&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">StateValue::boolean</a>(blending_));</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;started&quot;</span>, <a class="code hl_function" href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">StateValue::boolean</a>(started_));</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> floats = <a class="code hl_function" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">StateValue::object</a>();</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; kv : floats_) floats.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(kv.first, <a class="code hl_function" href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">StateValue::number</a>(kv.second));</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;floats&quot;</span>, std::move(floats));</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> bools = <a class="code hl_function" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">StateValue::object</a>();</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; kv : bools_) bools.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(kv.first, <a class="code hl_function" href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">StateValue::boolean</a>(kv.second));</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;bools&quot;</span>, std::move(bools));</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> triggers = <a class="code hl_function" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">StateValue::object</a>();</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; kv : triggers_) triggers.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(kv.first, <a class="code hl_function" href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">StateValue::boolean</a>(kv.second));</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    out.<a class="code hl_function" href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">set</a>(<span class="stringliteral">&quot;triggers&quot;</span>, std::move(triggers));</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>}</div>
+</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
+<div class="foldopen" id="foldopen00327" data-start="{" data-end="}">
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#a95a9be0096f879434f296e96aa7b236f">  327</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a95a9be0096f879434f296e96aa7b236f">AnimStateMachine::restoreState</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; in, std::string* err) {</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordflow">if</span> (!in.<a class="code hl_function" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a>()) {</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;anim: state is not an object&quot;</span>;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    }</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* current = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;currentState&quot;</span>);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* started = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;started&quot;</span>);</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <span class="keywordflow">if</span> (!current || !current-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">isString</a>() || !started || !started-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">isBool</a>()) {</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;anim: missing currentState/started&quot;</span>;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    }</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keyword">const</span> std::string stateName  = current-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">asString</a>();</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span>        wasStarted = started-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">asBool</a>();</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <span class="keywordflow">if</span> (wasStarted &amp;&amp; !stateName.empty() &amp;&amp; !<a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#a4d9daf35c66dd35cae2b66c42a1d0f39">hasState</a>(stateName)) {</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;anim: unknown state &#39;&quot;</span> + stateName + <span class="stringliteral">&quot;&#39;&quot;</span>;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    }</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    floats_.clear();</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    bools_.clear();</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    triggers_.clear();</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* floats = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;floats&quot;</span>); floats &amp;&amp; floats-&gt;isObject()) {</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; key : floats-&gt;keys()) {</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = floats-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(key);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &amp;&amp; (<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>-&gt;isInt() || <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>-&gt;isFloat())) floats_[key] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(stateNumber(*<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>));</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        }</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    }</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* bools = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;bools&quot;</span>); bools &amp;&amp; bools-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a>()) {</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; key : bools-&gt;keys()) {</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = bools-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(key);</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &amp;&amp; <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>-&gt;isBool()) bools_[key] = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>-&gt;asBool();</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        }</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* triggers = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;triggers&quot;</span>); triggers &amp;&amp; triggers-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a>()) {</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; key : triggers-&gt;keys()) {</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> = triggers-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(key);</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a> &amp;&amp; <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>-&gt;isBool()) triggers_[key] = <a class="code hl_variable" href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a>-&gt;asBool();</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        }</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    }</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    currentState_ = stateName;</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* ns = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;nextState&quot;</span>); ns &amp;&amp; ns-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">isString</a>()) nextState_ = ns-&gt;asString();</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* st = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;stateTime&quot;</span>); st &amp;&amp; (st-&gt;isInt() || st-&gt;isFloat()))</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        stateTime_ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(stateNumber(*st));</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* bd = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;blendDuration&quot;</span>); bd &amp;&amp; (bd-&gt;isInt() || bd-&gt;isFloat()))</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        blendDuration_ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(stateNumber(*bd));</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* be = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;blendElapsed&quot;</span>); be &amp;&amp; (be-&gt;isInt() || be-&gt;isFloat()))</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        blendElapsed_ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(stateNumber(*be));</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* bl = in.<a class="code hl_function" href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">find</a>(<span class="stringliteral">&quot;blending&quot;</span>); bl &amp;&amp; bl-&gt;<a class="code hl_function" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">isBool</a>()) blending_ = bl-&gt;asBool();</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    started_ = wasStarted;</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keywordflow">if</span> (started_ &amp;&amp; !currentState_.empty()) {</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        states_.at(currentState_).clip-&gt;sample(stateTime_, &amp;pose_, skeleton_);</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    }</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>}</div>
+</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span> </div>
+<div class="foldopen" id="foldopen00385" data-start="{" data-end="}">
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimStateMachine.html#afffdd36ec96c29f2658a29ad7f314150">  385</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#afffdd36ec96c29f2658a29ad7f314150">AnimStateMachine::resetToDefaults</a>() {</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    floats_.clear();</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    bools_.clear();</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    triggers_.clear();</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    blending_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    nextState_.clear();</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    stateTime_     = 0.f;</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    blendDuration_ = 0.f;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    blendElapsed_  = 0.f;</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>    <span class="keywordflow">if</span> (!stateOrder_.empty()) {</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>        <a class="code hl_function" href="classeve_1_1animation_1_1AnimStateMachine.html#acca29c0f9d89fcea166b035b51a66646">setEntry</a>(stateOrder_.front());</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    }</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    started_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    currentState_.clear();</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>}</div>
+</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span> </div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aAnimSkeleton_8h_html"><div class="ttname"><a href="AnimSkeleton_8h.html">AnimSkeleton.h</a></div></div>
+<div class="ttc" id="aAnimStateMachine_8h_html"><div class="ttname"><a href="AnimStateMachine_8h.html">AnimStateMachine.h</a></div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aDnutParser_8cpp_html_a5c33da5929c9f2f9ef8d006d2350e6ec"><div class="ttname"><a href="DnutParser_8cpp.html#a5c33da5929c9f2f9ef8d006d2350e6ec">value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="DnutParser_8cpp_source.html#l00018">DnutParser.cpp:18</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00450">EditorHost.cpp:450</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00064">Grass.cpp:64</a></div></div>
+<div class="ttc" id="aIStateProvider_8h_html"><div class="ttname"><a href="IStateProvider_8h.html">IStateProvider.h</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a6af87187b494e66b82de2561eaa5f93a"><div class="ttname"><a href="ModelRenderer_8cpp.html#a6af87187b494e66b82de2561eaa5f93a">tr</a></div><div class="ttdeci">float tr</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00094">ModelRenderer.cpp:94</a></div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_a8f8f80d37794cde9472343e4487ba3eb"><div class="ttname"><a href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00021">RockMesh.cpp:21</a></div></div>
+<div class="ttc" id="aSettlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_ac8859e8c1ce357c4c8b37bbb1936ba1c"><div class="ttname"><a href="SpriteStack_8cpp.html#ac8859e8c1ce357c4c8b37bbb1936ba1c">v</a></div><div class="ttdeci">int v</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00038">SpriteStack.cpp:38</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html"><div class="ttname"><a href="classeve_1_1StateValue.html">eve::StateValue</a></div><div class="ttdoc">JSON-compatible state value tree used by state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00020">StateValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a06f7509e63bac0703ab2b1e0df06e26c"><div class="ttname"><a href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">eve::StateValue::object</a></div><div class="ttdeci">static StateValue object()</div><div class="ttdoc">Empty object.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00039">StateValue.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a1a9456af1494eba1268fc6ac17131f8e"><div class="ttname"><a href="classeve_1_1StateValue.html#a1a9456af1494eba1268fc6ac17131f8e">eve::StateValue::boolean</a></div><div class="ttdeci">static StateValue boolean(bool v)</div><div class="ttdoc">Boolean value.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8cpp_source.html#l00050">StateValue.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a2ac75fdd66a0636ac8aae5afaf7c1134"><div class="ttname"><a href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">eve::StateValue::array</a></div><div class="ttdeci">static StateValue array()</div><div class="ttdoc">Empty array.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00037">StateValue.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a56863251ea1f5e05109805d402b2d7ad"><div class="ttname"><a href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">eve::StateValue::asBool</a></div><div class="ttdeci">bool asBool() const</div><div class="ttdoc">Boolean payload; only valid when kind() == Kind::Bool.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00057">StateValue.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aa46ea8b85932e3ccd7896af61146b693"><div class="ttname"><a href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">eve::StateValue::isString</a></div><div class="ttdeci">bool isString() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00048">StateValue.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aa94170547efc6b539cee34060e7963cb"><div class="ttname"><a href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">eve::StateValue::isBool</a></div><div class="ttdeci">bool isBool() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00047">StateValue.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aaa1c0a5376ba31980868ca5230d99780"><div class="ttname"><a href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">eve::StateValue::isObject</a></div><div class="ttdeci">bool isObject() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00049">StateValue.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aae4e15ee11a3a558911c373a06d309f7"><div class="ttname"><a href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">eve::StateValue::asString</a></div><div class="ttdeci">const std::string &amp; asString() const</div><div class="ttdoc">String payload; only valid when kind() == Kind::String.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00059">StateValue.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aca1a9bf25966b17772761d74ec3ee9c5"><div class="ttname"><a href="classeve_1_1StateValue.html#aca1a9bf25966b17772761d74ec3ee9c5">eve::StateValue::number</a></div><div class="ttdeci">static StateValue number(double v)</div><div class="ttdoc">Floating-point value.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8cpp_source.html#l00044">StateValue.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_ad478efd6633dc0d386f6b900b7d1e04e"><div class="ttname"><a href="classeve_1_1StateValue.html#ad478efd6633dc0d386f6b900b7d1e04e">eve::StateValue::find</a></div><div class="ttdeci">const StateValue * find(const std::string &amp;key) const</div><div class="ttdoc">Look up key; nullptr when absent.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8cpp_source.html#l00074">StateValue.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aed9daf3f70ad735a6615625b0061b8a1"><div class="ttname"><a href="classeve_1_1StateValue.html#aed9daf3f70ad735a6615625b0061b8a1">eve::StateValue::string</a></div><div class="ttdeci">static StateValue string(std::string v)</div><div class="ttdoc">String value.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8cpp_source.html#l00056">StateValue.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_af94024f4815db7b0284b458db6db5d5e"><div class="ttname"><a href="classeve_1_1StateValue.html#af94024f4815db7b0284b458db6db5d5e">eve::StateValue::set</a></div><div class="ttdeci">void set(const std::string &amp;key, StateValue v)</div><div class="ttdoc">Insert or replace key; only valid on objects.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8cpp_source.html#l00064">StateValue.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00017">AnimClip.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a3bd44da81cb6b3119875da2deb2eeb56"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a3bd44da81cb6b3119875da2deb2eeb56">eve::animation::AnimPose::blendFrom</a></div><div class="ttdeci">void blendFrom(const AnimPose *a, const AnimPose *b, float t)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00062">AnimPose.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_acc150d76b9d3ea4d86972aeaca80a220"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#acc150d76b9d3ea4d86972aeaca80a220">eve::animation::AnimPose::copyFrom</a></div><div class="ttdeci">void copyFrom(const AnimPose *other)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00056">AnimPose.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_aeea32fec7441e303ac3c6216448d4e33"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">eve::animation::AnimPose::resize</a></div><div class="ttdeci">void resize(int boneCount)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00044">AnimPose.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a44d26194685931ff9c09672982daddba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">eve::animation::AnimSkeleton::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00028">AnimSkeleton.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_afc96c35f3802fb1d494d11f49526571d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">eve::animation::AnimSkeleton::applyBindPose</a></div><div class="ttdeci">void applyBindPose(class AnimPose *pose) const</div><div class="ttdoc">Fill pose locals with bind pose.</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00121">AnimSkeleton.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a09bb158407e9b7296a1fcdca9976bce3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a09bb158407e9b7296a1fcdca9976bce3">eve::animation::AnimStateMachine::setHasExitTime</a></div><div class="ttdeci">void setHasExitTime(int transitionId, bool enabled)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00179">AnimStateMachine.cpp:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a1d1971aaf9b3ae92a1fa3d3e108f36ff"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a1d1971aaf9b3ae92a1fa3d3e108f36ff">eve::animation::AnimStateMachine::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00185">AnimStateMachine.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a208fd4db8d3c016125fbaa601b950bff"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a208fd4db8d3c016125fbaa601b950bff">eve::animation::AnimStateMachine::addTransition</a></div><div class="ttdeci">int addTransition(const std::string &amp;from, const std::string &amp;to, float blendSeconds)</div><div class="ttdoc">Add transition from → to with blend duration.</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00124">AnimStateMachine.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a2aa53207ed6b635c7923ee077342c461"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a2aa53207ed6b635c7923ee077342c461">eve::animation::AnimStateMachine::addTriggerCondition</a></div><div class="ttdeci">void addTriggerCondition(int transitionId, const std::string &amp;param)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00163">AnimStateMachine.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a3a4c6935f390e036daa7dabfa74870f4"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a3a4c6935f390e036daa7dabfa74870f4">eve::animation::AnimStateMachine::captureState</a></div><div class="ttdeci">bool captureState(StateValue &amp;out) const</div><div class="ttdoc">Serialize runtime state (params, current/next state, blend).</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00303">AnimStateMachine.cpp:303</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a3c858d2a120764faec211054e03f1605"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a3c858d2a120764faec211054e03f1605">eve::animation::AnimStateMachine::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00271">AnimStateMachine.cpp:271</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a4d9daf35c66dd35cae2b66c42a1d0f39"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a4d9daf35c66dd35cae2b66c42a1d0f39">eve::animation::AnimStateMachine::hasState</a></div><div class="ttdeci">bool hasState(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00120">AnimStateMachine.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a4f532a89c5b68da875ccbb2dfb17acad"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a4f532a89c5b68da875ccbb2dfb17acad">eve::animation::AnimStateMachine::AnimStateMachine</a></div><div class="ttdeci">AnimStateMachine(AnimSkeleton *skeleton)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00065">AnimStateMachine.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a5aa552ecbb38e575c672e35f1096def0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a5aa552ecbb38e575c672e35f1096def0">eve::animation::AnimStateMachine::resetTrigger</a></div><div class="ttdeci">void resetTrigger(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00199">AnimStateMachine.cpp:199</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a5af30f52304707bddb5850d1f8c0520a"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a5af30f52304707bddb5850d1f8c0520a">eve::animation::AnimStateMachine::addBoolCondition</a></div><div class="ttdeci">void addBoolCondition(int transitionId, const std::string &amp;param, bool value)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00152">AnimStateMachine.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a81ae6f87dc7e191b55f4b912a10a0616"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a81ae6f87dc7e191b55f4b912a10a0616">eve::animation::AnimStateMachine::setTrigger</a></div><div class="ttdeci">void setTrigger(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00197">AnimStateMachine.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a8affc280618842163a6fd3ec22cee39e"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a8affc280618842163a6fd3ec22cee39e">eve::animation::AnimStateMachine::addFloatCondition</a></div><div class="ttdeci">void addFloatCondition(int transitionId, const std::string &amp;param, const std::string &amp;op, float threshold)</div><div class="ttdoc">Comparison op: &quot;&gt;&quot;, &quot;&gt;=&quot;, &quot;&lt;&quot;, &quot;&lt;=&quot;, &quot;==&quot;, &quot;!=&quot;.</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00139">AnimStateMachine.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a8bd54883b4e0145cf6058dbe68f54900"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a8bd54883b4e0145cf6058dbe68f54900">eve::animation::AnimStateMachine::setBool</a></div><div class="ttdeci">void setBool(const std::string &amp;name, bool value)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00190">AnimStateMachine.cpp:190</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a94eecd684a524903fda9894ca4f4d7be"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a94eecd684a524903fda9894ca4f4d7be">eve::animation::AnimStateMachine::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;name, float value)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00183">AnimStateMachine.cpp:183</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a95a9be0096f879434f296e96aa7b236f"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a95a9be0096f879434f296e96aa7b236f">eve::animation::AnimStateMachine::restoreState</a></div><div class="ttdeci">bool restoreState(const StateValue &amp;in, std::string *err=nullptr)</div><div class="ttdoc">Restore runtime state captured by captureState().</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00327">AnimStateMachine.cpp:327</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_a994008e17ae74d848733410beb12f673"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#a994008e17ae74d848733410beb12f673">eve::animation::AnimStateMachine::addState</a></div><div class="ttdeci">void addState(const std::string &amp;name, AnimClip *clip)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00101">AnimStateMachine.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_aa369ee10b32be6d7f536227fea473859"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#aa369ee10b32be6d7f536227fea473859">eve::animation::AnimStateMachine::getBool</a></div><div class="ttdeci">bool getBool(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00192">AnimStateMachine.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_ac091c84b83bc33227b73b9be78f2ffd0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#ac091c84b83bc33227b73b9be78f2ffd0">eve::animation::AnimStateMachine::~AnimStateMachine</a></div><div class="ttdeci">~AnimStateMachine()</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00074">AnimStateMachine.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_ac74832f772ebb1febad0799ba32dc37f"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#ac74832f772ebb1febad0799ba32dc37f">eve::animation::AnimStateMachine::getPose</a></div><div class="ttdeci">AnimPose * getPose()</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00201">AnimStateMachine.cpp:201</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_acca29c0f9d89fcea166b035b51a66646"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#acca29c0f9d89fcea166b035b51a66646">eve::animation::AnimStateMachine::setEntry</a></div><div class="ttdeci">void setEntry(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00111">AnimStateMachine.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_aee99485ed1fbd6cde59ce2e4e1dd1c26"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#aee99485ed1fbd6cde59ce2e4e1dd1c26">eve::animation::AnimStateMachine::setExitTime</a></div><div class="ttdeci">void setExitTime(int transitionId, float normalizedTime)</div><div class="ttdoc">Optional: require normalized local time in [0,1] &gt;= exitTime before transition.</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00173">AnimStateMachine.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimStateMachine_html_afffdd36ec96c29f2658a29ad7f314150"><div class="ttname"><a href="classeve_1_1animation_1_1AnimStateMachine.html#afffdd36ec96c29f2658a29ad7f314150">eve::animation::AnimStateMachine::resetToDefaults</a></div><div class="ttdeci">bool resetToDefaults()</div><div class="ttdoc">Clear params and re-seat the entry state (restore fallback).</div><div class="ttdef"><b>Definition</b> <a href="AnimStateMachine_8cpp_source.html#l00385">AnimStateMachine.cpp:385</a></div></div>
+<div class="ttc" id="aclasseve_1_1caps_1_1IStateProvider_html"><div class="ttname"><a href="classeve_1_1caps_1_1IStateProvider.html">eve::caps::IStateProvider</a></div><div class="ttdoc">Runtime-state serialization for state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="IStateProvider_8h_source.html#l00022">IStateProvider.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aed1d423554b8269ca7e6992b332f9812"><div class="ttname"><a href="namespaceeve_1_1animation.html#aed1d423554b8269ca7e6992b332f9812">eve::animation::clampf</a></div><div class="ttdeci">float clampf(float v, float lo, float hi)</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00031">AnimMath.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1cap_html_a4f15b92e22dafc466a09ee40fdca7050"><div class="ttname"><a href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">eve::cap::query</a></div><div class="ttdeci">I * query()</div><div class="ttdef"><b>Definition</b> <a href="Capability_8h_source.html#l00077">Capability.h:77</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">eve::dev::PauseReason::Exception</a></div><div class="ttdeci">@ Exception</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

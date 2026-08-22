@@ -1,0 +1,389 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::ClusteredLightingUpload结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1ClusteredLightingUpload-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::ClusteredLightingUpload结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU-built clustered lighting upload for one frame/camera. Point lights are clustered; directional lights become the primary dir (first by intensity).  
+ <a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:af295223d47aaf08318a8b0210c4fe4c6" id="r_af295223d47aaf08318a8b0210c4fe4c6"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af295223d47aaf08318a8b0210c4fe4c6">ambient</a> {0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:af295223d47aaf08318a8b0210c4fe4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8bbc8079a17d853ac35de2f7383a528" id="r_af8bbc8079a17d853ac35de2f7383a528"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af8bbc8079a17d853ac35de2f7383a528">gridInfo</a></td></tr>
+<tr class="separator:af8bbc8079a17d853ac35de2f7383a528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c8c192b45cfe980d8dda91ef616f365" id="r_a5c8c192b45cfe980d8dda91ef616f365"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a5c8c192b45cfe980d8dda91ef616f365">clipInfo</a> {0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a5c8c192b45cfe980d8dda91ef616f365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7bc4b2eca6d29bf939fe93c8160c2d3" id="r_aa7bc4b2eca6d29bf939fe93c8160c2d3"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa7bc4b2eca6d29bf939fe93c8160c2d3">view</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aa7bc4b2eca6d29bf939fe93c8160c2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6a7937c579d97c9928e89ca26bbc7e9" id="r_ac6a7937c579d97c9928e89ca26bbc7e9"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ac6a7937c579d97c9928e89ca26bbc7e9">primaryDir</a> {0.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:ac6a7937c579d97c9928e89ca26bbc7e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8fea97ab207e511833eca89749e8975" id="r_aa8fea97ab207e511833eca89749e8975"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa8fea97ab207e511833eca89749e8975">primaryColor</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aa8fea97ab207e511833eca89749e8975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accd2c1386ffb0db611424e08913edbe2" id="r_accd2c1386ffb0db611424e08913edbe2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#accd2c1386ffb0db611424e08913edbe2">lights</a></td></tr>
+<tr class="separator:accd2c1386ffb0db611424e08913edbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcbd79f06b53f6986ef1ee7677edf5eb" id="r_afcbd79f06b53f6986ef1ee7677edf5eb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1ClusterTableEntry.html">ClusterTableEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#afcbd79f06b53f6986ef1ee7677edf5eb">clusterTable</a></td></tr>
+<tr class="separator:afcbd79f06b53f6986ef1ee7677edf5eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad97f071392f144c4b5d1859e348aa3d8" id="r_ad97f071392f144c4b5d1859e348aa3d8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ad97f071392f144c4b5d1859e348aa3d8">lightIndices</a></td></tr>
+<tr class="separator:ad97f071392f144c4b5d1859e348aa3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bb51aa582d15889e44e2d9c0ef04dd1" id="r_a7bb51aa582d15889e44e2d9c0ef04dd1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">active</a> = false</td></tr>
+<tr class="separator:a7bb51aa582d15889e44e2d9c0ef04dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU-built clustered lighting upload for one frame/camera. Point lights are clustered; directional lights become the primary dir (first by intensity). </p>
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a7bb51aa582d15889e44e2d9c0ef04dd1" name="a7bb51aa582d15889e44e2d9c0ef04dd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bb51aa582d15889e44e2d9c0ef04dd1">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ClusteredLightingUpload::active = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00544">eve::graphics::RenderSystem3D::render()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l01025">eve::graphics::RenderSystem3D::renderToCanvas()</a>, <a class="el" href="GraphicsPipeline_8cpp_source.html#l01184">eve::graphics::vulkan::Graphics::setMesh3DClusteredLighting()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02745">eve::graphics::webgpu::Graphics::setMesh3DClusteredLighting()</a>.</p>
+
+</div>
+</div>
+<a id="af295223d47aaf08318a8b0210c4fe4c6" name="af295223d47aaf08318a8b0210c4fe4c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af295223d47aaf08318a8b0210c4fe4c6">&#9670;&#160;</a></span>ambient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::ClusteredLightingUpload::ambient {0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClusteredLight_8cpp_source.html#l00009">eve::graphics::buildClusteredLighting()</a> , 以及 <a class="el" href="GraphicsMesh_8cpp_source.html#l00539">eve::graphics::vulkan::Graphics::drawMeshShader()</a>.</p>
+
+</div>
+</div>
+<a id="a5c8c192b45cfe980d8dda91ef616f365" name="a5c8c192b45cfe980d8dda91ef616f365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c8c192b45cfe980d8dda91ef616f365">&#9670;&#160;</a></span>clipInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::ClusteredLightingUpload::clipInfo {0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00539">eve::graphics::vulkan::Graphics::drawMeshShader()</a> , 以及 <a class="el" href="Graphics3D_8cpp_source.html#l00770">eve::graphics::vulkan::Graphics::setMesh3DClip()</a>.</p>
+
+</div>
+</div>
+<a id="afcbd79f06b53f6986ef1ee7677edf5eb" name="afcbd79f06b53f6986ef1ee7677edf5eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcbd79f06b53f6986ef1ee7677edf5eb">&#9670;&#160;</a></span>clusterTable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1graphics_1_1ClusterTableEntry.html">ClusterTableEntry</a>&gt; eve::graphics::ClusteredLightingUpload::clusterTable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af8bbc8079a17d853ac35de2f7383a528" name="af8bbc8079a17d853ac35de2f7383a528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8bbc8079a17d853ac35de2f7383a528">&#9670;&#160;</a></span>gridInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::ClusteredLightingUpload::gridInfo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">{float(<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">ClusteredLightConfig::kTilesX</a>), float(<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">ClusteredLightConfig::kTilesY</a>),</div>
+<div class="line">                       float(<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">ClusteredLightConfig::kSlices</a>), 0.f}</div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_a1184f79fc9939f1ad375e7401528cb92"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a1184f79fc9939f1ad375e7401528cb92">eve::graphics::ClusteredLightConfig::kTilesY</a></div><div class="ttdeci">static constexpr int kTilesY</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00014">ClusteredLight.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_a501977928e18c11af19c35dd91ded6ca"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#a501977928e18c11af19c35dd91ded6ca">eve::graphics::ClusteredLightConfig::kSlices</a></div><div class="ttdeci">static constexpr int kSlices</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00015">ClusteredLight.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightConfig_html_ac427f7215aed6688df9ea79171ecee3f"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightConfig.html#ac427f7215aed6688df9ea79171ecee3f">eve::graphics::ClusteredLightConfig::kTilesX</a></div><div class="ttdeci">static constexpr int kTilesX</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00013">ClusteredLight.h:13</a></div></div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00539">eve::graphics::vulkan::Graphics::drawMeshShader()</a>.</p>
+
+</div>
+</div>
+<a id="ad97f071392f144c4b5d1859e348aa3d8" name="ad97f071392f144c4b5d1859e348aa3d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad97f071392f144c4b5d1859e348aa3d8">&#9670;&#160;</a></span>lightIndices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;uint32_t&gt; eve::graphics::ClusteredLightingUpload::lightIndices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="accd2c1386ffb0db611424e08913edbe2" name="accd2c1386ffb0db611424e08913edbe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accd2c1386ffb0db611424e08913edbe2">&#9670;&#160;</a></span>lights</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="namespaceeve_1_1graphics.html#a799720fa4932b401e8b55a9ef05722dc">ClusteredLightGpu</a>&gt; eve::graphics::ClusteredLightingUpload::lights</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8fea97ab207e511833eca89749e8975" name="aa8fea97ab207e511833eca89749e8975"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8fea97ab207e511833eca89749e8975">&#9670;&#160;</a></span>primaryColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::ClusteredLightingUpload::primaryColor {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00539">eve::graphics::vulkan::Graphics::drawMeshShader()</a>.</p>
+
+</div>
+</div>
+<a id="ac6a7937c579d97c9928e89ca26bbc7e9" name="ac6a7937c579d97c9928e89ca26bbc7e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6a7937c579d97c9928e89ca26bbc7e9">&#9670;&#160;</a></span>primaryDir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::ClusteredLightingUpload::primaryDir {0.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00539">eve::graphics::vulkan::Graphics::drawMeshShader()</a>.</p>
+
+</div>
+</div>
+<a id="aa7bc4b2eca6d29bf939fe93c8160c2d3" name="aa7bc4b2eca6d29bf939fe93c8160c2d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7bc4b2eca6d29bf939fe93c8160c2d3">&#9670;&#160;</a></span>view</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::ClusteredLightingUpload::view {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a> 第 <a class="el" href="ClusteredLight_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00539">eve::graphics::vulkan::Graphics::drawMeshShader()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="ClusteredLight_8h_source.html">ClusteredLight.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

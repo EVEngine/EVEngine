@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: Tilemap模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Tilemap模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>Tilemap模块</h1>
+<p><b>脚本入口：</b> <code>eve.Map()</code></p>
+<p>创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染；可用 Pathfinder 做格子寻路与群体 Flow Field，用 Fov 做动态视野与探索记忆。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local map = eve.Map();</div>
+<div class="line">local layer = map.newLayerFromFile(&quot;maps/level.json&quot;);</div>
+<div class="line">layer.setTile(2, 3, 7);</div>
+<div class="line">map.update(dt);</div>
+<div class="line">map.render(gfx);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Map</code> 聚合 TileLayer 并统一更新/渲染；TileLayer 保存网格、投影、origin、层级和图集资源。JSON loader 把 Tiled 数据映射到这些对象。寻路在格子索引空间进行，与投影解耦；需要世界坐标时对路径点调用 <code>tileToWorld*</code>。</p>
+<h2>目标导向指南</h2>
+<h3>载入 Tiled 地图</h3>
+<p>把 JSON 和图集放在游戏目录，用 <code>newLayerFromFile(path)</code> 创建层；初始化后设置 origin、layer 和 visible。每帧 <code>map.update(dt)</code>，渲染时 <code>map.render(gfx)</code>。</p>
+<h3>运行时修改瓦片</h3>
+<p>先用地图坐标换算接口把世界位置转成格子，再 <code>setTile(x, y, gid)</code>；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。改瓦片后若已创建 Pathfinder，调用 <code>syncFromLayer()</code>。</p>
+<h3>单体寻路（A*）</h3>
+<div class="fragment"><div class="line">local pf = map.newPathfinder(layer);</div>
+<div class="line">pf.setTopology(&quot;auto&quot;);   // ortho4 / ortho8 / hex；auto 按 orientation</div>
+<div class="line">pf.blockGid(1);           // 墙 GID</div>
+<div class="line">local path = pf.findPath(sx, sy, gx, gy);</div>
+<div class="line">if (path.getLength() &gt; 0) {</div>
+<div class="line">    local x = path.getX(0);</div>
+<div class="line">    local y = path.getY(0);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>正交/等距默认四向；<code>setDiagonal(true)</code> 后 <code>auto</code> 升为八向。交错/六角地图 <code>auto</code> 为 <code>hex</code>。</p>
+<h3>群体寻路（同目标 Flow Field）</h3>
+<p>多单位前往同一格时，建一次势场再各自跟随，避免每人跑一遍 A*：</p>
+<div class="fragment"><div class="line">local field = pf.buildFlowField(gx, gy);</div>
+<div class="line">local p1 = pf.followFlow(field, ax, ay);</div>
+<div class="line">local p2 = pf.findGroupPath(bx, by, gx, gy); // 内部复用缓存场</div>
+<div class="line">local nx = field.nextX(ax, ay);</div>
+<div class="line">local ny = field.nextY(ax, ay);</div>
+</div><!-- fragment --><p>自定义网格（不绑 TileLayer）：<code>map.newPathfinderSize(w, h)</code>，再用 <code>setBlocked</code> / <code>setCellCost</code>。</p>
+<h3>动态视野（FOV / 战争迷雾）</h3>
+<p>格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting；可选 <code>raycast</code> / <code>permissive</code> / <code>rectangle</code>。模式：<code>grid2d</code>（默认）、<code>heightmap</code>、<code>volume</code>。拓扑：<code>ortho</code> / <code>hex</code>。</p>
+<div class="fragment"><div class="line">local fov = map.newFov(layer);</div>
+<div class="line">fov.setBlockEmpty(false);</div>
+<div class="line">fov.blockOpaqueGid(1);</div>
+<div class="line">fov.setRadiusMetric(&quot;chebyshev&quot;);</div>
+<div class="line">fov.setTopology(&quot;auto&quot;); // 或 &quot;hex&quot;</div>
+<div class="line">local id = fov.addRevealer(sx, sy, 8);</div>
+<div class="line">// 软 RPG 挂钩：游戏自行读取 actor 属性后写入</div>
+<div class="line">fov.setRevealerPerception(id, actor.getFinalAttribute(&quot;perception&quot;));</div>
+<div class="line">fov.setPerceptionRadiusScale(0.25);</div>
+<div class="line">fov.setDetectionMargin(0.0);</div>
+<div class="line">fov.compute();</div>
+<div class="line">if (fov.canDetect(id, tx, ty, targetStealth)) { /* 可见且感知足够 */ }</div>
+<div class="line">local tex = fov.buildMaskTexture(gfx); // RGBA8 FoW 遮罩，调用方拥有</div>
+</div><!-- fragment --><p>自定义网格：<code>map.newFovSize(w, h)</code> + <code>setOpaque</code>。移动观察者后再次 <code>compute()</code>；无变更时 <code>isDirty()</code> 为 false，<code>compute</code> 会跳过。离开视野的格子保留 <code>explored</code>，可用 <code>clearMemory()</code> 清空。</p>
+<p>高度场：</p>
+<div class="fragment"><div class="line">fov.setMode(&quot;heightmap&quot;);</div>
+<div class="line">fov.setElevation(4, 1, 2.0);</div>
+<div class="line">fov.setCliffBlock(1.0);</div>
+</div><!-- fragment --><p>体素 3D：</p>
+<div class="fragment"><div class="line">local fov3 = map.newFovVolume(32, 32, 8);</div>
+<div class="line">fov3.setOpaque3(4, 4, 2, true);</div>
+<div class="line">fov3.addRevealer3(4, 4, 1, 10);</div>
+<div class="line">fov3.setVerticalRange(4);</div>
+<div class="line">fov3.compute();</div>
+<div class="line">fov3.isVisible3(8, 4, 1);</div>
+</div><!-- fragment --><h3>Dual Grid（双网格）</h3>
+<p>Tiled **没有**原生 dual-grid；在编辑器里画逻辑填充层，运行时解算显示层。支持正交 / 等距 / 交错 / 六角：掩码按格子索引采样，显示层继承投影参数并施加对应半步 origin 偏移。</p>
+<div class="fragment"><div class="line">local map = eve.Map();</div>
+<div class="line">local logic = map.newLayer(16, 12, 32, 32);</div>
+<div class="line">local display = map.newLayer(1, 1, 32, 32);</div>
+<div class="line">// display.setTileset(tex, 1, 4);  // 4×4 的 15-tile 图集</div>
+<div class="line">logic.setTile(3, 4, 1);</div>
+<div class="line">map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦</div>
+<div class="line">// map.dualGridOffsetX(logic) / dualGridOffsetY(logic) 可查偏移量</div>
+</div><!-- fragment --><p><code>resolveDualGridFilled(logic, display, filledGid)</code> 只把指定 GID 当作填充。逻辑层可继续用于碰撞 / 寻路；默认会 <code>setVisible(false)</code>。</p>
+<h2>常见问题</h2>
+<ul>
+<li>GID 与图集编号混淆：0 为空，其余值遵循 tileset 映射；默认空瓦片不可走（<code>setBlockEmpty</code>）。</li>
+<li>世界坐标直接作为 tile 索引：先做投影换算。</li>
+<li>修改 JSON 后未启用 watch/autoReload。</li>
+<li>期望 Tiled 直接导出 dual-grid 显示层：不支持；用逻辑层 + <code>resolveDualGrid</code>。</li>
+<li>寻路失败：<code>getLength()==0</code>（越界、不可走或不可达），不是抛异常。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>applyConfig()</code>、<code>clear()</code>、<code>depthYAt()</code>、<code>fill()</code>、<code>getAutoReload()</code>、<code>getConfigPath()</code>、<code>getLayer()</code>、<code>getLayerCount()</code></li>
+<li><code>getMapHeight()</code>、<code>getMapWidth()</code>、<code>getName()</code>、<code>getObjectCount()</code>、<code>getObjectGid()</code>、<code>getObjectHeight()</code>、<code>getObjectName()</code>、<code>getObjectType()</code></li>
+<li><code>getObjectWidth()</code>、<code>getObjectX()</code>、<code>getObjectY()</code>、<code>getTile()</code>、<code>getTileHeight()</code>、<code>getTileWidth()</code>、<code>getTilesetColumns()</code>、<code>getTilesetFirstGid()</code></li>
+<li><code>getTilesetTexture()</code>、<code>getX()</code>、<code>getY()</code>、<code>isVisible()</code>、<code>loadConfig()</code>、<code>loadFromFile()</code>、<code>newLayer()</code>、<code>newLayerFromFile()</code></li>
+<li><code>newPathfinder()</code>、<code>newPathfinderSize()</code>、<code>newFov()</code>、<code>newFovSize()</code>、<code>newFovVolume()</code></li>
+<li><code>pollConfigs()</code>、<code>reloadConfig()</code>、<code>render()</code>、<code>resize()</code>、<code>resolveDualGrid()</code>、<code>resolveDualGridFilled()</code>、<code>setAutoReload()</code>、<code>setCamera()</code>、<code>setCanvas()</code>、<code>setLayer()</code></li>
+<li><code>setOrigin()</code>、<code>setTile()</code>、<code>setTileSize()</code>、<code>setTileset()</code>、<code>setTilesetTileSize()</code>、<code>setTint()</code>、<code>setVisible()</code>、<code>tileToWorldX()</code></li>
+<li><code>tileToWorldY()</code>、<code>update()</code>、<code>worldToTileX()</code>、<code>worldToTileY()</code>、<code>dualGridFrame()</code>、<code>dualGridMaskAt()</code>、<code>dualGridOffsetX()</code>、<code>dualGridOffsetY()</code>、<code>lastDualGridError()</code></li>
+</ul>
+<p>Pathfinder：<code>setTopology</code>、<code>getTopology</code>、<code>setDiagonal</code>、<code>blockGid</code>、<code>unblockGid</code>、<code>clearBlockedGids</code>、<code>setBlockEmpty</code>、<code>setBlocked</code>、<code>isWalkable</code>、<code>setCellCost</code>、<code>getCellCost</code>、<code>syncFromLayer</code>、<code>findPath</code>、<code>buildFlowField</code>、<code>followFlow</code>、<code>findGroupPath</code>、<code>invalidateCache</code></p>
+<p>Path：<code>getLength</code>、<code>getX</code>、<code>getY</code>、<code>getTotalCost</code></p>
+<p>FlowField：<code>getWidth</code>、<code>getHeight</code>、<code>getGoalX</code>、<code>getGoalY</code>、<code>costAt</code>、<code>nextX</code>、<code>nextY</code>、<code>isReachable</code></p>
+<p>Fov：<code>getWidth</code>、<code>getHeight</code>、<code>getDepth</code>、<code>setMode</code>、<code>getMode</code>、<code>setAlgorithm</code>、<code>getAlgorithm</code>、<code>setRadiusMetric</code>、<code>getRadiusMetric</code>、<code>setTopology</code>、<code>getTopology</code>、<code>setCornerPeek</code>、<code>blockOpaqueGid</code>、<code>unblockOpaqueGid</code>、<code>clearOpaqueGids</code>、<code>setBlockEmpty</code>、<code>setOpaque</code>、<code>isOpaque</code>、<code>setOpaque3</code>、<code>isOpaque3</code>、<code>syncFromLayer</code>、<code>setElevation</code>、<code>getElevation</code>、<code>setCliffBlock</code>、<code>setEyeOffset</code>、<code>setVerticalRange</code>、<code>addRevealer</code>、<code>addRevealer3</code>、<code>removeRevealer</code>、<code>clearRevealers</code>、<code>setRevealerPosition</code>、<code>setRevealerPosition3</code>、<code>setRevealerRadius</code>、<code>setRevealerFacing</code>、<code>clearRevealerFacing</code>、<code>setRevealerEnabled</code>、<code>getRevealerCount</code>、<code>setRevealerPerception</code>、<code>getRevealerPerception</code>、<code>setPerceptionRadiusScale</code>、<code>setDetectionMargin</code>、<code>getEffectiveRadius</code>、<code>canDetect</code>、<code>canDetect3</code>、<code>markDirty</code>、<code>isDirty</code>、<code>compute</code>、<code>isVisible</code>、<code>isExplored</code>、<code>isVisible3</code>、<code>isExplored3</code>、<code>getState</code>、<code>getState3</code>、<code>clearMemory</code>、<code>resetVisibleOnly</code>、<code>getMaskValue</code>、<code>getMaskByte</code>、<code>getMaskValue3</code>、<code>getMaskByte3</code>、<code>buildMaskTexture</code>、<code>buildMaskTextureSlice</code></p>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/map/"><code>src/modules/map/</code></a> <b>设计：</b> `docs/dev/寻路系统设计.md`、`docs/dev/动态视野系统设计.md` <b>相关测试：</b> <a href="../../../test/map.cpp"><code>test/map.cpp</code></a>、<a href="../../../test/map_path.cpp"><code>test/map_path.cpp</code></a>、<a href="../../../test/map_fov.cpp"><code>test/map_fov.cpp</code></a>、<a href="../../../test/hex_level_simulation.cpp"><code>test/hex_level_simulation.cpp</code></a>、<a href="../../../test/hex_level_data.cpp"><code>test/hex_level_data.cpp</code></a> <b>示例：</b> <a href="../../../examples/hex-levels/"><code>examples/hex-levels/</code></a> </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1968 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::PlacementSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1building_1_1PlacementSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::PlacementSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementHit</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a014401530a7b411e332554af8f0e1ce1" id="r_a014401530a7b411e332554af8f0e1ce1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a014401530a7b411e332554af8f0e1ce1">ValidateFn</a> = std::function&lt; bool(const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const <a class="el" href="structeve_1_1building_1_1PlacementQuery.html">PlacementQuery</a> &amp;q, std::string *reason)&gt;</td></tr>
+<tr class="separator:a014401530a7b411e332554af8f0e1ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cd5fadca52dab645836c2610c35a496" id="r_a7cd5fadca52dab645836c2610c35a496"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7cd5fadca52dab645836c2610c35a496">SnapFn</a> = std::function&lt; <a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a>(const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, float worldX, float worldY)&gt;</td></tr>
+<tr class="separator:a7cd5fadca52dab645836c2610c35a496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95c2832402a5cdaddc0bdf707da7be64" id="r_a95c2832402a5cdaddc0bdf707da7be64"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95c2832402a5cdaddc0bdf707da7be64">ChangeHook</a> = std::function&lt; void(const <a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> &amp;ev)&gt;</td></tr>
+<tr class="separator:a95c2832402a5cdaddc0bdf707da7be64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34946f4d245338065c52709753e7e65e" id="r_a34946f4d245338065c52709753e7e65e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a34946f4d245338065c52709753e7e65e">SurfaceFn</a> = std::function&lt; bool(const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementHit</a> *hit)&gt;</td></tr>
+<tr class="separator:a34946f4d245338065c52709753e7e65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a6ca0cb67f111123cf1066c92c3267507" id="r_a6ca0cb67f111123cf1066c92c3267507"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6ca0cb67f111123cf1066c92c3267507">inst</a> ()</td></tr>
+<tr class="memdesc:a6ca0cb67f111123cf1066c92c3267507"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process singleton holding all <a class="el" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a> state.  <br /></td></tr>
+<tr class="separator:a6ca0cb67f111123cf1066c92c3267507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff9139063b97593d8f4d667600dd856b" id="r_aff9139063b97593d8f4d667600dd856b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aff9139063b97593d8f4d667600dd856b">registerValidateRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a014401530a7b411e332554af8f0e1ce1">ValidateFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:aff9139063b97593d8f4d667600dd856b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2ec3cc59e6e5c8849261f5347cb651f" id="r_af2ec3cc59e6e5c8849261f5347cb651f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af2ec3cc59e6e5c8849261f5347cb651f">unregisterValidateRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:af2ec3cc59e6e5c8849261f5347cb651f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada9cc58c5d2c21e3c5591d4a8ff09116" id="r_ada9cc58c5d2c21e3c5591d4a8ff09116"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ada9cc58c5d2c21e3c5591d4a8ff09116">hasValidateRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ada9cc58c5d2c21e3c5591d4a8ff09116"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6868d757a0cb84db8f0e814c18ee4e2" id="r_ad6868d757a0cb84db8f0e814c18ee4e2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ad6868d757a0cb84db8f0e814c18ee4e2">registerSnapRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7cd5fadca52dab645836c2610c35a496">SnapFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:ad6868d757a0cb84db8f0e814c18ee4e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af826a8721fab61eaab90b6aa1efcfae0" id="r_af826a8721fab61eaab90b6aa1efcfae0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af826a8721fab61eaab90b6aa1efcfae0">unregisterSnapRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:af826a8721fab61eaab90b6aa1efcfae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d8c3c4aa6ef4f2b90087e2b43359ec" id="r_ab6d8c3c4aa6ef4f2b90087e2b43359ec"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab6d8c3c4aa6ef4f2b90087e2b43359ec">hasSnapRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ab6d8c3c4aa6ef4f2b90087e2b43359ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc2a7886817d266988f7b001a8b933b4" id="r_afc2a7886817d266988f7b001a8b933b4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#afc2a7886817d266988f7b001a8b933b4">registerChangeHook</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95c2832402a5cdaddc0bdf707da7be64">ChangeHook</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:afc2a7886817d266988f7b001a8b933b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f9b6486482168b15585eef437362975" id="r_a7f9b6486482168b15585eef437362975"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7f9b6486482168b15585eef437362975">unregisterChangeHook</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a7f9b6486482168b15585eef437362975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac88b93d718b337566b0cfac3be260751" id="r_ac88b93d718b337566b0cfac3be260751"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac88b93d718b337566b0cfac3be260751">hasChangeHook</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ac88b93d718b337566b0cfac3be260751"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a502e54b80ab206803a13ff48d6e97a5d" id="r_a502e54b80ab206803a13ff48d6e97a5d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a502e54b80ab206803a13ff48d6e97a5d">registerSurface</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a34946f4d245338065c52709753e7e65e">SurfaceFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:a502e54b80ab206803a13ff48d6e97a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0388b5302000521b0e4cfac2ebc05c4" id="r_ac0388b5302000521b0e4cfac2ebc05c4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac0388b5302000521b0e4cfac2ebc05c4">unregisterSurface</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ac0388b5302000521b0e4cfac2ebc05c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92f87250e2449d9aadafafcba344ce2b" id="r_a92f87250e2449d9aadafafcba344ce2b"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a92f87250e2449d9aadafafcba344ce2b">hasSurface</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a92f87250e2449d9aadafafcba344ce2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7367c85cf3c4fd04b372e5f005986ffd" id="r_a7367c85cf3c4fd04b372e5f005986ffd"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7367c85cf3c4fd04b372e5f005986ffd">surfaceHit</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementHit</a> *hit)</td></tr>
+<tr class="separator:a7367c85cf3c4fd04b372e5f005986ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b9d32012a9265350062f48a737a84cd" id="r_a3b9d32012a9265350062f48a737a84cd"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a3b9d32012a9265350062f48a737a84cd">surfaceNames</a> ()</td></tr>
+<tr class="separator:a3b9d32012a9265350062f48a737a84cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85dfd7acb73dc24781f8c1cd5beded69" id="r_a85dfd7acb73dc24781f8c1cd5beded69"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a85dfd7acb73dc24781f8c1cd5beded69">setPlaneSurfaceHeight</a> (float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:a85dfd7acb73dc24781f8c1cd5beded69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d4b8cf2530be33d6b3536c64251db4b" id="r_a7d4b8cf2530be33d6b3536c64251db4b"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7d4b8cf2530be33d6b3536c64251db4b">getPlaneSurfaceHeight</a> ()</td></tr>
+<tr class="separator:a7d4b8cf2530be33d6b3536c64251db4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c7254a109d2a20c2b480006215178e6" id="r_a8c7254a109d2a20c2b480006215178e6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a8c7254a109d2a20c2b480006215178e6">ensureBuiltins</a> ()</td></tr>
+<tr class="memdesc:a8c7254a109d2a20c2b480006215178e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">确保内置规则已注册（模块首次使用时自动调用）。  <br /></td></tr>
+<tr class="separator:a8c7254a109d2a20c2b480006215178e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06975edb41abf054f1c0d29346b41b4a" id="r_a06975edb41abf054f1c0d29346b41b4a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a06975edb41abf054f1c0d29346b41b4a">snap</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const std::string &amp;buildingId, float worldX, float worldY)</td></tr>
+<tr class="separator:a06975edb41abf054f1c0d29346b41b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a678db70cd36da3ed3201fd4ed8fb38b5" id="r_a678db70cd36da3ed3201fd4ed8fb38b5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a678db70cd36da3ed3201fd4ed8fb38b5">snap3D</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const std::string &amp;buildingId, float worldX, float worldY, float worldZ)</td></tr>
+<tr class="separator:a678db70cd36da3ed3201fd4ed8fb38b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd0a9390339efc4eae10348d6450ed88" id="r_afd0a9390339efc4eae10348d6450ed88"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#afd0a9390339efc4eae10348d6450ed88">snapWithMode</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const std::string &amp;mode, float worldX, float worldY)</td></tr>
+<tr class="separator:afd0a9390339efc4eae10348d6450ed88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bf0fe3d81c8af2977b71958b92e3ce9" id="r_a9bf0fe3d81c8af2977b71958b92e3ce9"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9bf0fe3d81c8af2977b71958b92e3ce9">normalizeRotation</a> (const std::string &amp;buildingId, float rotationDeg)</td></tr>
+<tr class="memdesc:a9bf0fe3d81c8af2977b71958b92e3ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">规范化旋转角（cardinal → 0/90/180/270；none → 0）。  <br /></td></tr>
+<tr class="separator:a9bf0fe3d81c8af2977b71958b92e3ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1089b47ff7780441c17471b1e4433f31" id="r_a1089b47ff7780441c17471b1e4433f31"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a1089b47ff7780441c17471b1e4433f31">effectiveFootprint</a> (const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;def, float rotationDeg, int *outW, int *outH)</td></tr>
+<tr class="memdesc:a1089b47ff7780441c17471b1e4433f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">旋转后的占地宽高（cardinal 90/270 交换）。  <br /></td></tr>
+<tr class="separator:a1089b47ff7780441c17471b1e4433f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9985510a581f8e988ab5d15d4c69bf29" id="r_a9985510a581f8e988ab5d15d4c69bf29"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a9985510a581f8e988ab5d15d4c69bf29">foreachFootprintCell</a> (const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;def, int originCellX, int originCellY, float rotationDeg, const std::function&lt; bool(int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>)&gt; &amp;<a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="memdesc:a9985510a581f8e988ab5d15d4c69bf29"><td class="mdescLeft">&#160;</td><td class="mdescRight">枚举占地格子（旋转后局部 → 世界格子）。返回 false 若定义未知。  <br /></td></tr>
+<tr class="separator:a9985510a581f8e988ab5d15d4c69bf29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbaded2d0db2ecccf1ea7454a707eb49" id="r_afbaded2d0db2ecccf1ea7454a707eb49"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#afbaded2d0db2ecccf1ea7454a707eb49">canPlace</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int excludeInstanceId=0, std::string *reason=nullptr)</td></tr>
+<tr class="separator:afbaded2d0db2ecccf1ea7454a707eb49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb289dcf231b0ac3664f5c589c3b50f5" id="r_aeb289dcf231b0ac3664f5c589c3b50f5"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#aeb289dcf231b0ac3664f5c589c3b50f5">canPlaceElev</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;buildingId, int cellX, int cellY, float elevation, float rotationDeg=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int excludeInstanceId=0, std::string *reason=nullptr)</td></tr>
+<tr class="separator:aeb289dcf231b0ac3664f5c589c3b50f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2226bf439e27d6301594cb5a24ebb4d0" id="r_a2226bf439e27d6301594cb5a24ebb4d0"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a2226bf439e27d6301594cb5a24ebb4d0">placeAt</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;buildingId, int cellX, int cellY, float rotationDeg=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a2226bf439e27d6301594cb5a24ebb4d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">成功返回 instanceId；失败返回 0。  <br /></td></tr>
+<tr class="separator:a2226bf439e27d6301594cb5a24ebb4d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac91c33310d07f9187ba67e337cba7b22" id="r_ac91c33310d07f9187ba67e337cba7b22"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac91c33310d07f9187ba67e337cba7b22">placeAtWorld</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;buildingId, float worldX, float worldY, float rotationDeg=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ac91c33310d07f9187ba67e337cba7b22"><td class="mdescLeft">&#160;</td><td class="mdescRight">先吸附再放置；free/自定义 snap 会保留吸附后的世界坐标。  <br /></td></tr>
+<tr class="separator:ac91c33310d07f9187ba67e337cba7b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a597b6727997f476c275647bf1bd04" id="r_a52a597b6727997f476c275647bf1bd04"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a52a597b6727997f476c275647bf1bd04">placeAtWorld3D</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, const std::string &amp;buildingId, float worldX, float worldY, float worldZ, float rotationDeg=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a52a597b6727997f476c275647bf1bd04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9928f900f97c93a0338b5c3b2ead232" id="r_ae9928f900f97c93a0338b5c3b2ead232"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ae9928f900f97c93a0338b5c3b2ead232">placeGhost</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, <a class="el" href="classeve_1_1building_1_1Ghost.html">Ghost</a> *ghost)</td></tr>
+<tr class="separator:ae9928f900f97c93a0338b5c3b2ead232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f6e552f15525212296e95a4e59d8c3" id="r_ab0f6e552f15525212296e95a4e59d8c3"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ab0f6e552f15525212296e95a4e59d8c3">removeBuilding</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, int instanceId)</td></tr>
+<tr class="separator:ab0f6e552f15525212296e95a4e59d8c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac10c72900765ab6aaec541d6cef4c093" id="r_ac10c72900765ab6aaec541d6cef4c093"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#ac10c72900765ab6aaec541d6cef4c093">moveBuilding</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world, int instanceId, int cellX, int cellY, float rotationDeg=-1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ac10c72900765ab6aaec541d6cef4c093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7979a6b899b5df3d4b8493248cebf1e8" id="r_a7979a6b899b5df3d4b8493248cebf1e8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7979a6b899b5df3d4b8493248cebf1e8">clearBuildings</a> (<a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *world)</td></tr>
+<tr class="separator:a7979a6b899b5df3d4b8493248cebf1e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e6aabf5cdd1fbda556126780f93122" id="r_a95e6aabf5cdd1fbda556126780f93122"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95e6aabf5cdd1fbda556126780f93122">pushEvent</a> (<a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> ev)</td></tr>
+<tr class="separator:a95e6aabf5cdd1fbda556126780f93122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af275de13332d09138a85471101be3ec8" id="r_af275de13332d09138a85471101be3ec8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af275de13332d09138a85471101be3ec8">pollEvents</a> (std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> &gt; &amp;out)</td></tr>
+<tr class="separator:af275de13332d09138a85471101be3ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcd7a3d4f94af5d91347ae271de5eae5" id="r_abcd7a3d4f94af5d91347ae271de5eae5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#abcd7a3d4f94af5d91347ae271de5eae5">clearEvents</a> ()</td></tr>
+<tr class="separator:abcd7a3d4f94af5d91347ae271de5eae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f19b3d011ee97948ffea9b43ec73225" id="r_a6f19b3d011ee97948ffea9b43ec73225"><td class="memItemLeft" align="right" valign="top">static const std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a6f19b3d011ee97948ffea9b43ec73225">events</a> ()</td></tr>
+<tr class="separator:a6f19b3d011ee97948ffea9b43ec73225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af41b098ccd42631923d8d2d8247bf41f" id="r_af41b098ccd42631923d8d2d8247bf41f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#af41b098ccd42631923d8d2d8247bf41f">nextInstanceId</a> ()</td></tr>
+<tr class="separator:af41b098ccd42631923d8d2d8247bf41f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a> 第 <a class="el" href="PlacementSystem_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a95c2832402a5cdaddc0bdf707da7be64" name="a95c2832402a5cdaddc0bdf707da7be64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95c2832402a5cdaddc0bdf707da7be64">&#9670;&#160;</a></span>ChangeHook</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95c2832402a5cdaddc0bdf707da7be64">eve::building::PlacementSystem::ChangeHook</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> &amp;ev)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a> 第 <a class="el" href="PlacementSystem_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7cd5fadca52dab645836c2610c35a496" name="a7cd5fadca52dab645836c2610c35a496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cd5fadca52dab645836c2610c35a496">&#9670;&#160;</a></span>SnapFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7cd5fadca52dab645836c2610c35a496">eve::building::PlacementSystem::SnapFn</a> =  std::function&lt;<a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a>(const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, float worldX, float worldY)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a> 第 <a class="el" href="PlacementSystem_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34946f4d245338065c52709753e7e65e" name="a34946f4d245338065c52709753e7e65e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34946f4d245338065c52709753e7e65e">&#9670;&#160;</a></span>SurfaceFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a34946f4d245338065c52709753e7e65e">eve::building::PlacementSystem::SurfaceFn</a> =  std::function&lt;bool(const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, float <a class="el" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, float <a class="el" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, <a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementHit</a> *hit)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>放置表面：把指针坐标（2D 场景为鼠标世界坐标；3D 场景由游戏自行做 射线/高度采样后传入平面坐标）换算成真实世界命中点。 引擎只提供接口 + 内置 "plane"（Y=常数平面），物理射线 / 高度场等 表面由游戏侧按接口实现。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a> 第 <a class="el" href="PlacementSystem_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a014401530a7b411e332554af8f0e1ce1" name="a014401530a7b411e332554af8f0e1ce1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a014401530a7b411e332554af8f0e1ce1">&#9670;&#160;</a></span>ValidateFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a014401530a7b411e332554af8f0e1ce1">eve::building::PlacementSystem::ValidateFn</a> =  std::function&lt;bool(const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const <a class="el" href="structeve_1_1building_1_1PlacementQuery.html">PlacementQuery</a> &amp;q, std::string *reason)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a> 第 <a class="el" href="PlacementSystem_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="afbaded2d0db2ecccf1ea7454a707eb49" name="afbaded2d0db2ecccf1ea7454a707eb49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbaded2d0db2ecccf1ea7454a707eb49">&#9670;&#160;</a></span>canPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::canPlace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>excludeInstanceId</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00487">487</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00390">eve::building::PlacementWorld::canPlace()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00395">eve::building::PlacementWorld::canPlaceReason()</a>.</p>
+
+</div>
+</div>
+<a id="aeb289dcf231b0ac3664f5c589c3b50f5" name="aeb289dcf231b0ac3664f5c589c3b50f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb289dcf231b0ac3664f5c589c3b50f5">&#9670;&#160;</a></span>canPlaceElev()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::canPlaceElev </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>elevation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>excludeInstanceId</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>带 elevation 的校验（校验语义仍按 2D 占用/地形，elevation 只进 query 上下文）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00463">463</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00099">eve::building::PlacementQuery::buildingId</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00137">eve::building::PlacementWorld::cellToWorldPlane()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00100">eve::building::PlacementQuery::cellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00101">eve::building::PlacementQuery::cellY</a>, <a class="el" href="BuildingTypes_8h_source.html#l00104">eve::building::PlacementQuery::elevation</a>, <a class="el" href="BuildingTypes_8h_source.html#l00106">eve::building::PlacementQuery::excludeInstanceId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00105">eve::building::PlacementQuery::rotationDeg</a>, <a class="el" href="BuildingTypes_8h_source.html#l00102">eve::building::PlacementQuery::worldX</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00103">eve::building::PlacementQuery::worldY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Ghost_8cpp_source.html#l00080">eve::building::Ghost::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7979a6b899b5df3d4b8493248cebf1e8" name="a7979a6b899b5df3d4b8493248cebf1e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7979a6b899b5df3d4b8493248cebf1e8">&#9670;&#160;</a></span>clearBuildings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::clearBuildings </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00676">676</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementWorld_8h_source.html#l00160">eve::building::PlacementWorld::allChannels()</a> , 以及 <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00429">eve::building::PlacementWorld::clearBuildings()</a>.</p>
+
+</div>
+</div>
+<a id="abcd7a3d4f94af5d91347ae271de5eae5" name="abcd7a3d4f94af5d91347ae271de5eae5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcd7a3d4f94af5d91347ae271de5eae5">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00138">eve::building::Building::clearChangeEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a1089b47ff7780441c17471b1e4433f31" name="a1089b47ff7780441c17471b1e4433f31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1089b47ff7780441c17471b1e4433f31">&#9670;&#160;</a></span>effectiveFootprint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::effectiveFootprint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>def</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>outW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>outH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>旋转后的占地宽高（cardinal 90/270 交换）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00026">eve::building::BuildingDefinition::footprintH</a>, <a class="el" href="BuildingTypes_8h_source.html#l00028">eve::building::BuildingDefinition::footprintMask</a>, <a class="el" href="BuildingTypes_8h_source.html#l00025">eve::building::BuildingDefinition::footprintW</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="GridProjection_8cpp_source.html#l00187">eve::grid::rotatedFootprintSize()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00032">eve::building::BuildingDefinition::rotationMode</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00650">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingFx_8cpp_source.html#l00239">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a8c7254a109d2a20c2b480006215178e6" name="a8c7254a109d2a20c2b480006215178e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c7254a109d2a20c2b480006215178e6">&#9670;&#160;</a></span>ensureBuiltins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::ensureBuiltins </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>确保内置规则已注册（模块首次使用时自动调用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00099">eve::building::PlacementQuery::buildingId</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00137">eve::building::PlacementWorld::cellToWorldPlane()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00111">eve::building::SnapResult::cellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00112">eve::building::SnapResult::cellY</a>, <a class="el" href="CardTypes_8cpp_source.html#l00031">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00032">cy</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00080">eve::building::BuildingRegistry::find()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00062">eve::building::PlacementWorld::getGrid()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00043">eve::building::PlacementWorld::getHeight()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00042">eve::building::PlacementWorld::getWidth()</a>, <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>, <a class="el" href="GridConfig_8h_source.html#l00025">eve::grid::GridConfig::plane</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00076">registerSnapRule()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00099">registerSurface()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00062">registerValidateRule()</a>, <a class="el" href="GridProjection_8cpp_source.html#l00069">eve::grid::worldToCell()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00113">eve::building::PlacementWorld::worldToCellX()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00119">eve::building::PlacementWorld::worldToCellY()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00113">eve::building::SnapResult::worldX</a>, <a class="el" href="PlacementSystem_8h_source.html#l00029">eve::building::PlacementSystem::PlacementHit::worldX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00114">eve::building::SnapResult::worldY</a>, <a class="el" href="PlacementSystem_8h_source.html#l00030">eve::building::PlacementSystem::PlacementHit::worldY</a>, <a class="el" href="PlacementSystem_8h_source.html#l00031">eve::building::PlacementSystem::PlacementHit::worldZ</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a>, <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a27db3b98d01e664c17a6620b222c6469">eve::grid::XZ</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00083">hasSnapRule()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00106">hasSurface()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00071">hasValidateRule()</a>, <a class="el" href="Building_8cpp_source.html#l00102">eve::building::Building::newGhost()</a>, <a class="el" href="Building_8cpp_source.html#l00107">eve::building::Building::newSession()</a>, <a class="el" href="Building_8cpp_source.html#l00097">eve::building::Building::newWorld()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00017">eve::building::PlacementWorld::PlacementWorld()</a>, <a class="el" href="Building_8cpp_source.html#l00011">eve::building::Building::registerBuildingsFromJson()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00261">snap()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00244">snapWithMode()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00111">surfaceHit()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00120">surfaceNames()</a>.</p>
+
+</div>
+</div>
+<a id="a6f19b3d011ee97948ffea9b43ec73225" name="a6f19b3d011ee97948ffea9b43ec73225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f19b3d011ee97948ffea9b43ec73225">&#9670;&#160;</a></span>events()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> &gt; &amp; eve::building::PlacementSystem::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00142">eve::building::Building::getChangeEventAction()</a>, <a class="el" href="Building_8cpp_source.html#l00154">eve::building::Building::getChangeEventBuildingId()</a>, <a class="el" href="Building_8cpp_source.html#l00166">eve::building::Building::getChangeEventCellX()</a>, <a class="el" href="Building_8cpp_source.html#l00172">eve::building::Building::getChangeEventCellY()</a>, <a class="el" href="Building_8cpp_source.html#l00140">eve::building::Building::getChangeEventCount()</a>, <a class="el" href="Building_8cpp_source.html#l00160">eve::building::Building::getChangeEventInstanceId()</a>, <a class="el" href="Building_8cpp_source.html#l00178">eve::building::Building::getChangeEventOtherCellX()</a>, <a class="el" href="Building_8cpp_source.html#l00184">eve::building::Building::getChangeEventOtherCellY()</a>, <a class="el" href="Building_8cpp_source.html#l00190">eve::building::Building::getChangeEventRotation()</a> , 以及 <a class="el" href="Building_8cpp_source.html#l00148">eve::building::Building::getChangeEventWorldId()</a>.</p>
+
+</div>
+</div>
+<a id="a9985510a581f8e988ab5d15d4c69bf29" name="a9985510a581f8e988ab5d15d4c69bf29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9985510a581f8e988ab5d15d4c69bf29">&#9670;&#160;</a></span>foreachFootprintCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::foreachFootprintCell </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>def</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originCellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originCellY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; bool(int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>枚举占地格子（旋转后局部 → 世界格子）。返回 false 若定义未知。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="BuildingTypes_8h_source.html#l00026">eve::building::BuildingDefinition::footprintH</a>, <a class="el" href="BuildingTypes_8h_source.html#l00028">eve::building::BuildingDefinition::footprintMask</a>, <a class="el" href="BuildingTypes_8h_source.html#l00025">eve::building::BuildingDefinition::footprintW</a>, <a class="el" href="GridProjection_8cpp_source.html#l00121">eve::grid::foreachRotatedFootprint()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00032">eve::building::BuildingDefinition::rotationMode</a>.</p>
+
+</div>
+</div>
+<a id="a7d4b8cf2530be33d6b3536c64251db4b" name="a7d4b8cf2530be33d6b3536c64251db4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d4b8cf2530be33d6b3536c64251db4b">&#9670;&#160;</a></span>getPlaneSurfaceHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacementSystem::getPlaneSurfaceHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00136">eve::building::Building::getPlaneSurfaceHeight()</a>.</p>
+
+</div>
+</div>
+<a id="ac88b93d718b337566b0cfac3be260751" name="ac88b93d718b337566b0cfac3be260751"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac88b93d718b337566b0cfac3be260751">&#9670;&#160;</a></span>hasChangeHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::hasChangeHook </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ab6d8c3c4aa6ef4f2b90087e2b43359ec" name="ab6d8c3c4aa6ef4f2b90087e2b43359ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d8c3c4aa6ef4f2b90087e2b43359ec">&#9670;&#160;</a></span>hasSnapRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::hasSnapRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00116">eve::building::Building::hasSnapRule()</a>.</p>
+
+</div>
+</div>
+<a id="a92f87250e2449d9aadafafcba344ce2b" name="a92f87250e2449d9aadafafcba344ce2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f87250e2449d9aadafafcba344ce2b">&#9670;&#160;</a></span>hasSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::hasSurface </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00120">eve::building::Building::hasSurface()</a>.</p>
+
+</div>
+</div>
+<a id="ada9cc58c5d2c21e3c5591d4a8ff09116" name="ada9cc58c5d2c21e3c5591d4a8ff09116"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada9cc58c5d2c21e3c5591d4a8ff09116">&#9670;&#160;</a></span>hasValidateRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::hasValidateRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00112">eve::building::Building::hasValidateRule()</a>.</p>
+
+</div>
+</div>
+<a id="a6ca0cb67f111123cf1066c92c3267507" name="a6ca0cb67f111123cf1066c92c3267507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ca0cb67f111123cf1066c92c3267507">&#9670;&#160;</a></span>inst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a> &amp; eve::building::PlacementSystem::inst </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Process singleton holding all <a class="el" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a> state. </p>
+<p>Rules / hooks / events / counters used to live in one function-local static per accessor, which made the state invisible, non-destructible and hard to reason about across hot-reload and tests. State now lives in this single instance's members; the static API below delegates to it. </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac10c72900765ab6aaec541d6cef4c093" name="ac10c72900765ab6aaec541d6cef4c093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac10c72900765ab6aaec541d6cef4c093">&#9670;&#160;</a></span>moveBuilding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::moveBuilding </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em> = <code>-1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00635">635</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00082">eve::building::BuildingChangeEvent::action</a>, <a class="el" href="BuildingTypes_8h_source.html#l00063">eve::building::PlacedBuilding::buildingId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00084">eve::building::BuildingChangeEvent::buildingId</a>, <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00137">eve::building::PlacementWorld::cellToWorldPlane()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00086">eve::building::BuildingChangeEvent::cellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00087">eve::building::BuildingChangeEvent::cellY</a>, <a class="el" href="BuildingTypes_8h_source.html#l00071">eve::building::PlacedBuilding::channel</a>, <a class="el" href="BuildingTypes_8h_source.html#l00094">eve::building::BuildingChangeEvent::channel</a>, <a class="el" href="BuildingTypes_8h_source.html#l00069">eve::building::PlacedBuilding::elevation</a>, <a class="el" href="BuildingTypes_8h_source.html#l00093">eve::building::BuildingChangeEvent::elevation</a>, <a class="el" href="PlacementWorld_8h_source.html#l00038">eve::building::PlacementWorld::getId()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00085">eve::building::BuildingChangeEvent::instanceId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00064">eve::building::PlacedBuilding::originCellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00065">eve::building::PlacedBuilding::originCellY</a>, <a class="el" href="BuildingTypes_8h_source.html#l00088">eve::building::BuildingChangeEvent::otherCellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00089">eve::building::BuildingChangeEvent::otherCellY</a>, <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>, <a class="el" href="BuildingTypes_8h_source.html#l00070">eve::building::PlacedBuilding::rotationDeg</a>, <a class="el" href="BuildingTypes_8h_source.html#l00090">eve::building::BuildingChangeEvent::rotationDeg</a>, <a class="el" href="BuildingTypes_8h_source.html#l00083">eve::building::BuildingChangeEvent::worldId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00066">eve::building::PlacedBuilding::worldX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00091">eve::building::BuildingChangeEvent::worldX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00067">eve::building::PlacedBuilding::worldY</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00092">eve::building::BuildingChangeEvent::worldY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00425">eve::building::PlacementWorld::moveBuilding()</a>.</p>
+
+</div>
+</div>
+<a id="af41b098ccd42631923d8d2d8247bf41f" name="af41b098ccd42631923d8d2d8247bf41f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af41b098ccd42631923d8d2d8247bf41f">&#9670;&#160;</a></span>nextInstanceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacementSystem::nextInstanceId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9bf0fe3d81c8af2977b71958b92e3ce9" name="a9bf0fe3d81c8af2977b71958b92e3ce9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bf0fe3d81c8af2977b71958b92e3ce9">&#9670;&#160;</a></span>normalizeRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacementSystem::normalizeRotation </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>规范化旋转角（cardinal → 0/90/180/270；none → 0）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">d</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00080">eve::building::BuildingRegistry::find()</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00032">eve::building::BuildingDefinition::rotationMode</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Ghost_8cpp_source.html#l00080">eve::building::Ghost::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a2226bf439e27d6301594cb5a24ebb4d0" name="a2226bf439e27d6301594cb5a24ebb4d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2226bf439e27d6301594cb5a24ebb4d0">&#9670;&#160;</a></span>placeAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacementSystem::placeAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>成功返回 instanceId；失败返回 0。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00520">520</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00082">eve::building::BuildingChangeEvent::action</a>, <a class="el" href="BuildingTypes_8h_source.html#l00063">eve::building::PlacedBuilding::buildingId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00084">eve::building::BuildingChangeEvent::buildingId</a>, <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00137">eve::building::PlacementWorld::cellToWorldPlane()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00086">eve::building::BuildingChangeEvent::cellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00087">eve::building::BuildingChangeEvent::cellY</a>, <a class="el" href="BuildingTypes_8h_source.html#l00022">eve::building::BuildingDefinition::channel</a>, <a class="el" href="BuildingTypes_8h_source.html#l00071">eve::building::PlacedBuilding::channel</a>, <a class="el" href="BuildingTypes_8h_source.html#l00094">eve::building::BuildingChangeEvent::channel</a>, <a class="el" href="BuildingTypes_8h_source.html#l00069">eve::building::PlacedBuilding::elevation</a>, <a class="el" href="BuildingTypes_8h_source.html#l00093">eve::building::BuildingChangeEvent::elevation</a>, <a class="el" href="PlacementWorld_8h_source.html#l00038">eve::building::PlacementWorld::getId()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00062">eve::building::PlacedBuilding::instanceId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00085">eve::building::BuildingChangeEvent::instanceId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00064">eve::building::PlacedBuilding::originCellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00065">eve::building::PlacedBuilding::originCellY</a>, <a class="el" href="BuildingTypes_8h_source.html#l00070">eve::building::PlacedBuilding::rotationDeg</a>, <a class="el" href="BuildingTypes_8h_source.html#l00090">eve::building::BuildingChangeEvent::rotationDeg</a>, <a class="el" href="BuildingTypes_8h_source.html#l00035">eve::building::BuildingDefinition::tags</a>, <a class="el" href="BuildingTypes_8h_source.html#l00073">eve::building::PlacedBuilding::tags</a>, <a class="el" href="BuildingTypes_8h_source.html#l00083">eve::building::BuildingChangeEvent::worldId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00066">eve::building::PlacedBuilding::worldX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00091">eve::building::BuildingChangeEvent::worldX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00067">eve::building::PlacedBuilding::worldY</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00092">eve::building::BuildingChangeEvent::worldY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00402">eve::building::PlacementWorld::placeAt()</a>.</p>
+
+</div>
+</div>
+<a id="ac91c33310d07f9187ba67e337cba7b22" name="ac91c33310d07f9187ba67e337cba7b22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac91c33310d07f9187ba67e337cba7b22">&#9670;&#160;</a></span>placeAtWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacementSystem::placeAtWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>先吸附再放置；free/自定义 snap 会保留吸附后的世界坐标。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00560">560</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00407">eve::building::PlacementWorld::placeAtWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a52a597b6727997f476c275647bf1bd04" name="a52a597b6727997f476c275647bf1bd04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52a597b6727997f476c275647bf1bd04">&#9670;&#160;</a></span>placeAtWorld3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacementSystem::placeAtWorld3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>3D 版本：真实世界坐标 (wx, wy, wz)，按平面轴吸附后放置。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00576">576</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00028">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00412">eve::building::PlacementWorld::placeAtWorld3D()</a>.</p>
+
+</div>
+</div>
+<a id="ae9928f900f97c93a0338b5c3b2ead232" name="ae9928f900f97c93a0338b5c3b2ead232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9928f900f97c93a0338b5c3b2ead232">&#9670;&#160;</a></span>placeGhost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacementSystem::placeGhost </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1Ghost.html">Ghost</a> *&#160;</td>
+          <td class="paramname"><em>ghost</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00593">593</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>, <a class="el" href="Ghost_8h_source.html#l00020">eve::building::Ghost::getBuildingId()</a>, <a class="el" href="Ghost_8h_source.html#l00023">eve::building::Ghost::getCellX()</a>, <a class="el" href="Ghost_8h_source.html#l00024">eve::building::Ghost::getCellY()</a>, <a class="el" href="Ghost_8h_source.html#l00030">eve::building::Ghost::getElevation()</a>, <a class="el" href="Ghost_8h_source.html#l00033">eve::building::Ghost::getRotationDeg()</a>, <a class="el" href="Ghost_8h_source.html#l00027">eve::building::Ghost::getWorldX()</a>, <a class="el" href="Ghost_8h_source.html#l00028">eve::building::Ghost::getWorldY()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00450">id</a> , 以及 <a class="el" href="Ghost_8cpp_source.html#l00080">eve::building::Ghost::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00417">eve::building::PlacementWorld::placeGhost()</a>.</p>
+
+</div>
+</div>
+<a id="af275de13332d09138a85471101be3ec8" name="af275de13332d09138a85471101be3ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af275de13332d09138a85471101be3ec8">&#9670;&#160;</a></span>pollEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::pollEvents </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95e6aabf5cdd1fbda556126780f93122" name="a95e6aabf5cdd1fbda556126780f93122"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95e6aabf5cdd1fbda556126780f93122">&#9670;&#160;</a></span>pushEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::pushEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1BuildingChangeEvent.html">BuildingChangeEvent</a>&#160;</td>
+          <td class="paramname"><em>ev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc2a7886817d266988f7b001a8b933b4" name="afc2a7886817d266988f7b001a8b933b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc2a7886817d266988f7b001a8b933b4">&#9670;&#160;</a></span>registerChangeHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::registerChangeHook </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a95c2832402a5cdaddc0bdf707da7be64">ChangeHook</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ad6868d757a0cb84db8f0e814c18ee4e2" name="ad6868d757a0cb84db8f0e814c18ee4e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6868d757a0cb84db8f0e814c18ee4e2">&#9670;&#160;</a></span>registerSnapRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::registerSnapRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a7cd5fadca52dab645836c2610c35a496">SnapFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a502e54b80ab206803a13ff48d6e97a5d" name="a502e54b80ab206803a13ff48d6e97a5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a502e54b80ab206803a13ff48d6e97a5d">&#9670;&#160;</a></span>registerSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::registerSurface </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a34946f4d245338065c52709753e7e65e">SurfaceFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="aff9139063b97593d8f4d667600dd856b" name="aff9139063b97593d8f4d667600dd856b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9139063b97593d8f4d667600dd856b">&#9670;&#160;</a></span>registerValidateRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::registerValidateRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementSystem.html#a014401530a7b411e332554af8f0e1ce1">ValidateFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="ab0f6e552f15525212296e95a4e59d8c3" name="ab0f6e552f15525212296e95a4e59d8c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0f6e552f15525212296e95a4e59d8c3">&#9670;&#160;</a></span>removeBuilding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::removeBuilding </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00609">609</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00082">eve::building::BuildingChangeEvent::action</a>, <a class="el" href="BuildingTypes_8h_source.html#l00084">eve::building::BuildingChangeEvent::buildingId</a>, <a class="el" href="PlacementWorld_8h_source.html#l00166">eve::building::PlacementWorld::buildings()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00086">eve::building::BuildingChangeEvent::cellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00087">eve::building::BuildingChangeEvent::cellY</a>, <a class="el" href="BuildingTypes_8h_source.html#l00094">eve::building::BuildingChangeEvent::channel</a>, <a class="el" href="BuildingTypes_8h_source.html#l00093">eve::building::BuildingChangeEvent::elevation</a>, <a class="el" href="PlacementWorld_8h_source.html#l00038">eve::building::PlacementWorld::getId()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00085">eve::building::BuildingChangeEvent::instanceId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00090">eve::building::BuildingChangeEvent::rotationDeg</a>, <a class="el" href="BuildingTypes_8h_source.html#l00083">eve::building::BuildingChangeEvent::worldId</a>, <a class="el" href="BuildingTypes_8h_source.html#l00091">eve::building::BuildingChangeEvent::worldX</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00092">eve::building::BuildingChangeEvent::worldY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00421">eve::building::PlacementWorld::removeBuilding()</a>.</p>
+
+</div>
+</div>
+<a id="a85dfd7acb73dc24781f8c1cd5beded69" name="a85dfd7acb73dc24781f8c1cd5beded69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85dfd7acb73dc24781f8c1cd5beded69">&#9670;&#160;</a></span>setPlaneSurfaceHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::setPlaneSurfaceHeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>内置 "plane" 表面的常量高度（默认 0）。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00651">h</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00134">eve::building::Building::setPlaneSurfaceHeight()</a>.</p>
+
+</div>
+</div>
+<a id="a06975edb41abf054f1c0d29346b41b4a" name="a06975edb41abf054f1c0d29346b41b4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06975edb41abf054f1c0d29346b41b4a">&#9670;&#160;</a></span>snap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a> eve::building::PlacementSystem::snap </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00080">eve::building::BuildingRegistry::find()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00052">eve::building::PlacementWorld::getSnapMode()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00244">snapWithMode()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Ghost_8cpp_source.html#l00045">eve::building::Ghost::setFromWorld()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00271">snap3D()</a>.</p>
+
+</div>
+</div>
+<a id="a678db70cd36da3ed3201fd4ed8fb38b5" name="a678db70cd36da3ed3201fd4ed8fb38b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a678db70cd36da3ed3201fd4ed8fb38b5">&#9670;&#160;</a></span>snap3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a> eve::building::PlacementSystem::snap3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>3D 版本：按世界平面轴把 (wx, wy, wz) 映射到网格平面坐标再吸附。 </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementWorld_8h_source.html#l00062">eve::building::PlacementWorld::getGrid()</a>, <a class="el" href="GridConfig_8h_source.html#l00025">eve::grid::GridConfig::plane</a>, <a class="el" href="ImageData_8cpp_source.html#l00652">px</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00261">snap()</a> , 以及 <a class="el" href="namespaceeve_1_1grid.html#a50516dcae76c9edb093d04ad89b79eb3a27db3b98d01e664c17a6620b222c6469">eve::grid::XZ</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Ghost_8cpp_source.html#l00057">eve::building::Ghost::setFromWorld3D()</a>.</p>
+
+</div>
+</div>
+<a id="afd0a9390339efc4eae10348d6450ed88" name="afd0a9390339efc4eae10348d6450ed88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd0a9390339efc4eae10348d6450ed88">&#9670;&#160;</a></span>snapWithMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1SnapResult.html">SnapResult</a> eve::building::PlacementSystem::snapWithMode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementWorld_8cpp_source.html#l00125">eve::building::PlacementWorld::cellToWorldX()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00131">eve::building::PlacementWorld::cellToWorldY()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00111">eve::building::SnapResult::cellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00112">eve::building::SnapResult::cellY</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00113">eve::building::PlacementWorld::worldToCellX()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00119">eve::building::PlacementWorld::worldToCellY()</a>, <a class="el" href="BuildingTypes_8h_source.html#l00113">eve::building::SnapResult::worldX</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00114">eve::building::SnapResult::worldY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00261">snap()</a>.</p>
+
+</div>
+</div>
+<a id="a7367c85cf3c4fd04b372e5f005986ffd" name="a7367c85cf3c4fd04b372e5f005986ffd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7367c85cf3c4fd04b372e5f005986ffd">&#9670;&#160;</a></span>surfaceHit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacementSystem::surfaceHit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementHit</a> *&#160;</td>
+          <td class="paramname"><em>hit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>, <a class="el" href="Grass_8cpp_source.html#l00135">x</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00135">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Ghost_8cpp_source.html#l00069">eve::building::Ghost::setFromSurface()</a>.</p>
+
+</div>
+</div>
+<a id="a3b9d32012a9265350062f48a737a84cd" name="a3b9d32012a9265350062f48a737a84cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b9d32012a9265350062f48a737a84cd">&#9670;&#160;</a></span>surfaceNames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::building::PlacementSystem::surfaceNames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00136">ensureBuiltins()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Building_8cpp_source.html#l00124">eve::building::Building::getSurfaceCount()</a> , 以及 <a class="el" href="Building_8cpp_source.html#l00128">eve::building::Building::getSurfaceName()</a>.</p>
+
+</div>
+</div>
+<a id="a7f9b6486482168b15585eef437362975" name="a7f9b6486482168b15585eef437362975"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f9b6486482168b15585eef437362975">&#9670;&#160;</a></span>unregisterChangeHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::unregisterChangeHook </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="af826a8721fab61eaab90b6aa1efcfae0" name="af826a8721fab61eaab90b6aa1efcfae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af826a8721fab61eaab90b6aa1efcfae0">&#9670;&#160;</a></span>unregisterSnapRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::unregisterSnapRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ac0388b5302000521b0e4cfac2ebc05c4" name="ac0388b5302000521b0e4cfac2ebc05c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0388b5302000521b0e4cfac2ebc05c4">&#9670;&#160;</a></span>unregisterSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::unregisterSurface </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="af2ec3cc59e6e5c8849261f5347cb651f" name="af2ec3cc59e6e5c8849261f5347cb651f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2ec3cc59e6e5c8849261f5347cb651f">&#9670;&#160;</a></span>unregisterValidateRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacementSystem::unregisterValidateRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a> 第 <a class="el" href="PlacementSystem_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/building/<a class="el" href="PlacementSystem_8h_source.html">PlacementSystem.h</a></li>
+<li>src/modules/building/<a class="el" href="PlacementSystem_8cpp_source.html">PlacementSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

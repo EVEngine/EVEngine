@@ -1,0 +1,214 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1card.html">card</a></li><li class="navelem"><a class="el" href="classeve_1_1card_1_1Card.html">Card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::card::Card 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a92b3ec14dbc62820ba429a33343769d0">Card</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#adac61e2cf9182de0f8c4f20fc6672b18">clearCardDefinitions</a>()</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a23ff785d9d11f7482ebd7e8bdbe1f8aa">clearEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a29d1e89f174c390da4064e5e55b5dab3">drawCard</a>(const std::string &amp;handOwner)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a8ee9cd06f75f4266d1564e4f1cdd5c48">findHand</a>(const std::string &amp;owner) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#aac90d5daae1faec2a18575eef99204e3">getCardDefinitionAttack</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a15eafc731c664d6a66e903df2525d63d">getCardDefinitionCost</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#aa0eceba55722668344090474351e22ba">getCardDefinitionCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a8013a9b4f742eb8062b14c7e53fc5d19">getCardDefinitionHealth</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#afc7d911a061bd2ec4962802fe7919234">getCardDefinitionKind</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#ad9d88f5ef0a0fad8152509e5613a60d2">getCardDefinitionName</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a16eea58258db53f74636070177717494">getCardDefinitionTintB</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a6eb5db1f40b220df36528d9b0281d73d">getCardDefinitionTintG</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#acdf4f0700b2797a75e614bacbcbf6d67">getCardDefinitionTintR</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a297468783d6c7b6a7df115520cd031f5">getConfig</a>() const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#aab75635851c2cd3cb38ff2c941a0498d">getDeck</a>() const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a5049afd758459947605e58c11c068aaa">getEventCardId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#ac9d80c3a52d7b6fc2643cd4092d07ff6">getEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a85b47055495160f508edd0fe4aaf68f6">getEventHand</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a1347736facccbfaa46bc36f07b45c818">getEventReason</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a14b206361a9eeedc168599541726365c">getEventType</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a7093e408ee867f1126a8ecf6c3baae2f">getEventZone</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a9bb9487adc2eadb2795f12e251c68a03">getHand</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#ae172cea442d0dea417acb9af7a01e31d">getZone</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a45a7d47f3773f6de268e191f9366e96b">handCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a5c92df37d7247d3755a76f30508fc426">hasCardDefinition</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a3f58c6e7ec1f97a38e50c74408cd3fd9">Module_REG</a>(Card)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#af05fddf61bd337cfc2304ec9151fcdc6">newCard</a>(const std::string &amp;defId)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a5d34b76d8b7389a859d0929884a088e1">newConfig</a>()</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#ad2131dcfe1d708365cad218d627350d8">newDeck</a>()</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a64ce9160f69bb0e42a226ac680b34c99">newHand</a>(LayoutConfig *cfg)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#aecd3228743f0a1ad3ab8a5c8ca9d0566">newZone</a>(const std::string &amp;id, const std::string &amp;label, float x, float y, float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a3a39b43357ff9ec8b6ec9e86206edb20">registerCardsFromJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a3af1b040da5bf6c3805c54e79ca49688">render</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a1e98610549c499df3d7db7f2df35816a">renderDeck</a>(graphics::Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a7381bf4b216662183d1f884019fb0117">setConfig</a>(LayoutConfig *cfg)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a5e23010b3dc137060d31cb00acec4f01">update</a>(float dt, float mx, float my, bool down)</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a16fdc91ed549e1c8e540e30f15529ae8">zoneCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html#a6f70f4b46e01fcc502d8134d1d741461">~Card</a>() override</td><td class="entry"><a class="el" href="classeve_1_1card_1_1Card.html">eve::card::Card</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

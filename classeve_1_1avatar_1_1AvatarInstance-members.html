@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar.html">avatar</a></li><li class="navelem"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">AvatarInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::avatar::AvatarInstance 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e35a365aa95c9be79116b3c6fa50af4">addDestroyHook</a>(DestroyHook hook)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ad648894137102eeb5ba5238b57a075dc">addLayer</a>(const std::string &amp;name, graphics::Texture *texture, int zIndex)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4f97b1295c5a8f09b842ead0995aa59e">applyExpression</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#abff02505a65c2f89074bbe821eb98775">AvatarInstance</a>(std::string kind)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aa7e19a17ec4ab0846d89b77345a3bfa4">AvatarInstance</a>(const AvatarInstance &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab01811fe83a450dd1404638f7938465f">bakeMorphs</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4933a95e6a6a90bae949a8d7ae44373d">bindTween</a>(animation::Tween *tween)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a884deb21f24d06e30dd23a1eb7c1cecc">bindVroidModelData</a>(model3d::ModelData *data)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#afb45d6c0abcd42d1ae87c54c9a480468">defineExpression</a>(const std::string &amp;name, const std::string &amp;spec)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4d1d2ea862d510b7e4a8916de2d24618">DestroyHook</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a6114dce5c385da34267b265dd1d36743">getBoundMesh</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac23d66920fde198c2ab2e434442b5d7c">getBoundTween</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a3bf9e3fefcf5f8b1e3691dce68989ab4">getExpression</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a59ebadf686653d931d2a3bfc8aa145fd">getKind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#af76adbcd1f94da86c629ab3d6f218a3c">getLayer</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a8337ffa5f222114e2d6a0b59a409dd9d">getLayerCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aad6041826972cae7d4f499c0f8b0b1d6">getLayerName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ae28db068a0ff6bc01d4e00a6f6421f25">getLive2DBackendName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a2b91a967a1863ded03ae75ff2e187410">getMotion</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a20f14b18b0f618951e3fa90dafc53ea4">getParameter</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac784fc0cc844be5d849a5726df143089">getParameterCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a55c91973048bdfff7ee21b3dabbf4e7b">getParameterName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aff74ceefab02e105522b076d85e247b3">getRenderable3D</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a0bea0354361bd5a2283e8cd617370f8f">getScaleX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a8ed58ba1b517fa031d879015e65bb8b7">getScaleY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a3a9b7b517c5dd3ae5d30f24e2aec36e5">getVroidModelPath</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a2e32d8b0ca315f17dd26cf68e5fd1dcd">getX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a753a3e0ad1d0699a9bc0176712d2f5dd">getY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a4ba0d0b853087e0d00c7451753a8991c">hasLayer</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab7909aa281954019d3a8241d899872a9">hasLive2DBackend</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#af6fbd8c5cfe9d4cd57c5a6e283ce6555">hasParameter</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a1f2dfd59bb9171d3464aa8d82ee6afb2">isVisible</a>() const</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac5f0a1a5a22b4deacf3d4974da8c2648">loadLive2DModel</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a9e5ddb402ae236bb7482ee99370628d1">loadMorphNamesFromModel</a>(int meshIndex=0)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a81bd812fa257dd41d6cdaef23a555d5f">loadVroidModelPath</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a33ccf35c15a55c13768d648d30635e29">operator=</a>(const AvatarInstance &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#acd1dd0ff0bf32e1200bd36b5c94355c6">release</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a5d9d912ca7e857ac99dcc81635d72a11">removeDestroyHook</a>(size_t id)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a043bfecc9cb83967798d6b0701540cc2">setExpression</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a143eb08026ee6a72c8a465208160c7cb">setLayer</a>(int layer)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a09128ba0f35f64547e12c0706929eecb">setLayerColor</a>(const std::string &amp;name, float r, float g, float b, float a)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a0998d9559839288eb2e2659b9c476b3e">setLayerOffset</a>(const std::string &amp;name, float ox, float oy)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ae43e9615e6ff36db3f4f8a35919a8c3a">setLayerSize</a>(const std::string &amp;name, float w, float h)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#acfad8015c5e01429d542593fb856aa1c">setLayerTexture</a>(const std::string &amp;name, graphics::Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#af018ded4bdf33a24d1c5b799cfa876c4">setLayerVisible</a>(const std::string &amp;name, bool visible)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac5fb2737384ba712fa6ef8e8bd2f07a3">setLayerZ</a>(const std::string &amp;name, int zIndex)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a896d4f9baa63aa39c0c9a9f8d383d6d0">setMesh</a>(graphics::Mesh *mesh)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#abfd276ba49fb68db25a0c7bddf107e6c">setMotion</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aa2637446c8011bf02d319b7cee41ea92">setParameter</a>(const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab8f80c914bc37df51d16d0d86dd36d64">setPosition</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#aff78f9cbbb9dc104555b0b45ac48a305">setPosition3D</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ac09efbbf665038a862abd4419e58bdd0">setRotation3D</a>(float yaw, float pitch, float roll)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a016c9b4dd2c8eabbce0f101d502913ce">setScale</a>(float sx, float sy)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ae5bee5cfadfcf466ad3d587affb3f69d">setScale3D</a>(float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#ab1d17b587c047c842f4f5fff13f8019f">setTexture</a>(graphics::Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a7221e1f43fc2d011faffd6f9bf5b730e">setVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a1fec85d5fb424513129676f8359d0314">sync</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a8e9b1ed844567744d03418198c4ecf36">unbindTween</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a73c4495232c20baf8654c3348f574e84">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html#a49b98a50383b805046801f42adaf2ff0">~AvatarInstance</a>()</td><td class="entry"><a class="el" href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

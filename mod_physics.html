@@ -1,0 +1,286 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 物理模块（Box2D + Box3D + 布料 + 流体）</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">物理模块（Box2D + Box3D + 布料 + 流体）</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>物理模块（Box2D + Box3D + 布料 + 流体）</h1>
+<p><b>脚本入口：</b> <code>eve.Physics()</code></p>
+<p>创建 World、Body、Fixture（Box2D 2D 刚体）、World3D / Body3D / Shape3D（Box3D 3D 刚体），以及可交互的 <code>Cloth</code>（Verlet 布料）与 <code>Fluid</code>（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；布料/流体直接在像素空间模拟。</p>
+<h2>基本用法</h2>
+<h3>刚体（Box2D，2D）</h3>
+<div class="fragment"><div class="line">local physics = eve.Physics();</div>
+<div class="line">physics.setMeter(30.0);</div>
+<div class="line">local world = physics.newWorld(0, 980, true);</div>
+<div class="line">local body = world.newBody(&quot;dynamic&quot;, 100, 60);</div>
+<div class="line">body.newRectangleFixture(32, 32, 1.0, 0.3, 0.1);</div>
+<div class="line">world.update(dt);</div>
+</div><!-- fragment --><h3>刚体（Box3D，3D）</h3>
+<div class="fragment"><div class="line">local physics = eve.Physics();</div>
+<div class="line">local world3 = physics.newWorld3D(0, -9.8, 0, true); // 米 / s²，+Y 向上</div>
+<div class="line">local ground = world3.newBody(&quot;static&quot;, 0, -1, 0);</div>
+<div class="line">ground.newBoxShape(20, 2, 20, 0.0, 0.5, 0.0);       // 全尺寸宽高深（米）</div>
+<div class="line">local box = world3.newBody(&quot;dynamic&quot;, 0, 4, 0);</div>
+<div class="line">box.newBoxShape(1, 1, 1, 1.0, 0.3, 0.1);</div>
+<div class="line">box.newSphereShape(0.5, 1.0);                        // 或球体</div>
+<div class="line">box.newCapsuleShape(1.0, 0.25, 1.0);                 // 或胶囊（沿局部 Y）</div>
+<div class="line">world3.update(dt);</div>
+<div class="line">// 姿态用四元数：box.setRotation(qx, qy, qz, qw); box.getRotX/Y/Z/W()</div>
+</div><!-- fragment --><h3>布料</h3>
+<div class="fragment"><div class="line">local cloth = physics.newCloth(18, 12, 14.0, 48.0, 36.0); // cols, rows, spacing, origin</div>
+<div class="line">cloth.setGravity(0, 980);</div>
+<div class="line">cloth.setBounds(0, 0, 800, 600);</div>
+<div class="line">cloth.setStiffness(0.9);</div>
+<div class="line">// 鼠标拖拽</div>
+<div class="line">local idx = cloth.grabAt(mx, my, 28.0);</div>
+<div class="line">if (idx &gt;= 0) cloth.moveGrab(mx, my);</div>
+<div class="line">else cloth.releaseGrab();</div>
+<div class="line">cloth.update(dt);</div>
+<div class="line">cloth.draw(gfx);</div>
+</div><!-- fragment --><h3>流体</h3>
+<div class="fragment"><div class="line">local fluid = physics.newFluid(600);</div>
+<div class="line">fluid.setBounds(400, 48, 360, 500);</div>
+<div class="line">fluid.setGravity(0, 980);</div>
+<div class="line">fluid.emit(520, 100, 120, 0, 40);          // x, y, count, vx, vy</div>
+<div class="line">fluid.interactAt(mx, my, 70.0, -4200.0);   // 负值排斥，正值吸引</div>
+<div class="line">fluid.update(dt);</div>
+<div class="line">fluid.draw(gfx);</div>
+</div><!-- fragment --><p>示例：<a href="../../../examples/softbody/"><code>examples/softbody/</code></a></p>
+<h2>对象关系与调用时机</h2>
+<p><code>Physics</code> 保存 2D 像素/米比例并创建 World / World3D / Cloth / Fluid。World 管理 Body；Body 管理 Fixture。World3D 管理 Body3D；Body3D 管理 Shape3D。布料与流体独立于刚体世界，可同屏并存。2D 碰撞消息为 <code>begincontact</code> / <code>endcontact</code>；3D 为 <code>begincontact3d</code> / <code>endcontact3d</code>（参数均为 body id）。查询 API（<code>rayCast</code>、<code>queryAABB</code>）结果对应**上一次查询**写入的缓存。</p>
+<p>每帧：<code>world.update</code> / <code>world3.update</code> / <code>cloth.update</code> / <code>fluid.update</code> 各调用一次；绘制在 <code>eve_render</code> 中用 <code>draw</code> / <code>drawDebug</code>。</p>
+<h2>目标导向指南</h2>
+<h3>创建会落地的角色（2D）</h3>
+<ol type="1">
+<li>用 <code>setMeter(30)</code> 定义像素与米的比例。</li>
+<li>创建向下重力的 World。</li>
+<li>地面用 <code>static</code> Body，角色用 <code>dynamic</code> Body。</li>
+<li>给 Body 创建矩形或圆形 Fixture，配置密度、摩擦和弹性。</li>
+<li>每帧只调用一次 <code>world.update(dt)</code>，渲染位置从 <code>body.getX/Y()</code> 读取。</li>
+</ol>
+<h3>创建会落地的物体（3D）</h3>
+<ol type="1">
+<li><code>newWorld3D(0, -9.8, 0)</code>：坐标与重力均以米为单位。</li>
+<li>地面 <code>static</code> + <code>newBoxShape</code>；动态体用 box / sphere / capsule。</li>
+<li>每帧 <code>world3.update(dt)</code>；位置 <code>getX/Y/Z</code>，姿态四元数 <code>getRotX/Y/Z/W</code>。</li>
+<li>拾取：<code>shape.testPoint(x,y,z)</code>、<code>world3.rayCast</code>、<code>world3.queryAABB(min…, max…)</code>。</li>
+</ol>
+<h3>制作触发区域</h3>
+<p>把 Fixture / Shape3D 设为 sensor，监听 <code>begincontact</code> / <code>endcontact</code>（2D）或 <code>begincontact3d</code> / <code>endcontact3d</code>（3D）；sensor 不产生碰撞推力，适合传送门、拾取物和区域检测。调试时调用 <code>world.drawDebug(gfx)</code> 核对 2D 形状。</p>
+<h3>物理体拾取与视线</h3>
+<ul>
+<li><code>fixture.testPoint(x, y)</code> / <code>shape3.testPoint(x, y, z)</code> — 点是否在形状内</li>
+<li><code>world.rayCast</code> / <code>world3.rayCast</code> — 段上最近命中，返回 body id（未命中 <code>-1</code>）</li>
+<li><code>world.queryAABB(x, y, w, h)</code> — 2D 轴对齐盒（原点+宽高）</li>
+<li><code>world3.queryAABB(minX, minY, minZ, maxX, maxY, maxZ)</code> — 3D AABB（角点）</li>
+</ul>
+<h3>可交互布料</h3>
+<ol type="1">
+<li><code>newCloth(cols, rows, spacing, originX, originY)</code> — 默认钉住顶行。</li>
+<li><code>setBounds</code> 限制摆动范围；<code>applyForce</code> 可作风场。</li>
+<li><code>grabAt</code> / <code>moveGrab</code> / <code>releaseGrab</code> 做鼠标拖拽；<code>pin</code> / <code>unpin</code> 控制固定点。</li>
+<li><code>draw(gfx)</code> 绘制约束网与质点。</li>
+</ol>
+<h3>可交互流体</h3>
+<ol type="1">
+<li><code>newFluid(capacity)</code> 后 <code>setBounds</code> 建容器。</li>
+<li><code>emit</code> 喷射粒子；<code>interactAt</code> 做吸引/排斥搅拌。</li>
+<li>可调 <code>setSmoothingRadius</code> / <code>setRestDensity</code> / <code>setPressureStiffness</code> / <code>setViscosity</code>。</li>
+<li><code>draw(gfx)</code> 按密度着色绘制粒子。</li>
+</ol>
+<h2>常见问题</h2>
+<ul>
+<li>每帧改变 meter：会破坏 2D 单位一致性，应启动时设置一次；3D 世界不受 <code>setMeter</code> 影响。</li>
+<li>直接把 Body 坐标当左上角：Box2D / Box3D Body 通常表示形状中心。</li>
+<li>更新 World 多次或完全不更新：每个逻辑帧一次。</li>
+<li><code>rayCast</code> / <code>queryAABB</code> 结果会被下次同类查询覆盖；需要时立刻读出。</li>
+<li>布料/流体粒子过多会占 CPU：演示规模建议布料 ≤ 20×15、流体 ≤ 600。</li>
+<li>布料与流体**不会**自动与刚体碰撞；需要时用 bounds / 采样位置自行耦合。</li>
+<li>3D 物体尺寸建议贴近真实尺度（约 0.1–10 m）；过大过小会降低求解稳定性。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>World3D</code>、<code>Body3D</code>、<code>Cloth</code>、<code>Fluid</code>）的方法也列在这里。</p>
+<ul>
+<li><code>applyAngularImpulse()</code>、<code>applyForce()</code>、<code>applyForceAt()</code>、<code>applyLinearImpulse()</code>、<code>clear()</code>、<code>clearBounds()</code>、<code><a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy()</a></code>、<code>destroyBody()</code></li>
+<li><code>draw()</code>、<code>drawDebug()</code>、<code>emit()</code>、<code>getAngle()</code>、<code>getAngularVelocity()</code>、<code>getAngularVelocityX()</code>、<code>getAngularVelocityY()</code>、<code>getAngularVelocityZ()</code>、<code>getBody()</code>、<code>getCapacity()</code>、<code>getCols()</code></li>
+<li><code>getDamping()</code>、<code>getDensity()</code>、<code>getFriction()</code>、<code>getGrabIndex()</code>、<code>getGravityX()</code>、<code>getGravityY()</code>、<code>getGravityZ()</code>、<code>getId()</code>、<code>getIterations()</code></li>
+<li><code>getLinearVelocityX()</code>、<code>getLinearVelocityY()</code>、<code>getLinearVelocityZ()</code>、<code>getMeter()</code>、<code>getName()</code>、<code>getNearPressureStiffness()</code>、<code>getParticleCount()</code>、<code>getParticleSize()</code>、<code>getParticleVx()</code></li>
+<li><code>getParticleVy()</code>、<code>getParticleX()</code>、<code>getParticleY()</code>、<code>getPressureStiffness()</code>、<code>getQueryBodyId()</code>、<code>getQueryCount()</code>、<code>getRayHitBodyId()</code>、<code>getRayHitFraction()</code></li>
+<li><code>getRayHitNormalX()</code>、<code>getRayHitNormalY()</code>、<code>getRayHitNormalZ()</code>、<code>getRayHitX()</code>、<code>getRayHitY()</code>、<code>getRayHitZ()</code>、<code>getRestDensity()</code>、<code>getRestitution()</code>、<code>getRotW()</code>、<code>getRotX()</code>、<code>getRotY()</code>、<code>getRotZ()</code>、<code>getRows()</code>、<code>getSmoothingRadius()</code></li>
+<li><code>getSpacing()</code>、<code>getStiffness()</code>、<code>getType()</code>、<code>getViscosity()</code>、<code>getX()</code>、<code>getY()</code>、<code>getZ()</code>、<code>grabAt()</code>、<code>hasRayHit()</code></li>
+<li><code>interactAt()</code>、<code>isActive()</code>、<code>isAwake()</code>、<code>isBullet()</code>、<code>isFixedRotation()</code>、<code>isGrabbing()</code>、<code>isPinned()</code>、<code>isSensor()</code></li>
+<li><code>moveGrab()</code>、<code>newBody()</code>、<code>newBoxShape()</code>、<code>newCapsuleShape()</code>、<code>newCircleFixture()</code>、<code>newCloth()</code>、<code>newFluid()</code>、<code>newRectangleFixture()</code>、<code>newSphereShape()</code>、<code>newWorld()</code>、<code>newWorld3D()</code>、<code>pin()</code></li>
+<li><code>pinTopRow()</code>、<code>queryAABB()</code>、<code>rayCast()</code>、<code>releaseGrab()</code>、<code>setActive()</code>、<code>setAngle()</code>、<code>setAngularVelocity()</code>、<code>setAwake()</code></li>
+<li><code>setBounds()</code>、<code>setBullet()</code>、<code>setColor()</code>、<code>setDamping()</code>、<code>setDensity()</code>、<code>setFixedRotation()</code>、<code>setFriction()</code>、<code>setGravity()</code></li>
+<li><code>setIterations()</code>、<code>setLinearVelocity()</code>、<code>setMeter()</code>、<code>setNearPressureStiffness()</code>、<code>setParticlePosition()</code>、<code>setParticleSize()</code>、<code>setPosition()</code>、<code>setPressureStiffness()</code></li>
+<li><code>setRestDensity()</code>、<code>setRestitution()</code>、<code>setRotation()</code>、<code>setSensor()</code>、<code>setSmoothingRadius()</code>、<code>setStiffness()</code>、<code>setType()</code>、<code>setViscosity()</code>、<code>testPoint()</code></li>
+<li><code>unpin()</code>、<code>update()</code>、<code>updateFull()</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/physics/"><code>src/modules/physics/</code></a> <b>相关测试：</b> <a href="../../../test/box2d.cpp"><code>test/box2d.cpp</code></a>、<a href="../../../test/box3d.cpp"><code>test/box3d.cpp</code></a>、<a href="../../../test/softbody.cpp"><code>test/softbody.cpp</code></a> </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

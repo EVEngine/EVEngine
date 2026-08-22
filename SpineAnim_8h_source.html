@@ -1,0 +1,375 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/SpineAnim.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SpineAnim.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SpineAnim_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SpineSkeletonData_8h.html">animation/SpineSkeletonData.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">struct </span>DrawItem2D;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>Animation;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>SpineAtlas;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>SpineSkeleton;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a>(<a class="code hl_class" href="classeve_1_1animation_1_1SpineSkeleton.html">SpineSkeleton</a> *skeleton);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a9eb5352b447be41f96a4660f799a605f">~SpineAnim</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a715e4e1505cc3cbf374698dbd75f5e65">   37</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a715e4e1505cc3cbf374698dbd75f5e65">SpineAnim</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#aef435d5b662b6f0953da6a9ec7789053">   38</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;<a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#aef435d5b662b6f0953da6a9ec7789053">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1SpineAnim.html">SpineAnim</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a42d2ca341885433e9ba62601edc9c336">   40</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1SpineSkeleton.html">SpineSkeleton</a> *<a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a42d2ca341885433e9ba62601edc9c336">getSkeleton</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> skeleton_; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span>       <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a2e088e3481cfdd25707823a55ba46ef4">setAtlas</a>(<a class="code hl_class" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> *atlas);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a064febfc2dea87c13507c335c379d9d3">   43</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> *<a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a064febfc2dea87c13507c335c379d9d3">getAtlas</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> atlas_; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a0619c975b6045b19b5d9fd082eaf4c65">setPageTexture</a>(<span class="keywordtype">int</span> pageIndex, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a1679d215e1be74f965c22dc7ea2b3ef3">setPageTextureByName</a>(<span class="keyword">const</span> std::string &amp;pageName, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *<a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a0710d00c50b0211db3d6cbd89eac5450">getPageTexture</a>(<span class="keywordtype">int</span> pageIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a6e851e8bd34631293125b47d36cb79b2">play</a>(<span class="keyword">const</span> std::string &amp;animationName);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a21161acb1c37322448ead448518905d4">stop</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#aa81f8474de6014c016a45dbcdd282010">pause</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ae4bf5bf91310c92d6008fe08ff041371">resume</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a1126c56a256b9d2f49a97450f0bbbf4b">setSpeed</a>(<span class="keywordtype">float</span> speed);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a698864c3f58cc00aa1a06e98b339c4cd">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a698864c3f58cc00aa1a06e98b339c4cd">getSpeed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> speed_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ae785d77cde59f2da10bb115c97075b51">setTime</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#ab531e92586e10210ad2742fd17902897">   58</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ab531e92586e10210ad2742fd17902897">getTime</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> time_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a5fea1163a025ee6977a6b11599211156">   59</a></span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a5fea1163a025ee6977a6b11599211156">setLoop</a>(<span class="keywordtype">bool</span> loop) { loop_ = loop; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a70b2c70a124ada392e1286748aaa6cd8">   60</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a70b2c70a124ada392e1286748aaa6cd8">getLoop</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> loop_; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#ab5acaa257a83301be65772f0c474f758">   63</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ab5acaa257a83301be65772f0c474f758">setFlipY</a>(<span class="keywordtype">bool</span> flip) { flipY_ = flip; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a839b03caaefbe65ae90938386418536c">   64</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a839b03caaefbe65ae90938386418536c">getFlipY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> flipY_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a6a52d68f9afb342f4f5dd63a0ec9e79a">setPosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a467a5906f77cd1b2289c5fdf702f9187">   67</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a467a5906f77cd1b2289c5fdf702f9187">getX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> x_; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a53bf468b68d5ef2e1a7d6547a5f71c24">   68</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a53bf468b68d5ef2e1a7d6547a5f71c24">getY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> y_; }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a39f77917a07fb72adf5b984ee7fe5b97">setScale</a>(<span class="keywordtype">float</span> sx, <span class="keywordtype">float</span> sy);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a42bfc6d9452fbb1854f26f63a7735b16">   70</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a42bfc6d9452fbb1854f26f63a7735b16">getScaleX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> scaleX_; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#ad4a27fcf0110e359d6b57743d6a492ab">   71</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ad4a27fcf0110e359d6b57743d6a492ab">getScaleY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> scaleY_; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a461b46c67974fa22e3f03d2d2375f957">   72</a></span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a461b46c67974fa22e3f03d2d2375f957">setLayer</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) { layer_ = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#ad6e4850d9dad039e60680c74e6b7b8d0">   73</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ad6e4850d9dad039e60680c74e6b7b8d0">getLayer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> layer_; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ab1602e2a3dea0f6fdc151e04a0c48055">setColor</a>(<span class="keywordtype">float</span> r, <span class="keywordtype">float</span> g, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = 1.f);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#ae1cef663907eaa0364d5e444ac33a43c">   76</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ae1cef663907eaa0364d5e444ac33a43c">isPlaying</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> playing_ &amp;&amp; !paused_; }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a3d775b24a9719e5ebde22e9945a55bd8">   77</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a3d775b24a9719e5ebde22e9945a55bd8">isPaused</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> paused_; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#a66d7490195151d4b84f0f4fddaa21f47">   78</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a66d7490195151d4b84f0f4fddaa21f47">isFinished</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> finished_; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#ae30ba4e8c3f4a493e46b9c2f0fa1787f">   79</a></span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#ae30ba4e8c3f4a493e46b9c2f0fa1787f">getAnimation</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> animName_; }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">float</span>       <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a4773144afc71845031ef0d537e43fc69">getAnimationDuration</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a01e9ba33bad49b0f4f426e206d4fb338">apply</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a2aa6d43b0d13072fb52a80d6ebe862df">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a66608f196fb6b3f44e78b15ad6b8040e">collectDrawItems</a>(std::vector&lt;graphics::DrawItem2D&gt; &amp;out);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#aec1b4b824c1ab17968dd7f05d266526e">draw</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a45c6e11ddf1689769b204c2c0fe0076d">getDrawSlotCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a2387427afc9d91c6c98287808438b724">getDrawSlotX</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a59e087ed76d67af8168c7e5c161bc75e">getDrawSlotY</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a9a70c327f5603dd4cab54835edf48e9b">getDrawSlotWidth</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a0c8bb5e25c042d58e9832344029b6dff">getDrawSlotHeight</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#a5120645b13f619c96e5309cd4e824712">getDrawSlotRotation</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#aeedf16930ea10e23c2cd5f2bd2fae6fb">getDrawSlotPage</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1SpineAnim.html#aa8b041c64bca140e751a2bc9465adf6e">getDrawSlotRegion</a>(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">  106</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1Animation.html">Animation</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">struct </span>DrawSlot {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordtype">float</span>       <a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> = 0.f, <a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a> = 0.f;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordtype">float</span>       <a class="code hl_variable" href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a> = 0.f, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = 0.f;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">float</span>       rotation = 0.f;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordtype">int</span>         page     = 0;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordtype">int</span>         region   = -1;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordtype">int</span>         order    = 0;  <span class="comment">// slot draw order (back-to-front)</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordtype">bool</span>        rotated  = <span class="keyword">false</span>;  <span class="comment">// atlas region packed rotated (90°)</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        std::string regionName;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordtype">float</span>       u0 = 0.f, v0 = 0.f, u1 = 1.f, v1 = 1.f;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    };</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">void</span> setOwner(<a class="code hl_class" href="classeve_1_1animation_1_1Animation.html">Animation</a> *owner) { owner_ = owner; }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_friend" href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">Animation</a> *owner()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> owner_; }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> rebuildDrawSlots();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> checkDrawSlot(<span class="keywordtype">int</span> index) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">static</span> <span class="keywordtype">float</span> sampleFloat(<span class="keyword">const</span> std::vector&lt;SpineSkeletonData::FloatKey&gt; &amp;keys, <span class="keywordtype">float</span> time,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                             <span class="keywordtype">float</span> fallback);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keyword">static</span> <span class="keywordtype">void</span>  sampleTranslate(<span class="keyword">const</span> std::vector&lt;SpineSkeletonData::TranslateKey&gt; &amp;keys,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                                 <span class="keywordtype">float</span> time, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">static</span> <span class="keywordtype">void</span>  sampleScale(<span class="keyword">const</span> std::vector&lt;SpineSkeletonData::ScaleKey&gt; &amp;keys, <span class="keywordtype">float</span> time,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                             <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keyword">static</span> std::string sampleAttachment(<span class="keyword">const</span> std::vector&lt;SpineSkeletonData::AttachmentKey&gt; &amp;keys,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                                        <span class="keywordtype">float</span> time, <span class="keyword">const</span> std::string &amp;fallback);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_friend" href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">Animation</a>                         *owner_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    SpineSkeleton                     *skeleton_  = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    SpineAtlas                        *atlas_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    std::vector&lt;graphics::Texture *&gt;   pageTextures_;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">int</span>                                animIndex_ = -1;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    std::string                        animName_;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">float</span>                              speed_     = 1.f;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">float</span>                              time_      = 0.f;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">bool</span>                               loop_      = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">bool</span>                               playing_   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">bool</span>                               paused_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">bool</span>                               finished_  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">bool</span>                               flipY_     = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">float</span>                              x_ = 0.f, y_ = 0.f;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">float</span>                              scaleX_ = 1.f, scaleY_ = 1.f;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">int</span>                                layer_ = 0;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">float</span>                              r_ = 1.f, g_ = 1.f, b_ = 1.f, a_ = 1.f;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    std::vector&lt;DrawSlot&gt;              drawSlots_;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>};</div>
+</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aGrass_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="Grass_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="Grass_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00135">Grass.cpp:135</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00651">ImageData.cpp:651</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aac374e320caaadeca4874add33b62af2"><div class="ttname"><a href="ImageData_8cpp.html#aac374e320caaadeca4874add33b62af2">w</a></div><div class="ttdeci">int w</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00650">ImageData.cpp:650</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00120">MarchingCubes.cpp:120</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aSpineSkeletonData_8h_html"><div class="ttname"><a href="SpineSkeletonData_8h.html">SpineSkeletonData.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1Animation_html"><div class="ttname"><a href="classeve_1_1animation_1_1Animation.html">eve::animation::Animation</a></div><div class="ttdoc">Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal playback (player / state mac...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00053">Animation.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html">eve::animation::SpineAnim</a></div><div class="ttdoc">Spine animation player + 2D draw collector (region attachments).</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00032">SpineAnim.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a01e9ba33bad49b0f4f426e206d4fb338"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a01e9ba33bad49b0f4f426e206d4fb338">eve::animation::SpineAnim::apply</a></div><div class="ttdeci">void apply()</div><div class="ttdoc">Apply current animation time to skeleton and update world transforms.</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00213">SpineAnim.cpp:213</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a0619c975b6045b19b5d9fd082eaf4c65"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a0619c975b6045b19b5d9fd082eaf4c65">eve::animation::SpineAnim::setPageTexture</a></div><div class="ttdeci">void setPageTexture(int pageIndex, graphics::Texture *texture)</div><div class="ttdoc">Bind a GPU texture to an atlas page (by index or page image name).</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00035">SpineAnim.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a064febfc2dea87c13507c335c379d9d3"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a064febfc2dea87c13507c335c379d9d3">eve::animation::SpineAnim::getAtlas</a></div><div class="ttdeci">SpineAtlas * getAtlas() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00043">SpineAnim.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a0710d00c50b0211db3d6cbd89eac5450"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a0710d00c50b0211db3d6cbd89eac5450">eve::animation::SpineAnim::getPageTexture</a></div><div class="ttdeci">graphics::Texture * getPageTexture(int pageIndex) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00055">SpineAnim.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a0c8bb5e25c042d58e9832344029b6dff"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a0c8bb5e25c042d58e9832344029b6dff">eve::animation::SpineAnim::getDrawSlotHeight</a></div><div class="ttdeci">float getDrawSlotHeight(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00453">SpineAnim.cpp:453</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a1126c56a256b9d2f49a97450f0bbbf4b"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a1126c56a256b9d2f49a97450f0bbbf4b">eve::animation::SpineAnim::setSpeed</a></div><div class="ttdeci">void setSpeed(float speed)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00091">SpineAnim.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a1679d215e1be74f965c22dc7ea2b3ef3"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a1679d215e1be74f965c22dc7ea2b3ef3">eve::animation::SpineAnim::setPageTextureByName</a></div><div class="ttdeci">void setPageTextureByName(const std::string &amp;pageName, graphics::Texture *texture)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00044">SpineAnim.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a21161acb1c37322448ead448518905d4"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a21161acb1c37322448ead448518905d4">eve::animation::SpineAnim::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00074">SpineAnim.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a2387427afc9d91c6c98287808438b724"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a2387427afc9d91c6c98287808438b724">eve::animation::SpineAnim::getDrawSlotX</a></div><div class="ttdeci">float getDrawSlotX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00441">SpineAnim.cpp:441</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a2aa6d43b0d13072fb52a80d6ebe862df"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a2aa6d43b0d13072fb52a80d6ebe862df">eve::animation::SpineAnim::update</a></div><div class="ttdeci">bool update(float dt)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00276">SpineAnim.cpp:276</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a2e088e3481cfdd25707823a55ba46ef4"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a2e088e3481cfdd25707823a55ba46ef4">eve::animation::SpineAnim::setAtlas</a></div><div class="ttdeci">void setAtlas(SpineAtlas *atlas)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00029">SpineAnim.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a39f77917a07fb72adf5b984ee7fe5b97"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a39f77917a07fb72adf5b984ee7fe5b97">eve::animation::SpineAnim::setScale</a></div><div class="ttdeci">void setScale(float sx, float sy)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00112">SpineAnim.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a3d775b24a9719e5ebde22e9945a55bd8"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a3d775b24a9719e5ebde22e9945a55bd8">eve::animation::SpineAnim::isPaused</a></div><div class="ttdeci">bool isPaused() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00077">SpineAnim.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a42bfc6d9452fbb1854f26f63a7735b16"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a42bfc6d9452fbb1854f26f63a7735b16">eve::animation::SpineAnim::getScaleX</a></div><div class="ttdeci">float getScaleX() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00070">SpineAnim.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a42d2ca341885433e9ba62601edc9c336"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a42d2ca341885433e9ba62601edc9c336">eve::animation::SpineAnim::getSkeleton</a></div><div class="ttdeci">SpineSkeleton * getSkeleton() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00040">SpineAnim.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a45c6e11ddf1689769b204c2c0fe0076d"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a45c6e11ddf1689769b204c2c0fe0076d">eve::animation::SpineAnim::getDrawSlotCount</a></div><div class="ttdeci">int getDrawSlotCount() const</div><div class="ttdoc">Query posed draw slots without textures (for unit tests). Returns number of visible region attachment...</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00439">SpineAnim.cpp:439</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a461b46c67974fa22e3f03d2d2375f957"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a461b46c67974fa22e3f03d2d2375f957">eve::animation::SpineAnim::setLayer</a></div><div class="ttdeci">void setLayer(int layer)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00072">SpineAnim.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a467a5906f77cd1b2289c5fdf702f9187"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a467a5906f77cd1b2289c5fdf702f9187">eve::animation::SpineAnim::getX</a></div><div class="ttdeci">float getX() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00067">SpineAnim.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a4773144afc71845031ef0d537e43fc69"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a4773144afc71845031ef0d537e43fc69">eve::animation::SpineAnim::getAnimationDuration</a></div><div class="ttdeci">float getAnimationDuration() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00102">SpineAnim.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a5120645b13f619c96e5309cd4e824712"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a5120645b13f619c96e5309cd4e824712">eve::animation::SpineAnim::getDrawSlotRotation</a></div><div class="ttdeci">float getDrawSlotRotation(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00457">SpineAnim.cpp:457</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a53bf468b68d5ef2e1a7d6547a5f71c24"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a53bf468b68d5ef2e1a7d6547a5f71c24">eve::animation::SpineAnim::getY</a></div><div class="ttdeci">float getY() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00068">SpineAnim.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a59e087ed76d67af8168c7e5c161bc75e"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a59e087ed76d67af8168c7e5c161bc75e">eve::animation::SpineAnim::getDrawSlotY</a></div><div class="ttdeci">float getDrawSlotY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00445">SpineAnim.cpp:445</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a5fea1163a025ee6977a6b11599211156"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a5fea1163a025ee6977a6b11599211156">eve::animation::SpineAnim::setLoop</a></div><div class="ttdeci">void setLoop(bool loop)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00059">SpineAnim.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a66608f196fb6b3f44e78b15ad6b8040e"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a66608f196fb6b3f44e78b15ad6b8040e">eve::animation::SpineAnim::collectDrawItems</a></div><div class="ttdeci">void collectDrawItems(std::vector&lt; graphics::DrawItem2D &gt; &amp;out)</div><div class="ttdoc">Append region attachment quads into the shared 2D draw queue.</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00396">SpineAnim.cpp:396</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a66d7490195151d4b84f0f4fddaa21f47"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a66d7490195151d4b84f0f4fddaa21f47">eve::animation::SpineAnim::isFinished</a></div><div class="ttdeci">bool isFinished() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00078">SpineAnim.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a698864c3f58cc00aa1a06e98b339c4cd"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a698864c3f58cc00aa1a06e98b339c4cd">eve::animation::SpineAnim::getSpeed</a></div><div class="ttdeci">float getSpeed() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00056">SpineAnim.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a6a52d68f9afb342f4f5dd63a0ec9e79a"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a6a52d68f9afb342f4f5dd63a0ec9e79a">eve::animation::SpineAnim::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00107">SpineAnim.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a6e851e8bd34631293125b47d36cb79b2"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a6e851e8bd34631293125b47d36cb79b2">eve::animation::SpineAnim::play</a></div><div class="ttdeci">bool play(const std::string &amp;animationName)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00060">SpineAnim.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a70b2c70a124ada392e1286748aaa6cd8"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a70b2c70a124ada392e1286748aaa6cd8">eve::animation::SpineAnim::getLoop</a></div><div class="ttdeci">bool getLoop() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00060">SpineAnim.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a715e4e1505cc3cbf374698dbd75f5e65"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a715e4e1505cc3cbf374698dbd75f5e65">eve::animation::SpineAnim::SpineAnim</a></div><div class="ttdeci">SpineAnim(const SpineAnim &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a839b03caaefbe65ae90938386418536c"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a839b03caaefbe65ae90938386418536c">eve::animation::SpineAnim::getFlipY</a></div><div class="ttdeci">bool getFlipY() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00064">SpineAnim.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a9a70c327f5603dd4cab54835edf48e9b"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a9a70c327f5603dd4cab54835edf48e9b">eve::animation::SpineAnim::getDrawSlotWidth</a></div><div class="ttdeci">float getDrawSlotWidth(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00449">SpineAnim.cpp:449</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_a9eb5352b447be41f96a4660f799a605f"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#a9eb5352b447be41f96a4660f799a605f">eve::animation::SpineAnim::~SpineAnim</a></div><div class="ttdeci">~SpineAnim()</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00025">SpineAnim.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_aa81f8474de6014c016a45dbcdd282010"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#aa81f8474de6014c016a45dbcdd282010">eve::animation::SpineAnim::pause</a></div><div class="ttdeci">void pause()</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00083">SpineAnim.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_aa8b041c64bca140e751a2bc9465adf6e"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#aa8b041c64bca140e751a2bc9465adf6e">eve::animation::SpineAnim::getDrawSlotRegion</a></div><div class="ttdeci">std::string getDrawSlotRegion(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00465">SpineAnim.cpp:465</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ab1602e2a3dea0f6fdc151e04a0c48055"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ab1602e2a3dea0f6fdc151e04a0c48055">eve::animation::SpineAnim::setColor</a></div><div class="ttdeci">void setColor(float r, float g, float b, float a=1.f)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00117">SpineAnim.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ab531e92586e10210ad2742fd17902897"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ab531e92586e10210ad2742fd17902897">eve::animation::SpineAnim::getTime</a></div><div class="ttdeci">float getTime() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00058">SpineAnim.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ab5acaa257a83301be65772f0c474f758"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ab5acaa257a83301be65772f0c474f758">eve::animation::SpineAnim::setFlipY</a></div><div class="ttdeci">void setFlipY(bool flip)</div><div class="ttdoc">When true (default), Spine Y-up is flipped for screen Y-down draw items.</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00063">SpineAnim.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ad4a27fcf0110e359d6b57743d6a492ab"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ad4a27fcf0110e359d6b57743d6a492ab">eve::animation::SpineAnim::getScaleY</a></div><div class="ttdeci">float getScaleY() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00071">SpineAnim.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ad6e4850d9dad039e60680c74e6b7b8d0"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ad6e4850d9dad039e60680c74e6b7b8d0">eve::animation::SpineAnim::getLayer</a></div><div class="ttdeci">int getLayer() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00073">SpineAnim.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ae1cef663907eaa0364d5e444ac33a43c"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ae1cef663907eaa0364d5e444ac33a43c">eve::animation::SpineAnim::isPlaying</a></div><div class="ttdeci">bool isPlaying() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00076">SpineAnim.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ae30ba4e8c3f4a493e46b9c2f0fa1787f"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ae30ba4e8c3f4a493e46b9c2f0fa1787f">eve::animation::SpineAnim::getAnimation</a></div><div class="ttdeci">std::string getAnimation() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00079">SpineAnim.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ae4bf5bf91310c92d6008fe08ff041371"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ae4bf5bf91310c92d6008fe08ff041371">eve::animation::SpineAnim::resume</a></div><div class="ttdeci">void resume()</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00087">SpineAnim.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_ae785d77cde59f2da10bb115c97075b51"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#ae785d77cde59f2da10bb115c97075b51">eve::animation::SpineAnim::setTime</a></div><div class="ttdeci">void setTime(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00096">SpineAnim.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_aec1b4b824c1ab17968dd7f05d266526e"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#aec1b4b824c1ab17968dd7f05d266526e">eve::animation::SpineAnim::draw</a></div><div class="ttdeci">void draw(graphics::Graphics *gfx)</div><div class="ttdoc">Draw the current pose into an existing frame without clearing or presenting it.</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00293">SpineAnim.cpp:293</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_aeedf16930ea10e23c2cd5f2bd2fae6fb"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#aeedf16930ea10e23c2cd5f2bd2fae6fb">eve::animation::SpineAnim::getDrawSlotPage</a></div><div class="ttdeci">int getDrawSlotPage(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8cpp_source.html#l00461">SpineAnim.cpp:461</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_aef435d5b662b6f0953da6a9ec7789053"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#aef435d5b662b6f0953da6a9ec7789053">eve::animation::SpineAnim::operator=</a></div><div class="ttdeci">SpineAnim &amp; operator=(const SpineAnim &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAnim_html_af47625f50036c466946f960db7320bcf"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAnim.html#af47625f50036c466946f960db7320bcf">eve::animation::SpineAnim::Animation</a></div><div class="ttdeci">friend class Animation</div><div class="ttdef"><b>Definition</b> <a href="SpineAnim_8h_source.html#l00106">SpineAnim.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html">eve::animation::SpineAtlas</a></div><div class="ttdoc">Esoteric Spine .atlas text parser (region rectangles + page metadata). Does not load image pixels — b...</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8h_source.html#l00014">SpineAtlas.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1SpineSkeleton.html">eve::animation::SpineSkeleton</a></div><div class="ttdoc">Runtime Spine skeleton pose (local + world bone transforms, slot attachments). Script type: SpineSkel...</div><div class="ttdef"><b>Definition</b> <a href="SpineSkeleton_8h_source.html#l00014">SpineSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00051">Graphics.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00017">Texture.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00029">Animation.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="AnimTrail_8h_source.html#l00006">AnimTrail.h:6</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

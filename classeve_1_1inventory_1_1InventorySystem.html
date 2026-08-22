@@ -1,0 +1,1742 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::inventory::InventorySystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1inventory.html">inventory</a></li><li class="navelem"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">InventorySystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1inventory_1_1InventorySystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::inventory::InventorySystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a8d7eadcfc5492411ced8dd78c55581b6" id="r_a8d7eadcfc5492411ced8dd78c55581b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">AcceptFn</a> = std::function&lt; bool(const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, const <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, int quantity, std::string *reason)&gt;</td></tr>
+<tr class="separator:a8d7eadcfc5492411ced8dd78c55581b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f55fc4ff05f6c0b02912886b5d2abe" id="r_a73f55fc4ff05f6c0b02912886b5d2abe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">CapacityFn</a> = std::function&lt; bool(const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, const <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, int quantity, std::string *reason)&gt;</td></tr>
+<tr class="separator:a73f55fc4ff05f6c0b02912886b5d2abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab96855112d060449449bf064c439e73e" id="r_ab96855112d060449449bf064c439e73e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">StackFn</a> = std::function&lt; bool(const <a class="el" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def)&gt;</td></tr>
+<tr class="separator:ab96855112d060449449bf064c439e73e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d80e1fcfe55095047d243314b69a7ee" id="r_a4d80e1fcfe55095047d243314b69a7ee"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">ChangeHook</a> = std::function&lt; void(const <a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &amp;ev)&gt;</td></tr>
+<tr class="separator:a4d80e1fcfe55095047d243314b69a7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a8f497c7bc6a095bf798ad7242b7b6bfd" id="r_a8f497c7bc6a095bf798ad7242b7b6bfd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8f497c7bc6a095bf798ad7242b7b6bfd">registerAcceptRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">AcceptFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:a8f497c7bc6a095bf798ad7242b7b6bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4d20948756bfac1ac59b96953d5d51a" id="r_ab4d20948756bfac1ac59b96953d5d51a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab4d20948756bfac1ac59b96953d5d51a">unregisterAcceptRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ab4d20948756bfac1ac59b96953d5d51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab45feab6470197bff0d11aa9a9456997" id="r_ab45feab6470197bff0d11aa9a9456997"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab45feab6470197bff0d11aa9a9456997">hasAcceptRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ab45feab6470197bff0d11aa9a9456997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd35b9ef8ae097c2965889631c4b5aa" id="r_a5fd35b9ef8ae097c2965889631c4b5aa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a5fd35b9ef8ae097c2965889631c4b5aa">registerCapacityPolicy</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">CapacityFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:a5fd35b9ef8ae097c2965889631c4b5aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7e59d27fc3e6d1381efa51039b6710" id="r_a7e7e59d27fc3e6d1381efa51039b6710"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a7e7e59d27fc3e6d1381efa51039b6710">unregisterCapacityPolicy</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a7e7e59d27fc3e6d1381efa51039b6710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad21b72f0583a8dee89b79707545e82e8" id="r_ad21b72f0583a8dee89b79707545e82e8"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ad21b72f0583a8dee89b79707545e82e8">hasCapacityPolicy</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ad21b72f0583a8dee89b79707545e82e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19b374f8f8b5ea696a4c65f16f802ebb" id="r_a19b374f8f8b5ea696a4c65f16f802ebb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a19b374f8f8b5ea696a4c65f16f802ebb">registerStackRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">StackFn</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:a19b374f8f8b5ea696a4c65f16f802ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0135c62835d01ef8d5768c283836f27d" id="r_a0135c62835d01ef8d5768c283836f27d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a0135c62835d01ef8d5768c283836f27d">unregisterStackRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a0135c62835d01ef8d5768c283836f27d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab233bccda408421bef3a6e668d7f42f3" id="r_ab233bccda408421bef3a6e668d7f42f3"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab233bccda408421bef3a6e668d7f42f3">hasStackRule</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ab233bccda408421bef3a6e668d7f42f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2795195d01f8e47d3cd9febfb7c39cc" id="r_aa2795195d01f8e47d3cd9febfb7c39cc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#aa2795195d01f8e47d3cd9febfb7c39cc">registerChangeHook</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>, <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">ChangeHook</a> <a class="el" href="Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:aa2795195d01f8e47d3cd9febfb7c39cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0f4ccbaeb4a6396a3ac8490e6f73731" id="r_ac0f4ccbaeb4a6396a3ac8490e6f73731"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ac0f4ccbaeb4a6396a3ac8490e6f73731">unregisterChangeHook</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:ac0f4ccbaeb4a6396a3ac8490e6f73731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a407a54dff07a260582a0566a554ca117" id="r_a407a54dff07a260582a0566a554ca117"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a407a54dff07a260582a0566a554ca117">hasChangeHook</a> (const std::string &amp;<a class="el" href="RockMesh_8cpp.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>)</td></tr>
+<tr class="separator:a407a54dff07a260582a0566a554ca117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ac9a746a8b064df1cfdc8df5711f23" id="r_a25ac9a746a8b064df1cfdc8df5711f23"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a25ac9a746a8b064df1cfdc8df5711f23">ensureBuiltins</a> ()</td></tr>
+<tr class="memdesc:a25ac9a746a8b064df1cfdc8df5711f23"><td class="mdescLeft">&#160;</td><td class="mdescRight">确保内置规则已注册（模块首次使用时自动调用）。  <br /></td></tr>
+<tr class="separator:a25ac9a746a8b064df1cfdc8df5711f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37f939627eec09067c1fb7401dc8daa0" id="r_a37f939627eec09067c1fb7401dc8daa0"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a37f939627eec09067c1fb7401dc8daa0">canAdd</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, const std::string &amp;itemId, int quantity, std::string *reason=nullptr)</td></tr>
+<tr class="separator:a37f939627eec09067c1fb7401dc8daa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08a0c84c03938cb44a547ca7e15137dd" id="r_a08a0c84c03938cb44a547ca7e15137dd"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a08a0c84c03938cb44a547ca7e15137dd">addItem</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, const std::string &amp;itemId, int quantity)</td></tr>
+<tr class="memdesc:a08a0c84c03938cb44a547ca7e15137dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">返回实际放入数量（可能部分成功）。  <br /></td></tr>
+<tr class="separator:a08a0c84c03938cb44a547ca7e15137dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac81d7731393193e2a4905d240da6befb" id="r_ac81d7731393193e2a4905d240da6befb"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ac81d7731393193e2a4905d240da6befb">removeItem</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, const std::string &amp;itemId, int quantity)</td></tr>
+<tr class="separator:ac81d7731393193e2a4905d240da6befb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac64613ff5617f8d6eadd9a817270212e" id="r_ac64613ff5617f8d6eadd9a817270212e"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ac64613ff5617f8d6eadd9a817270212e">removeAt</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, int slot, int quantity)</td></tr>
+<tr class="separator:ac64613ff5617f8d6eadd9a817270212e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3902b808ec2508f04300dd910d487a27" id="r_a3902b808ec2508f04300dd910d487a27"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a3902b808ec2508f04300dd910d487a27">swapSlots</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, int slotA, int slotB)</td></tr>
+<tr class="separator:a3902b808ec2508f04300dd910d487a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbf8247863f8c3243a442fbd4981218f" id="r_acbf8247863f8c3243a442fbd4981218f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#acbf8247863f8c3243a442fbd4981218f">moveSlot</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, int fromSlot, int toSlot)</td></tr>
+<tr class="separator:acbf8247863f8c3243a442fbd4981218f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a73172da09df6aac839afe7c86df768" id="r_a8a73172da09df6aac839afe7c86df768"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8a73172da09df6aac839afe7c86df768">splitStack</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, int slot, int quantity, int toSlot)</td></tr>
+<tr class="separator:a8a73172da09df6aac839afe7c86df768"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab31aba04c73d2938346e6d5cdac6cce5" id="r_ab31aba04c73d2938346e6d5cdac6cce5"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab31aba04c73d2938346e6d5cdac6cce5">transfer</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *from, <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *to, const std::string &amp;itemId, int quantity)</td></tr>
+<tr class="separator:ab31aba04c73d2938346e6d5cdac6cce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad87fac42c2013c42530f919fc7ed65e2" id="r_ad87fac42c2013c42530f919fc7ed65e2"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ad87fac42c2013c42530f919fc7ed65e2">transferSlot</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *from, int fromSlot, <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *to, int quantity)</td></tr>
+<tr class="separator:ad87fac42c2013c42530f919fc7ed65e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e1ef39619ea7178739d638df8def8fb" id="r_a9e1ef39619ea7178739d638df8def8fb"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a9e1ef39619ea7178739d638df8def8fb">countItem</a> (const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, const std::string &amp;itemId)</td></tr>
+<tr class="separator:a9e1ef39619ea7178739d638df8def8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8874497459214cb26cea921614744de" id="r_af8874497459214cb26cea921614744de"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#af8874497459214cb26cea921614744de">findItem</a> (const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, const std::string &amp;itemId)</td></tr>
+<tr class="separator:af8874497459214cb26cea921614744de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada5a833b8d9685be2f754a41e8431b5a" id="r_ada5a833b8d9685be2f754a41e8431b5a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ada5a833b8d9685be2f754a41e8431b5a">findItemByTag</a> (const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, const std::string &amp;tag)</td></tr>
+<tr class="separator:ada5a833b8d9685be2f754a41e8431b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e6a9a0f06b0bd0fea450f27ace2f603" id="r_a3e6a9a0f06b0bd0fea450f27ace2f603"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a3e6a9a0f06b0bd0fea450f27ace2f603">usedWeight</a> (const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag)</td></tr>
+<tr class="separator:a3e6a9a0f06b0bd0fea450f27ace2f603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6177bfb465091a11c2f576d0c25f683b" id="r_a6177bfb465091a11c2f576d0c25f683b"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a6177bfb465091a11c2f576d0c25f683b">usedVolume</a> (const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag)</td></tr>
+<tr class="separator:a6177bfb465091a11c2f576d0c25f683b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa675f464b280690e89214c2fc5734153" id="r_aa675f464b280690e89214c2fc5734153"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#aa675f464b280690e89214c2fc5734153">usedSlotCount</a> (const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag)</td></tr>
+<tr class="separator:aa675f464b280690e89214c2fc5734153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3007e15e970aacb3f06038b78e39d50" id="r_ab3007e15e970aacb3f06038b78e39d50"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab3007e15e970aacb3f06038b78e39d50">clearBag</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag)</td></tr>
+<tr class="separator:ab3007e15e970aacb3f06038b78e39d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce24df603cdbf3f972fa906033c656b" id="r_a1ce24df603cdbf3f972fa906033c656b"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a1ce24df603cdbf3f972fa906033c656b">equipFromBag</a> (<a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">EquipmentSet</a> *eq, const std::string &amp;equipSlot, <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, int bagSlot)</td></tr>
+<tr class="separator:a1ce24df603cdbf3f972fa906033c656b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a367c87a09740c8942f6d2096348d5971" id="r_a367c87a09740c8942f6d2096348d5971"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a367c87a09740c8942f6d2096348d5971">unequipToBag</a> (<a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">EquipmentSet</a> *eq, const std::string &amp;equipSlot, <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag)</td></tr>
+<tr class="separator:a367c87a09740c8942f6d2096348d5971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82e9b2c8e3705d17f6697468681141f6" id="r_a82e9b2c8e3705d17f6697468681141f6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a82e9b2c8e3705d17f6697468681141f6">pushEvent</a> (<a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> ev)</td></tr>
+<tr class="separator:a82e9b2c8e3705d17f6697468681141f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae08871c391cdba3e87697ef8b6651d84" id="r_ae08871c391cdba3e87697ef8b6651d84"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ae08871c391cdba3e87697ef8b6651d84">pollEvents</a> (std::vector&lt; <a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &gt; &amp;out)</td></tr>
+<tr class="separator:ae08871c391cdba3e87697ef8b6651d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adacd80289f9a7e37012ca69bee5ab994" id="r_adacd80289f9a7e37012ca69bee5ab994"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#adacd80289f9a7e37012ca69bee5ab994">clearEvents</a> ()</td></tr>
+<tr class="separator:adacd80289f9a7e37012ca69bee5ab994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a339b6b86915cec457816eb283e0cea52" id="r_a339b6b86915cec457816eb283e0cea52"><td class="memItemLeft" align="right" valign="top">static const std::vector&lt; <a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a339b6b86915cec457816eb283e0cea52">events</a> ()</td></tr>
+<tr class="separator:a339b6b86915cec457816eb283e0cea52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f3e5eeb6128d34ea451f0d7678f7785" id="r_a7f3e5eeb6128d34ea451f0d7678f7785"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a7f3e5eeb6128d34ea451f0d7678f7785">nextInstanceId</a> ()</td></tr>
+<tr class="separator:a7f3e5eeb6128d34ea451f0d7678f7785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a> 第 <a class="el" href="InventorySystem_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a8d7eadcfc5492411ced8dd78c55581b6" name="a8d7eadcfc5492411ced8dd78c55581b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d7eadcfc5492411ced8dd78c55581b6">&#9670;&#160;</a></span>AcceptFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">eve::inventory::InventorySystem::AcceptFn</a> =  std::function&lt;bool(const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, const <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, int quantity, std::string *reason)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a> 第 <a class="el" href="InventorySystem_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73f55fc4ff05f6c0b02912886b5d2abe" name="a73f55fc4ff05f6c0b02912886b5d2abe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f55fc4ff05f6c0b02912886b5d2abe">&#9670;&#160;</a></span>CapacityFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">eve::inventory::InventorySystem::CapacityFn</a> =  std::function&lt;bool(const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, const <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, int quantity, std::string *reason)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a> 第 <a class="el" href="InventorySystem_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d80e1fcfe55095047d243314b69a7ee" name="a4d80e1fcfe55095047d243314b69a7ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d80e1fcfe55095047d243314b69a7ee">&#9670;&#160;</a></span>ChangeHook</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">eve::inventory::InventorySystem::ChangeHook</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &amp;ev)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a> 第 <a class="el" href="InventorySystem_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab96855112d060449449bf064c439e73e" name="ab96855112d060449449bf064c439e73e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab96855112d060449449bf064c439e73e">&#9670;&#160;</a></span>StackFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">eve::inventory::InventorySystem::StackFn</a> =  std::function&lt;bool(const <a class="el" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a> 第 <a class="el" href="InventorySystem_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a08a0c84c03938cb44a547ca7e15137dd" name="a08a0c84c03938cb44a547ca7e15137dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08a0c84c03938cb44a547ca7e15137dd">&#9670;&#160;</a></span>addItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::addItem </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>返回实际放入数量（可能部分成功）。 </p>
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00014">eve::inventory::ItemDefinition::id</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00198">nextInstanceId()</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00067">eve::inventory::Bag::addItem()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00476">transfer()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00516">transferSlot()</a> , 以及 <a class="el" href="InventorySystem_8cpp_source.html#l00719">unequipToBag()</a>.</p>
+
+</div>
+</div>
+<a id="a37f939627eec09067c1fb7401dc8daa0" name="a37f939627eec09067c1fb7401dc8daa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37f939627eec09067c1fb7401dc8daa0">&#9670;&#160;</a></span>canAdd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::canAdd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00057">eve::inventory::Bag::canAddItem()</a>, <a class="el" href="Bag_8cpp_source.html#l00061">eve::inventory::Bag::canAddItemReason()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00476">transfer()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00516">transferSlot()</a> , 以及 <a class="el" href="InventorySystem_8cpp_source.html#l00719">unequipToBag()</a>.</p>
+
+</div>
+</div>
+<a id="ab3007e15e970aacb3f06038b78e39d50" name="ab3007e15e970aacb3f06038b78e39d50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3007e15e970aacb3f06038b78e39d50">&#9670;&#160;</a></span>clearBag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::clearBag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00674">674</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00105">eve::inventory::Bag::clear()</a>.</p>
+
+</div>
+</div>
+<a id="adacd80289f9a7e37012ca69bee5ab994" name="adacd80289f9a7e37012ca69bee5ab994"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adacd80289f9a7e37012ca69bee5ab994">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00095">eve::inventory::Inventory::clearChangeEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a9e1ef39619ea7178739d638df8def8fb" name="a9e1ef39619ea7178739d638df8def8fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e1ef39619ea7178739d638df8def8fb">&#9670;&#160;</a></span>countItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::countItem </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00613">613</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00087">eve::inventory::Bag::countItem()</a> , 以及 <a class="el" href="InventorySystem_8cpp_source.html#l00476">transfer()</a>.</p>
+
+</div>
+</div>
+<a id="a25ac9a746a8b064df1cfdc8df5711f23" name="a25ac9a746a8b064df1cfdc8df5711f23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ac9a746a8b064df1cfdc8df5711f23">&#9670;&#160;</a></span>ensureBuiltins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::ensureBuiltins </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>确保内置规则已注册（模块首次使用时自动调用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00120">a</a>, <a class="el" href="Bag_8h_source.html#l00103">eve::inventory::Bag::acceptTags()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00120">b</a>, <a class="el" href="Bag_8h_source.html#l00045">eve::inventory::Bag::getMaxVolume()</a>, <a class="el" href="Bag_8h_source.html#l00043">eve::inventory::Bag::getMaxWeight()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00062">registerAcceptRule()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00074">registerCapacityPolicy()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00088">registerStackRule()</a>, <a class="el" href="Bag_8h_source.html#l00104">eve::inventory::Bag::rejectTags()</a>, <a class="el" href="ItemTypes_8h_source.html#l00019">eve::inventory::ItemDefinition::tags</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00654">usedVolume()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00643">usedWeight()</a>, <a class="el" href="ItemTypes_8h_source.html#l00018">eve::inventory::ItemDefinition::volume</a> , 以及 <a class="el" href="ItemTypes_8h_source.html#l00017">eve::inventory::ItemDefinition::weight</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00069">hasAcceptRule()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00083">hasCapacityPolicy()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00095">hasStackRule()</a>, <a class="el" href="Inventory_8cpp_source.html#l00065">eve::inventory::Inventory::newBag()</a>, <a class="el" href="Inventory_8cpp_source.html#l00070">eve::inventory::Inventory::newEquipmentSet()</a> , 以及 <a class="el" href="Inventory_8cpp_source.html#l00011">eve::inventory::Inventory::registerItemsFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a1ce24df603cdbf3f972fa906033c656b" name="a1ce24df603cdbf3f972fa906033c656b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce24df603cdbf3f972fa906033c656b">&#9670;&#160;</a></span>equipFromBag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::equipFromBag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">EquipmentSet</a> *&#160;</td>
+          <td class="paramname"><em>eq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>equipSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bagSlot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00684">684</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Equipment_8cpp_source.html#l00083">eve::inventory::EquipmentSet::canEquipFromBag()</a>, <a class="el" href="Item_8cpp_source.html#l00020">eve::inventory::ItemStack::clear()</a>, <a class="el" href="ItemTypes_8h_source.html#l00054">eve::inventory::InventoryChangeEvent::equipSlot</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a>, <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a> , 以及 <a class="el" href="Equipment_8cpp_source.html#l00068">eve::inventory::EquipmentSet::stackAt()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Equipment_8cpp_source.html#l00131">eve::inventory::EquipmentSet::equipFromBag()</a>.</p>
+
+</div>
+</div>
+<a id="a339b6b86915cec457816eb283e0cea52" name="a339b6b86915cec457816eb283e0cea52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a339b6b86915cec457816eb283e0cea52">&#9670;&#160;</a></span>events()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &gt; &amp; eve::inventory::InventorySystem::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00101">eve::inventory::Inventory::getChangeEventAction()</a>, <a class="el" href="Inventory_8cpp_source.html#l00107">eve::inventory::Inventory::getChangeEventBagId()</a>, <a class="el" href="Inventory_8cpp_source.html#l00097">eve::inventory::Inventory::getChangeEventCount()</a>, <a class="el" href="Inventory_8cpp_source.html#l00143">eve::inventory::Inventory::getChangeEventEquipSlot()</a>, <a class="el" href="Inventory_8cpp_source.html#l00119">eve::inventory::Inventory::getChangeEventItemId()</a>, <a class="el" href="Inventory_8cpp_source.html#l00113">eve::inventory::Inventory::getChangeEventOtherBagId()</a>, <a class="el" href="Inventory_8cpp_source.html#l00137">eve::inventory::Inventory::getChangeEventOtherSlot()</a>, <a class="el" href="Inventory_8cpp_source.html#l00125">eve::inventory::Inventory::getChangeEventQuantity()</a> , 以及 <a class="el" href="Inventory_8cpp_source.html#l00131">eve::inventory::Inventory::getChangeEventSlot()</a>.</p>
+
+</div>
+</div>
+<a id="af8874497459214cb26cea921614744de" name="af8874497459214cb26cea921614744de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8874497459214cb26cea921614744de">&#9670;&#160;</a></span>findItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::findItem </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00622">622</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00091">eve::inventory::Bag::findItem()</a>.</p>
+
+</div>
+</div>
+<a id="ada5a833b8d9685be2f754a41e8431b5a" name="ada5a833b8d9685be2f754a41e8431b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada5a833b8d9685be2f754a41e8431b5a">&#9670;&#160;</a></span>findItemByTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::findItemByTag </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00631">631</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="Item_8cpp_source.html#l00011">eve::inventory::ItemDefinition::hasTag()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00095">eve::inventory::Bag::findItemByTag()</a>.</p>
+
+</div>
+</div>
+<a id="ab45feab6470197bff0d11aa9a9456997" name="ab45feab6470197bff0d11aa9a9456997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab45feab6470197bff0d11aa9a9456997">&#9670;&#160;</a></span>hasAcceptRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::hasAcceptRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00083">eve::inventory::Inventory::hasAcceptRule()</a>.</p>
+
+</div>
+</div>
+<a id="ad21b72f0583a8dee89b79707545e82e8" name="ad21b72f0583a8dee89b79707545e82e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad21b72f0583a8dee89b79707545e82e8">&#9670;&#160;</a></span>hasCapacityPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::hasCapacityPolicy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00087">eve::inventory::Inventory::hasCapacityPolicy()</a>.</p>
+
+</div>
+</div>
+<a id="a407a54dff07a260582a0566a554ca117" name="a407a54dff07a260582a0566a554ca117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a407a54dff07a260582a0566a554ca117">&#9670;&#160;</a></span>hasChangeHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::hasChangeHook </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ab233bccda408421bef3a6e668d7f42f3" name="ab233bccda408421bef3a6e668d7f42f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab233bccda408421bef3a6e668d7f42f3">&#9670;&#160;</a></span>hasStackRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::hasStackRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00091">eve::inventory::Inventory::hasStackRule()</a>.</p>
+
+</div>
+</div>
+<a id="acbf8247863f8c3243a442fbd4981218f" name="acbf8247863f8c3243a442fbd4981218f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbf8247863f8c3243a442fbd4981218f">&#9670;&#160;</a></span>moveSlot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::moveSlot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fromSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toSlot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="ItemTypes_8h_source.html#l00016">eve::inventory::ItemDefinition::maxStack</a>, <a class="el" href="ItemTypes_8h_source.html#l00053">eve::inventory::InventoryChangeEvent::otherSlot</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a>, <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a> , 以及 <a class="el" href="InventorySystem_8cpp_source.html#l00392">swapSlots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00079">eve::inventory::Bag::moveSlot()</a>.</p>
+
+</div>
+</div>
+<a id="a7f3e5eeb6128d34ea451f0d7678f7785" name="a7f3e5eeb6128d34ea451f0d7678f7785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f3e5eeb6128d34ea451f0d7678f7785">&#9670;&#160;</a></span>nextInstanceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::nextInstanceId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00288">addItem()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00451">splitStack()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00516">transferSlot()</a> , 以及 <a class="el" href="InventorySystem_8cpp_source.html#l00719">unequipToBag()</a>.</p>
+
+</div>
+</div>
+<a id="ae08871c391cdba3e87697ef8b6651d84" name="ae08871c391cdba3e87697ef8b6651d84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08871c391cdba3e87697ef8b6651d84">&#9670;&#160;</a></span>pollEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::pollEvents </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82e9b2c8e3705d17f6697468681141f6" name="a82e9b2c8e3705d17f6697468681141f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e9b2c8e3705d17f6697468681141f6">&#9670;&#160;</a></span>pushEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::pushEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a>&#160;</td>
+          <td class="paramname"><em>ev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Equipment_8cpp_source.html#l00139">eve::inventory::EquipmentSet::clearSlot()</a>.</p>
+
+</div>
+</div>
+<a id="a8f497c7bc6a095bf798ad7242b7b6bfd" name="a8f497c7bc6a095bf798ad7242b7b6bfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f497c7bc6a095bf798ad7242b7b6bfd">&#9670;&#160;</a></span>registerAcceptRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::registerAcceptRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">AcceptFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a5fd35b9ef8ae097c2965889631c4b5aa" name="a5fd35b9ef8ae097c2965889631c4b5aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fd35b9ef8ae097c2965889631c4b5aa">&#9670;&#160;</a></span>registerCapacityPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::registerCapacityPolicy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">CapacityFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="aa2795195d01f8e47d3cd9febfb7c39cc" name="aa2795195d01f8e47d3cd9febfb7c39cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2795195d01f8e47d3cd9febfb7c39cc">&#9670;&#160;</a></span>registerChangeHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::registerChangeHook </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">ChangeHook</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a19b374f8f8b5ea696a4c65f16f802ebb" name="a19b374f8f8b5ea696a4c65f16f802ebb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19b374f8f8b5ea696a4c65f16f802ebb">&#9670;&#160;</a></span>registerStackRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::registerStackRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">StackFn</a>&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Settlement_8cpp_source.html#l00030">fn</a> , 以及 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="ac64613ff5617f8d6eadd9a817270212e" name="ac64613ff5617f8d6eadd9a817270212e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64613ff5617f8d6eadd9a817270212e">&#9670;&#160;</a></span>removeAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::removeAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00075">eve::inventory::Bag::removeAt()</a>.</p>
+
+</div>
+</div>
+<a id="ac81d7731393193e2a4905d240da6befb" name="ac81d7731393193e2a4905d240da6befb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac81d7731393193e2a4905d240da6befb">&#9670;&#160;</a></span>removeItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::removeItem </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="EditorHost_8cpp_source.html#l00462">removed</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00071">eve::inventory::Bag::removeItem()</a>.</p>
+
+</div>
+</div>
+<a id="a8a73172da09df6aac839afe7c86df768" name="a8a73172da09df6aac839afe7c86df768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a73172da09df6aac839afe7c86df768">&#9670;&#160;</a></span>splitStack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::splitStack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toSlot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00198">nextInstanceId()</a>, <a class="el" href="ItemTypes_8h_source.html#l00053">eve::inventory::InventoryChangeEvent::otherSlot</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00083">eve::inventory::Bag::splitStack()</a>.</p>
+
+</div>
+</div>
+<a id="a3902b808ec2508f04300dd910d487a27" name="a3902b808ec2508f04300dd910d487a27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3902b808ec2508f04300dd910d487a27">&#9670;&#160;</a></span>swapSlots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::swapSlots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slotA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slotB</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00053">eve::inventory::InventoryChangeEvent::otherSlot</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00406">moveSlot()</a> , 以及 <a class="el" href="Bag_8cpp_source.html#l00077">eve::inventory::Bag::swapSlots()</a>.</p>
+
+</div>
+</div>
+<a id="ab31aba04c73d2938346e6d5cdac6cce5" name="ab31aba04c73d2938346e6d5cdac6cce5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab31aba04c73d2938346e6d5cdac6cce5">&#9670;&#160;</a></span>transfer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::transfer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00476">476</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00288">addItem()</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00272">canAdd()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00613">countItem()</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="ItemTypes_8h_source.html#l00049">eve::inventory::InventoryChangeEvent::otherBagId</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00075">eve::inventory::Inventory::transferItem()</a>.</p>
+
+</div>
+</div>
+<a id="ad87fac42c2013c42530f919fc7ed65e2" name="ad87fac42c2013c42530f919fc7ed65e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad87fac42c2013c42530f919fc7ed65e2">&#9670;&#160;</a></span>transferSlot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::transferSlot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fromSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quantity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00516">516</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00288">addItem()</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00272">canAdd()</a>, <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="ItemTypes_8h_source.html#l00016">eve::inventory::ItemDefinition::maxStack</a>, <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00198">nextInstanceId()</a>, <a class="el" href="ItemTypes_8h_source.html#l00049">eve::inventory::InventoryChangeEvent::otherBagId</a>, <a class="el" href="ItemTypes_8h_source.html#l00053">eve::inventory::InventoryChangeEvent::otherSlot</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Inventory_8cpp_source.html#l00079">eve::inventory::Inventory::transferSlot()</a>.</p>
+
+</div>
+</div>
+<a id="a367c87a09740c8942f6d2096348d5971" name="a367c87a09740c8942f6d2096348d5971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a367c87a09740c8942f6d2096348d5971">&#9670;&#160;</a></span>unequipToBag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::inventory::InventorySystem::unequipToBag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">EquipmentSet</a> *&#160;</td>
+          <td class="paramname"><em>eq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>equipSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00719">719</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ItemTypes_8h_source.html#l00047">eve::inventory::InventoryChangeEvent::action</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00288">addItem()</a>, <a class="el" href="ItemTypes_8h_source.html#l00048">eve::inventory::InventoryChangeEvent::bagId</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00272">canAdd()</a>, <a class="el" href="ItemTypes_8h_source.html#l00054">eve::inventory::InventoryChangeEvent::equipSlot</a>, <a class="el" href="Bag_8h_source.html#l00030">eve::inventory::Bag::getId()</a>, <a class="el" href="Bag_8h_source.html#l00038">eve::inventory::Bag::getSlotCount()</a>, <a class="el" href="ItemTypes_8h_source.html#l00032">eve::inventory::ItemStack::itemId</a>, <a class="el" href="ItemTypes_8h_source.html#l00050">eve::inventory::InventoryChangeEvent::itemId</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00198">nextInstanceId()</a>, <a class="el" href="ItemTypes_8h_source.html#l00051">eve::inventory::InventoryChangeEvent::quantity</a>, <a class="el" href="ItemTypes_8h_source.html#l00052">eve::inventory::InventoryChangeEvent::slot</a>, <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a> , 以及 <a class="el" href="Equipment_8cpp_source.html#l00068">eve::inventory::EquipmentSet::stackAt()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Equipment_8cpp_source.html#l00135">eve::inventory::EquipmentSet::unequipToBag()</a>.</p>
+
+</div>
+</div>
+<a id="ab4d20948756bfac1ac59b96953d5d51a" name="ab4d20948756bfac1ac59b96953d5d51a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4d20948756bfac1ac59b96953d5d51a">&#9670;&#160;</a></span>unregisterAcceptRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::unregisterAcceptRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a7e7e59d27fc3e6d1381efa51039b6710" name="a7e7e59d27fc3e6d1381efa51039b6710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e7e59d27fc3e6d1381efa51039b6710">&#9670;&#160;</a></span>unregisterCapacityPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::unregisterCapacityPolicy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="ac0f4ccbaeb4a6396a3ac8490e6f73731" name="ac0f4ccbaeb4a6396a3ac8490e6f73731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0f4ccbaeb4a6396a3ac8490e6f73731">&#9670;&#160;</a></span>unregisterChangeHook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::unregisterChangeHook </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="a0135c62835d01ef8d5768c283836f27d" name="a0135c62835d01ef8d5768c283836f27d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0135c62835d01ef8d5768c283836f27d">&#9670;&#160;</a></span>unregisterStackRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::inventory::InventorySystem::unregisterStackRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00021">name</a>.</p>
+
+</div>
+</div>
+<a id="aa675f464b280690e89214c2fc5734153" name="aa675f464b280690e89214c2fc5734153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa675f464b280690e89214c2fc5734153">&#9670;&#160;</a></span>usedSlotCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::inventory::InventorySystem::usedSlotCount </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00665">665</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">n</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a> , 以及 <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Bag_8cpp_source.html#l00103">eve::inventory::Bag::getUsedSlotCount()</a>.</p>
+
+</div>
+</div>
+<a id="a6177bfb465091a11c2f576d0c25f683b" name="a6177bfb465091a11c2f576d0c25f683b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6177bfb465091a11c2f576d0c25f683b">&#9670;&#160;</a></span>usedVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::inventory::InventorySystem::usedVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00654">654</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00038">v</a> , 以及 <a class="el" href="ItemTypes_8h_source.html#l00018">eve::inventory::ItemDefinition::volume</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a> , 以及 <a class="el" href="Bag_8cpp_source.html#l00101">eve::inventory::Bag::getUsedVolume()</a>.</p>
+
+</div>
+</div>
+<a id="a3e6a9a0f06b0bd0fea450f27ace2f603" name="a3e6a9a0f06b0bd0fea450f27ace2f603"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e6a9a0f06b0bd0fea450f27ace2f603">&#9670;&#160;</a></span>usedWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::inventory::InventorySystem::usedWeight </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a> 第 <a class="el" href="InventorySystem_8cpp_source.html#l00643">643</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Item_8cpp_source.html#l00053">eve::inventory::ItemRegistry::find()</a>, <a class="el" href="Weather_8cpp_source.html#l00028">s</a>, <a class="el" href="Bag_8h_source.html#l00101">eve::inventory::Bag::slots()</a>, <a class="el" href="ImageData_8cpp_source.html#l00650">w</a> , 以及 <a class="el" href="ItemTypes_8h_source.html#l00017">eve::inventory::ItemDefinition::weight</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00111">ensureBuiltins()</a> , 以及 <a class="el" href="Bag_8cpp_source.html#l00099">eve::inventory::Bag::getUsedWeight()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/inventory/<a class="el" href="InventorySystem_8h_source.html">InventorySystem.h</a></li>
+<li>src/modules/inventory/<a class="el" href="InventorySystem_8cpp_source.html">InventorySystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['rectangle_0',['Rectangle',['../namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e',1,'eve::grid']]],
+  ['reduce_1',['Reduce',['../namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599aec4875f03ff0bb0b26cf76ac7f41e3c8',1,'eve::tensor']]],
+  ['reducemax_2',['ReduceMax',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd',1,'eve::tensor']]],
+  ['reducemean_3',['ReduceMean',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206',1,'eve::tensor']]],
+  ['reducemin_4',['ReduceMin',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e',1,'eve::tensor']]],
+  ['reducesum_5',['ReduceSum',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a',1,'eve::tensor']]],
+  ['reflect_6',['Reflect',['../namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445a74de3e45e4491e956e8dc18d841d9b00',1,'eve']]],
+  ['reliable_7',['Reliable',['../classeve_1_1network_1_1UdpLink.html#a8d820e72b9d4521e74ad987817144cf0a84fcf5d37086f2a93953734ce8f385b6',1,'eve::network::UdpLink']]],
+  ['relu_8',['Relu',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a7bfde445daa113a9903d4eaa43b41e2b',1,'eve::tensor']]],
+  ['remove_9',['Remove',['../structeve_1_1sceneloader_1_1SceneDiffEntry.html#a3d057b5bc06d8cf089a9bd0d5a603c00a1063e38cb53d94d386f21227fcd84717',1,'eve::sceneloader::SceneDiffEntry']]],
+  ['reshape_10',['Reshape',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67aa7c59ccedc6a3bd90c17f3b990afefad',1,'eve::tensor']]],
+  ['resize2d_11',['resize2d',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a0e703cba8cae48eee88ab0e0921ca8ff',1,'eve::tensor::Resize2d'],['../namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a0e703cba8cae48eee88ab0e0921ca8ff',1,'eve::tensor::Resize2d']]],
+  ['return_12',['Return',['../namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a988fd738de9c6d177440c5dcf69e73ce',1,'eve::dev']]],
+  ['returning_13',['Returning',['../namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba6300e0c307ee17a1e9ae7bf72d279468',1,'eve::card']]],
+  ['rmsnorm_14',['rmsnorm',['../namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a533a34c62723462c962ca7535ca06570',1,'eve::tensor::RMSNorm'],['../namespaceeve_1_1tensor.html#ac39248a2a6efb5ed5bde9d902742e599a533a34c62723462c962ca7535ca06570',1,'eve::tensor::RMSNorm']]],
+  ['row_15',['Row',['../namespaceeve_1_1ui.html#a3d22c9fb078c675de1a03caafc9c6d05aa70367aa7cb74e510f4f9413ccf059d3',1,'eve::ui']]],
+  ['running_16',['running',['../namespaceeve.html#a61faae4d6488bb9756f624196fc503daa5bda814c4aedb126839228f1a3d92f09',1,'eve::Running'],['../namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09',1,'eve::dev::Running']]]
+];

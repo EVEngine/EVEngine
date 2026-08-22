@@ -1,0 +1,205 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.2.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ik.html">ik</a></li><li class="navelem"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::ik::Skeleton2D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a30a43db547e8f2d24577aec47294dc75">bind</a>()</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a83a3601571d7068ed3fa8be21e946035">clearConstraints</a>(int boneId)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#ac66e68cb2650cd77a8c8c38683723cbf">createBone</a>(int parentId, float length=1.f)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a65867e3cf098c9e0c66a1776ea0fb696">forwardKinematics</a>()</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a5bc7307d61a9adeacef92ba038fd99e4">getBoneCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#af7ca93aaa88384db2a745aab3b39b8bb">getChild</a>(int boneId, int childIndex) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a502878851893baca046ef0f47a82f721">getChildCount</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a03617ca59110bd0855b5b049f2a9ce70">getLength</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a8835c35bf0719fdcd154f605048879a0">getOrientationX</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#aa055f24cf064499653bcabe8b3ca03f8">getOrientationY</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a7ee48940fb50803d4e43d1e01c3522fd">getParent</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a2314dbf49d7c1b5108d4d7be5ae1f002">getRootId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a7990c7d02a970e06f222d8c31c71211b">getRotation</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a64758fd3f9bdbe633dd3cfcd35c91cd8">getX</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a4909571b5ac27614ea1eb06ec1382323">getY</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a57344e94be1bc11324414def5bd22926">hasConstraints</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a68068ae99bd67c66987fb2dddd36fead">initStraightPose</a>(float rootX=0.f, float rootY=0.f)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a340a52747397a6cfd1f19a3c404a9efc">native</a>()</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a551581e68af63f03c956f01a22dbbdb9">native</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a448fa3292db21eb8483f17760a0953d4">operator=</a>(const Skeleton2D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#aa428664b1e9e32ac0486b9d1aa57d634">setConstraints</a>(int boneId, float minAngle, float maxAngle)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#ab91ccb03cd438281cacb89388ca859ec">setLength</a>(int boneId, float length)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a19c076ad8e2bf7fa8d70cb92096470c6">setOrientation</a>(int boneId, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#ad8975312e2f09e3b473b4287aa53a128">setPosition</a>(int boneId, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a25b498104fabc281c7a4cd83f2252d5f">setRotation</a>(int boneId, float angle)</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a16ce98878341f97b846fabe045845d27">Skeleton2D</a>()</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#ae6a3bb2fe1a6750f62d46a678fe1dbe0">Skeleton2D</a>(const Skeleton2D &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a3f024a25aec44779ce0cb0d35c5288d8">state</a>()</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#ac9240bc4f1d3054fda1602eeeefd3570">state</a>() const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a2c40329ac7d5ec765d9dec87f5649e94">totalLengthTo</a>(int boneId) const</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a3378b35b3ca4d2b375676a766c4f78b6">updateRotations</a>()</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html#a73c74c119a007b3a006b5706936f4e84">~Skeleton2D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
