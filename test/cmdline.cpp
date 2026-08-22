@@ -712,6 +712,41 @@ TEST_CASE("cmdline.buildAndroidUsesGetInstalledSdk") {
     std::filesystem::remove_all(out, ec);
 }
 
+TEST_CASE("cmdline.buildAndroidSkipsTemplateBuildOutputs") {
+    // 官方 SDK 的 platform/apk 模板在发布流水线里被 test-sdk.sh 编译过，
+    // app/build 下会残留 CI 测试产物；组装工程不应继承它们。
+    const auto sdk = fakeSdkRoot("eve_ut_cmdline_sdk_stale", "android");
+    writeFile(sdk / "platform" / "apk" / "app" / "build" / "stale-marker.txt",
+              "ci test output");
+    const auto tools = tempDir("eve_ut_cmdline_android_tools_stale");
+    writeFakeGradle(tools / "gradle-8.5");
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
+    ScopedEnv javaEnv("JAVA_HOME", tools.string());
+    ScopedEnv gradleEnv("GRADLE_HOME", (tools / "gradle-8.5").string());
+
+    const auto game = tempDir("eve_ut_cmdline_game_stale");
+    writeFile(game / "main.nut", "eve_init = function() {}\n");
+    const auto out = tempDir("eve_ut_cmdline_apk_out_stale");
+
+    CaptureStreams cap;
+    const int      rc = runCli(
+        {"eve", "build", "android", game.string(), "--sdk", sdk.string(), "-o", out.string()});
+    REQUIRE(rc == 0);
+    std::error_code ec;
+    // 模板的 app/build 未被复制进组装工程；gradle 照常执行并产出自己的输出。
+    REQUIRE(!std::filesystem::exists(out / "apk" / "app" / "build" / "stale-marker.txt", ec));
+    REQUIRE(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "build" / "outputs" / "apk" / "release" / "app-release.apk", ec));
+    // SDK 模板本身保持不变（只跳过复制，不修改 SDK）。
+    REQUIRE(std::filesystem::is_regular_file(
+        sdk / "platform" / "apk" / "app" / "build" / "stale-marker.txt", ec));
+
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(tools, ec);
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(out, ec);
+}
+
 TEST_CASE("cmdline.getUnsupportedPlatformFails") {
     CaptureStreams cap;
     const int      rc = runCli({"eve", "get", "ios"});

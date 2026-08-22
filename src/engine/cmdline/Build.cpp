@@ -180,8 +180,11 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
     fs::remove_all(outDir, ec);
     fs::create_directories(outDir, ec);
     const std::string apkDir = (fs::path(outDir) / "apk").string();
+    // 跳过模板自带的构建产物：官方 SDK 的 platform/apk 在发布流水线里被
+    // test-sdk.sh 编译过一次，app/build 下会残留一个 CI 测试 APK（不是用户的
+    // 游戏）。copyTree 只按相对路径跳过顶层目录，所以 app/build 要显式列出。
     if (!copyTree((fs::path(root) / "platform" / "apk").string(), apkDir,
-                  {"build", ".gradle", "local.properties"})) {
+                  {"build", ".gradle", "local.properties", "app/build"})) {
         cerr << rang::fg::red << "SDK is missing the android APK template (platform/apk)."
              << rang::fg::reset << endl;
         return 3;
