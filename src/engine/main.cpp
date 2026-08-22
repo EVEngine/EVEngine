@@ -43,6 +43,13 @@ public:
 
 int main(int argc, char **argv)
 {
+    // Make script print() / cout diagnostics visible immediately when stdout is
+    // redirected (CI logs, pipes): the C runtime fully buffers stdout when it
+    // is not a console, so a startup marker from eve_init could otherwise stay
+    // in the buffer and be lost when the process is killed after a smoke run.
+    std::setvbuf(stdout, nullptr, _IONBF, 0);
+    std::cout.setf(std::ios::unitbuf);
+
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     eve::installCrashHandler();
     // Diagnostic hook: EVE_TEST_CRASH=1 forces an access violation right after

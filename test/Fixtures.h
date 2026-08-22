@@ -48,12 +48,47 @@ inline void openGfxWindow(eve::window::Window *&win, eve::graphics::Graphics *&g
     REQUIRE(win->setWindowSettings(s));
 }
 
-/** @brief RAII window + graphics pair; closes the window on destruction. */
+/**
+ * @brief Opens a headless Graphics (no SDL window, no swapchain; present() is a
+ * no-op). Rendering goes through offscreen canvases + pixel readback.
+ * @param gfx Out-parameter receiving the Graphics singleton.
+ * @param w Logical width in pixels (env EVENGINE_TEST_VIEW_W overrides).
+ * @param h Logical height in pixels (env EVENGINE_TEST_VIEW_H overrides).
+ */
+inline void openHeadlessGfx(eve::graphics::Graphics *&gfx, int w = 320, int h = 240) {
+    const char *viewW = std::getenv("EVENGINE_TEST_VIEW_W");
+    const char *viewH = std::getenv("EVENGINE_TEST_VIEW_H");
+    if (viewW && viewW[0]) w = std::atoi(viewW);
+    if (viewH && viewH[0]) h = std::atoi(viewH);
+    if (w <= 0 || h <= 0) {
+        // Invalid EVENGINE_TEST_VIEW_W/H; fail the test that requested graphics.
+        REQUIRE(false);
+        return;
+    }
+
+    gfx = eve::graphics::Graphics::create();
+    REQUIRE(gfx != nullptr);
+    gfx->initHeadless(w, h);
+}
+
+/**
+ * @brief RAII graphics pair: windowed (default) or headless.
+ * Windowed fixtures close the window on destruction; headless fixtures own no
+ * window (the Graphics singleton lives for the whole test process and
+ * initHeadless is re-entrant).
+ */
 struct GfxFixture {
     eve::window::Window      *win = nullptr;
     eve::graphics::Graphics *gfx = nullptr;
+    bool                     headless = false;
 
-    explicit GfxFixture(int w = 320, int h = 240) { openGfxWindow(win, gfx, w, h); }
+    explicit GfxFixture(int w = 320, int h = 240, bool useHeadless = false) {
+        headless = useHeadless;
+        if (headless)
+            openHeadlessGfx(gfx, w, h);
+        else
+            openGfxWindow(win, gfx, w, h);
+    }
     ~GfxFixture() {
         if (win) win->close();
     }

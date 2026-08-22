@@ -302,18 +302,21 @@ void JobSystemThreadPool::State::completeJob(JobImpl *job, bool ok) {
     fireCompletion(job);
 
     // Decrement the outstanding counters while the job is still pinned by
-    // `completing` (waitFrameJobs waits on it too), then mark the job's own
-    // memory as finished. Dependents are released only after that, so a join
-    // can never become runnable (and later be deleted) while this job is
-    // still writing its own fields.
+    // `completing` (waitFrameJobs waits on it too), release dependents, then
+    // mark the job's own memory as finished. All of this stays inside one
+    // critical section: a waiter can only return once completionDone is set,
+    // so it cannot delete the job (heap jobs are owned by the caller) while
+    // this worker is still iterating job->dependents. The dependents are
+    // released before completionDone so a join can never become runnable (and
+    // later be deleted) while this job is still writing its own fields.
     {
         std::lock_guard<std::mutex> lock(mu);
         --outstanding;
         if (job->scope == JobScope::Frame)
             --outstandingFrame;
+        releaseDependents(job);
         job->completionDone = true;
     }
-    releaseDependents(job);
     {
         std::lock_guard<std::mutex> lock(mu);
         --completing;
@@ -343,19 +346,19 @@ void JobSystemThreadPool::State::recordError(JobImpl *job, const std::string &me
 }
 
 void JobSystemThreadPool::State::releaseDependents(JobImpl *job) {
+    // Caller holds mu. (Kept as a helper so completeJob reads as a single
+    // critical section; the enqueue + depCount updates below are lock-free
+    // only because they are performed under that same lock.)
     bool woke = false;
-    {
-        std::lock_guard<std::mutex> lock(mu);
-        for (JobImpl *dep : job->dependents) {
-            if (dep->depCount > 0)
-                --dep->depCount;
-            if (dep->depCount == 0 && dep->scheduled && !dep->enqueued) {
-                enqueueLocked(dep);
-                woke = true;
-            }
+    for (JobImpl *dep : job->dependents) {
+        if (dep->depCount > 0)
+            --dep->depCount;
+        if (dep->depCount == 0 && dep->scheduled && !dep->enqueued) {
+            enqueueLocked(dep);
+            woke = true;
         }
-        job->dependents.clear();
     }
+    job->dependents.clear();
     if (woke)
         cv.notify_all();
 }

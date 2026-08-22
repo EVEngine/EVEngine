@@ -455,6 +455,31 @@ build/ios-debug/EVEngine.xcodeproj:
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug -S .
 
+# iOS game app for the simulator (no signing required). Uses its own
+# third-party tree (ios-simulator-debug) so the device deps are not clobbered.
+build/ios-sim-debug: build/ios-sim-debug/EVEngine.xcodeproj
+	cmake --build build/ios-sim-debug --target deps -j $(ANDROID_JOBS)
+	cd build/ios-sim-debug && xcodebuild -scheme eve -configuration Debug \
+		-sdk iphonesimulator -arch $(IOS_ARCH) \
+		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+		build
+
+build/ios-sim-debug/EVEngine.xcodeproj:
+	cmake -G Xcode \
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
+		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DCMAKE_OSX_SYSROOT=iphonesimulator \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_PLATFORM=ios \
+		-DBUILD_TESTING=OFF \
+		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
+		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
+		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(CMAKE_EXTRA_ARGS) \
+		-B build/ios-sim-debug -S .
+
 # ---- iOS test app (zeroerr suite as the eve.app executable) ----
 #   make build/ios-debug-test [IOS_DEVELOPMENT_TEAM=<TeamID>]
 #   make run/ios-test-debug [FILTER=math.*]   # install + launch on device

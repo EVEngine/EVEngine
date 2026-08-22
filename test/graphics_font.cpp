@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "Fixtures.h"
 #include "common/Exception.h"
 #include "data/ByteData.h"
 #include "font/Font.h"
@@ -64,24 +65,6 @@ std::unique_ptr<eve::font::FontData> loadFontAwesome(int size = 32) {
     return std::unique_ptr<eve::font::FontData>(eve::font::Font::create()->newFontData(&data, size));
 }
 
-// Prepares a small headless window + Graphics pair, matching the pattern
-// used by test/RenderSystem.cpp's GraphicsSmoke.* cases.
-struct GraphicsFixture {
-    eve::window::Window *win = nullptr;
-    Graphics             *gfx = nullptr;
-
-    GraphicsFixture(int w = 320, int h = 240) {
-        win = eve::window::Window::create();
-        gfx = Graphics::create();
-        eve::window::WindowSettings s;
-        s.width    = static_cast<uint16_t>(w);
-        s.height   = static_cast<uint16_t>(h);
-        s.centered = true;
-        win->setWindowSettings(s);
-    }
-    ~GraphicsFixture() { win->close(); }
-};
-
 bool expectException(const std::function<void()> &fn) {
     try {
         fn();
@@ -97,7 +80,7 @@ TEST_CASE("graphics.font.newFontBuildsAtlasForCharset") {
     auto fontData = loadFontAwesome(32);
     REQUIRE(fontData.get() != nullptr);
 
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     REQUIRE(fx.gfx != nullptr);
 
     std::unique_ptr<Font> gfont(fx.gfx->newFont(fontData.get(), kIconUtf8));
@@ -129,7 +112,7 @@ TEST_CASE("graphics.font.newFontDefaultCharsetDoesNotCrash") {
     auto fontData = loadFontAwesome(24);
     REQUIRE(fontData.get() != nullptr);
 
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     // FontAwesome has no printable ASCII glyphs, so most/all of the default
     // charset will be skipped — this exercises the "no glyphs rasterized"
     // fallback path (a valid 1x1 placeholder atlas) without throwing.
@@ -139,7 +122,7 @@ TEST_CASE("graphics.font.newFontDefaultCharsetDoesNotCrash") {
 }
 
 TEST_CASE("graphics.print.throwsWithoutFont") {
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     fx.gfx->setFont(nullptr);
     CHECK(fx.gfx->getFont() == nullptr);
     CHECK(expectException([&] { fx.gfx->print("hello", 0, 0); }));
@@ -149,7 +132,7 @@ TEST_CASE("graphics.print.rendersGlyphPixelsOnCanvas") {
     auto fontData = loadFontAwesome(32);
     REQUIRE(fontData.get() != nullptr);
 
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     std::unique_ptr<Font> gfont(fx.gfx->newFont(fontData.get(), kIconUtf8));
     REQUIRE(gfont.get() != nullptr);
     fx.gfx->setFont(gfont.get());
@@ -180,21 +163,23 @@ TEST_CASE("graphics.print.rendersGlyphPixelsOnCanvas") {
     }
     CHECK(litPixels > 0);
 
-    // Hold the window open so the glyph is visible while debugging (~2s).
-    // Left: magnified canvas from the assert above. Right: live print at 3x.
-    fx.gfx->setBackgroundColorRGBA(0.08f, 0.08f, 0.1f, 1.f);
-    for (int frame = 0; frame < 60; ++frame) {
-        fx.gfx->clearScreen();
-        fx.gfx->drawTexturedRect(rt->getTexture(), 16.f, 16.f, 128.f, 128.f,
-                                 Color(1.f, 1.f, 1.f, 1.f));
-        fx.gfx->print(kIconUtf8, 160.f, 40.f, Color(1.f, 1.f, 1.f, 1.f), 3.f);
-        fx.gfx->present();
+    // Windowed-only debug preview: hold the window open so the glyph is visible
+    // while debugging (~2s). Skipped in headless mode (present() is a no-op).
+    if (!fx.gfx->isHeadless()) {
+        fx.gfx->setBackgroundColorRGBA(0.08f, 0.08f, 0.1f, 1.f);
+        for (int frame = 0; frame < 60; ++frame) {
+            fx.gfx->clearScreen();
+            fx.gfx->drawTexturedRect(rt->getTexture(), 16.f, 16.f, 128.f, 128.f,
+                                     Color(1.f, 1.f, 1.f, 1.f));
+            fx.gfx->print(kIconUtf8, 160.f, 40.f, Color(1.f, 1.f, 1.f, 1.f), 3.f);
+            fx.gfx->present();
 
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+            SDL_Delay(16);
         }
-        SDL_Delay(16);
     }
 
     // Reset so other tests don't inherit this font.

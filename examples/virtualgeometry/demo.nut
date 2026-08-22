@@ -46,6 +46,6 @@ function vg_step() {
         print("visible clusters=" + visible + " / " + renderer.getClusterCount()
               + " LODmax=" + renderer.getMaxLodLevel()
               + " view=" + renderer.getViewWidth() + "x" + renderer.getViewHeight()
-              + " rgbaBytes=" + rgba.getSize() + "\n");
+              + " rgbaBytes=" + (renderer.getViewWidth() * renderer.getViewHeight() * 4) + "\n");
     }
 }
