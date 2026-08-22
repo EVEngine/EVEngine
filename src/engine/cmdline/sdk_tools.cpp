@@ -391,6 +391,12 @@ void applyEnvFile(const std::string& path) {
 }
 
 int runShell(const std::string& cmd) {
+#if defined(EVENGINE_IOS)
+    // iOS forbids system(); the shell-out paths (eve get / eve build) are
+    // desktop-host only and never run on the iOS runtime.
+    std::cerr << "eve: shell commands are not available on iOS: " << cmd << std::endl;
+    return 127;
+#else
     const int rc = std::system(cmd.c_str());
     if (rc == -1) {
         std::cerr << "eve: failed to run: " << cmd << std::endl;
@@ -401,6 +407,7 @@ int runShell(const std::string& cmd) {
 #else
     if (WIFEXITED(rc)) return WEXITSTATUS(rc);
     return 1;
+#endif
 #endif
 }
 
