@@ -16,10 +16,10 @@ struct CleanArgs : Handler {
     }
 
     int parse(CLI::App& app, Cmdline& cmd) override {
-        auto create = app.get_subcommand("clean");
-        if (create->parsed()) {
-            string name = cmd.get_remaining(create, "debug");
-            int    res  = cmd.Create(".", name);
+        auto clean = app.get_subcommand("clean");
+        if (clean->parsed()) {
+            string name = cmd.get_remaining(clean, "debug");
+            int    res  = cmd.Clean(name);
             if (res == 0)
                 cout << rang::fg::green << "Clean " << name << " build in current path" << rang::fg::reset << endl;
             return res;

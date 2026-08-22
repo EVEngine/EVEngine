@@ -41,6 +41,15 @@ int Cmdline::Zip(std::string path) {
     // Normalize trailing separators so the output name is the game folder name.
     while (!outName.empty() && (outName.back() == '/' || outName.back() == '\\'))
         outName.pop_back();
+    // `eve zip` (default ".") would otherwise produce a literal "..eve";
+    // name the archive after the current directory instead.
+    if (outName.empty() || outName == ".") {
+        std::error_code aec;
+        // current_path() is already normalized; absolute(".") is not on POSIX
+        // (its filename() is "."), which would yield "..eve" again.
+        outName = std::filesystem::current_path(aec).filename().string();
+        if (aec || outName.empty()) outName = "game";
+    }
     outName += ".eve";
 
     if (!cmdline::createGameArchive(path, outName)) {

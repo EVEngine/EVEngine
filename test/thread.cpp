@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Exception.h"
+#include "event/Event.h"
 #include "thread/Channel.h"
 #include "thread/JobSystem.h"
 #include "thread/Task.h"
@@ -92,6 +93,48 @@ TEST_CASE("thread.channel.crossThread") {
     std::string got = ch->supply(1000);
     producer.join();
     CHECK_EQ(got, std::string("from-worker"));
+}
+
+TEST_CASE("thread.channel.demandBlocksUntilValue") {
+    std::unique_ptr<eve::thread::Channel> ch(threadModule()->newChannel());
+    std::thread producer([&] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        ch->push("demanded");
+    });
+    std::string got = ch->demand();
+    producer.join();
+    CHECK_EQ(got, std::string("demanded"));
+    CHECK(!ch->hasData());
+}
+
+TEST_CASE("thread.postMain.pushesToEventQueue") {
+    auto *ev = eve::event::Event::create();
+    REQUIRE(ev != nullptr);
+    ev->clear();
+
+    threadModule()->postMain("thread.task.done", "result-1");
+    threadModule()->postMain("thread.task.done", "result-2");
+    CHECK_EQ(ev->pollName(), std::string("thread.task.done"));
+    CHECK_EQ(ev->pollData(), std::string("result-2"));
+}
+
+TEST_CASE("thread.postMain.emptyNameThrows") {
+    CHECK(expectException([&] { threadModule()->postMain(""); }));
+}
+
+TEST_CASE("thread.postMain.fromWorkerThread") {
+    auto *ev = eve::event::Event::create();
+    REQUIRE(ev != nullptr);
+    ev->clear();
+
+    std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(1));
+    std::unique_ptr<eve::thread::Task> task(pool->submit([mod = threadModule()] {
+        mod->postMain("thread.worker.done", "w");
+    }));
+    task->wait();
+    CHECK_EQ(task->getStatus(), std::string("done"));
+    CHECK_EQ(ev->pollName(), std::string("thread.worker.done"));
+    CHECK_EQ(ev->pollData(), std::string("w"));
 }
 
 TEST_CASE("thread.pool.submitSleep") {
@@ -402,6 +445,31 @@ TEST_CASE("thread.jobsystem.dependencies") {
     CHECK(b->isDone());
     delete a;
     delete b;
+}
+
+TEST_CASE("thread.jobsystem.heapDeleteWhileCompletingStress") {
+    // Regression for a heap-use-after-free in releaseDependents: with the
+    // completionDone flag and the dependents-release split across two lock
+    // acquisitions, a waiter could return from wait() and delete the heap job
+    // while the completing worker was still iterating job->dependents (ASan:
+    // voxel.world.cross_chunk_seam_culled). Deleting immediately after wait()
+    // from the waiting thread widens the race; 200 iterations raise the odds.
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(4));
+    std::atomic<int> ran{0};
+    for (int i = 0; i < 200; ++i) {
+        eve::thread::Job *child =
+            js->createJob([&ran] { ran.fetch_add(1, std::memory_order_relaxed); });
+        eve::thread::Job *dependent = js->createJob([] {});
+        dependent->addDependency(child);
+        js->schedule(child);
+        js->schedule(dependent);
+        child->wait();
+        delete child;  // frees the dependents vector while the worker may
+                       // still be in completeJob's tail (pre-fix UAF)
+        dependent->wait();
+        delete dependent;
+    }
+    CHECK_EQ(ran.load(), 200);
 }
 
 TEST_CASE("thread.jobsystem.dependencyOnCompletedJobIsNoOp") {

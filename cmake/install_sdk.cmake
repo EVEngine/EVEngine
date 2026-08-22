@@ -71,6 +71,13 @@ if(BUILD_PLATFORM STREQUAL "macosx")
     )
 endif()
 
+# Windows: bundle the runtime DLLs (Vulkan loader + VC redist) next to eve.exe
+# so a packaged game is self-contained and can be produced from ANY host
+# (Linux/macOS cross-packaging included) without a Visual Studio install.
+if(BUILD_PLATFORM STREQUAL "win32")
+    install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/win32_bundle_runtime.cmake")
+endif()
+
 # ---- Public headers (engine common + module façades) ----
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     DESTINATION include/eve/common
