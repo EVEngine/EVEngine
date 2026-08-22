@@ -119,6 +119,7 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  economy.cpp
   rx.cpp
   runtime.cpp
   timer.cpp

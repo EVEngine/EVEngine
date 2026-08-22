@@ -46,6 +46,8 @@ void Collector::tick(int player) {
         return;
     }
     switch (state_) {
+        case State::Idle:
+            break;
         case State::MovingToNode:
             if (--travelRemaining_ <= 0) state_ = State::Gathering;
             break;
