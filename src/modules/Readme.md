@@ -77,6 +77,11 @@
     代码：`src/modules/voxel/`
     设计：`docs/dev/体素渲染模块设计.md`
 
+6b1c. 可交互积雪 - snow（`eve.Snow`）
+    深度场雪面（SnowField 网格）+ 真实位移深坑 + POM 微细节 + 降雪回填
+    `newField` / `stampFootprint` / `stampImpact` / `addSnowfall` / `applyToHeightmap`
+    代码：`src/modules/snow/`
+
 6b2. 逆运动学 - ik（`eve.IK`）
     封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
     `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`

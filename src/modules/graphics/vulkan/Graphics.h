@@ -303,7 +303,10 @@ public:
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
     bool releaseTexture(Texture *texture) override;
+    bool updateTexture(Texture *texture, int width, int height,
+                       const uint8_t *rgba) override;
     bool replaceTexturePixels(Texture *tex, image::ImageData *data);
+    bool replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_t *rgba);
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
     void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
                                 const Color &color) override;

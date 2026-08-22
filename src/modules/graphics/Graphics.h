@@ -328,6 +328,17 @@ public:
     virtual Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) = 0;
 
     /**
+     * @brief Replace an existing texture's pixels in place (pointer stays stable).
+     *
+     * The new size must match the texture's current dimensions (mip chain and
+     * sampler are kept); callers that need a different size should create a new
+     * texture instead. Returns false when the texture is not owned by this
+     * backend or the backend does not support in-place updates.
+     */
+    virtual bool updateTexture(Texture *texture, int width, int height,
+                               const uint8_t *rgba) = 0;
+
+    /**
      * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
      * No-op when texture is null or not owned by this Graphics.
      */
