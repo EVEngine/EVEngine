@@ -311,10 +311,7 @@ static void setPixelRGBA4(const Colorf &c, ImageData::Pixel *p) {
     uint16_t g    = (uint16_t)(clamp01(c.g) * 0xF + 0.5);
     uint16_t b    = (uint16_t)(clamp01(c.b) * 0xF + 0.5);
     uint16_t a    = (uint16_t)(clamp01(c.a) * 0xF + 0.5);
-    const uint16_t packed = (r << 12) | (g << 8) | (b << 4) | (a << 0);
-    // Packed formats are stored at 2-byte granularity, which may not satisfy
-    // the Pixel union's 4-byte alignment; memcpy avoids misaligned access UB.
-    std::memcpy(&p->packed16, &packed, sizeof(packed));
+    p->packed16 = (r << 12) | (g << 8) | (b << 4) | (a << 0);
 }
 
 static void setPixelRGB5A1(const Colorf &c, ImageData::Pixel *p) {
@@ -323,8 +320,7 @@ static void setPixelRGB5A1(const Colorf &c, ImageData::Pixel *p) {
     uint16_t g    = (uint16_t)(clamp01(c.g) * 0x1F + 0.5);
     uint16_t b    = (uint16_t)(clamp01(c.b) * 0x1F + 0.5);
     uint16_t a    = (uint16_t)(clamp01(c.a) * 0x1 + 0.5);
-    const uint16_t packed = (r << 11) | (g << 6) | (b << 1) | (a << 0);
-    std::memcpy(&p->packed16, &packed, sizeof(packed));
+    p->packed16 = (r << 11) | (g << 6) | (b << 1) | (a << 0);
 }
 
 static void setPixelRGB565(const Colorf &c, ImageData::Pixel *p) {
@@ -332,8 +328,7 @@ static void setPixelRGB565(const Colorf &c, ImageData::Pixel *p) {
     uint16_t r    = (uint16_t)(clamp01(c.r) * 0x1F + 0.5);
     uint16_t g    = (uint16_t)(clamp01(c.g) * 0x3F + 0.5);
     uint16_t b    = (uint16_t)(clamp01(c.b) * 0x1F + 0.5);
-    const uint16_t packed = (r << 11) | (g << 5) | (b << 0);
-    std::memcpy(&p->packed16, &packed, sizeof(packed));
+    p->packed16 = (r << 11) | (g << 5) | (b << 0);
 }
 
 static void setPixelRGB10A2(const Colorf &c, ImageData::Pixel *p) {
@@ -439,31 +434,25 @@ static void getPixelRGBA32F(const ImageData::Pixel *p, Colorf &c) {
 
 static void getPixelRGBA4(const ImageData::Pixel *p, Colorf &c) {
     // LSB->MSB: [a, b, g, r]
-    uint16_t packed = 0;
-    std::memcpy(&packed, &p->packed16, sizeof(packed));
-    c.r = ((packed >> 12) & 0xF) / (float)0xF;
-    c.g = ((packed >> 8) & 0xF) / (float)0xF;
-    c.b = ((packed >> 4) & 0xF) / (float)0xF;
-    c.a = ((packed >> 0) & 0xF) / (float)0xF;
+    c.r = ((p->packed16 >> 12) & 0xF) / (float)0xF;
+    c.g = ((p->packed16 >> 8) & 0xF) / (float)0xF;
+    c.b = ((p->packed16 >> 4) & 0xF) / (float)0xF;
+    c.a = ((p->packed16 >> 0) & 0xF) / (float)0xF;
 }
 
 static void getPixelRGB5A1(const ImageData::Pixel *p, Colorf &c) {
     // LSB->MSB: [a, b, g, r]
-    uint16_t packed = 0;
-    std::memcpy(&packed, &p->packed16, sizeof(packed));
-    c.r = ((packed >> 11) & 0x1F) / (float)0x1F;
-    c.g = ((packed >> 6) & 0x1F) / (float)0x1F;
-    c.b = ((packed >> 1) & 0x1F) / (float)0x1F;
-    c.a = ((packed >> 0) & 0x1) / (float)0x1;
+    c.r = ((p->packed16 >> 11) & 0x1F) / (float)0x1F;
+    c.g = ((p->packed16 >> 6) & 0x1F) / (float)0x1F;
+    c.b = ((p->packed16 >> 1) & 0x1F) / (float)0x1F;
+    c.a = ((p->packed16 >> 0) & 0x1) / (float)0x1;
 }
 
 static void getPixelRGB565(const ImageData::Pixel *p, Colorf &c) {
     // LSB->MSB: [b, g, r]
-    uint16_t packed = 0;
-    std::memcpy(&packed, &p->packed16, sizeof(packed));
-    c.r = ((packed >> 11) & 0x1F) / (float)0x1F;
-    c.g = ((packed >> 5) & 0x3F) / (float)0x3F;
-    c.b = ((packed >> 0) & 0x1F) / (float)0x1F;
+    c.r = ((p->packed16 >> 11) & 0x1F) / (float)0x1F;
+    c.g = ((p->packed16 >> 5) & 0x3F) / (float)0x3F;
+    c.b = ((p->packed16 >> 0) & 0x1F) / (float)0x1F;
     c.a = 1.0f;
 }
 
@@ -486,23 +475,27 @@ static void getPixelRG11B10F(const ImageData::Pixel *p, Colorf &c) {
 void ImageData::setPixel(int x, int y, const Colorf &c) {
     if (!inside(x, y)) throw eve::Exception("Attempt to set out-of-range pixel!");
 
-    size_t pixelsize = getPixelSize();
-    Pixel *p         = (Pixel *)(data + ((y * width + x) * pixelsize));
-
     if (pixelSetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::setPixel", format.c_str());
 
-    pixelSetFunction(c, p);
+    // Packed formats (RGBA4 / RGB5A1 / RGB565) place pixels at 2-byte
+    // granularity, which can violate the Pixel union's 4-byte alignment.
+    // Encode into an aligned local and copy the bytes back instead of
+    // accessing a possibly-misaligned union member (UBSan).
+    const size_t pixelsize = getPixelSize();
+    Pixel tmp;
+    pixelSetFunction(c, &tmp);
+    std::memcpy(data + ((y * width + x) * pixelsize), &tmp, pixelsize);
 }
 
 void ImageData::getPixel(int x, int y, Colorf &c) const {
     if (!inside(x, y)) throw eve::Exception("Attempt to get out-of-range pixel!");
 
-    size_t       pixelsize = getPixelSize();
-    const Pixel *p         = (const Pixel *)(data + ((y * width + x) * pixelsize));
-
     if (pixelGetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::getPixel", format.c_str());
 
-    pixelGetFunction(p, c);
+    const size_t pixelsize = getPixelSize();
+    Pixel tmp;
+    std::memcpy(&tmp, data + ((y * width + x) * pixelsize), pixelsize);
+    pixelGetFunction(&tmp, c);
 }
 
 Colorf ImageData::getPixel(int x, int y) const {
