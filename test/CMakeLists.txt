@@ -55,6 +55,7 @@ file(GLOB all_test_cpp
   ScenePanel.cpp
   scene.cpp
   sceneloader.cpp
+  service_mocks.cpp
   particles.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp

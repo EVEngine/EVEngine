@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <chrono>
 #include <functional>
+#include <thread>
 
 namespace eve::network {
 
@@ -77,6 +78,7 @@ Module_IMPL(Network, new Network());
 Network::Network() {
     worker_ = std::make_unique<NetWorker>(this);
     worker_->start();
+    eve::cap::provide<eve::service::INetwork>(this);
 }
 
 Network::~Network() {
@@ -94,6 +96,34 @@ UdpSocket* Network::newUdp() {
 
 HttpRequest* Network::newHttp(std::string method, std::string url) {
     return new HttpRequest(this, std::move(method), std::move(url));
+}
+
+bool Network::httpRequest(const std::string& method, const std::string& url,
+                          const std::string& body, int timeoutMs, int& status,
+                          std::string& responseBody) {
+    HttpRequest* req = newHttp(method, url);
+    if (!req) return false;
+    if (!body.empty()) req->setBodyString(body);
+    req->setTimeout(timeoutMs > 0 ? timeoutMs : 10000);
+    if (!req->submit()) return false;
+
+    const auto deadline = std::chrono::steady_clock::now() +
+                          std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 1);
+    while (std::chrono::steady_clock::now() < deadline) {
+        std::vector<NetCompletion> out;
+        drainForTest(out);
+        for (const auto& c : out) {
+            if (c.handle != req) continue;
+            if (c.type == NetEvType::HttpResp) {
+                status = c.status;
+                if (c.bytes) responseBody.assign(c.bytes->begin(), c.bytes->end());
+                return true;
+            }
+            if (c.type == NetEvType::Err) return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    return false;
 }
 
 Channel* Network::newChannel(TcpSocket* socket) {

@@ -3,10 +3,15 @@
 #include <string>
 #include <vector>
 
+#include "common/Capability.h"
+#include "common/Exception.h"
 #include "common/Module.h"
+#include "common/ServiceInterfaces.h"
 #include "common/config.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
+
+#include <cstdint>
 
 #define EVENGINE_APPDATA_PREFIX ""
 #ifdef EVENGINE_WINDOWS
@@ -28,7 +33,7 @@
 
 namespace eve::filesystem {
 
-class Filesystem : public Module {
+class Filesystem : public Module, public eve::service::IFileSystem {
 public:
     Module_REG(Filesystem);
 
@@ -39,8 +44,35 @@ public:
         std::string type;  // file, directory, symlink, other
     };
 
-    Filesystem() {}
+    Filesystem() { eve::cap::provide<eve::service::IFileSystem>(this); }
     virtual ~Filesystem() {}
+
+    bool readFile(const std::string &path, std::vector<uint8_t> &out) override {
+        try {
+            FileData *fd = read(path);
+            if (!fd) return false;
+            const auto *data = static_cast<const uint8_t *>(fd->getData());
+            out.assign(data, data + fd->getSize());
+            delete fd;
+            return true;
+        } catch (const eve::Exception &) {
+            return false;
+        }
+    }
+
+    bool writeFile(const std::string &path, const void *data, size_t size) override {
+        try {
+            write(path, data, int64_t(size));
+            return true;
+        } catch (const eve::Exception &) {
+            return false;
+        }
+    }
+
+    bool fileExists(const std::string &path) override {
+        Info info;
+        return getInfo(path, info);
+    }
 
     virtual void init(const char* arg0) = 0;
 

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/Capability.h"
 #include "common/Module.h"
+#include "common/ServiceInterfaces.h"
 #include "NetTypes.h"
 
 #include <memory>
@@ -27,7 +29,7 @@ class NetRpc;
  * @brief Network module: TCP/UDP/HTTP factories, background worker, and
  * completion event plumbing. Script: `net <- eve.Network();`
  */
-class Network : public Module {
+class Network : public Module, public eve::service::INetwork {
 public:
     Module_REG(Network);
     Network();
@@ -71,6 +73,11 @@ public:
 
     /** @brief Background worker thread handle (advanced). */
     NetWorker* worker() const { return worker_.get(); }
+
+    /** @brief Synchronous HTTP request (blocks up to timeoutMs on the worker). */
+    bool httpRequest(const std::string& method, const std::string& url,
+                     const std::string& body, int timeoutMs, int& status,
+                     std::string& responseBody) override;
 
     /** @brief Internal: register/unregister sockets for pump polling. */
     void watchTcp(TcpSocket* sock);
