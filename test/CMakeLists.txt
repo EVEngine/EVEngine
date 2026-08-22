@@ -358,6 +358,7 @@ set(EVELIBS
   EVProcgen
   EVHouseGen
   EVVoxel
+  EVSnow
   EVStylize
   EVSpriteStack
   EVEditor)

@@ -245,6 +245,9 @@ eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
                    GROUP 3d)
+eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
+                   DEPS graphics procgen
+                   GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
