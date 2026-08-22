@@ -340,6 +340,7 @@ set(EVELIBS
   EVScene
   EVSceneLoader
   EVParticles
+  EVFluids
   EVPhysics
   EVMap
   EVGpgpu
