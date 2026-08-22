@@ -151,6 +151,12 @@ check/test-manifest:
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
 
+# Verify every script-facing addFunc in the newly-authored doc chapters is
+# actually documented (see docs/usr/REVIEW.md). Existing chapters have known
+# debt and are reported as warnings; pass --modules to extend the gate.
+check/bindings:
+	python3 scripts/check_bindings.py --strict --modules avatar,buildingfx,camera,database,dialogue,grid,housegen,sceneloader,stylize,virtualgeometry
+
 # Worktree/agent setup: initialize the pinned git submodules (external/*).
 # third-party/ itself is fetched by the first cmake configure at the pinned
 # commit (EVENGINE_THIRD_PARTY_PIN in CMakeLists.txt).

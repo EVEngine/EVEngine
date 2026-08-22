@@ -96,6 +96,7 @@ file(GLOB all_test_cpp
   indirect_builder.cpp
   box2d.cpp
   box3d.cpp
+  binding_selfcheck.cpp
   softbody.cpp
   hotreload.cpp
   remotesync.cpp

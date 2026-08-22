@@ -99,6 +99,12 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/module_depgraph.py --check
 
+      - name: Check script bindings are documented (new chapters)
+        timeout-minutes: 5
+        run: >-
+          python3 scripts/check_bindings.py --strict
+          --modules avatar,buildingfx,camera,database,dialogue,grid,housegen,sceneloader,stylize,virtualgeometry
+
       - name: Check declared module layers vs includes
         timeout-minutes: 5
         run: python3 scripts/module_depgraph.py --check-layers
