@@ -246,7 +246,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
 
 void Graphics::initHeadless(int width, int height) {
     StartupStage initStage("graphics: initHeadless (total)");
-    if (initialized) throw Exception("Graphics::initHeadless: already initialized");
+    if (initialized) {
+        if (headless_) {
+            // Re-entrant: test cases share the process-wide Graphics singleton.
+            // Update the logical viewport and keep the existing device.
+            setViewportSize(width, height, width, height);
+            return;
+        }
+        throw Exception("Graphics::initHeadless: already initialized with a window");
+    }
     if (width <= 0 || height <= 0) throw Exception("Graphics::initHeadless: invalid size");
 
     // No window, no surface extensions, no swapchain: a bare Vulkan device that
