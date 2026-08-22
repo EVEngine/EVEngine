@@ -1812,6 +1812,16 @@ bool Graphics::releaseTexture(Texture *texture) {
     return true;
 }
 
+bool Graphics::updateTexture(Texture *texture, int width, int height,
+                             const uint8_t *rgba) {
+    // WebGPU backend keeps texture images immutable; rebuild via newTexture.
+    (void)texture;
+    (void)width;
+    (void)height;
+    (void)rgba;
+    return false;
+}
+
 GpuTexture *Graphics::gpuForTexture(Texture *t) const {
     return t ? static_cast<GpuTexture *>(t->gpuHandle) : nullptr;
 }
