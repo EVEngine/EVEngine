@@ -3,7 +3,7 @@
 # so NO torch / transformers / bitsandbytes are needed here.
 # Python 3.10+ recommended.
 
-fastapi>=0.110
-uvicorn[standard]>=0.29
-pydantic>=2.6
-requests>=2.31
+fastapi>=0.141.1
+uvicorn[standard]>=0.52.4
+pydantic>=2.13.4
+requests>=2.34.2
