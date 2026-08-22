@@ -103,6 +103,15 @@ TEST_CASE("event.clearThenPollEmpty") {
     CHECK(ev->pollName() == "");
 }
 
+TEST_CASE("Event.wait.returnsQueuedMessage") {
+    auto* ev = Event::create();
+    ev->pushData("wait.queued", "payload");
+    auto* msg = ev->wait();
+    REQUIRE(msg != nullptr);
+    CHECK(msg->name == "wait.queued");
+    delete msg;
+}
+
 TEST_CASE("event.pumpSmoke") {
     auto* ev = Event::create();
     ev->pump();
