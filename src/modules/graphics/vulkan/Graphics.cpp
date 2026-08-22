@@ -105,6 +105,7 @@ Graphics::~Graphics() {
     mesh3dClusteredFrameSlots.clear();
     destroyShadowResources();
     destroyGBufferResources();
+    destroyDecalResources();
     destroySceneColorResources();
     destroyUiColorResources();
     auto destroyBuf = [&](vkb::GenericBuffer &b) { b.release(); };
@@ -533,6 +534,11 @@ Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
 }
 
+Graphics::DecalSlot *Graphics::currentDecalSlot() {
+    if (decalSlots.empty()) return nullptr;
+    return &decalSlots[currentFrameSlot() % decalSlots.size()];
+}
+
 Graphics::SceneColorSlot *Graphics::currentSceneColorSlot() {
     if (sceneColorSlots.empty()) return nullptr;
     return &sceneColorSlots[currentFrameSlot() % sceneColorSlots.size()];
@@ -554,6 +560,8 @@ void Graphics::dropPendingOffscreenPasses() {
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPending = false;
     gbufferPassDraws.clear();
+    decalPending = false;
+    decalPassDraws.clear();
 }
 
 bool Graphics::beginSwapchainRenderPass() {

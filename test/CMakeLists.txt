@@ -187,6 +187,7 @@ file(GLOB all_test_scripts
   simplesquirrel.nut
   window.nut
   timer.nut
+  decal.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
@@ -359,6 +360,7 @@ set(EVELIBS
   EVHouseGen
   EVVoxel
   EVStylize
+  EVDecal
   EVSpriteStack
   EVEditor)
 

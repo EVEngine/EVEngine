@@ -478,6 +478,110 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     return img;
 }
 
+image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachment) {
+    if (!initialized) return nullptr;
+    auto *slot = currentDecalSlot();
+    auto *gslot = currentGBufferSlot();
+    if (!slot || !gslot || !slot->framebuffer || !decalPipeline || !decalRenderPass ||
+        !gbufferPipeline || !gbufferRenderPass || !gslot->framebuffer)
+        return nullptr;
+    vkb::ColorTarget *src = nullptr;
+    if (attachment == "normal")
+        src = &slot->normal;
+    else if (attachment == "params")
+        src = &slot->params;
+    else if (attachment == "albedo")
+        src = &slot->albedo;
+    else
+        return nullptr;
+
+    const uint32_t w = uint32_t(decalWidth);
+    const uint32_t h = uint32_t(decalHeight);
+    if (w == 0 || h == 0) return nullptr;
+    ensureDecalUnitBox();
+    if (!decalUnitBox || !decalUnitBox->gpuHandle) return nullptr;
+
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                // Replay the pending G-buffer fill so hwDepth +
+                                // normal are fresh for the decal pass (same
+                                // pattern as renderEntityIdMask).
+                                if (gbufferPending && !gbufferPassDraws.empty()) {
+                                    std::array<vk::ClearValue, 4> clears{};
+                                    clears[0].color =
+                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                    clears[1].color =
+                                        vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+                                    clears[2].color =
+                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                    vk::RenderPassBeginInfo rpBegin{};
+                                    rpBegin.renderPass = gbufferRenderPass;
+                                    rpBegin.framebuffer = gslot->framebuffer;
+                                    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+                                    rpBegin.clearValueCount = uint32_t(clears.size());
+                                    rpBegin.pClearValues = clears.data();
+                                    gslot->normal.beginColorAttachment();
+                                    gslot->depthColor.beginColorAttachment();
+                                    gslot->albedo.beginColorAttachment();
+                                    gslot->depth.beginDepthAttachment();
+                                    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+                                    setViewportAndScissor(cb, w, h);
+                                    cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                    gbufferPipeline);
+                                    for (const auto &d : gbufferPassDraws) {
+                                        if (!d.mesh || !d.mesh->gpuHandle) continue;
+                                        auto *gpuMesh =
+                                            static_cast<GpuMesh *>(d.mesh->gpuHandle);
+                                        Texture *alb = d.albedo ? d.albedo : whiteTexture;
+                                        if (alb && alb->gpuHandle && texSetLayout) {
+                                            auto *gpuTex =
+                                                static_cast<GpuTexture *>(alb->gpuHandle);
+                                            cb.bindDescriptorSets(
+                                                vk::PipelineBindPoint::eGraphics,
+                                                gbufferPipelineLayout, 0, 1,
+                                                gpuTex->descriptorSet.ptr(), 0, nullptr);
+                                        }
+                                        cb.pushConstants(
+                                            gbufferPipelineLayout,
+                                            vk::ShaderStageFlagBits::eVertex |
+                                                vk::ShaderStageFlagBits::eFragment,
+                                            0, sizeof(GBufferPush), &d.push);
+                                        drawIndexedMesh(cb, *gpuMesh);
+                                    }
+                                    cb.endRenderPass();
+                                    gslot->normal.endSampledLayout();
+                                    gslot->depthColor.endSampledLayout();
+                                    gslot->albedo.endSampledLayout();
+                                    gslot->depth.endSampledLayout();
+                                }
+
+                                // Decal pass reads the pass above; record it and
+                                // then copy the requested attachment to CPU.
+                                recordDecalPassInto(cb, *slot, *gslot);
+                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0,
+                                                           1};
+                                region.imageExtent = vk::Extent3D{w, h, 1};
+                                cb.copyImageToBuffer(src->image(),
+                                                     vk::ImageLayout::eTransferSrcOptimal,
+                                                     staging.buffer, region);
+                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    auto *img = new image::ImageData(int(w), int(h), "RGBA8");
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+    return img;
+}
+
 Canvas *Graphics::newCanvas(int w, int h) {
     ASSERT(initialized);
     ASSERT_GT(w, 0);

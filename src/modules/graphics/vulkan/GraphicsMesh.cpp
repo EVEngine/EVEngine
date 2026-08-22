@@ -571,6 +571,26 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!depthTex || !depthTex->gpuHandle) throw Exception("drawMesh: missing scene depth texture");
     auto *gpuDepth = static_cast<GpuTexture *>(depthTex->gpuHandle);
 
+    // Screen-space decal layer (bindings 8/9/10). Only sampled when the decal
+    // pass actually recorded this frame; otherwise the transparent/flat
+    // placeholders make the blend a no-op.
+    ensureDecalPlaceholders();
+    GpuTexture *gpuDecalAlb = nullptr;
+    GpuTexture *gpuDecalNrm = nullptr;
+    GpuTexture *gpuDecalPrm = nullptr;
+    if (decalLayerFresh) {
+        if (auto *dslot = currentDecalSlot()) {
+            gpuDecalAlb = &dslot->albedoGpu;
+            gpuDecalNrm = &dslot->normalGpu;
+            gpuDecalPrm = &dslot->paramsGpu;
+        }
+    }
+    if (!gpuDecalAlb) {
+        gpuDecalAlb = static_cast<GpuTexture *>(decalFlatAlbedo->gpuHandle);
+        gpuDecalNrm = static_cast<GpuTexture *>(decalFlatNormal->gpuHandle);
+        gpuDecalPrm = static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
+    }
+
     ensureDefaultEnvCubemap();
     Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
     if (!envTex || !envTex->gpuHandle) throw Exception("drawMesh: missing env cubemap");
@@ -622,7 +642,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         const ShadowUBO shadow = makeShadowUbo();
         updateRingLocal(cfslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
         vk::DescriptorSet set =
-            mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, cfslots);
+            mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDecalAlb, gpuDecalNrm,
+                                  gpuDecalPrm, cfslots);
         const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
         if (mesh3dClusteredPipeline != lastMesh3dClusteredPipeline) {
@@ -679,7 +700,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
     const ShadowUBO shadow = makeShadowUbo();
     updateRingLocal(fslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth,
+                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {

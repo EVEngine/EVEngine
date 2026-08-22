@@ -1585,6 +1585,17 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
     Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
     auto *gpuEnv = static_cast<GpuTexture *>(envTex->gpuHandle);
     auto *gpuDepth = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    ensureDecalPlaceholders();
+    auto *gpuDecalAlb = static_cast<GpuTexture *>(decalFlatAlbedo->gpuHandle);
+    auto *gpuDecalNrm = static_cast<GpuTexture *>(decalFlatNormal->gpuHandle);
+    auto *gpuDecalPrm = static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
+    if (decalLayerFresh) {
+        if (auto *dslot = currentDecalSlot()) {
+            gpuDecalAlb = &dslot->albedoGpu;
+            gpuDecalNrm = &dslot->normalGpu;
+            gpuDecalPrm = &dslot->paramsGpu;
+        }
+    }
 
     Mesh3DUBO ubo = mesh3dFrameUbo;
     ubo.model = glm::mat4(1.f);
@@ -1630,7 +1641,8 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
     }
     shadowUbo.bias.z = mesh3dShadowReceive ? 1.f : 0.f;
     updateRingLocal(fslots.shadowRing, shadowOffset, &shadowUbo, sizeof(shadowUbo));
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth,
+                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
     return {set, uboOffset, shadowOffset};
 }
 
