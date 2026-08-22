@@ -348,6 +348,7 @@ std::string sdkVersion(const std::string& root) {
     std::ifstream in(std::filesystem::path(root) / "share" / "eve" / "VERSION");
     std::string   s;
     std::getline(in, s);
+    while (!s.empty() && (s.back() == '\r' || s.back() == '\n' || s.back() == ' ')) s.pop_back();
     return s;
 }
 
@@ -474,6 +475,7 @@ std::string sdkTargetPlatform(const std::string& sdkRoot) {
     std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
     std::string  s;
     std::getline(in, s);
+    while (!s.empty() && (s.back() == '\r' || s.back() == '\n' || s.back() == ' ')) s.pop_back();
     return s;
 }
 
