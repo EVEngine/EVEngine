@@ -580,11 +580,11 @@ public:
         glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
     };
     virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
-                                                 const glm::mat4 &viewProj, int width, int height) {
+                                                 const glm::mat4 &viewProj, int w, int h) {
         (void)draws;
         (void)viewProj;
-        (void)width;
-        (void)height;
+        (void)w;
+        (void)h;
         return nullptr;
     }
 
@@ -594,8 +594,8 @@ public:
      * Valid only after a G-buffer or entity-ID offscreen pass filled it.
      * Caller owns the returned ImageData*. Returns nullptr when unsupported.
      */
-    virtual image::ImageData *readGBufferToImageData(const std::string &name) {
-        (void)name;
+    virtual image::ImageData *readGBufferToImageData(const std::string &attachment) {
+        (void)attachment;
         return nullptr;
     }
 

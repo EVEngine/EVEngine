@@ -69,7 +69,7 @@ class RawStringLiteralTest(unittest.TestCase):
                     f"eve_raw_string_literal(_lit_{idx} \"${{_content_{idx}}}\")"
                 )
                 lines.append(f'string(APPEND _out "CASE{idx}|${{_lit_{idx}}}\\n")')
-            lines.append(f'file(WRITE "${{OUT}}" "${{_out}}")')
+            lines.append('file(WRITE "${OUT}" "${_out}")')
             harness.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
             run_cmake(harness, out)

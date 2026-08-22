@@ -2041,6 +2041,7 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     RenderControl *rc = gfx->getRenderControl();
     REQUIRE(rc != nullptr);
     rc->enable("gbuffer");
@@ -2349,6 +2350,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     Texture *sceneTex = capturePresented(gfx);
     REQUIRE(sceneTex != nullptr);
 
@@ -3201,6 +3203,7 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
     auto *parts = eve::particles::Particles::create();
@@ -3383,6 +3386,7 @@ TEST_CASE("graphics.imageAudit.postQuality") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
     const int w = 400, h = 300;
 

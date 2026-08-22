@@ -269,7 +269,7 @@ std::string sqLiteralValue(const Poco::Dynamic::Var& v) {
             auto arr = v.extract<Poco::JSON::Array::Ptr>();
             for (size_t i = 0; i < arr->size(); ++i) {
                 if (i) out += ",";
-                out += sqLiteralValue(arr->get(i));
+                out += sqLiteralValue(arr->get(static_cast<unsigned int>(i)));
             }
         } catch (...) {
         }
@@ -1127,7 +1127,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                 auto arr = args->getArray("buffers");
                 if (arr) {
                     for (size_t i = 0; i < arr->size(); ++i)
-                        buffers.push_back(arr->get(i).convert<std::string>());
+                        buffers.push_back(
+                            arr->get(static_cast<unsigned int>(i)).convert<std::string>());
                 }
             } catch (...) {
             }

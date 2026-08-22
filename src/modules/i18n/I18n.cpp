@@ -248,8 +248,8 @@ std::string I18n::formatString(const std::string &tpl,
         if (tpl[i] == '{') {
             const size_t close = tpl.find('}', i + 1);
             if (close != std::string::npos) {
-                const std::string name = tpl.substr(i + 1, close - i - 1);
-                const auto        it   = params.find(name);
+                const std::string key  = tpl.substr(i + 1, close - i - 1);
+                const auto        it   = params.find(key);
                 if (it != params.end()) {
                     out += it->second;
                     i = close + 1;

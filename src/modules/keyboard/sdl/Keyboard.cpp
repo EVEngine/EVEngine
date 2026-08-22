@@ -32,8 +32,8 @@ bool Keyboard::isDown(const std::vector<std::string>& keys) const {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
     if (!state) return false;
 
-    for (const auto& name : keys) {
-        SDL_Keycode key = SDL_GetKeyFromName(name.c_str());
+    for (const auto& keyName : keys) {
+        SDL_Keycode key = SDL_GetKeyFromName(keyName.c_str());
         if (key == SDLK_UNKNOWN) continue;
         SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
         if (scancode != SDL_SCANCODE_UNKNOWN && state[scancode]) return true;
@@ -49,8 +49,8 @@ bool Keyboard::isScancodeDown(const std::vector<std::string>& scancodes) const {
     const Uint8* state = SDL_GetKeyboardState(nullptr);
     if (!state) return false;
 
-    for (const auto& name : scancodes) {
-        SDL_Scancode scancode = SDL_GetScancodeFromName(name.c_str());
+    for (const auto& scancodeName : scancodes) {
+        SDL_Scancode scancode = SDL_GetScancodeFromName(scancodeName.c_str());
         if (scancode != SDL_SCANCODE_UNKNOWN && state[scancode]) return true;
     }
     return false;
@@ -61,8 +61,8 @@ std::string Keyboard::getKeyFromScancode(const std::string& scancode) const {
     if (sdlScancode == SDL_SCANCODE_UNKNOWN) return {};
     SDL_Keycode key = SDL_GetKeyFromScancode(sdlScancode);
     if (key == SDLK_UNKNOWN) return {};
-    const char* name = SDL_GetKeyName(key);
-    return name ? name : std::string{};
+    const char* keyName = SDL_GetKeyName(key);
+    return keyName ? keyName : std::string{};
 }
 
 std::string Keyboard::getScancodeFromKey(const std::string& key) const {
@@ -70,8 +70,8 @@ std::string Keyboard::getScancodeFromKey(const std::string& key) const {
     if (sdlKey == SDLK_UNKNOWN) return {};
     SDL_Scancode scancode = SDL_GetScancodeFromKey(sdlKey);
     if (scancode == SDL_SCANCODE_UNKNOWN) return {};
-    const char* name = SDL_GetScancodeName(scancode);
-    return name ? name : std::string{};
+    const char* scancodeName = SDL_GetScancodeName(scancode);
+    return scancodeName ? scancodeName : std::string{};
 }
 
 void Keyboard::setTextInput(bool enable) {

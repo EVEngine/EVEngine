@@ -29,15 +29,8 @@ struct PbrTextureSet {
     image::ImageData *height    = nullptr;  // RGBA8, grayscale displacement
     image::ImageData *ao        = nullptr;  // RGBA8, grayscale ambient occlusion
 
-    void destroy() {
-        delete albedo;
-        delete normal;
-        delete roughness;
-        delete metallic;
-        delete height;
-        delete ao;
-        albedo = normal = roughness = metallic = height = ao = nullptr;
-    }
+    /** @brief Deletes all maps and nulls the pointers (defined in PbrMaterial.cpp). */
+    void destroy();
 };
 
 /** @brief Recipe returns a full PBR set (caller owns), or nullptr on failure. */

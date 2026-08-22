@@ -8,7 +8,8 @@
 namespace eve {
 namespace filesystem {
 
-FileData::FileData(const std::string &filename, uint64_t size) : data(nullptr), filename(filename), size((size_t)size) {
+FileData::FileData(const std::string &filename, uint64_t size)
+    : data(nullptr), size((size_t)size), filename(filename) {
     try {
         data = new uint8_t[size];
     } catch (std::bad_alloc &) {
@@ -25,7 +26,7 @@ FileData::FileData(const std::string &filename, uint64_t size) : data(nullptr), 
 }
 
 FileData::FileData(const FileData &c)
-    : data(nullptr), filename(c.filename), size(c.size), extension(c.extension), name(c.name) {
+    : data(nullptr), size(c.size), filename(c.filename), extension(c.extension), name(c.name) {
     try {
         data = new uint8_t[size];
     } catch (std::bad_alloc &) {

@@ -286,7 +286,7 @@ void softmaxRows(float *data, int rows, int cols) {
         for (int c = 0; c < cols; ++c) mx = std::max(mx, row[c]);
         double sum = 0.0;
         for (int c = 0; c < cols; ++c) {
-            row[c] = std::exp(double(row[c] - mx));
+            row[c] = static_cast<float>(std::exp(double(row[c] - mx)));
             sum += row[c];
         }
         for (int c = 0; c < cols; ++c) row[c] = float(row[c] / sum);

@@ -9,6 +9,16 @@
 
 namespace eve::procgen {
 
+void PbrTextureSet::destroy() {
+    delete albedo;
+    delete normal;
+    delete roughness;
+    delete metallic;
+    delete height;
+    delete ao;
+    albedo = normal = roughness = metallic = height = ao = nullptr;
+}
+
 PbrRecipeRegistry &PbrRecipeRegistry::instance() {
     static PbrRecipeRegistry reg;
     return reg;

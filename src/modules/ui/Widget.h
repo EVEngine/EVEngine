@@ -253,7 +253,7 @@ WidgetDesc slider(std::string label, float value, float minV, float maxV, std::s
 WidgetDesc progress(float fraction, std::string id = "", std::string overlay = "");
 /** Dropdown; options joined by '\n', selected index in `selected`. */
 WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
-                 std::string id = "", std::function<void(int)> onValue = {});
+                 std::string id = "", std::function<void(float)> onValue = {});
 /** Colored / textured image. Size defaults to texture size via layout. */
 WidgetDesc image(std::string id = "", float width = 0.f, float height = 0.f,
                  std::function<void()> onClick = {});

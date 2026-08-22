@@ -35,6 +35,7 @@ bool copyFileIf(const path& src, const path& dst) {
 }
 
 // Best-effort copy of a DLL from any of the candidate source directories.
+#ifdef EVENGINE_WINDOWS
 bool copyFirst(const std::string& dll, const std::vector<path>& candidates, const path& dstDir) {
     for (const auto& dir : candidates) {
         path p = dir / dll;
@@ -42,6 +43,7 @@ bool copyFirst(const std::string& dll, const std::vector<path>& candidates, cons
     }
     return false;
 }
+#endif  // EVENGINE_WINDOWS
 
 // Locate the target SDK root: --sdk, EVENGINE_SDK, or next to the running binary.
 std::string resolveSdkRoot(const std::string& sdkArg) {

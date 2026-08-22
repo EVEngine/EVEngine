@@ -56,6 +56,16 @@ AvatarInstance::~AvatarInstance() { release(); }
 void AvatarInstance::release() {
     if (released_) return;
     released_ = true;
+    // Notify owners (e.g. Dialogue) before the object is destroyed so they can
+    // drop dangling raw pointers. Runs exactly once: the destructor re-enters
+    // release() but the guard above short-circuits.
+    for (auto &[hookId, hook] : destroyHooks_) {
+        try {
+            hook(this);
+        } catch (...) {
+        }
+    }
+    destroyHooks_.clear();
     tween_ = nullptr;
     if (auto *mod = ModuleManager::getInstance<Avatar>("Avatar"))
         mod->unregisterInstance(this);
@@ -63,6 +73,23 @@ void AvatarInstance::release() {
     destroyVroid();
     delete live2d_;
     live2d_ = nullptr;
+}
+
+size_t AvatarInstance::addDestroyHook(DestroyHook hook) {
+    if (!hook)
+        return static_cast<size_t>(-1);
+    const size_t id = nextDestroyHookId_++;
+    destroyHooks_.emplace_back(id, std::move(hook));
+    return id;
+}
+
+void AvatarInstance::removeDestroyHook(size_t id) {
+    for (auto it = destroyHooks_.begin(); it != destroyHooks_.end(); ++it) {
+        if (it->first == id) {
+            destroyHooks_.erase(it);
+            return;
+        }
+    }
 }
 
 void AvatarInstance::setPosition(float x, float y) {

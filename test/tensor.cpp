@@ -718,7 +718,7 @@ TEST_CASE("tensor.func.transformerBlockInference") {
     // residual -> MLP(gelu) -> residual -> classifier softmax. Verified against
     // the eager reference and (when a window exists) on the generated GPU kernels.
     auto *tf = TF::create();
-    const int B = 1, T = 2, D = 4, H = 4, C = 3;
+    const int B = 1, T = 2, D = 4, C = 3;
     const float scale = 1.f / std::sqrt(float(D));
     const float eps = 1e-5f;
 

@@ -217,6 +217,13 @@ if(_has_ui)
         ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
     endif()
     add_library(eve_imgui STATIC ${_eve_imgui_sources})
+    # Vendored third-party imgui mixes public/private enums (input-text/tree
+    # flags); GCC 15's -Wdeprecated-enum-enum-conversion is noise for this
+    # bundled library. Engine call sites that mix enums are fixed at the
+    # source instead (only relevant when strict warnings are enabled).
+    if(NOT MSVC AND EVENGINE_ENABLE_STRICT_WARNINGS)
+      target_compile_options(eve_imgui PRIVATE -Wno-deprecated-enum-enum-conversion)
+    endif()
     target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
     # On Emscripten SDL2 headers come from the port sysroot.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
