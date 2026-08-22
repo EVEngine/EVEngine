@@ -510,3 +510,412 @@ jobs:
           gh release upload "$TAG" "${zips[@]}" --repo "$REPO" --clobber
           echo "Attached SDKs to $TAG:"
           printf '  %s\n' "${zips[@]}"
+
+  # ---- Consumer simulation -----------------------------------------------
+  # Play the role of an end user whose machine has NOTHING but the packaged
+  # SDK zip: download the real release artifact -> eve get android ->
+  # eve build android (APK) -> eve package <host> -> run the packaged game.
+  # Cross-packaging (linux -> win32, macosx -> win32/linux) is exercised by
+  # setting EVE_CROSS_TARGETS; combos that cannot cross-compile are simply not
+  # listed (see run-*-cross jobs for the combos we promise).
+  consumer-win32:
+    name: Consumer win32 (get android + build + run)
+    needs: publish
+    runs-on: windows-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    env:
+      TAG: ${{ inputs.tag }}
+      HOST: win32
+      EVE_CROSS_TARGETS: ""
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
+      - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_runtime: true
+          install_swiftshader: true
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (SwiftShader)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Cache Android toolchain (JDK/Gradle/cmdline-tools/platform)
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.eve-ci/android-sdk
+          key: eve-android-toolchain-${{ runner.os }}-v1
+
+      - name: Cache Gradle dependency cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.gradle/caches
+          key: eve-gradle-${{ runner.os }}-v1
+
+      - name: Resolve toolchain dirs (cacheable, absolute)
+        run: |
+          echo "EVE_SDK_INSTALL_ROOT=$HOME/.eve-ci/eve-sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$HOME/.eve-ci/android-sdk" >> "$GITHUB_ENV"
+
+      - name: Run consumer test (get android -> build android -> package -> run)
+        timeout-minutes: 60
+        run: bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
+
+      - name: Upload android APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-apk-${{ env.HOST }}
+          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}.apk
+          if-no-files-found: error
+          retention-days: 7
+
+  consumer-linux:
+    name: Consumer linux (get android + build + run + cross win32)
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      TAG: ${{ inputs.tag }}
+      HOST: linux
+      EVE_CROSS_TARGETS: win32
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
+      - name: Install headless runtime deps
+        timeout-minutes: 10
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
+            libxxf86vm1 libasound2 libgl1 \
+            mesa-vulkan-drivers xvfb
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Cache Android toolchain (JDK/Gradle/cmdline-tools/platform)
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.eve-ci/android-sdk
+          key: eve-android-toolchain-${{ runner.os }}-v1
+
+      - name: Cache Gradle dependency cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.gradle/caches
+          key: eve-gradle-${{ runner.os }}-v1
+
+      - name: Resolve toolchain dirs (cacheable, absolute)
+        run: |
+          echo "EVE_SDK_INSTALL_ROOT=$HOME/.eve-ci/eve-sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$HOME/.eve-ci/android-sdk" >> "$GITHUB_ENV"
+
+      - name: Run consumer test (get android -> build android -> package -> run + cross win32)
+        timeout-minutes: 90
+        run: |
+          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd.*.json | head -1)"
+          xvfb-run -a bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
+
+      - name: Upload cross win32 package (produced on linux)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pkg-win32-from-linux
+          path: ${{ runner.temp }}/consumer/pkg-win32.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  consumer-macosx:
+    name: Consumer macosx (get android + build + run + cross win32/linux)
+    needs: publish
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      TAG: ${{ inputs.tag }}
+      HOST: macosx
+      EVE_CROSS_TARGETS: "win32 linux"
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
+      - name: Cache Android toolchain (JDK/Gradle/cmdline-tools/platform)
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.eve-ci/android-sdk
+          key: eve-android-toolchain-${{ runner.os }}-v1
+
+      - name: Cache Gradle dependency cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.gradle/caches
+          key: eve-gradle-${{ runner.os }}-v1
+
+      - name: Resolve toolchain dirs (cacheable, absolute)
+        run: |
+          echo "EVE_SDK_INSTALL_ROOT=$HOME/.eve-ci/eve-sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$HOME/.eve-ci/android-sdk" >> "$GITHUB_ENV"
+
+      - name: Run consumer test (get android -> build android -> package -> run + cross win32/linux)
+        timeout-minutes: 90
+        run: bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
+
+      - name: Upload cross win32 package (produced on macosx)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pkg-win32-from-macosx
+          path: ${{ runner.temp }}/consumer/pkg-win32.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload cross linux package (produced on macosx)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pkg-linux-from-macosx
+          path: ${{ runner.temp }}/consumer/pkg-linux.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  # ---- Packaged-game run verification on the target platform ---------------
+  # A package produced by a foreign host must actually run on its target.
+  run-win32-cross:
+    name: Run win32 packages (built on linux/macosx)
+    needs: [consumer-linux, consumer-macosx]
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_runtime: true
+          install_swiftshader: true
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (SwiftShader)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Download cross win32 packages
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: pkg-win32-from-*
+          path: packages
+
+      - name: Run each win32 package and require the startup marker
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          found=0
+          for tgz in packages/*/pkg-win32.tar.gz; do
+            [ -f "$tgz" ] || continue
+            name="$(basename "$(dirname "$tgz")")"
+            dir="$RUNNER_TEMP/run-$name"
+            mkdir -p "$dir"
+            tar -xzf "$tgz" -C "$dir"
+            log="$RUNNER_TEMP/run-${name}.log"
+            ( cd "$dir" && exec ./eve.exe >"$log" 2>&1 ) &
+            pid=$!
+            ok=0
+            for i in $(seq 1 40); do
+              grep -q EVE_CI_GAME_OK "$log" 2>/dev/null && { ok=1; break; }
+              sleep 1
+            done
+            kill "$pid" 2>/dev/null || true
+            if [ "$ok" -eq 1 ]; then
+              echo "OK: $name printed EVE_CI_GAME_OK"
+              found=1
+            else
+              echo "FAIL: $name did not start (log tail):"
+              tail -n 20 "$log" 2>/dev/null || true
+            fi
+          done
+          [ "$found" -eq 1 ] || { echo "ERROR: no win32 package ran successfully" >&2; exit 1; }
+
+  run-linux-cross:
+    name: Run linux package (built on macosx)
+    needs: consumer-macosx
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install headless runtime deps
+        timeout-minutes: 10
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
+            libxxf86vm1 libasound2 libgl1 \
+            mesa-vulkan-drivers xvfb
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Download cross linux package
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: pkg-linux-from-macosx
+          path: packages
+
+      - name: Run the linux package and require the startup marker
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          tar -xzf packages/pkg-linux.tar.gz -C packages
+          chmod +x packages/eve
+          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd.*.json | head -1)"
+          export ALSOFT_DRIVERS=null
+          xvfb-run -a bash -c 'cd packages && exec ./eve > run.log 2>&1' &
+          pid=$!
+          ok=0
+          for i in $(seq 1 40); do
+            grep -q EVE_CI_GAME_OK packages/run.log 2>/dev/null && { ok=1; break; }
+            sleep 1
+          done
+          kill "$pid" 2>/dev/null || true
+          if [ "$ok" -eq 1 ]; then
+            echo "OK: linux package (built on macosx) printed EVE_CI_GAME_OK"
+          else
+            tail -n 25 packages/run.log 2>/dev/null || true
+            echo "ERROR: linux package did not print EVE_CI_GAME_OK" >&2
+            exit 1
+          fi
+
+  # ---- Android emulator run (best-effort first; promote to hard gate later) --
+  # The official SDK ships arm64-v8a only, so the APK needs an arm64 emulator:
+  # macOS (arm64) runners run these natively.
+  run-android:
+    name: Run APK on arm64 emulator (best-effort)
+    needs: [consumer-win32, consumer-linux, consumer-macosx]
+    runs-on: macos-14
+    timeout-minutes: 45
+    continue-on-error: true
+    steps:
+      - name: Download android APK
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: android-apk-linux
+          path: apk
+
+      - name: Boot arm64 emulator, install and launch the game
+        timeout-minutes: 40
+        uses: reactivecircus/android-emulator-runner@69c8581131285561115a2e413eb0037446bdc2d6 # v2.35.0
+        with:
+          api-level: 30
+          arch: arm64-v8a
+          target: google_apis
+          disable-animations: true
+          script: |
+            adb logcat -c
+            adb install -r apk/*.apk
+            adb shell am start -n com.evengine.example/.EVEngineActivity
+            ok=0
+            for i in $(seq 1 90); do
+              if adb logcat -d | grep -q EVE_CI_GAME_OK; then ok=1; break; fi
+              sleep 1
+            done
+            if [ "$ok" -eq 1 ]; then
+              echo "OK: APK printed EVE_CI_GAME_OK on the emulator"
+            else
+              echo "WARN: game marker not seen (logcat tail):"
+              adb logcat -d | tail -n 60 || true
+              exit 1
+            fi
+
+  # ---- iOS: engine runs a game on the simulator (best-effort) ---------------
+  # The released ios SDK is a device app; the simulator cannot execute device
+  # slices, so this builds the game app for iphonesimulator from the release
+  # source and boots it. Soft gate: report, never block the release.
+  ios-sim:
+    name: iOS simulator run (best-effort)
+    needs: publish
+    runs-on: macos-latest
+    timeout-minutes: 120
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+          submodules: recursive
+
+      - name: Install tools
+        timeout-minutes: 10
+        run: brew install ninja || true
+
+      - name: Install Vulkan SDK (MoltenVK for the simulator build)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Create the CI game (startup marker in main.nut)
+        run: |
+          mkdir -p "$RUNNER_TEMP/ci-game"
+          cat > "$RUNNER_TEMP/ci-game/config.nut" <<'EOF'
+          config = { width=0 height=0 title="eve-ci" debug=false hotReload=false };
+          EOF
+          cat > "$RUNNER_TEMP/ci-game/main.nut" <<'EOF'
+          eve_init = function() { print("EVE_CI_GAME_OK"); };
+          eve_update = function(dt) {};
+          EOF
+
+      - name: Build iOS game app for the simulator
+        timeout-minutes: 80
+        run: make build/ios-sim-debug IOS_GAME="$RUNNER_TEMP/ci-game" JOBS="$(sysctl -n hw.ncpu)"
+
+      - name: Boot simulator, install, launch, look for the startup marker
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          APP="$(find build/ios-sim-debug -name 'eve.app' -type d | head -1)"
+          [ -n "$APP" ] || { echo "WARN: eve.app not found"; exit 1; }
+          SIM="$(xcrun simctl list devices available | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1)"
+          [ -n "$SIM" ] || { echo "WARN: no simulator available"; exit 1; }
+          xcrun simctl boot "$SIM" 2>/dev/null || true
+          xcrun simctl bootstatus "$SIM" -b >/dev/null 2>&1 || true
+          xcrun simctl install "$SIM" "$APP"
+          xcrun simctl launch "$SIM" com.evengine.example
+          ok=0
+          for i in $(seq 1 90); do
+            if xcrun simctl spawn "$SIM" log show --last 2s --predicate 'eventMessage CONTAINS "EVE_CI_GAME_OK"' 2>/dev/null \
+               | grep -q EVE_CI_GAME_OK; then ok=1; break; fi
+            sleep 1
+          done
+          if [ "$ok" -eq 1 ]; then
+            echo "OK: iOS game printed EVE_CI_GAME_OK on the simulator"
+          else
+            echo "WARN: iOS game marker not seen on the simulator"
+            xcrun simctl spawn "$SIM" log show --last 60s --predicate 'process == "eve"' 2>/dev/null | tail -n 40 || true
+            exit 1
+          fi

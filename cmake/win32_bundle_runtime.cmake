@@ -40,6 +40,12 @@ if(NOT _eve_vulkan_dll)
     endif()
 endif()
 if(NOT EXISTS "${_eve_vulkan_dll}")
+    # The system-installed loader (GPU driver) is a valid fallback.
+    if(EXISTS "C:/Windows/System32/vulkan-1.dll")
+        set(_eve_vulkan_dll "C:/Windows/System32/vulkan-1.dll")
+    endif()
+endif()
+if(NOT EXISTS "${_eve_vulkan_dll}")
     message(WARNING
         "win32 bundle: vulkan-1.dll not found (VULKAN_SDK unset?). "
         "Packaged games will need a Vulkan loader from the user's GPU driver.")
@@ -59,14 +65,17 @@ foreach(_eve_ms_root IN ITEMS
     if(NOT EXISTS "${_eve_ms_root}")
         continue()
     endif()
-    file(GLOB _eve_vs_roots "${_eve_ms_root}/*/")
+    file(GLOB _eve_vs_roots "${_eve_ms_root}/*")
     foreach(_eve_vs_root IN LISTS _eve_vs_roots)
-        file(GLOB _eve_redist_vers "${_eve_vs_root}VC/Redist/MSVC/*")
-        foreach(_eve_ver IN LISTS _eve_redist_vers)
-            file(GLOB _eve_crt_subs_now
-                "${_eve_ver}/x64/Microsoft.VC*.CRT"
-                "${_eve_ver}/x64/Microsoft.VC*.DebugCRT")
-            list(APPEND _eve_crt_subs ${_eve_crt_subs_now})
+        file(GLOB _eve_editions "${_eve_vs_root}/*")
+        foreach(_eve_ed IN LISTS _eve_editions)
+            file(GLOB _eve_redist_vers "${_eve_ed}/VC/Redist/MSVC/*")
+            foreach(_eve_ver IN LISTS _eve_redist_vers)
+                file(GLOB _eve_crt_subs_now
+                    "${_eve_ver}/x64/Microsoft.VC*.CRT"
+                    "${_eve_ver}/x64/Microsoft.VC*.DebugCRT")
+                list(APPEND _eve_crt_subs ${_eve_crt_subs_now})
+            endforeach()
         endforeach()
     endforeach()
 endforeach()
