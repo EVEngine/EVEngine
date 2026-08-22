@@ -28,6 +28,18 @@ set -euo pipefail
 HOST="${1:?usage: consumer-test.sh <host> <tag> <work-dir>}"
 TAG="${2:?usage: consumer-test.sh <host> <tag> <work-dir>}"
 WORK="${3:?usage: consumer-test.sh <host> <tag> <work-dir>}"
+# Git Bash passes $RUNNER_TEMP in Windows form (D:\a\_temp). Normalize to a
+# POSIX path before the leading-slash check below, otherwise $(pwd) gets
+# prepended and curl/zip paths end up mangled (a mix of /d/... and D:\...).
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    if command -v cygpath >/dev/null 2>&1; then
+      WORK="$(cygpath -u "$WORK")"
+    else
+      WORK="$(printf '%s' "$WORK" | tr '\\' '/')"
+    fi
+    ;;
+esac
 case "$WORK" in
   /*) ;;
   *) WORK="$(pwd)/$WORK" ;;
