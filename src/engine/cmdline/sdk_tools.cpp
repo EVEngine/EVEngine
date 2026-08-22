@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <zlib.h>
+
 #if defined(_WIN32)
 #include <windows.h>
 #include <process.h>
@@ -35,6 +37,121 @@ int processId() {
 #else
     return static_cast<int>(getpid());
 #endif
+}
+
+// 校验 zip 条目路径安全：拒绝绝对路径与 ".."/"." 组件（zip-slip 防护）。
+bool zipEntryPathSafe(const std::string& name) {
+    if (name.empty()) return false;
+    if (name[0] == '/' || name[0] == '\\') return false;
+    std::string comp;
+    for (const char c : name) {
+        if (c == '/' || c == '\\') {
+            if (comp == ".." || comp == ".") return false;
+            comp.clear();
+        } else {
+            comp += c;
+        }
+    }
+    return comp != ".." && comp != ".";
+}
+
+// 进程内 ZIP 解压（STORED + DEFLATE）：宿主 tar 不一定能读 zip（Linux 的
+// GNU tar 就不支持），而 SDK 安装不能要求用户机器预装 unzip/bsdtar。
+bool extractZip(const std::string& zipPath, const std::string& destDir) {
+    std::ifstream in(zipPath, std::ios::binary);
+    if (!in) return false;
+    const std::vector<char> data((std::istreambuf_iterator<char>(in)),
+                                 std::istreambuf_iterator<char>());
+    if (data.size() < 22) return false;
+
+    const auto le16 = [&](size_t off) -> uint16_t {
+        return static_cast<uint16_t>(static_cast<unsigned char>(data[off]) |
+                                     (static_cast<unsigned char>(data[off + 1]) << 8));
+    };
+    const auto le32 = [&](size_t off) -> uint32_t {
+        return static_cast<uint32_t>(static_cast<unsigned char>(data[off]) |
+                                     (static_cast<unsigned char>(data[off + 1]) << 8) |
+                                     (static_cast<unsigned char>(data[off + 2]) << 16) |
+                                     (static_cast<unsigned char>(data[off + 3]) << 24));
+    };
+
+    // EOCD 在文件末尾 64KB+22 字节内。
+    size_t eocd = std::string::npos;
+    const size_t searchStart = data.size() > 65557 ? data.size() - 65557 : 0;
+    for (size_t i = data.size() - 22; i + 1 > searchStart; --i) {
+        if (data[i] == 'P' && data[i + 1] == 'K' && data[i + 2] == 5 && data[i + 3] == 6) {
+            eocd = i;
+            break;
+        }
+    }
+    if (eocd == std::string::npos) return false;
+    const uint32_t cdOffset = le32(eocd + 16);
+    const uint32_t cdSize = le32(eocd + 12);
+    if (cdOffset > data.size() || cdSize > data.size() - cdOffset) return false;
+
+    size_t pos = cdOffset;
+    const size_t cdEnd = cdOffset + cdSize;
+    while (pos + 46 <= cdEnd && data[pos] == 'P' && data[pos + 1] == 'K' &&
+           data[pos + 2] == 1 && data[pos + 3] == 2) {
+        const uint16_t method = le16(pos + 10);
+        const uint32_t compSz = le32(pos + 20);
+        const uint32_t uncompSz = le32(pos + 24);
+        const uint16_t nameLen = le16(pos + 28);
+        const uint16_t extraLen = le16(pos + 30);
+        const uint16_t commentLen = le16(pos + 32);
+        const uint32_t localOff = le32(pos + 42);
+        if (pos + 46 + nameLen + extraLen + commentLen > cdEnd) return false;
+        const std::string name(data.data() + pos + 46, nameLen);
+        pos += 46 + nameLen + extraLen + commentLen;
+
+        if (!zipEntryPathSafe(name)) return false;
+        const bool isDir = !name.empty() && name.back() == '/';
+        const auto dest = std::filesystem::path(destDir) / name;
+        std::error_code ec;
+        if (isDir) {
+            std::filesystem::create_directories(dest, ec);
+            continue;
+        }
+        if (localOff + 30 > data.size() || data[localOff] != 'P' ||
+            data[localOff + 1] != 'K' || data[localOff + 2] != 3 || data[localOff + 3] != 4)
+            return false;
+        const size_t lData = localOff + 30 + le16(localOff + 26) + le16(localOff + 28);
+        if (lData + compSz > data.size()) return false;
+
+        std::vector<char> out;
+        if (method == 0) {
+            out.assign(data.begin() + static_cast<ptrdiff_t>(lData),
+                       data.begin() + static_cast<ptrdiff_t>(lData + compSz));
+        } else if (method == 8) {
+            z_stream zs = {};
+            if (inflateInit2(&zs, -15) != Z_OK) return false;
+            zs.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(data.data() + lData));
+            zs.avail_in = static_cast<uInt>(compSz);
+            std::vector<char> buf(65536);
+            int ret;
+            do {
+                zs.next_out = reinterpret_cast<Bytef*>(buf.data());
+                zs.avail_out = static_cast<uInt>(buf.size());
+                ret = inflate(&zs, Z_NO_FLUSH);
+                if (ret != Z_OK && ret != Z_STREAM_END) {
+                    inflateEnd(&zs);
+                    return false;
+                }
+                out.insert(out.end(), buf.begin(), buf.end() - zs.avail_out);
+            } while (ret != Z_STREAM_END);
+            inflateEnd(&zs);
+        } else {
+            return false;  // 不支持的方法（zip 里极罕见）。
+        }
+        if (out.size() != uncompSz) return false;
+
+        std::filesystem::create_directories(dest.parent_path(), ec);
+        std::ofstream ofs(dest, std::ios::binary | std::ios::trunc);
+        if (!ofs) return false;
+        ofs.write(out.data(), static_cast<std::streamsize>(out.size()));
+        if (!ofs) return false;
+    }
+    return true;
 }
 
 }  // namespace
@@ -311,9 +428,8 @@ int installEveSdk(Platform p) {
 
     const std::string extractDir = (work / "extract").string();
     fs::create_directories(extractDir, ec);
-    if (runShell("tar -xf \"" + zipPath + "\" -C \"" + extractDir + "\"") != 0) {
-        std::cerr << "eve get: failed to extract " << zipName
-                  << " (need a zip-capable tar)" << std::endl;
+    if (!extractZip(zipPath, extractDir)) {
+        std::cerr << "eve get: failed to extract " << zipName << std::endl;
         fs::remove_all(work, ec);
         return 3;
     }
@@ -499,9 +615,8 @@ int downloadAndExtract(const std::string& url, const std::string& zipPath,
     std::error_code ec;
     std::filesystem::remove_all(extractDir, ec);
     std::filesystem::create_directories(extractDir, ec);
-    if (runShell("tar -xf \"" + zipPath + "\" -C \"" + extractDir + "\"") != 0) {
-        std::cerr << "eve get: failed to extract " << zipPath
-                  << " (need a zip-capable tar)" << std::endl;
+    if (!extractZip(zipPath, extractDir)) {
+        std::cerr << "eve get: failed to extract " << zipPath << std::endl;
         return 3;
     }
     std::filesystem::remove(zipPath, ec);

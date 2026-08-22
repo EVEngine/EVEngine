@@ -45,7 +45,9 @@ int Cmdline::Zip(std::string path) {
     // name the archive after the current directory instead.
     if (outName.empty() || outName == ".") {
         std::error_code aec;
-        outName = std::filesystem::absolute(path, aec).filename().string();
+        // current_path() is already normalized; absolute(".") is not on POSIX
+        // (its filename() is "."), which would yield "..eve" again.
+        outName = std::filesystem::current_path(aec).filename().string();
         if (aec || outName.empty()) outName = "game";
     }
     outName += ".eve";
