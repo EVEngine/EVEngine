@@ -100,6 +100,9 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
         const uint16_t extraLen = le16(pos + 30);
         const uint16_t commentLen = le16(pos + 32);
         const uint32_t localOff = le32(pos + 42);
+        // Unix mode lives in the upper 16 bits of the central-directory
+        // external attributes; captured before pos advances past this entry.
+        const uint32_t extAttr = le32(pos + 38);
         if (pos + 46 + nameLen + extraLen + commentLen > cdEnd) return false;
         const std::string name(data.data() + pos + 46, nameLen);
         pos += 46 + nameLen + extraLen + commentLen;
@@ -150,6 +153,19 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
         if (!ofs) return false;
         ofs.write(out.data(), static_cast<std::streamsize>(out.size()));
         if (!ofs) return false;
+#if !defined(_WIN32)
+        // Preserve the unix mode recorded in the zip's external attributes
+        // (bits 16-23) so extracted tools stay executable: gradle, sdkmanager,
+        // aapt/adb all ship as scripts/binaries with +x in their archives.
+        const auto mode = static_cast<unsigned>((extAttr >> 16) & 0xFFFF);
+        if (mode & 0111) {
+            std::error_code pec;
+            std::filesystem::permissions(dest,
+                std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec |
+                    std::filesystem::perms::others_exec,
+                std::filesystem::perm_options::add, pec);
+        }
+#endif
     }
     return true;
 }
@@ -348,6 +364,7 @@ std::string sdkVersion(const std::string& root) {
     std::ifstream in(std::filesystem::path(root) / "share" / "eve" / "VERSION");
     std::string   s;
     std::getline(in, s);
+    while (!s.empty() && (s.back() == '\r' || s.back() == '\n' || s.back() == ' ')) s.pop_back();
     return s;
 }
 
@@ -474,6 +491,7 @@ std::string sdkTargetPlatform(const std::string& sdkRoot) {
     std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
     std::string  s;
     std::getline(in, s);
+    while (!s.empty() && (s.back() == '\r' || s.back() == '\n' || s.back() == ' ')) s.pop_back();
     return s;
 }
 

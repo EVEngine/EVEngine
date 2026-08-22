@@ -27,6 +27,8 @@ std::string targetRuntimeName(const std::string& sdkRoot) {
     std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
     std::string   plat;
     std::getline(in, plat);
+    while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
+        plat.pop_back();
     return plat == "win32" ? "eve.exe" : "eve";
 }
 

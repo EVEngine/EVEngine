@@ -28,6 +28,18 @@ set -euo pipefail
 HOST="${1:?usage: consumer-test.sh <host> <tag> <work-dir>}"
 TAG="${2:?usage: consumer-test.sh <host> <tag> <work-dir>}"
 WORK="${3:?usage: consumer-test.sh <host> <tag> <work-dir>}"
+# Git Bash passes $RUNNER_TEMP in Windows form (D:\a\_temp). Normalize to a
+# POSIX path before the leading-slash check below, otherwise $(pwd) gets
+# prepended and curl/zip paths end up mangled (a mix of /d/... and D:\...).
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    if command -v cygpath >/dev/null 2>&1; then
+      WORK="$(cygpath -u "$WORK")"
+    else
+      WORK="$(printf '%s' "$WORK" | tr '\\' '/')"
+    fi
+    ;;
+esac
 case "$WORK" in
   /*) ;;
   *) WORK="$(pwd)/$WORK" ;;
@@ -126,7 +138,9 @@ PYEOF
 
 # Launcher must be the game host (regression guard for the EVTestActivity bug).
 if [ -n "${ANDROID_HOME:-}" ]; then
-  AAPT="$(find "$ANDROID_HOME/build-tools" -name 'aapt' -o -name 'aapt.exe' 2>/dev/null | sort -V | tail -1)"
+  # set -o pipefail would abort on a missing build-tools dir; the launcher
+  # check is best-effort so the failure mode is a WARN, not a hard exit.
+  AAPT="$(find "$ANDROID_HOME/build-tools" -name 'aapt' -o -name 'aapt.exe' 2>/dev/null | sort -V | tail -1 || true)"
   if [ -n "$AAPT" ] && "$AAPT" dump badging "$APK" 2>/dev/null | grep -q 'launchable-activity.*EVEngineActivity'; then
     echo "OK: APK launcher = EVEngineActivity"
   else
