@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -40,17 +41,6 @@ using namespace eve::graphics;
 
 namespace {
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width  = static_cast<uint16_t>(w);
-    s.height = static_cast<uint16_t>(h);
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 Texture *makeSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) {
     const uint8_t px[4] = {r, g, b, a};

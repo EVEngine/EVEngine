@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -34,17 +35,6 @@ using namespace eve::graphics;
 
 namespace {
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width  = static_cast<uint16_t>(w);
-    s.height = static_cast<uint16_t>(h);
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 Texture *makePackedAlbedoDepth(Graphics *gfx, int w, int h) {
     std::vector<uint8_t> px(size_t(w * h * 4));

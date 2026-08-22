@@ -28,9 +28,13 @@ public:
     bool empty() const;
     int getMeshCount() const;
     int getMaterialCount() const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     int getVertexCount(int meshIndex) const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     int getFaceCount(int meshIndex) const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     bool hasNormals(int meshIndex) const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     bool hasTexCoords(int meshIndex) const;
 
     // ---- material accessors ----
@@ -91,6 +95,7 @@ public:
     std::string getAnimationName(int animIndex) const;
 
     const aiScene *getScene() const;
+    /** @brief Raw Assimp mesh at meshIndex; returns nullptr when out of range. */
     const aiMesh *getMesh(int meshIndex) const;
 
     /** @brief Replace this scene with `replacement`'s (cache reload). */

@@ -44,6 +44,7 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <glm/gtc/type_ptr.hpp>
 #include <memory>
 
 namespace eve::graphics {
@@ -90,6 +91,32 @@ bool updateMeshVerticesScript(Graphics *gfx, Mesh *mesh, ssq::Array posArr, ssq:
     return gfx->updateMeshVertices(mesh, pos.data(), nrm.empty() ? nullptr : nrm.data(),
                                    uv.empty() ? nullptr : uv.data(), vertexCount,
                                    idx.empty() ? nullptr : idx.data(), indexCount);
+}
+
+void setMesh3DViewProjScript(Graphics *gfx, ssq::Array a) {
+    if (a.size() != 16) throw eve::Exception("setMesh3DViewProj: expected 16 floats");
+    glm::mat4 m(1.f);
+    for (size_t i = 0; i < 16; ++i) glm::value_ptr(m)[i] = a.get<float>(i);
+    gfx->setMesh3DViewProj(m);
+}
+
+void setMesh3DViewScript(Graphics *gfx, ssq::Array a) {
+    if (a.size() != 16) throw eve::Exception("setMesh3DView: expected 16 floats");
+    glm::mat4 m(1.f);
+    for (size_t i = 0; i < 16; ++i) glm::value_ptr(m)[i] = a.get<float>(i);
+    gfx->setMesh3DView(m);
+}
+
+void setMesh3DCameraPosScript(Graphics *gfx, float x, float y, float z) {
+    gfx->setMesh3DCameraPos(glm::vec3(x, y, z));
+}
+
+void setCanvasScript(Graphics *gfx, ssq::Object obj) {
+    if (obj.isNull()) {
+        gfx->setCanvas(nullptr);
+        return;
+    }
+    gfx->setCanvas(obj.toPtrUnsafe<Canvas *>());
 }
 
 }  // namespace
@@ -688,7 +715,9 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTextureFromFileRepeated", &Graphics::newTextureFromFileRepeated);
     cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
-    cls.addFunc("setTextureSampler", &Graphics::setTextureSamplerParams);
+    cls.addFunc("setTextureSampler",
+                static_cast<void (Graphics::*)(Texture *, const std::string &, const std::string &, float, float)>(
+                    &Graphics::setTextureSampler));
     cls.addFunc("getMaxAnisotropy", &Graphics::getMaxAnisotropy);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
     cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
@@ -713,12 +742,19 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader*)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
+    cls.addFunc("begin3DFrame", &Graphics::begin3DFrame);
+    cls.addFunc("setMesh3DViewProj",
+                std::function<void(Graphics *, ssq::Array)>(setMesh3DViewProjScript));
+    cls.addFunc("setMesh3DView",
+                std::function<void(Graphics *, ssq::Array)>(setMesh3DViewScript));
+    cls.addFunc("setMesh3DCameraPos",
+                std::function<void(Graphics *, float, float, float)>(setMesh3DCameraPosScript));
     cls.addFunc("renderScene3DToCanvas", &Graphics::renderScene3DToCanvas);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
     cls.addFunc("drawCanvas", &Graphics::drawCanvas);
     cls.addFunc("newCanvas", &Graphics::newCanvas);
-    cls.addFunc("setCanvas", static_cast<void (Graphics::*)(Canvas*)>(&Graphics::setCanvas));
+    cls.addFunc("setCanvas", std::function<void(Graphics *, ssq::Object)>(setCanvasScript));
     cls.addFunc("getCanvas", &Graphics::getCanvas);
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
@@ -743,6 +779,12 @@ void Graphics::expose(ssq::Class& cls) {
 void Graphics::reset() {
     currentShader = nullptr;
     currentFont   = nullptr;
+}
+
+void Graphics::initHeadless(int width, int height) {
+    (void)width;
+    (void)height;
+    throw Exception("Graphics::initHeadless: not supported on this backend");
 }
 
 void Graphics::setShader(Shader* shader) { currentShader = shader; }
@@ -878,6 +920,15 @@ void Graphics::drawTexturedRectRGBA(Texture* texture, float x, float y, float w,
     drawTexturedRect(texture, x, y, w, h, Color(r, g, b, a));
 }
 
+void Graphics::drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a) {
+    drawSolidRectRGBA(x, y, w, h, r, g, b, a);
+}
+
+void Graphics::drawTexturedRect(Texture* texture, float x, float y, float w, float h, float r, float g, float b,
+                                float a) {
+    drawTexturedRectRGBA(texture, x, y, w, h, r, g, b, a);
+}
+
 Texture* Graphics::newTextureFromImageData(image::ImageData* data, bool repeatU, bool repeatV) {
     if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
     if (data->getFormat() != "RGBA8") throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
@@ -919,9 +970,19 @@ Texture* Graphics::newTextureWithSampler(image::ImageData* data, bool repeatU, b
     return newTextureFromImageData(data, info);
 }
 
-void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filter, const std::string& mipmap,
-                                       float maxAnisotropy, float lodBias) {
+void Graphics::setTextureSampler(Texture* texture, const std::string& filter, const std::string& mipmap,
+                                 float maxAnisotropy, float lodBias) {
     if (!texture) return;
+    // Fail fast on typos instead of silently treating an unknown filter as linear.
+    if (filter != "nearest" && filter != "Nearest" && filter != "NEAREST" &&
+        filter != "linear" && filter != "Linear" && filter != "LINEAR") {
+        throw eve::Exception("Graphics::setTextureSampler: unknown filter '%s'", filter.c_str());
+    }
+    if (mipmap != "none" && mipmap != "None" && mipmap != "NONE" &&
+        mipmap != "nearest" && mipmap != "Nearest" && mipmap != "NEAREST" &&
+        mipmap != "linear" && mipmap != "Linear" && mipmap != "LINEAR") {
+        throw eve::Exception("Graphics::setTextureSampler: unknown mipmap mode '%s'", mipmap.c_str());
+    }
     TextureSampler s = texture->getSampler();
     s.min            = TextureSampler::parseFilter(filter);
     s.mag            = s.min;
@@ -929,6 +990,11 @@ void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filt
     s.maxAnisotropy  = maxAnisotropy;
     s.lodBias        = lodBias;
     setTextureSampler(texture, s);
+}
+
+void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filter, const std::string& mipmap,
+                                       float maxAnisotropy, float lodBias) {
+    setTextureSampler(texture, filter, mipmap, maxAnisotropy, lodBias);
 }
 
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }

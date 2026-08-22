@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <algorithm>
@@ -39,17 +40,6 @@ using namespace eve::graphics;
 
 namespace {
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 400, int h = 300) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width  = static_cast<uint16_t>(w);
-    s.height = static_cast<uint16_t>(h);
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {

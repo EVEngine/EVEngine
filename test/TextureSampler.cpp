@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Exception.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -114,6 +115,37 @@ TEST_CASE("GraphicsSmoke.textureMipmapsAndAnisotropy") {
     fx.gfx->clear(std::nullopt, std::nullopt, std::nullopt);
     fx.gfx->drawTexturedRect(tex, 10.f, 10.f, 64.f, 64.f, Color(1, 1, 1, 1));
     fx.gfx->present();
+}
+
+TEST_CASE("GraphicsSmoke.setTextureSamplerValidatesStrings") {
+    GraphicsFixture fx;
+    auto px = makeSolid(16, 16, 120, 120, 120);
+    Texture *tex = fx.gfx->newTexture(16, 16, px.data());
+    REQUIRE(tex != nullptr);
+
+    // Valid string update through the script-facing name.
+    fx.gfx->setTextureSampler(tex, "nearest", "none", 1.f, 0.f);
+    CHECK_EQ(static_cast<int>(tex->getSampler().min), static_cast<int>(FilterMode::Nearest));
+
+    // Deprecated alias keeps working.
+    fx.gfx->setTextureSamplerParams(tex, "linear", "linear", 8.f, 0.f);
+    CHECK_EQ(static_cast<int>(tex->getSampler().mipmap), static_cast<int>(MipmapMode::Linear));
+
+    // Typos fail fast instead of silently falling back to linear.
+    bool threw = false;
+    try {
+        fx.gfx->setTextureSampler(tex, "linar", "none", 1.f, 0.f);
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+    threw = false;
+    try {
+        fx.gfx->setTextureSampler(tex, "linear", "mip", 1.f, 0.f);
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
 }
 
 TEST_CASE("GraphicsSmoke.cubemapGeneratesMipChain") {

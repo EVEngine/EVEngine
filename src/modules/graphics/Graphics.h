@@ -71,6 +71,11 @@ public:
     virtual void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                       float a = 1.f);
+    /** @brief RGBA-float overload matching the script-facing drawSolidRect name. */
+    virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
+    /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
+    virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
+                                  float a = 1.f);
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
@@ -88,9 +93,20 @@ public:
                                    const std::string &filter, const std::string &mipmap,
                                    float lodBias = 0.f);
 
-    /** @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias). */
-    virtual void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
-                                         float maxAnisotropy, float lodBias);
+    /**
+     * @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias).
+     * Script-facing name is `setTextureSampler` (see Graphics::expose); this string
+     * overload keeps the C++ name identical to the script API.
+     * @param filter "nearest" or "linear" (case-insensitive).
+     * @param mipmap "none", "nearest" or "linear" (case-insensitive).
+     * @throws eve::Exception on an unknown filter/mipmap string.
+     */
+    virtual void setTextureSampler(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                   float maxAnisotropy, float lodBias);
+
+    /** @deprecated Use setTextureSampler() with the same arguments. */
+    void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                 float maxAnisotropy, float lodBias);
 
     virtual void present() = 0;
 
@@ -244,6 +260,20 @@ public:
      * Must be called after the window exists (SDL_WINDOW_VULKAN).
      **/
     virtual void initWithWindow(void *nativeWindow) = 0;
+
+    /**
+     * @brief Initialize the renderer without a window or swapchain (headless mode).
+     * Creates a GPU device and offscreen render targets; present() becomes a no-op.
+     * Rendering goes through Canvas + readback (newImageData / readPixels).
+     * @param width Logical viewport width in pixels (must be > 0).
+     * @param height Logical viewport height in pixels (must be > 0).
+     * @throws eve::Exception when the backend does not support headless init,
+     *         or when graphics is already initialized.
+     */
+    virtual void initHeadless(int width, int height);
+
+    /** @brief True when the renderer was initialized via initHeadless(). */
+    virtual bool isHeadless() const { return false; }
 
     /**
      * @brief Sets the current graphics display viewport dimensions.

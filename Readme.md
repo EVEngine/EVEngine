@@ -8,6 +8,7 @@ Evolutionary Vision Engine
 
 ## 文档导航
 
+- 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
 - [在线 API 参考（Doxygen）](https://evengine.github.io/EVEngine/)：随 GitHub Pages 持续发布，包含 C++ API 与用户手册。
 - [开发者文档](docs/dev/README.md)：面向引擎维护者与贡献者，包含架构、模块设计、测试策略与实施记录。
