@@ -36,7 +36,7 @@ eve_init = function() {
 
     gfx.setDirectionalLight(-0.35, 0.7, 0.45, 1.0, 0.95, 0.9);
 
-    print("webgpu main.nut init ok\n");
+    print("3d sphere demo init ok\n");
 };
 
 eve_update = function(dt) {

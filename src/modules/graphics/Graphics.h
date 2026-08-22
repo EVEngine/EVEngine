@@ -660,6 +660,12 @@ public:
      */
     virtual void setMesh3DClusteredActive(bool active) = 0;
 
+    /**
+     * @brief Sets the screen-space ambient-occlusion strength applied in the
+     * forward mesh pass. 0 disables SSAO (default).
+     */
+    virtual void setMesh3DSSAO(float intensity) = 0;
+
     /** @brief Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
 
@@ -732,6 +738,18 @@ public:
      * if needed. Returns false if no presented frame is available or encoding fails.
      */
     bool saveFramePng(const std::string &path);
+
+    /**
+     * @brief Queue an asynchronous readback of the current frame to a PNG file.
+     * @return True when the readback was queued (WebGPU browser backend); poll
+     *         frameReadbackStatus() for completion. Default false elsewhere.
+     */
+    virtual bool beginFrameReadback(const std::string &path) {
+        (void)path;
+        return false;
+    }
+    /** @brief Async readback state: 0=idle, 1=pending, 2=done, 3=failed. */
+    virtual int frameReadbackStatus() const { return 0; }
 
     /**
      * @brief Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
@@ -857,6 +875,16 @@ public:
      */
     virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }
+
+    /**
+     * @brief Create a 2D custom shader from WGSL source (WebGPU backend).
+     * Empty vert → default textured vertex shader. The fragment WGSL declares
+     * the shared 2D bindings (color texture 0, depth texture 1, sampler 2,
+     * depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points.
+     * Vulkan throws (uses SPIR-V via newShaderFromSpv).
+     */
+    virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                                      const std::string &fragWgsl) = 0;
 
     /**
      * @brief Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).

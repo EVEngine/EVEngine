@@ -49,6 +49,12 @@ Uint32 messageBoxFlag(const std::string& type) {
 }  // namespace
 
 Window::Window() : open(false) {
+#if defined(__EMSCRIPTEN__)
+    // Bind SDL keyboard to the render canvas instead of the whole window, so
+    // typing in the playground editor / REPL never reaches the game. The
+    // canvas must be focused (tabindex + click) to deliver keys.
+    SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "canvas");
+#endif
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
         throw Exception("Could not initialize SDL video subsystem (%s)", SDL_GetError());
 }

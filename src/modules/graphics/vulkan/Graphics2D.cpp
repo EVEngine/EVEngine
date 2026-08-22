@@ -1209,6 +1209,11 @@ Shader *Graphics::newMeshShaderFromWgsl(const std::string &, const std::string &
                     "WebGPU backend; use newMeshShaderFromSpv on Vulkan.");
 }
 
+Shader *Graphics::newShaderFromWgsl(const std::string &, const std::string &) {
+    throw Exception("newShaderFromWgsl: WGSL shaders are only supported on the WebGPU "
+                    "backend; use newShaderFromSpv on Vulkan.");
+}
+
 void Graphics::flushBatch() {
     if (!initialized) return;
     if (isCanvasActive()) {

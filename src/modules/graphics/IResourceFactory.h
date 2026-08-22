@@ -82,6 +82,16 @@ public:
     virtual Shader *newShaderFromSpvFile(const std::string &vertPath,
                                          const std::string &fragPath) = 0;
     virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+
+    /**
+     * @brief Create a 2D custom shader from WGSL source (WebGPU backend).
+     * Empty vert → default textured vertex shader. The fragment WGSL declares
+     * the shared 2D bindings (color texture 0, depth texture 1, sampler 2,
+     * depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points.
+     * Vulkan throws (uses SPIR-V via newShaderFromSpv).
+     */
+    virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                                      const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
     virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,

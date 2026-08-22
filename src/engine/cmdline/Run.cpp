@@ -3,8 +3,11 @@
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/config.h"
+#include "common/ECS.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
+#include "graphics/Light.h"
+#include "graphics/RenderSystem3D.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -22,12 +25,24 @@
 
 #if defined(EVENGINE_WEBGPU)
 #include <emscripten.h>
+#include <squirrel.h>
+
+#include <algorithm>
+#include <cstring>
+#include <fstream>
+#include <sstream>
+
+#include "graphics/Graphics.h"
 
 namespace {
 // Global frame-loop state: the root script (load.nut) defines a global
 // eve_frame() function; emscripten_set_main_loop drives it per animation frame.
 ssq::VM* gFrameVm = nullptr;
 ssq::Function* gFrameFunc = nullptr;
+// Raw Squirrel handle for the browser playground bridges below. Set right
+// after load.nut finishes; Run() never returns (emscripten_set_main_loop with
+// simulateInfiniteLoop=1), so it stays valid for the page lifetime.
+HSQUIRRELVM gPlaygroundVm = nullptr;
 
 void webgpuFrameTick() {
     if (!gFrameVm || !gFrameFunc || gFrameFunc->isEmpty()) return;
@@ -44,7 +59,231 @@ void webgpuFrameTick() {
     }
     if (!keep) emscripten_cancel_main_loop();
 }
+
+// ---------------------------------------------------------------------------
+// Playground bridge (browser only).
+//
+// The shell page (platform/webgpu/shell.html) calls these exported functions
+// to push a new main.nut into the running engine and trigger the same soft
+// hot-reload path used by the desktop file watcher (load.nut handle_change).
+// They run on the browser main thread only, so a single shared result buffer
+// is safe.
+// ---------------------------------------------------------------------------
+
+constexpr SQInteger kPlaygroundResultCap = 8192;
+char gPlaygroundResult[kPlaygroundResultCap];
+
+const char* setPlaygroundResult(const char* text) {
+    if (!text) text = "";
+    std::snprintf(gPlaygroundResult, kPlaygroundResultCap, "%s", text);
+    return gPlaygroundResult;
+}
+
+// Write /game/main.nut and soft-reload it (dofile + optional eve_reload hook).
+// The reload error path prints through the same channels as the desktop
+// watcher, so the page console shows compile/runtime errors.
+void playgroundApply(const char* source) {
+    if (!gPlaygroundVm || !source) return;
+    HSQUIRRELVM vm = gPlaygroundVm;
+    const SQInteger top = sq_gettop(vm);
+    try {
+        std::ofstream out("/game/main.nut", std::ios::binary | std::ios::trunc);
+        if (!out) {
+            std::fprintf(stderr, "playground: cannot open /game/main.nut for writing\n");
+            return;
+        }
+        out.write(source, static_cast<std::streamsize>(std::strlen(source)));
+        out.close();
+    } catch (const std::exception& e) {
+        std::fprintf(stderr, "playground: write /game/main.nut failed: %s\n", e.what());
+        return;
+    }
+    // Route through load.nut's handle_change("main.nut") so scripts are
+    // tracked and re-dofiled exactly like an on-disk change.
+    sq_pushroottable(vm);
+    sq_pushstring(vm, _SC("handle_change"), -1);
+    if (SQ_SUCCEEDED(sq_get(vm, -2))) {          // [root, fn]
+        sq_remove(vm, -2);                       // [fn]
+        sq_pushroottable(vm);                    // [fn, root] (env/this param)
+        sq_pushstring(vm, _SC("main.nut"), -1);
+        // UI.cpp callScriptHandler convention: the roottable is the first
+        // parameter, so 2 params = [root, "main.nut"].
+        sq_call(vm, 2, SQFalse, SQTrue);
+    }
+    sq_settop(vm, top);
+}
+
+// Evaluate one Squirrel snippet in the running VM (REPL). Returns the
+// stringified result, or a "compile error:" / "eval error:" message.
+const char* playgroundEval(const char* source) {
+    if (!gPlaygroundVm) return "engine not ready";
+    if (!source) return "";
+    HSQUIRRELVM vm = gPlaygroundVm;
+    const SQInteger top = sq_gettop(vm);
+    char errbuf[640];
+    // REPL semantics: expressions like `__pg.frames` should return their value.
+    // A bare expression statement yields null in Squirrel, so first try
+    // `return (...)`; if that does not compile (e.g. an assignment or a
+    // multi-statement block), fall back to executing the raw source.
+    const std::string wrapped = std::string("return (") + source + ");";
+    const char* evalSource = wrapped.c_str();
+    SQInteger evalLen = static_cast<SQInteger>(wrapped.size());
+    bool compileOk =
+        SQ_SUCCEEDED(sq_compilebuffer(vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
+    if (!compileOk) {
+        sq_settop(vm, top);
+        compileOk = SQ_SUCCEEDED(sq_compilebuffer(vm, source, std::strlen(source),
+                                                  _SC("playground_eval"), SQTrue));
+    }
+    if (!compileOk) {
+        const SQChar* msg = nullptr;
+        if (sq_gettype(vm, -1) == OT_STRING) sq_getstring(vm, -1, &msg);
+        std::snprintf(errbuf, sizeof(errbuf), "compile error: %s", msg ? msg : "unknown");
+        sq_settop(vm, top);
+        return setPlaygroundResult(errbuf);
+    }
+    sq_pushroottable(vm);
+    if (SQ_FAILED(sq_call(vm, 1, SQTrue, SQTrue))) {
+        const SQChar* msg = nullptr;
+        if (sq_gettype(vm, -1) == OT_STRING) sq_getstring(vm, -1, &msg);
+        std::snprintf(errbuf, sizeof(errbuf), "eval error: %s", msg ? msg : "unknown");
+        sq_settop(vm, top);
+        return setPlaygroundResult(errbuf);
+    }
+    if (sq_gettype(vm, -1) == OT_NULL) {
+        sq_settop(vm, top);
+        return setPlaygroundResult("null");
+    }
+    if (SQ_FAILED(sq_tostring(vm, -1))) {
+        sq_settop(vm, top);
+        return setPlaygroundResult("(unprintable result)");
+    }
+    const SQChar* result = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, -1, &result)) || !result) {
+        sq_settop(vm, top);
+        return setPlaygroundResult("(unprintable result)");
+    }
+    const char* out = setPlaygroundResult(result);
+    sq_settop(vm, top);
+    return out;
+}
+
+// Read a file from the browser VFS (relative to /game, which is the CWD).
+const char* playgroundRead(const char* path) {
+    if (!gPlaygroundVm || !path) return "";
+    try {
+        std::ifstream in(path, std::ios::binary);
+        if (!in) return setPlaygroundResult("");
+        std::ostringstream ss;
+        ss << in.rdbuf();
+        const std::string text = ss.str();
+        const size_t n = std::min(text.size(), static_cast<size_t>(kPlaygroundResultCap - 1));
+        std::memcpy(gPlaygroundResult, text.data(), n);
+        gPlaygroundResult[n] = '\0';
+        return gPlaygroundResult;
+    } catch (...) {
+        return setPlaygroundResult("");
+    }
+}
+
+// Binary-safe VFS read (e.g. PNG screenshots): copies up to dstCap bytes into
+// the JS-provided buffer and returns the byte count written.
+int playgroundReadBytes(const char* path, void* dst, int dstCap) {
+    if (!gPlaygroundVm || !path || !dst || dstCap <= 0) return 0;
+    try {
+        std::ifstream in(path, std::ios::binary);
+        if (!in) return 0;
+        std::ostringstream ss;
+        ss << in.rdbuf();
+        const std::string text = ss.str();
+        const int n = std::min<int>(static_cast<int>(text.size()), dstCap);
+        std::memcpy(dst, text.data(), n);
+        return n;
+    } catch (...) {
+        return 0;
+    }
+}
+
+// Queue an async frame readback (PNG). The webgpu backend pumps it from
+// present() so we never sleep inside this JS-initiated call (ASYNCIFY).
+void playgroundCapture(const char* path) {
+    if (!gPlaygroundVm || !path) return;
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    if (gfx) gfx->beginFrameReadback(path);
+}
+
+int playgroundReadbackStatus() {
+    if (!gPlaygroundVm) return 0;
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    return gfx ? gfx->frameReadbackStatus() : 0;
+}
+
+// Pause/freeze game updates (eve_update) while the render keeps presenting.
+// load.nut's eve_frame checks the eve_playground_paused root flag.
+void playgroundSetPaused(int paused) {
+    if (!gPlaygroundVm) return;
+    HSQUIRRELVM vm = gPlaygroundVm;
+    const SQInteger top = sq_gettop(vm);
+    sq_pushroottable(vm);
+    sq_pushstring(vm, _SC("eve_playground_paused"), -1);
+    sq_pushbool(vm, paused != 0);
+    sq_newslot(vm, -3, SQFalse);
+    sq_settop(vm, top);
+}
+
+// Destroy the ECS entities demos create (renderables, lights, cameras) and
+// drop the playground state table, so applying a *different* demo (or pressing
+// "重置状态") starts from a clean scene instead of stacking entities.
+void playgroundResetScene() {
+    if (!gPlaygroundVm) return;
+    HSQUIRRELVM vm = gPlaygroundVm;
+    const SQInteger top = sq_gettop(vm);
+    try {
+        auto *table = ecs::current();
+        auto destroyAll = [&](auto *mgr) {
+            if (!mgr || !mgr->registy) return;
+            auto *reg = dynamic_cast<ecs::IRegistryComponentBuffer *>(mgr->registy);
+            if (!reg) return;
+            std::vector<ecs::Entity *> entities;
+            const uint32_t n = reg->entity_count();
+            entities.reserve(n);
+            for (uint32_t i = 0; i < n; ++i) {
+                if (ecs::Entity *e = reg->entity_at(i)) entities.push_back(e);
+            }
+            for (ecs::Entity *e : entities) ecs::DestroyEntity(e);
+        };
+        destroyAll(table->getManager<eve::graphics::Renderable3D>());
+        destroyAll(table->getManager<eve::graphics::Light3D>());
+        destroyAll(table->getManager<eve::graphics::Camera3D>());
+
+        sq_pushroottable(vm);
+        sq_pushstring(vm, _SC("__pg"), -1);
+        sq_deleteslot(vm, -2, SQFalse);
+        sq_settop(vm, top);
+    } catch (...) {
+        sq_settop(vm, top);
+    }
+}
 } // namespace
+
+extern "C" {
+
+EMSCRIPTEN_KEEPALIVE void eve_playground_apply(const char* source) { playgroundApply(source); }
+EMSCRIPTEN_KEEPALIVE const char* eve_playground_eval(const char* source) {
+    return playgroundEval(source);
+}
+EMSCRIPTEN_KEEPALIVE const char* eve_playground_read(const char* path) {
+    return playgroundRead(path);
+}
+EMSCRIPTEN_KEEPALIVE int eve_playground_read_bytes(const char* path, void* dst, int dstCap) {
+    return playgroundReadBytes(path, dst, dstCap);
+}
+EMSCRIPTEN_KEEPALIVE void eve_playground_capture(const char* path) { playgroundCapture(path); }
+EMSCRIPTEN_KEEPALIVE int eve_playground_readback_status() { return playgroundReadbackStatus(); }
+EMSCRIPTEN_KEEPALIVE void eve_playground_set_paused(int paused) { playgroundSetPaused(paused); }
+EMSCRIPTEN_KEEPALIVE void eve_playground_reset() { playgroundResetScene(); }
+
+} // extern "C"
 #endif
 
 #if defined(EVENGINE_ANDROID)
@@ -261,6 +500,10 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         // keeps main() alive; `runtime` stays in scope because Run() never returns.
         gFrameVm = &runtime.vm();
         gFrameFunc = new ssq::Function(runtime.vm().find("eve_frame").toFunction());
+        gPlaygroundVm = runtime.handle();
+        // Let the shell page enable the editor once the engine VM is live
+        // (onRuntimeInitialized fires before main(), so it is not enough).
+        EM_ASM({ if (window.eveEngineReady) window.eveEngineReady(); });
         emscripten_set_main_loop(&webgpuFrameTick, 0, /*simulateInfiniteLoop=*/1);
 #endif
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
