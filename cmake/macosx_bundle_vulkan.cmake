@@ -51,7 +51,9 @@ foreach(_eve_dylib IN ITEMS
         "${_eve_vk_lib}/libvulkan.1.dylib"
         "${_eve_vk_lib}/libMoltenVK.dylib")
     if(EXISTS "${_eve_dylib}")
-        file(INSTALL "${_eve_dylib}" DESTINATION "${_eve_lib}")
+        # The LunarG SDK ships libvulkan.1.dylib as a symlink; install the
+        # resolved file so the SDK tree (and the packed zip) is self-contained.
+        file(INSTALL "${_eve_dylib}" DESTINATION "${_eve_lib}" FOLLOW_SYMLINK_CHAIN)
     endif()
 endforeach()
 
