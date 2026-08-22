@@ -43,6 +43,7 @@ mat.setShadingModel("custom");
 
 ### `Stylize`（模块）
 
+- `getName()`：模块名（"Stylize"）。
 - 风格注册表：`getStyleCount` / `getStyleId(i)` / `hasStyle(id)` /
   `hasMeshStyle(id)` / `supports(style, feature)` / `getStyleParamCount` /
   `getStyleParamName`。
@@ -68,4 +69,3 @@ mat.setShadingModel("custom");
 - `supports(style, "gbuffer")` 可查询是否需要深度/法线输入（`RenderControl`
   开启 `gbuffer` 后可用）。
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel`。
-

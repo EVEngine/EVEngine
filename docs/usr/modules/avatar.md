@@ -42,6 +42,7 @@ av.applyExpression("shy");
 
 ### `Avatar`（模块）
 
+- `getName()`：模块名（"Avatar"）。
 - `newImageAvatar()`：新建 Image 分层立绘。
 - `newLive2DAvatar()`：新建 Live2D 头像（需已注册后端，见 `getLive2DBackendName`）。
 - `newVroidAvatar()`：新建 VRoid（3D）头像。
@@ -71,4 +72,3 @@ av.applyExpression("shy");
 - Image 层的 `Texture` 引用由 Graphics 持有，传给 `addLayer` 的纹理需保持有效。
 - VRoid 路径绑定的是 `Model3D` 数据 + `Renderable3D`；`bakeMorphs` 把 morph 权重
   烘焙进网格，热重载后需重新绑定。
-

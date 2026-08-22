@@ -44,7 +44,8 @@ function eve_update(dt) { ctrl.update(dt); }
 ### `CameraController`
 
 - 绑定：`setCamera(cam)` / `getCamera()`。
-- 跟随目标：`setTarget(x,y,z)` / `getTargetX/Y/Z`、`setOffset(x,y,z)`、`setLookAhead(v)`。
+- 跟随目标：`setTarget(x,y,z)` / `getTargetX()` / `getTargetY()` / `getTargetZ()`、
+  `setOffset(x,y,z)`、`setLookAhead(v)`。
 - 模式：`setMode("follow"|"orbit"|"topdown"|"firstperson"|"cinematic")` / `getMode()`。
 - 环绕：`setRadius`、`setAzimuth`、`setElevation`、`setOrbitSpeed`、`setYaw`、`setPitch`。
 - 平滑：`setSmooth(k)`、`setMaxSpeed(v)`、`snap()`（立即到位）。
@@ -57,4 +58,3 @@ function eve_update(dt) { ctrl.update(dt); }
 - `Camera3D` 由脚本创建并 `setActive(true)` 才会被 `RenderSystem3D` 采用；
   控制器只改其 eye/target，不负责渲染。
 - 示例：[`examples/camera-controllers`](../../../examples/camera-controllers/main.nut)。
-

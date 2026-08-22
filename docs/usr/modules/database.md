@@ -33,6 +33,7 @@ conn.close();
 
 ### `Database`（模块）
 
+- `getName()`：模块名（"Database"）。
 - `connect(path)` / `connectSQLite(path)` → `Connection`。
 
 ### `Connection`
@@ -58,4 +59,3 @@ conn.close();
 - `Connection` 由脚本持有，`close()` 后不可再用；模块不缓存连接。
 - SQLite 文件路径走引擎虚拟文件系统（写目录见 `filesystem.setupWriteDirectory`）。
 - 热重载脚本时若反复建表，用 `IF NOT EXISTS` 保证幂等。
-

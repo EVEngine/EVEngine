@@ -41,6 +41,7 @@ generator 的 yield 值。完整可运行示例见
 
 ### `Dialogue`（模块）
 
+- `getName()`：模块名（"Dialogue"）。
 - 角色：`registerCharacter(id, displayName)`、`hasCharacter`、`getDisplayName`、
   `getCharacterCount`、`getCharacterId`、`bindAvatar(id, avatar)`、`getAvatar(id)`。
 - 舞台：`show(id, slot)`、`hide`、`isShown`、`getSlot`、`setSlotX/getSlotX`、
@@ -66,4 +67,3 @@ generator 的 yield 值。完整可运行示例见
   等任何 `AvatarInstance`。
 - `update(dt)` 推进打字机/口型/舞台同步；选项选择前先 `isWaitingChoice()` 判空。
 - `loadPoolsFromDnutFile` 解析 `.dnut`（剧本数据文件），错误看 `getLastPoolsError`。
-

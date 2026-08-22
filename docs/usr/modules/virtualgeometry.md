@@ -43,6 +43,7 @@ function eve_render() {
 
 ### `VirtualGeometry`（模块）
 
+- `getName()`：模块名（"VirtualGeometry"）。
 - `isAvailable()`、`newRenderer()`。
 
 ### `VirtualGeometryRenderer`
@@ -59,4 +60,3 @@ function eve_render() {
 - 仅 Vulkan 后端可用（WebGPU 返回 `isAvailable()==false`）。
 - `resolve()` 返回的 ByteData 归调用方；每次相机/模型变化后需重新 `update()`
   再 resolve。
-

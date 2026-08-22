@@ -38,6 +38,7 @@ loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 
 ### `SceneLoader`（模块）
 
+- `getName()`：模块名（"SceneLoader"）。
 - `load(path)` → `SceneHost`（null 表示失败）；默认自动链接 Renderable3D。
 - `host(path)` → 已挂载的 `SceneHost`。
 - `reloadChecked(path)` → bool：热重载并 diff 应用。
@@ -52,4 +53,3 @@ loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 - 返回的 `SceneHost` 归 scene 模块管理，卸载/热重载后旧句柄失效。
 - 异步加载的 GPU 上传必须发生在主线程，所以用 `pollAsync()` 而非在 worker 里挂载。
 - 材质贴图按路径缓存并跨网格共享；`unload` 会释放该路径的 GPU 资源。
-
