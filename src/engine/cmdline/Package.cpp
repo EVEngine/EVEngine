@@ -2,6 +2,7 @@
 #include "zip_writer.h"
 #include "common/config.h"
 #include <filesystem>
+#include <fstream>
 #include <CLI11.hpp>
 #include <rang.hpp>
 
@@ -19,12 +20,15 @@ namespace eve::cmd
 
 namespace {
 
-// Runtime binary name inside the SDK's bin/: eve.exe on Windows, eve elsewhere.
-#ifdef EVENGINE_WINDOWS
-constexpr const char* kEveRuntimeName = "eve.exe";
-#else
-constexpr const char* kEveRuntimeName = "eve";
-#endif
+// Runtime binary name inside the *target* SDK's bin/. The packaged game runs on
+// the SDK's platform, which is not necessarily the host running `eve package`
+// (e.g. a Linux host can produce a Windows game folder for the win32 SDK).
+std::string targetRuntimeName(const std::string& sdkRoot) {
+    std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
+    std::string   plat;
+    std::getline(in, plat);
+    return plat == "win32" ? "eve.exe" : "eve";
+}
 
 bool copyFileIf(const path& src, const path& dst) {
     error_code ec;
@@ -35,7 +39,6 @@ bool copyFileIf(const path& src, const path& dst) {
 }
 
 // Best-effort copy of a DLL from any of the candidate source directories.
-#ifdef EVENGINE_WINDOWS
 bool copyFirst(const std::string& dll, const std::vector<path>& candidates, const path& dstDir) {
     for (const auto& dir : candidates) {
         path p = dir / dll;
@@ -43,7 +46,6 @@ bool copyFirst(const std::string& dll, const std::vector<path>& candidates, cons
     }
     return false;
 }
-#endif  // EVENGINE_WINDOWS
 
 // Locate the target SDK root: --sdk, EVENGINE_SDK, or next to the running binary.
 std::string resolveSdkRoot(const std::string& sdkArg) {
@@ -121,62 +123,75 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     create_directories(outDir, ec);
 
     path sdkBin  = path(sdkRoot) / "bin";
+    path sdkLib  = path(sdkRoot) / "lib";
     path sdkPlat = path(sdkRoot) / "platform";
 
+    const std::string runtimeName = targetRuntimeName(sdkRoot);
+
     // 1. Runtime executable.
-    path runtimeSrc = sdkBin / kEveRuntimeName;
-    path runtimeDst = outDir / kEveRuntimeName;
+    path runtimeSrc = sdkBin / runtimeName;
+    path runtimeDst = outDir / runtimeName;
     if (!copyFileIf(runtimeSrc, runtimeDst)) {
         cerr << rang::fg::red << "SDK missing " << runtimeSrc.string() << rang::fg::reset << endl;
         return 3;
     }
 
+    // 2. Windows runtime DLLs the packaged game needs (vulkan loader + VC CRT).
+    // win32 SDKs bundle them in bin/ so ANY host can produce a self-contained
+    // package; on a Windows host we also fall back to the local VS redist for
+    // older SDKs that predate bundling.
+    if (runtimeName == "eve.exe") {
+        std::vector<path> crtCandidates;
+        if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
+        if (exists(sdkLib)) crtCandidates.push_back(sdkLib);
 #ifdef EVENGINE_WINDOWS
-    // 2. Windows runtime DLLs the executable needs (vulkan + VC CRT). Best-effort.
-    std::vector<path> crtCandidates;
-    if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
-    // VC redist (version-independent glob): both release CRT and debug CRT.
-    for (const auto& msroot : {"C:/Program Files/Microsoft Visual Studio"}) {
-        path base = path(msroot);
-        if (exists(base / "18")) base = base / "18";
-        for (const auto& entry : directory_iterator(base, ec)) {
-            if (!entry.is_directory()) continue;
-            path redist = entry.path() / "Community" / "VC" / "Redist" / "MSVC";
-            if (!exists(redist)) continue;
-            for (const auto& ver : directory_iterator(redist, ec)) {
-                for (const auto& crtDir : {"x64", "debug_nonredist/x64"}) {
-                    path crt = ver.path() / crtDir;
-                    if (!exists(crt)) continue;
-                    for (const auto& sub : directory_iterator(crt, ec)) {
-                        if (!sub.is_directory()) continue;
-                        const std::string n = sub.path().filename().string();
-                        if (n.find("Microsoft.VC") == 0 && (n.find(".CRT") != string::npos ||
-                            n.find("DebugCRT") != string::npos))
-                            crtCandidates.push_back(sub.path());
+        // VC redist (version-independent glob): both release CRT and debug CRT.
+        for (const auto& msroot : {"C:/Program Files/Microsoft Visual Studio"}) {
+            path base = path(msroot);
+            if (exists(base / "18")) base = base / "18";
+            for (const auto& entry : directory_iterator(base, ec)) {
+                if (!entry.is_directory()) continue;
+                path redist = entry.path() / "Community" / "VC" / "Redist" / "MSVC";
+                if (!exists(redist)) continue;
+                for (const auto& ver : directory_iterator(redist, ec)) {
+                    for (const auto& crtDir : {"x64", "debug_nonredist/x64"}) {
+                        path crt = ver.path() / crtDir;
+                        if (!exists(crt)) continue;
+                        for (const auto& sub : directory_iterator(crt, ec)) {
+                            if (!sub.is_directory()) continue;
+                            const std::string n = sub.path().filename().string();
+                            if (n.find("Microsoft.VC") == 0 &&
+                                (n.find(".CRT") != string::npos ||
+                                 n.find("DebugCRT") != string::npos))
+                                crtCandidates.push_back(sub.path());
+                        }
                     }
                 }
             }
         }
-    }
-    if (exists(path("C:/Windows/System32"))) crtCandidates.push_back(path("C:/Windows/System32"));
+        if (exists(path("C:/Windows/System32")))
+            crtCandidates.push_back(path("C:/Windows/System32"));
+#endif
 
-    // eve.exe links the VC runtime dynamically; bundle both release and debug sets so
-    // the package is self-contained regardless of build type.
-    for (const auto& dll : {"vulkan-1.dll", "msvcp140.dll", "msvcp140_1.dll",
-                            "msvcp140_2.dll", "vcruntime140.dll", "vcruntime140_1.dll",
-                            "concrt140.dll", "msvcp140d.dll", "vcruntime140d.dll",
-                            "vcruntime140_1d.dll", "ucrtbased.dll", "concrt140d.dll"}) {
-        if (!copyFirst(dll, crtCandidates, outDir))
-            cerr << rang::fg::yellow << "note: runtime DLL not found (may be system-installed): "
-                 << dll << rang::fg::reset << endl;
+        // eve.exe links the VC runtime dynamically; bundle both release and
+        // debug sets so the package is self-contained regardless of build type.
+        for (const auto& dll : {"vulkan-1.dll", "msvcp140.dll", "msvcp140_1.dll",
+                                "msvcp140_2.dll", "vcruntime140.dll",
+                                "vcruntime140_1.dll", "concrt140.dll",
+                                "msvcp140d.dll", "vcruntime140d.dll",
+                                "vcruntime140_1d.dll", "ucrtbased.dll",
+                                "concrt140d.dll"}) {
+            if (!copyFirst(dll, crtCandidates, outDir))
+                cerr << rang::fg::yellow
+                     << "note: runtime DLL not found (may be system-installed): "
+                     << dll << rang::fg::reset << endl;
+        }
     }
-#endif  // EVENGINE_WINDOWS
 
 #ifdef EVENGINE_MACOSX
     // 2b. macOS: bundle the runtime dylibs (Vulkan loader, zlib, ...) that the
     // executable links from the SDK's lib/ directory, so the packaged game is
     // self-contained next to the eve binary.
-    path sdkLib = path(sdkRoot) / "lib";
     if (exists(sdkLib)) {
         for (const auto& entry : directory_iterator(sdkLib, ec)) {
             if (entry.is_regular_file() && entry.path().extension() == ".dylib")

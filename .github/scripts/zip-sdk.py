@@ -39,6 +39,10 @@ def main() -> None:
         for dirpath, dirnames, filenames in os.walk(root, onerror=lambda _e: None):
             dirnames[:] = [
                 d for d in dirnames
+                # Never ship build outputs: the android SDK template is compiled
+                # by test-sdk.sh before packaging, leaving app/build outputs
+                # (e.g. a CI test APK) that consumers must not inherit.
+                if d not in ("build", ".gradle")
                 if os.access(os.path.join(dirpath, d), os.R_OK)
             ]
             for name in filenames:

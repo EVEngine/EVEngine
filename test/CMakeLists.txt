@@ -147,6 +147,7 @@ file(GLOB all_test_cpp
   dap.cpp
   mcp.cpp
   console.cpp
+  cmdline.cpp
   main.cpp
 )
 
