@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(EVEngine)
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "1")
+set(EVENGINE_MINOR_VERSION "2")
 set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "-dev")
 
